@@ -1,0 +1,59 @@
+@import "./setup/index";
+@import "./generic/index";
+
+html {
+  @include font(400);
+  font-size: 63.5%;
+  position: relative;
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-text));
+  min-height: 100vh;
+
+  * {
+    outline: none !important;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+
+  body {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    b,
+    strong {
+      @include font(700);
+    }
+  }
+
+  a {
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+@import "./app/index.scss";
+
+// @import "./generic/dark-theme";
+
+.dev-screen {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  h2 {
+    font-size: 10rem;
+    margin-bottom: 8px;
+  }
+
+  p {
+    font-size: 1.6rem;
+  }
+}

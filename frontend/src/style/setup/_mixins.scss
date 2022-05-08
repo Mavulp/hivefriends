@@ -1,0 +1,171 @@
+//
+// Helpers
+//
+
+@function is-number($value) {
+  @return type-of($value) == "number";
+}
+
+//
+// Mixins
+//
+
+@mixin noselect() {
+  -webkit-touch-callout: none; // iOS Safari
+  -webkit-user-select: none; // Safari
+  -khtml-user-select: none; // Konqueror HTML
+  -moz-user-select: none; // Old versions of Firefox
+  -ms-user-select: none; // Internet Explorer/Edge
+  user-select: none; // Non-prefixed version - Chrome, Opera and Firefox
+}
+
+// Adds transition to the element,
+@mixin t($time: 0.3s, $type: ease-in-out) {
+  -webkit-transition: all $time $type;
+  -moz-transition: all $time $type;
+  -o-transition: all $time $type;
+  transition: all $time $type;
+}
+
+// Rotate element
+@mixin rotate($deg) {
+  -webkit-transform: rotate($deg);
+  -moz-transform: rotate($deg);
+  -ms-transform: rotate($deg);
+  -o-transform: rotate($deg);
+  transform: rotate($deg);
+}
+
+// Basic background gradient
+@mixin gradient($angle: 45deg, $col1: rgba(0, 0, 0, 1), $col2: rgba(255, 255, 255, 1)) {
+  background: $col1;
+  background: -moz-linear-gradient($angle, $col1 0%, $col2 100%);
+  background: -webkit-linear-gradient($angle, $col1 0%, $col2 100%);
+  background: linear-gradient($angle, $col1 0%, $col2 100%);
+}
+
+// Border radius
+
+@mixin radius($radius) {
+  border-radius: $radius;
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+}
+
+@mixin hover-underline($thickness, $color, $width: 16px, $offset: 0) {
+  &::after {
+    content: "";
+
+    border-bottom: solid $thickness $color;
+
+    width: 0;
+    position: absolute;
+    bottom: -4px;
+    display: block;
+
+    transition: width 0.25s ease-in-out, transform 0.25s ease-in-out;
+  }
+
+  &:hover {
+    &::after {
+      width: $width;
+      transform: translateX($offset);
+    }
+  }
+}
+
+// END GOAL
+// Remove most of / if not all framework.scss definitions for flex
+// and grid and just use mixins
+
+@mixin flex($wrap: nowrap, $gap: 16px, $justify: flex-start, $align: center, $direction: row) {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: $wrap;
+  flex-wrap: $wrap;
+  gap: $gap;
+  -webkit-box-pack: $justify;
+  -ms-flex-pack: $justify;
+  justify-content: $justify;
+  -webkit-box-align: $align;
+  -ms-flex-align: $align;
+  align-items: $align;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: $direction;
+  flex-direction: $direction;
+}
+
+@mixin flex-basis($size, $gap: 16px, $display: flex) {
+  display: $display;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  width: calc($size - calc($gap / 2));
+}
+
+@mixin truncate($truncation-boundary, $lines: 1) {
+  max-width: $truncation-boundary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-clamp: $lines;
+}
+
+@mixin grid($gap: 16px, $columns: 3) {
+  display: -ms-grid;
+  display: grid;
+  gap: $gap;
+
+  @if is-number($columns) {
+    grid-template-columns: repeat($columns, 1fr);
+  } @else {
+    grid-template-columns: $columns;
+  }
+}
+
+@function generateStars($n, $color: #fff) {
+  $value: "#{random(2000)}px #{random(2000)}px"+$color;
+
+  @for $i from 2 through $n {
+    $value: "#{$value} , #{random(2000)}px #{random(2000)}px"+$color;
+  }
+
+  @return unquote($value);
+}
+
+.stars {
+  display: none;
+  width: 2px;
+  height: 2px;
+  background: transparent;
+  box-shadow: generateStars(700);
+  z-index: -1;
+  opacity: 0.05;
+  position: fixed;
+  left: 0;
+  top: 0;
+
+  &.dark {
+    width: 4px;
+    height: 4px;
+    box-shadow: generateStars(700, #000);
+
+    &:after {
+      width: 4px;
+      height: 4px;
+      box-shadow: generateStars(700, #000);
+    }
+  }
+
+  &:after {
+    content: " ";
+    position: fixed;
+    top: 0;
+    width: 2px;
+    height: 2px;
+    opacity: 0.3;
+    background: transparent;
+    box-shadow: generateStars(700);
+  }
+}
