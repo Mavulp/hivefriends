@@ -11,15 +11,15 @@ const router = createRouter({
       redirect: { name: "Login" }
     },
     {
-      path: "/",
+      path: "/login",
       name: "Login",
       component: Login
-    },
-    {
-      path: "/home",
-      name: "Home",
-      component: Home
     }
+    // {
+    //   path: "/home",
+    //   name: "Home",
+    //   component: Home
+    // }
   ]
 })
 

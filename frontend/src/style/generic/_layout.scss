@@ -1,0 +1,19 @@
+.irl-layout {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  flex: 1;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.irl-router-layout {
+  display: flex;
+  // padding: 24px;
+  flex: 1;
+}
+
+.flex-1 {
+  flex: 1;
+}

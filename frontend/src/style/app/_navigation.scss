@@ -1,0 +1,34 @@
+.irl-header {
+  @include flex($align: center);
+  width: 100%;
+  position: relative;
+  height: 56px;
+  line-height: 56px;
+  border-bottom: 1px solid rgb(var(--color-border-light));
+  padding: 0 24px;
+
+  .logo-wrap {
+    @include font(500);
+    // text-transform: uppercase;
+    font-size: 2rem;
+    color: rgb(var(--color-text));
+  }
+
+  span {
+    color: rgb(var(--color-text));
+
+    &.user {
+      font-size: 1.4rem;
+      margin-right: 24px;
+    }
+
+    &.bread {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1rem;
+      color: rgb(var(--color-text-light));
+    }
+  }
+}
