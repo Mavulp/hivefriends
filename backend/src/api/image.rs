@@ -1,10 +1,9 @@
 use axum::{extract::Path, routing::post, Extension, Json, Router};
-use rusqlite::{params, OptionalExtension};
 use serde::Serialize;
 
 use std::sync::Arc;
 
-use crate::{ApiError, AppState};
+use crate::{api::error::Error, AppState};
 
 pub fn api_route() -> Router {
     Router::new()
@@ -20,10 +19,10 @@ struct ImageCreationResult {
 async fn post_upload_image(
     Path(id): Path<String>,
     Extension(state): Extension<Arc<AppState>>,
-) -> Result<Json<ImageCreationResult>, ApiError> {
+) -> Result<Json<ImageCreationResult>, Error> {
     match upload_image(id, &state).await {
         Ok(result) => Ok(Json(result)),
-        Err(e) => Err(ApiError::InternalError(e)),
+        Err(e) => Err(Error::InternalError(e)),
     }
 }
 

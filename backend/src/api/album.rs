@@ -4,7 +4,7 @@ use serde::Serialize;
 
 use std::sync::Arc;
 
-use crate::{ApiError, AppState};
+use crate::{api::error::Error, AppState};
 
 pub fn api_route() -> Router {
     Router::new()
@@ -30,18 +30,18 @@ struct Album {
 async fn album_by_id(
     Path(id): Path<String>,
     Extension(state): Extension<Arc<AppState>>,
-) -> Result<Json<Album>, ApiError> {
+) -> Result<Json<Album>, Error> {
     match get_album_by_id(id, &state).await {
         Ok(Some(album)) => Ok(Json(album)),
-        Ok(None) => Err(ApiError::NotFound),
-        Err(e) => Err(ApiError::InternalError(e)),
+        Ok(None) => Err(Error::NotFound),
+        Err(e) => Err(Error::InternalError(e)),
     }
 }
 
 async fn get_album_by_id(album_id: String, state: &Arc<AppState>) -> anyhow::Result<Option<Album>> {
     let conn = state.pool.get().await?;
 
-    conn.interact(move |mut conn| {
+    conn.interact(move |conn| {
         let result = conn
             .query_row(
                 r"SELECT id, created_at FROM album 

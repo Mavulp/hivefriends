@@ -1,16 +1,10 @@
-#![allow(dead_code)]
-
 use anyhow::Context;
 use axum::{
-    http::StatusCode,
-    response::{IntoResponse, Response},
-    routing::{post, Router},
-    Extension, Json,
+    routing::Router,
+    Extension,
 };
 use deadpool_sqlite::{Config, Pool, Runtime};
 use rusqlite_migration::{Migrations, M};
-use serde::{Deserialize, Serialize};
-use serde_json::json;
 use tracing::*;
 use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
 use tracing_log::LogTracer;
@@ -27,6 +21,8 @@ pub struct AppState {
 pub mod api {
     pub mod album;
     pub mod image;
+    pub mod login;
+    pub mod error;
 }
 
 #[tokio::main]
@@ -42,8 +38,8 @@ async fn main() {
         .with(EnvFilter::new("INFO"))
         .with(JsonStorageLayer)
         .with(bunyan_formatting_layer);
+
     tracing::subscriber::set_global_default(subscriber).unwrap();
-    // TODO add logger here
 
     if let Err(e) = run().await {
         let err = e
@@ -64,8 +60,8 @@ async fn run() -> anyhow::Result<()> {
         .context("BIND_ADDRESS could not be parsed")?;
 
     let app = Router::new()
-        .route("/api/image/", post(dummy_login))
-        .route("/api/login", post(dummy_login))
+        .route("/api/image/", api::login::api_route())
+        .nest("/api/login", api::image::api_route())
         .nest("/api/album/", api::album::api_route())
         .layer(Extension(Arc::new(AppState { pool })));
 
@@ -90,42 +86,4 @@ async fn setup_database(path: &str) -> anyhow::Result<Pool> {
         .unwrap()?;
 
     Ok(pool)
-}
-
-#[derive(Debug, Deserialize)]
-struct LoginRequest {
-    username: String,
-    password: String,
-}
-
-#[derive(Debug, Serialize)]
-struct LoginResponse {}
-
-async fn dummy_login(_: Json<LoginRequest>) -> Result<Json<LoginResponse>, ApiError> {
-    Err(ApiError::Placeholder)
-}
-
-#[derive(Debug)]
-enum ApiError {
-    Placeholder,
-    NotFound,
-    InternalError(anyhow::Error),
-}
-
-impl IntoResponse for ApiError {
-    fn into_response(self) -> Response {
-        eprintln!("{:#?}", self);
-        let (status, error) = match self {
-            ApiError::Placeholder => (StatusCode::NOT_IMPLEMENTED, "This is an error"),
-            ApiError::NotFound => (StatusCode::NOT_FOUND, "This is an error"),
-            ApiError::InternalError(_e) => (StatusCode::INTERNAL_SERVER_ERROR, "This is an error"),
-        };
-
-        let body = Json(json!({
-            "error": error,
-        }))
-        .into_response();
-
-        (status, body).into_response()
-    }
 }
