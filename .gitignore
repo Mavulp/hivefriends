@@ -3,3 +3,4 @@
 /frontend/dist
 .DS_STORE
 .env
+*.db
