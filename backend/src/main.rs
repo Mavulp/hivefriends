@@ -52,7 +52,10 @@ async fn main() {
 }
 
 async fn run() -> anyhow::Result<()> {
-    let pool = setup_database("test.db").await?;
+    let db_path = std::env::var("DB_PATH")
+        .context("DB_PATH not set")?;
+
+    let pool = setup_database(&db_path).await?;
 
     let bind_addr: SocketAddr = std::env::var("BIND_ADDRESS")
         .context("BIND_ADDRESS not set")?
