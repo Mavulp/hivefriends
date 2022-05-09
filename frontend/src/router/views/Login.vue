@@ -4,13 +4,19 @@ import Btn from "../../components/Button.vue"
 import { reactive } from "vue"
 import { getRanMinMax } from "../../js/utils"
 
-// const text = ref<string>("test")
 const form = reactive({
   username: null,
   password: null
 })
 
-const placeholder = ["dolanspaghetti", "tmtupomegranate", "apjriehat", "frank", "chantarobantaro"]
+const placeholder = [
+  "dolanspaghetti",
+  "tmtupomegranate",
+  "apjriehat",
+  "stormtrooper11",
+  "clobatenjoyer",
+  "garticphonehater"
+]
 
 function submit() {}
 </script>

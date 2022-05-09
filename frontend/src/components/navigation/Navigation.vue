@@ -4,7 +4,9 @@ import { ref } from "vue"
 
 <template>
   <div class="irl-header">
-    <div class="logo-wrap">hive_irl</div>
+    <div class="logo-wrap">
+      <img src="/Sharp.png" alt="" />
+    </div>
 
     <div class="flex-1"></div>
 

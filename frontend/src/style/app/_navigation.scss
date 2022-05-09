@@ -9,9 +9,13 @@
 
   .logo-wrap {
     @include font(500);
-    // text-transform: uppercase;
+    @include flex($align: center); // text-transform: uppercase;
     font-size: 2rem;
     color: rgb(var(--color-text));
+
+    img {
+      max-height: 40px;
+    }
   }
 
   span {
