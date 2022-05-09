@@ -1,16 +1,23 @@
 <script setup lang="ts">
-import { ref } from "vue"
+import { computed, ref } from "vue"
+import { useRoute } from "vue-router"
+
+const route = useRoute()
+
+const bread = computed(() => {
+  return route.meta.title
+})
 </script>
 
 <template>
-  <div class="irl-header">
+  <div class="hi-header">
     <div class="logo-wrap">
       <img src="/Sharp.png" alt="" />
     </div>
 
     <div class="flex-1"></div>
 
-    <span class="bread">Home / Sign In</span>
+    <span class="bread">{{ bread }}</span>
 
     <div class="flex-1"></div>
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import InputText from "../../components/form/InputText.vue"
 import Btn from "../../components/Button.vue"
-import { reactive } from "vue"
+import { ref, reactive } from "vue"
 import { getRanMinMax } from "../../js/utils"
 
 const form = reactive({
@@ -9,16 +9,19 @@ const form = reactive({
   password: null
 })
 
-const placeholder = [
+const placeholders = [
   "dolanspaghetti",
   "tmtupomegranate",
   "apjriehat",
   "stormtrooper11",
   "clobatenjoyer",
-  "garticphonehater"
+  "quoteshater"
 ]
+const placeholder = ref(placeholders[getRanMinMax(0, 5)])
 
-function submit() {}
+function submit() {
+  console.log("?>??")
+}
 </script>
 
 <template>
@@ -29,16 +32,11 @@ function submit() {}
 
     <div class="route-login-split has-form">
       <form @submit.prevent="submit" class="form-wrap">
-        <InputText v-model:value="form.username" label="Username" :placeholder="placeholder[getRanMinMax(0, 3)]" />
+        <InputText v-model:value="form.username" label="Username" :placeholder="placeholder" />
         <InputText v-model:value="form.password" label="Password" type="password" placeholder="***************" />
 
         <!-- <button class="button"></button> -->
-        <Btn
-          class="btn-login-special"
-          type="submit"
-          size="56px"
-          :class="{ 'btn-disabled': !form.username || !form.password }"
-        >
+        <Btn class="btn-login" type="submit" size="56px" :class="{ 'btn-disabled': !form.username || !form.password }">
           <template #default>
             <span>Sign In</span>
           </template>

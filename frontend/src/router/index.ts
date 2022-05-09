@@ -13,14 +13,24 @@ const router = createRouter({
     {
       path: "/login",
       name: "Login",
-      component: Login
+      component: Login,
+      meta: {
+        title: "Sign In"
+      }
+    },
+    {
+      path: "/home",
+      name: "Home",
+      component: Home,
+      meta: {
+        title: "Home"
+      }
     }
-    // {
-    //   path: "/home",
-    //   name: "Home",
-    //   component: Home
-    // }
   ]
+})
+
+router.afterEach((to) => {
+  document.title = `${to.meta.title} :: hi!friends`
 })
 
 export default router

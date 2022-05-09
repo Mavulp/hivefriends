@@ -1,0 +1,89 @@
+.album {
+  @include radius(32px);
+  display: block;
+  background-color: rgba(var(--color-background-dimmed), 0.1);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+
+  &.album-large {
+    .album-timestamp {
+      gap: 24px;
+      margin-bottom: 16px;
+
+      .timestamp-divider {
+        width: 128px;
+      }
+    }
+
+    .album-title {
+      padding: 64px;
+
+      &:before {
+        top: -128px;
+      }
+
+      h2 {
+        font-size: 5.4rem;
+        margin-bottom: 24px;
+      }
+
+      .album-desc {
+        gap: 64px;
+
+        span {
+          font-size: 1.4rem;
+        }
+      }
+    }
+  }
+
+  .album-timestamp {
+    @include flex($align: center, $gap: 16px);
+    margin-bottom: 8px;
+
+    .timestamp-divider {
+      display: block;
+      width: 32px;
+      border-bottom: 1px solid rgb(var(--color-border));
+    }
+  }
+
+  .album-title {
+    display: block;
+    position: absolute;
+    z-index: 10;
+    inset: 0;
+    top: unset;
+    padding: 24px;
+
+    &:before {
+      content: "";
+      display: block;
+      position: absolute;
+      inset: 0;
+      top: -32px;
+      z-index: -1;
+      @include gradient(180deg, rgba(#fff, 0), rgba(var(--color-background-dark), 0.5));
+    }
+
+    h2 {
+      @include font(900);
+      display: block;
+      font-size: 2.2rem;
+      line-height: 1.2em;
+      margin-bottom: 8px;
+    }
+
+    .album-desc {
+      @include flex($align: center, $gap: 32px);
+
+      span {
+        font-size: 1rem;
+        color: rgb(var(--color-text));
+      }
+    }
+
+    // .album-desc
+  }
+}

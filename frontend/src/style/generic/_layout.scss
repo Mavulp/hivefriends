@@ -1,4 +1,4 @@
-.irl-layout {
+.hi-layout {
   display: flex;
   width: 100%;
   min-height: 100vh;
@@ -8,10 +8,17 @@
   flex-direction: column;
 }
 
-.irl-router-layout {
+.hi-router-layout {
   display: flex;
   // padding: 24px;
   flex: 1;
+}
+
+.hi-home-layout {
+  @include grid(64px, 2.5fr 1fr);
+  max-width: 1920px;
+  width: 100%;
+  height: 100%;
 }
 
 .flex-1 {
