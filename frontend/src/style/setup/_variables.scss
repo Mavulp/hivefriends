@@ -1,8 +1,8 @@
 :root {
   --color-background: 250, 250, 250;
   --color-background-dimmed: 128, 128, 128;
-  --color-background-dark: 25, 23, 22;
-  --color-text: 25, 23, 22;
+  --color-background-dark: 25, 23, 22; /* #191716 */
+  --color-text: 25, 23, 22; /* #191716 */
   --color-text-light: 128, 128, 128;
   --color-text-white: 255, 255, 255;
   --color-border: 90, 90, 90;
@@ -10,6 +10,8 @@
   --color-white: 254, 254, 254;
   // --color-highlight: 181, 116, 42;
 }
+
+$c: #191716;
 
 // :root.dark-theme {
 // }

@@ -67,7 +67,7 @@ const router = createRouter({
  * Router Guards
  */
 router.afterEach((to) => {
-  document.title = `${to.meta.title} :: hi!friends`
+  document.title = `${to.meta.title} // hi!friends`
 })
 
 router.beforeResolve(async (to, from, next) => {
