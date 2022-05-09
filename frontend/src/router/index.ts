@@ -4,7 +4,7 @@ import Login from "./views/Login.vue"
 import Home from "./views/Home.vue"
 import AlbumDetail from "./views/AlbumDetail.vue"
 import ImageDetail from "./views/ImageDetail.vue"
-import Albums from "./views/Albums.vue"
+import AlbumList from "./views/AlbumList.vue"
 
 /**
  * Router Setup
@@ -29,33 +29,35 @@ const router = createRouter({
       name: "Home",
       component: Home,
       meta: {
-        title: "Home"
+        title: "Home",
+        requiresAuth: true
       }
     },
     {
-      path: "/album/all",
+      path: "/albums",
       name: "Albums",
-      component: Albums,
+      component: AlbumList,
       meta: {
-        title: "All Albums"
+        title: "All Albums",
+        requiresAuth: true
       }
     },
     {
       path: "/album/:id",
-      name: "Albums",
+      name: "AlbumDetail",
       component: AlbumDetail,
       meta: {
-        // This will be updated on route load
-        title: "Album Detail"
+        title: "Album Detail",
+        requiresAuth: true
       }
     },
     {
       path: "/album/:id/image/:image",
-      name: "Albums",
+      name: "ImageDetail",
       component: ImageDetail,
       meta: {
-        // This will be also update
-        title: "Image Detail"
+        title: "Image Detail",
+        requiresAuth: true
       }
     }
   ]
@@ -66,6 +68,11 @@ const router = createRouter({
  */
 router.afterEach((to) => {
   document.title = `${to.meta.title} :: hi!friends`
+})
+
+router.beforeResolve(async (to, from, next) => {
+  // Handle authentication
+  next()
 })
 
 export default router
