@@ -63,7 +63,7 @@ async fn run() -> anyhow::Result<()> {
         .context("BIND_ADDRESS could not be parsed")?;
 
     let app = Router::new()
-        .route("/api/image/", api::login::api_route())
+        .nest("/api/image/", api::login::api_route())
         .nest("/api/login", api::image::api_route())
         .nest("/api/album/", api::album::api_route())
         .layer(Extension(Arc::new(AppState { pool })));
