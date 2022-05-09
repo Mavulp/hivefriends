@@ -1,0 +1,35 @@
+name: Deploy backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+
+jobs:
+  deploy:
+    name: Deploy backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Build project
+      run: cargo build --release
+
+    - name: Install SSH key
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+    - name: Push dist
+      run: rsync -rtzv -e 'ssh -o "StrictHostKeyChecking no" -p ${{ secrets.REMOTE_PORT}}' target/release/hivefriends ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/backend/hivefriends
+
+    - name: Run deploy script
+      run: |
+        ssh -o "StrictHostKeyChecking no" -p ${{ secrets.REMOTE_PORT }} ${{ secrets.REMOTE_USER}}@${{ secrets.REMOTE_HOST }} sudo /home/${{ secrets.REMOTE_USER }}/deploy-backend.sh

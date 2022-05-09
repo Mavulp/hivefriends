@@ -31,8 +31,8 @@ jobs:
         known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
 
     - name: Push dist
-      run: rsync -rtzv -e 'ssh -o "StrictHostKeyChecking no" -p ${{ secrets.REMOTE_PORT}}' dist/ ${{ secrets.REMOTE_USER}}@${{ secrets.REMOTE_HOST}}:/home/${{ secrets.REMOTE_USER }}/frontend
+      run: rsync -rtzv -e 'ssh -o "StrictHostKeyChecking no" -p ${{ secrets.REMOTE_PORT}}' dist/ ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/frontend
 
     - name: Run deploy script
       run: |
-        ssh -o "StrictHostKeyChecking no" -p ${{ secrets.REMOTE_PORT }} ${{ secrets.REMOTE_USER}}@${{ secrets.REMOTE_HOST }} sudo /home/${{ secrets.REMOTE_USER }}/deploy-frontend.sh
+        ssh -o "StrictHostKeyChecking no" -p ${{ secrets.REMOTE_PORT }} ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} sudo /home/${{ secrets.REMOTE_USER }}/deploy-frontend.sh
