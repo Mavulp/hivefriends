@@ -48,7 +48,7 @@ CREATE TABLE auth_session (
     id INTEGER PRIMARY KEY NOT NULL,
     user_id INTEGER NOT NULL,
     token TEXT NOT NULL,
-    created_at INTEGER NOT NULL -- time since unix epoch
+    created_at INTEGER NOT NULL, -- time since unix epoch
 
     CONSTRAINT fk_user_id_assoc
         FOREIGN KEY (user_id)
