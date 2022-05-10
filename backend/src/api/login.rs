@@ -73,10 +73,10 @@ async fn post_login(
                 bearer_token,
             }))
         } else {
-            Err(Error::NotFound)
+            Err(Error::InvalidLogin)
         }
     } else {
-        Err(Error::NotFound)
+        Err(Error::InvalidLogin)
     }
 }
 
