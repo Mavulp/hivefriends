@@ -15,7 +15,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use crate::{api::error::Error, AppState};
+use crate::{api::error::Error, api::auth::Authorize, AppState};
 
 pub fn api_route() -> Router {
     Router::new().route("/", post(post_upload_image))
@@ -34,11 +34,12 @@ async fn post_upload_image(
         ContentLengthLimit<Multipart, { 5 * MB }>,
         ContentLengthLimitRejection<MultipartRejection>,
     >,
+    Authorize(user_id): Authorize,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<ImageCreationResponse>, Error> {
     let multipart = multipart?.0;
 
-    match upload_image(multipart, &state).await {
+    match upload_image(multipart, user_id, &state).await {
         Ok(response) => Ok(Json(response)),
         Err(e) if e.is::<ImageCreationError>() => {
             match e.downcast_ref::<ImageCreationError>().unwrap() {
@@ -61,6 +62,7 @@ enum ImageCreationError {
 
 async fn upload_image(
     mut multipart: Multipart,
+    user_id: i64,
     state: &Arc<AppState>,
 ) -> anyhow::Result<ImageCreationResponse> {
     let field = multipart
@@ -78,8 +80,8 @@ async fn upload_image(
     let conn = state.pool.get().await?;
     conn.interact(move |conn| {
         conn.execute(
-            r"INSERT INTO images (key, created_at) VALUES (?1, ?2)",
-            params![&image_key, now],
+            r"INSERT INTO images (key, uploader_id, created_at) VALUES (?1, ?2, ?3)",
+            params![&image_key, user_id, now],
         )
     })
     .await

@@ -1,4 +1,5 @@
 use anyhow::Context;
+use argon2::{Argon2, PasswordHash, PasswordVerifier};
 use axum::{
     extract::rejection::JsonRejection,
     routing::{post, Router},
@@ -9,13 +10,9 @@ use rusqlite::{params, OptionalExtension};
 use serde::{Deserialize, Serialize};
 
 use std::sync::Arc;
+use std::time::SystemTime;
 
 use crate::{api::error::Error, AppState};
-
-const AUTH_CHARSET: &str = "abcdefghijklmnopqrstuvwxyz\
-                       ABCDEFGHIJKLMNOPQRSTUVWXYZ\
-                       1234567890";
-const AUTH_LENGTH: usize = 64;
 
 pub fn api_route() -> Router {
     Router::new().route("/", post(post_login))
@@ -44,32 +41,36 @@ async fn post_login(
     let result = conn
         .interact(move |conn| {
             conn.query_row(
-                r"SELECT password_hash FROM users WHERE username=?1",
+                r"SELECT id, password_hash FROM users WHERE username=?1",
                 params![req.username],
-                |row| row.get::<_, String>(0),
+                |row| Ok((row.get::<_, i64>(0)?, row.get::<_, String>(1)?)),
             )
             .optional()
         })
         .await
         .unwrap();
 
-    if let Some(hash) = result.context("Failed to query database")? {
-        // FIXME WHERE MY HASHING AT
-        if hash == req.password {
-            let char_vec = AUTH_CHARSET.split("").collect::<Vec<&str>>();
-            let mut rng = rand::thread_rng();
+    if let Some((id, hash)) = result.context("Failed to query database")? {
+        let argon2 = Argon2::default();
+        let parsed_hash = PasswordHash::new(&hash).context("Failed creating hash")?;
 
-            let token =
-                std::iter::repeat_with(|| char_vec.choose(&mut rng).expect("CHARSET not be empty"))
-                    .take(AUTH_LENGTH)
-                    .map(|s| *s)
-                    .collect::<Vec<_>>()
-                    .join("");
+        if argon2
+            .verify_password(req.password.as_bytes(), &parsed_hash)
+            .is_ok()
+        {
+            let now = SystemTime::UNIX_EPOCH.elapsed().unwrap().as_secs() as u32;
+            let bearer_token = generate_token();
+            let token = bearer_token.clone();
 
-            // TODO store token in db
+            let conn = state.pool.get().await.context("Failed getting DB connection")?;
+            conn.interact(move |conn| {
+                conn.execute(
+                    r"INSERT INTO auth_sessions (user_id, token, created_at) VALUES (?1, ?2, ?3)",
+                    params![id, token, now])
+            }).await.unwrap().context("Failed inserting token into DB")?;
 
             Ok(Json(LoginResponse {
-                bearer_token: token,
+                bearer_token,
             }))
         } else {
             Err(Error::NotFound)
@@ -77,4 +78,23 @@ async fn post_login(
     } else {
         Err(Error::NotFound)
     }
+}
+
+fn generate_token() -> String {
+    const AUTH_CHARSET: &str = "abcdefghijklmnopqrstuvwxyz\
+                           ABCDEFGHIJKLMNOPQRSTUVWXYZ\
+                           1234567890";
+    const AUTH_LENGTH: usize = 64;
+
+    let char_vec = AUTH_CHARSET.split("").collect::<Vec<&str>>();
+    let mut rng = rand::thread_rng();
+
+    let token =
+        std::iter::repeat_with(|| char_vec.choose(&mut rng).expect("CHARSET not be empty"))
+            .take(AUTH_LENGTH)
+            .map(|s| *s)
+            .collect::<Vec<_>>()
+            .join("");
+
+    token
 }

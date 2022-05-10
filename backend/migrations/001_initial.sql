@@ -1,7 +1,7 @@
 CREATE TABLE images (
     id INTEGER PRIMARY KEY NOT NULL,
     key TEXT NOT NULL, -- used for filesystem path and in API responses
-    uploader_id INTEGER,
+    uploader_id INTEGER NOT NULL,
     created_at INTEGER NOT NULL, -- time since unix epoch
 
     CONSTRAINT fk_uploader_id_assoc
@@ -45,7 +45,7 @@ CREATE TABLE users (
     created_at INTEGER NOT NULL -- time since unix epoch
 ) STRICT;
 
-CREATE TABLE auth_session (
+CREATE TABLE auth_sessions (
     id INTEGER PRIMARY KEY NOT NULL,
     user_id INTEGER NOT NULL,
     token TEXT NOT NULL,

@@ -20,6 +20,7 @@ pub struct AppState {
 pub mod api {
     pub mod album;
     pub mod error;
+    pub mod auth;
     pub mod image;
     pub mod login;
 }
