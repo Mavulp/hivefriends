@@ -1,7 +1,7 @@
 use argh::FromArgs;
 use rusqlite::{params, Connection};
 use argon2::{password_hash::SaltString, Argon2, PasswordHasher};
-use rand::{rngs::OsRng};
+use rand::rngs::OsRng;
 
 use std::time::SystemTime;
 

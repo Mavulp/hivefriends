@@ -85,7 +85,7 @@ async fn setup_database(path: &str) -> anyhow::Result<Pool> {
     let migrations = Migrations::new(vec![M::up(include_str!("../migrations/001_initial.sql"))]);
 
     let conn = pool.get().await?;
-    conn.interact(move |mut conn| migrations.to_latest(&mut conn))
+    conn.interact(move |conn| migrations.to_latest(conn))
         .await
         .unwrap()?;
 

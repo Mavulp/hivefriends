@@ -167,7 +167,7 @@ WHERE album_id=?1",
 
             let images = image_iter.collect::<Result<Vec<_>, _>>()?;
             Ok(Some(Album {
-                key: album_id.to_string(),
+                key: album_id,
                 created_at,
                 images,
             }))

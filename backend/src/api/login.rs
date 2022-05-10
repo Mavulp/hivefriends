@@ -8,6 +8,7 @@ use axum::{
 use rand::seq::SliceRandom;
 use rusqlite::{params, OptionalExtension};
 use serde::{Deserialize, Serialize};
+use rand::rngs::OsRng;
 
 use std::sync::Arc;
 use std::time::SystemTime;
@@ -87,14 +88,10 @@ fn generate_token() -> String {
     const AUTH_LENGTH: usize = 64;
 
     let char_vec = AUTH_CHARSET.split("").collect::<Vec<&str>>();
-    let mut rng = rand::thread_rng();
 
-    let token =
-        std::iter::repeat_with(|| char_vec.choose(&mut rng).expect("CHARSET not be empty"))
-            .take(AUTH_LENGTH)
-            .map(|s| *s)
-            .collect::<Vec<_>>()
-            .join("");
-
-    token
+    std::iter::repeat_with(|| char_vec.choose(&mut OsRng).expect("CHARSET is not empty"))
+        .take(AUTH_LENGTH)
+        .copied()
+        .collect::<Vec<_>>()
+        .join("")
 }

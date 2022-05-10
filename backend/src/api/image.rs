@@ -74,7 +74,7 @@ async fn upload_image(
 
     let now = SystemTime::UNIX_EPOCH.elapsed()?.as_secs() as u32;
     let key = blob_uuid::random_blob();
-    store_image(&state.data_path, &key, &data).await?;
+    store_image(state.data_path.clone(), &key, &data).await?;
 
     let image_key = key.clone();
     let conn = state.pool.get().await?;
@@ -87,15 +87,15 @@ async fn upload_image(
     .await
     .unwrap()?;
 
-    Ok(ImageCreationResponse { key: key })
+    Ok(ImageCreationResponse { key })
 }
 
-async fn store_image(directory: &PathBuf, key: &str, data: &[u8]) -> anyhow::Result<()> {
+async fn store_image(directory: PathBuf, key: &str, data: &[u8]) -> anyhow::Result<()> {
     let image = image::load_from_memory(data)?;
     let medium = image.thumbnail(512, 512);
     let tiny = medium.thumbnail(128, 128);
 
-    let mut image_dir = directory.clone();
+    let mut image_dir = directory;
     image_dir.push(key);
 
     fs::create_dir_all(&image_dir).await?;
