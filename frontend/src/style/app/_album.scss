@@ -54,22 +54,6 @@
     }
   }
 
-  .album-timestamp {
-    @include flex($align: center, $gap: 16px);
-    margin-bottom: 8px;
-    z-index: 5;
-
-    span {
-      color: rgb(var(--color-text-white));
-    }
-
-    .timestamp-divider {
-      display: block;
-      width: 32px;
-      border-bottom: 1px solid rgb(var(--color-border-light));
-    }
-  }
-
   .album-title {
     display: block;
     position: absolute;
@@ -112,7 +96,21 @@
         color: rgb(var(--color-text-white));
       }
     }
+  }
+}
 
-    // .album-desc
+.album-timestamp {
+  @include flex($align: center, $gap: 16px);
+  margin-bottom: 8px;
+  z-index: 5;
+
+  span {
+    color: rgb(var(--color-text-white));
+  }
+
+  .timestamp-divider {
+    display: block;
+    width: 32px;
+    border-bottom: 1px solid rgb(var(--color-border-light));
   }
 }

@@ -1,0 +1,12 @@
+.hi-album-detail {
+  .hi-album-detail-layout {
+    // @include flex($gap: 32px, $align: flex-start, $justify: flex-start);
+
+    .hi-album-header {
+    }
+
+    .hi-album-images {
+      @include grid(16px, 3);
+    }
+  }
+}
