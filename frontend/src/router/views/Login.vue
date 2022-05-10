@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import InputText from "../../components/form/InputText.vue"
 import Btn from "../../components/Button.vue"
-import { ref, reactive } from "vue"
+import { ref, reactive, computed } from "vue"
 import { getRanMinMax } from "../../js/utils"
+import { useAuth } from "../../store/auth"
+import { useFormValidation, required, minLength } from "../../js/error"
 
-const form = reactive({
-  username: null,
-  password: null
-})
+// const auth = useAuth()
+
+const form = reactive({ username: "", password: "" })
 
 const placeholders = [
   "dolanspaghetti",
@@ -19,9 +20,28 @@ const placeholders = [
 ]
 const placeholder = ref(placeholders[getRanMinMax(0, 5)])
 
-function submit() {
-  console.log("?>??")
+async function submit() {
+  validate().then(() => {
+    // Submit
+    if (form.username && form.password) {
+      // auth.signIn(form)
+      console.log("passed")
+    }
+  })
 }
+
+const rules = computed(() => ({
+  username: {
+    required
+  },
+  password: {
+    required,
+    minLength: minLength(3)
+  }
+}))
+
+// Setup validation
+const { errors, validate } = useFormValidation(form, rules)
 </script>
 
 <template>
@@ -32,11 +52,22 @@ function submit() {
 
     <div class="route-login-split has-form">
       <form @submit.prevent="submit" class="form-wrap">
-        <InputText v-model:value="form.username" label="Username" :placeholder="placeholder" />
-        <InputText v-model:value="form.password" label="Password" type="password" placeholder="***************" />
+        <InputText :error="errors.name" v-model:value="form.username" label="Username" :placeholder="placeholder" />
+        <InputText
+          :error="errors.password"
+          v-model:value="form.password"
+          label="Password"
+          type="password"
+          placeholder="***************"
+        />
 
-        <!-- <button class="button"></button> -->
-        <Btn class="btn-login" type="submit" size="56px" :class="{ 'btn-disabled': !form.username || !form.password }">
+        <!-- <Btn class="btn-login" type="submit" size="56px" :class="{ 'btn-disabled': !form.username || !form.password }">
+          <template #default>
+            <span>Sign In</span>
+          </template>
+        </Btn> -->
+
+        <Btn class="btn-login" type="submit" size="56px">
           <template #default>
             <span>Sign In</span>
           </template>
