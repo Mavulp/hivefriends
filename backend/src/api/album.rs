@@ -44,7 +44,7 @@ async fn get_album_by_id(album_id: String, state: &Arc<AppState>) -> anyhow::Res
     conn.interact(move |conn| {
         let result = conn
             .query_row(
-                r"SELECT id, created_at FROM album 
+                r"SELECT id, created_at FROM albums 
 WHERE key=?1",
                 params![album_id],
                 |row| Ok((row.get::<_, i32>(0)?, row.get(1)?)),
@@ -53,8 +53,8 @@ WHERE key=?1",
 
         if let Some((id, created_at)) = result {
             let mut stmt = conn.prepare(
-                r"SELECT key, created_at FROM image 
-INNER JOIN album_image_association ON image_id=id 
+                r"SELECT key, created_at FROM images 
+INNER JOIN albums_images_associations ON image_id=id 
 WHERE album_id=?1",
             )?;
             let image_iter = stmt.query_map(params![id], |row| {
