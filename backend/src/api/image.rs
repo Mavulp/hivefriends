@@ -15,7 +15,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use crate::{api::error::Error, api::auth::Authorize, AppState};
+use crate::{api::auth::Authorize, api::error::Error, AppState};
 
 pub fn api_route() -> Router {
     Router::new().route("/", post(post_upload_image))

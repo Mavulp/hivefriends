@@ -5,10 +5,10 @@ use axum::{
     routing::{post, Router},
     Extension, Json,
 };
+use rand::rngs::OsRng;
 use rand::seq::SliceRandom;
 use rusqlite::{params, OptionalExtension};
 use serde::{Deserialize, Serialize};
-use rand::rngs::OsRng;
 
 use std::sync::Arc;
 use std::time::SystemTime;
@@ -63,16 +63,22 @@ async fn post_login(
             let bearer_token = generate_token();
             let token = bearer_token.clone();
 
-            let conn = state.pool.get().await.context("Failed getting DB connection")?;
+            let conn = state
+                .pool
+                .get()
+                .await
+                .context("Failed getting DB connection")?;
             conn.interact(move |conn| {
                 conn.execute(
                     r"INSERT INTO auth_sessions (user_id, token, created_at) VALUES (?1, ?2, ?3)",
-                    params![id, token, now])
-            }).await.unwrap().context("Failed inserting token into DB")?;
+                    params![id, token, now],
+                )
+            })
+            .await
+            .unwrap()
+            .context("Failed inserting token into DB")?;
 
-            Ok(Json(LoginResponse {
-                bearer_token,
-            }))
+            Ok(Json(LoginResponse { bearer_token }))
         } else {
             Err(Error::InvalidLogin)
         }

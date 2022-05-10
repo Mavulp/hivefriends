@@ -2,7 +2,6 @@
 name = "hivefriends"
 version = "0.1.0"
 edition = "2021"
-default-run = "hivefriends"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -29,3 +28,4 @@ blob-uuid = "0.5"
 headers = "0.3.7"
 argh = "0.1.7"
 argon2 = { version = "0.4.0", features = ["std"] }
+rpassword = "6.0.1"

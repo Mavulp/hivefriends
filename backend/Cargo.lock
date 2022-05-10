@@ -627,6 +627,7 @@ dependencies = [
  "image",
  "lazy_static",
  "rand",
+ "rpassword",
  "rusqlite",
  "rusqlite_migration",
  "serde",
@@ -1134,6 +1135,18 @@ name = "retain_mut"
 version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8c31b5c4033f8fdde8700e4657be2c497e7288f01515be52168c631e2e4d4086"
+
+[[package]]
+name = "rpassword"
+version = "6.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2bf099a1888612545b683d2661a1940089f6c2e5a8e38979b2159da876bfd956"
+dependencies = [
+ "libc",
+ "serde",
+ "serde_json",
+ "winapi",
+]
 
 [[package]]
 name = "rusqlite"

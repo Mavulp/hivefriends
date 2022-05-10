@@ -1,4 +1,5 @@
 use anyhow::Context;
+use argh::FromArgs;
 use axum::{routing::Router, Extension};
 use deadpool_sqlite::{Config, Pool, Runtime};
 use rusqlite_migration::{Migrations, M};
@@ -19,10 +20,11 @@ pub struct AppState {
 
 pub mod api {
     pub mod album;
-    pub mod error;
     pub mod auth;
+    pub mod error;
     pub mod image;
     pub mod login;
+    pub mod user;
 }
 
 #[tokio::main]
@@ -51,12 +53,52 @@ async fn main() {
     }
 }
 
-async fn run() -> anyhow::Result<()> {
-    let data_path = std::env::var("DATA_PATH").context("DATA_PATH not set")?;
-    let data_path = data_path.into();
-    let db_path = std::env::var("DB_PATH").context("DB_PATH not set")?;
+#[derive(FromArgs, PartialEq, Debug)]
+/// Top-level command.
+struct Args {
+    #[argh(subcommand)]
+    subcommand: Option<SubCommands>,
+}
 
+#[derive(FromArgs, PartialEq, Debug)]
+#[argh(subcommand)]
+enum SubCommands {
+    Account(AccountArgs),
+}
+
+#[derive(FromArgs, PartialEq, Debug)]
+/// create account.
+#[argh(subcommand, name = "adduser")]
+pub struct AccountArgs {
+    #[argh(positional)]
+    /// username
+    username: String,
+}
+
+async fn run() -> anyhow::Result<()> {
+    let args: Args = argh::from_env();
+
+    let db_path = std::env::var("DB_PATH").context("DB_PATH not set")?;
     let pool = setup_database(&db_path).await?;
+
+    match args.subcommand {
+        Some(SubCommands::Account(args)) => {
+            let password =
+                rpassword::prompt_password(&format!("Password for {}: ", args.username))?;
+
+            let conn = pool.get().await.context("Failed to get connection")?;
+            conn.interact(move |conn| api::user::create_account(&args.username, &password, conn))
+                .await
+                .unwrap()?;
+
+            return Ok(());
+        }
+        None => (),
+    }
+
+    let data_path = std::env::var("DATA_PATH")
+        .context("DATA_PATH not set")?
+        .into();
 
     let bind_addr: SocketAddr = std::env::var("BIND_ADDRESS")
         .context("BIND_ADDRESS not set")?
