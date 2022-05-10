@@ -1,8 +1,5 @@
 use anyhow::Context;
-use axum::{
-    routing::Router,
-    Extension,
-};
+use axum::{routing::Router, Extension};
 use deadpool_sqlite::{Config, Pool, Runtime};
 use rusqlite_migration::{Migrations, M};
 use tracing::*;
@@ -20,9 +17,9 @@ pub struct AppState {
 
 pub mod api {
     pub mod album;
+    pub mod error;
     pub mod image;
     pub mod login;
-    pub mod error;
 }
 
 #[tokio::main]
@@ -46,14 +43,13 @@ async fn main() {
             .chain()
             .skip(1)
             .fold(e.to_string(), |acc, cause| format!("{}: {}\n", acc, cause));
-        eprintln!("{}", err);
+        error!("{}", err);
         std::process::exit(1);
     }
 }
 
 async fn run() -> anyhow::Result<()> {
-    let db_path = std::env::var("DB_PATH")
-        .context("DB_PATH not set")?;
+    let db_path = std::env::var("DB_PATH").context("DB_PATH not set")?;
 
     let pool = setup_database(&db_path).await?;
 
