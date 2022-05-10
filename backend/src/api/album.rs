@@ -1,15 +1,109 @@
-use axum::{extract::Path, routing::get, Extension, Json, Router};
+use axum::{
+    extract::{rejection::JsonRejection, Path},
+    routing::{get, post},
+    Extension, Json, Router,
+};
 use rusqlite::{params, OptionalExtension};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use std::sync::Arc;
+use std::time::SystemTime;
 
 use crate::{api::error::Error, AppState};
 
 pub fn api_route() -> Router {
     Router::new()
-        //.route("/", get(all_albums))
+        .route("/", post(post_create_album))
         .route("/:id", get(album_by_id))
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateAlbumRequestImage {
+    key: String,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateAlbumRequest {
+    title: String,
+    images: Vec<CreateAlbumRequestImage>,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateAlbumResponse {
+    key: String,
+}
+
+/// Creates a new album.
+///
+/// # Example request
+/// ```json
+/// {
+///     "name": "My album!",
+///     "images": [
+///         { "key": "klaFLKF31" },
+///         { "key": "sia29mFKa" },
+///         { "key": "PqqQ3p1km" }
+///     ]
+/// }
+/// ```
+///
+/// # Example response
+/// ```json
+/// {
+///     "key": "asdasfaa"
+/// }
+/// ```
+async fn post_create_album(
+    request: Result<Json<CreateAlbumRequest>, JsonRejection>,
+    Extension(state): Extension<Arc<AppState>>,
+) -> Result<Json<CreateAlbumResponse>, Error> {
+    let Json(request) = request?;
+
+    match create_album(request, &state).await {
+        Ok(response) => Ok(Json(response)),
+        /*Err(e) if e.is::<CreateAlbumError>() => {
+            match e.downcast_ref::<ImageCreationError>().unwrap() {
+                ImageCreationError::NoImage => Err(Error::InvalidArguments(e)),
+                ImageCreationError::ImageError(_) => Err(Error::InvalidArguments(e)),
+            }
+        }*/
+        Err(e) => Err(Error::InternalError(e)),
+    }
+}
+
+async fn create_album(
+    request: CreateAlbumRequest,
+    state: &Arc<AppState>,
+) -> anyhow::Result<CreateAlbumResponse> {
+    let conn = state.pool.get().await?;
+
+    let now = SystemTime::UNIX_EPOCH.elapsed()?.as_secs() as u32;
+    let key = blob_uuid::random_blob();
+
+    let album_key = key.clone();
+    conn.interact::<_, anyhow::Result<()>>(move |conn| {
+        let tx = conn.transaction()?;
+
+        tx.execute(
+            r"INSERT INTO albums (key, title, created_at) VALUES (?1, ?2, ?3)",
+            params![album_key, request.title, now])?;
+        let album_id = tx.last_insert_rowid();
+
+        for image in request.images {
+            tx.execute(
+                r"INSERT INTO album_image_associations (album_id, image_id) SELECT ?1, id FROM images WHERE key = ?2",
+                params![album_id, image.key])?;
+        }
+
+        tx.commit()?;
+
+        Ok(())
+    }).await.unwrap()?;
+
+    Ok(CreateAlbumResponse { key })
 }
 
 #[derive(Serialize)]
@@ -27,6 +121,13 @@ struct Album {
     images: Vec<Image>,
 }
 
+/// Gets album information.
+///
+/// # Example response
+/// ```json
+/// {
+/// }
+/// ```
 async fn album_by_id(
     Path(id): Path<String>,
     Extension(state): Extension<Arc<AppState>>,
@@ -54,7 +155,7 @@ WHERE key=?1",
         if let Some((id, created_at)) = result {
             let mut stmt = conn.prepare(
                 r"SELECT key, created_at FROM images 
-INNER JOIN albums_images_associations ON image_id=id 
+INNER JOIN album_image_associations ON image_id=id 
 WHERE album_id=?1",
             )?;
             let image_iter = stmt.query_map(params![id], |row| {

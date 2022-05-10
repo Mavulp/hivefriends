@@ -1,7 +1,7 @@
 CREATE TABLE images (
     id INTEGER PRIMARY KEY NOT NULL,
     key TEXT NOT NULL, -- used for filesystem path and in API responses
-    uploader_id INTEGER NOT NULL,
+    uploader_id INTEGER,
     created_at INTEGER NOT NULL, -- time since unix epoch
 
     CONSTRAINT fk_uploader_id_assoc
@@ -16,13 +16,14 @@ ON images (key);
 CREATE TABLE albums (
     id INTEGER PRIMARY KEY NOT NULL,
     key TEXT NOT NULL, -- used in API responses
+    title TEXT NOT NULL,
     created_at INTEGER NOT NULL -- time since unix epoch
 ) STRICT;
 
 CREATE INDEX albums_key_idx
 ON albums (key);
 
-CREATE TABLE albums_images_associations (
+CREATE TABLE album_image_associations (
     image_id INTEGER NOT NULL, -- image is a part of:
     album_id INTEGER NOT NULL, -- this album
 

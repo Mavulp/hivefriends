@@ -1,5 +1,8 @@
 use axum::{
-    extract::rejection::JsonRejection,
+    extract::{
+        multipart::MultipartRejection,
+        rejection::{ContentLengthLimitRejection, JsonRejection},
+    },
     http::StatusCode,
     response::{IntoResponse, Response},
     Json,
@@ -13,11 +16,17 @@ pub enum Error {
     #[error("Not Found")]
     NotFound,
 
+    #[error("Invalid argument(s): {0}")]
+    InvalidArguments(anyhow::Error),
+
     #[error("Internal Server Error")]
     InternalError(#[from] anyhow::Error),
 
     #[error("{0}")]
     JsonRejection(#[from] JsonRejection),
+
+    #[error("{0}")]
+    MultipartSizeRejection(#[from] ContentLengthLimitRejection<MultipartRejection>),
 }
 
 impl IntoResponse for Error {
@@ -30,6 +39,8 @@ impl IntoResponse for Error {
                 StatusCode::INTERNAL_SERVER_ERROR
             }
             Error::JsonRejection(_) => StatusCode::BAD_REQUEST,
+            Error::MultipartSizeRejection(_) => StatusCode::BAD_REQUEST,
+            Error::InvalidArguments(_) => StatusCode::BAD_REQUEST,
         };
 
         let body = Json(json!({

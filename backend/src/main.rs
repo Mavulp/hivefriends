@@ -9,10 +9,12 @@ use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::{EnvFilter, Registry};
 
 use std::net::SocketAddr;
+use std::path::PathBuf;
 use std::sync::Arc;
 
 pub struct AppState {
     pool: Pool,
+    data_path: PathBuf,
 }
 
 pub mod api {
@@ -49,6 +51,8 @@ async fn main() {
 }
 
 async fn run() -> anyhow::Result<()> {
+    let data_path = std::env::var("DATA_PATH").context("DATA_PATH not set")?;
+    let data_path = data_path.into();
     let db_path = std::env::var("DB_PATH").context("DB_PATH not set")?;
 
     let pool = setup_database(&db_path).await?;
@@ -62,7 +66,7 @@ async fn run() -> anyhow::Result<()> {
         .nest("/api/login", api::login::api_route())
         .nest("/api/images/", api::image::api_route())
         .nest("/api/albums/", api::album::api_route())
-        .layer(Extension(Arc::new(AppState { pool })));
+        .layer(Extension(Arc::new(AppState { pool, data_path })));
 
     info!("listening on {}", bind_addr);
     axum::Server::try_bind(&bind_addr)?
