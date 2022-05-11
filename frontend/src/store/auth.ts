@@ -12,11 +12,16 @@ export const useAuth = defineStore("auth", {
       post("/api/login", credentials)
         .then((res) => {
           localStorage.setItem("bearer_token", res)
+          this.logged = true
         })
         .catch((error) => {
           const toast = useToast()
           toast.add(String(error), "error")
         })
+    },
+    signOut() {
+      this.logged = false
+      localStorage.removeItem("bearer_token")
     }
   },
   getters: {

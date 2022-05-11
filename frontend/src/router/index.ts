@@ -21,7 +21,8 @@ const router = createRouter({
       name: "Login",
       component: Login,
       meta: {
-        title: "Sign In"
+        title: "Sign In",
+        bread: "Sign in to hi!friends"
       }
     },
     {
@@ -30,6 +31,7 @@ const router = createRouter({
       component: Home,
       meta: {
         title: "Home",
+        bread: "Latest albums",
         requiresAuth: true
       }
     },
@@ -39,6 +41,7 @@ const router = createRouter({
       component: AlbumList,
       meta: {
         title: "All Albums",
+        bread: "All albums from all users",
         requiresAuth: true
       }
     },
@@ -47,7 +50,8 @@ const router = createRouter({
       name: "AlbumDetail",
       component: AlbumDetail,
       meta: {
-        title: "Album Detail",
+        title: "_album_name_",
+        bread: "_album_name_",
         requiresAuth: true
       }
     },
@@ -56,7 +60,8 @@ const router = createRouter({
       name: "ImageDetail",
       component: ImageDetail,
       meta: {
-        title: "Image Detail",
+        title: "_image_name_",
+        bread: "_image_name_",
         requiresAuth: true
       }
     }

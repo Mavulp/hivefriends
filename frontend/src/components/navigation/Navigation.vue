@@ -1,14 +1,20 @@
 <script setup lang="ts">
-// import MenuIcon from 'vue-material-design-icons/Menu.vue';
-
-import { computed, ref } from "vue"
-import { useRoute } from "vue-router"
+import { computed } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import { useAuth } from "../../store/auth"
 
 const route = useRoute()
+const router = useRouter()
+const auth = useAuth()
 
-const bread = computed(() => {
-  return route.meta.title
-})
+// const bread = computed(() => {
+//   return route.meta.title
+// })
+
+function signOut() {
+  auth.signOut()
+  router.push({ name: "Login" })
+}
 </script>
 
 <template>
@@ -19,22 +25,24 @@ const bread = computed(() => {
 
     <div class="flex-1"></div>
 
-    <span class="bread">{{ bread }}</span>
+    <span class="bread">{{ route.meta.bread ?? route.meta.title }}</span>
 
     <div class="flex-1"></div>
 
     <!-- <span>Sign In to see your user</span> -->
 
-    <span class="user"> dolanske </span>
+    <template v-if="auth.isLoggedIn">
+      <span class="user"> dolanske </span>
 
-    <button data-title-bottom="Your albums">
-      <span class="material-icons">&#xe413;</span>
-    </button>
-    <button data-title-bottom="Settings">
-      <span class="material-icons">&#xe8b8;</span>
-    </button>
-    <button data-title-bottom="Log out">
-      <span class="material-icons">&#xe9ba;</span>
-    </button>
+      <button data-title-bottom="Your albums">
+        <span class="material-icons">&#xe413;</span>
+      </button>
+      <button data-title-bottom="Settings">
+        <span class="material-icons">&#xe8b8;</span>
+      </button>
+      <button data-title-bottom="Log out" @click="signOut()">
+        <span class="material-icons">&#xe9ba;</span>
+      </button>
+    </template>
   </div>
 </template>
