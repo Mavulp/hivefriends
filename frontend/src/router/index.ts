@@ -23,43 +23,43 @@ const router = createRouter({
       meta: {
         title: "Sign In"
       }
+    },
+    {
+      path: "/home",
+      name: "Home",
+      component: Home,
+      meta: {
+        title: "Home",
+        requiresAuth: true
+      }
+    },
+    {
+      path: "/albums",
+      name: "Albums",
+      component: AlbumList,
+      meta: {
+        title: "All Albums",
+        requiresAuth: true
+      }
+    },
+    {
+      path: "/album/:id",
+      name: "AlbumDetail",
+      component: AlbumDetail,
+      meta: {
+        title: "Album Detail",
+        requiresAuth: true
+      }
+    },
+    {
+      path: "/album/:id/image/:image",
+      name: "ImageDetail",
+      component: ImageDetail,
+      meta: {
+        title: "Image Detail",
+        requiresAuth: true
+      }
     }
-    // {
-    //   path: "/home",
-    //   name: "Home",
-    //   component: Home,
-    //   meta: {
-    //     title: "Home",
-    //     requiresAuth: true
-    //   }
-    // },
-    // {
-    //   path: "/albums",
-    //   name: "Albums",
-    //   component: AlbumList,
-    //   meta: {
-    //     title: "All Albums",
-    //     requiresAuth: true
-    //   }
-    // },
-    // {
-    //   path: "/album/:id",
-    //   name: "AlbumDetail",
-    //   component: AlbumDetail,
-    //   meta: {
-    //     title: "Album Detail",
-    //     requiresAuth: true
-    //   }
-    // },
-    // {
-    //   path: "/album/:id/image/:image",
-    //   name: "ImageDetail",
-    //   component: ImageDetail,
-    //   meta: {
-    //     title: "Image Detail",
-    //     requiresAuth: true
-    //   }
-    // }
   ]
 })
 
@@ -71,6 +71,14 @@ router.afterEach((to) => {
 })
 
 router.beforeResolve(async (to, from, next) => {
+  if (to.meta.requiresAuth) {
+    const token = localStorage.getItem("bearer_token")
+
+    if (!token) {
+      return next({ name: "Login" })
+    }
+  }
+
   // Handle authentication
   next()
 })

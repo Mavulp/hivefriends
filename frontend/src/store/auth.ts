@@ -1,5 +1,6 @@
 import { defineStore } from "pinia"
 import { post } from "../js/fetch"
+import { useToast } from "./toast"
 
 export const useAuth = defineStore("auth", {
   state: () => ({
@@ -7,12 +8,15 @@ export const useAuth = defineStore("auth", {
     logged: false
   }),
   actions: {
-    signIn(credentials: { username: string; password: string }) {
+    async signIn(credentials: { username: string; password: string }) {
       post("/api/login", credentials)
         .then((res) => {
-          console.log(res)
+          localStorage.setItem("bearer_token", res)
         })
-        .catch((error) => console.log(error))
+        .catch((error) => {
+          const toast = useToast()
+          toast.add(String(error), "error")
+        })
     }
   },
   getters: {
