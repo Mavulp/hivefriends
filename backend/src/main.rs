@@ -1,12 +1,9 @@
 use anyhow::Context;
 use axum::{routing::Router, Extension};
+use tower_http::trace::TraceLayer;
 use deadpool_sqlite::{Config, Pool, Runtime};
 use rusqlite_migration::{Migrations, M};
 use tracing::*;
-use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
-use tracing_log::LogTracer;
-use tracing_subscriber::layer::SubscriberExt;
-use tracing_subscriber::{EnvFilter, Registry};
 
 use std::net::SocketAddr;
 use std::path::PathBuf;
@@ -36,17 +33,10 @@ pub mod data {
 async fn main() {
     dotenv::dotenv().ok();
 
-    LogTracer::init().expect("Unable to setup log tracer!");
-
     let app_name = concat!(env!("CARGO_PKG_NAME"), "-", env!("CARGO_PKG_VERSION")).to_string();
-    let (non_blocking_writer, _guard) = tracing_appender::non_blocking(std::io::stdout());
-    let bunyan_formatting_layer = BunyanFormattingLayer::new(app_name, non_blocking_writer);
-    let subscriber = Registry::default()
-        .with(EnvFilter::new("INFO"))
-        .with(JsonStorageLayer)
-        .with(bunyan_formatting_layer);
+    tracing_subscriber::fmt::init();
 
-    tracing::subscriber::set_global_default(subscriber).unwrap();
+    info!("Running {}", app_name);
 
     if let Err(e) = run().await {
         let err = e
@@ -64,15 +54,12 @@ async fn run() -> anyhow::Result<()> {
     let db_path = std::env::var("DB_PATH").context("DB_PATH not set")?;
     let pool = setup_database(&db_path).await?;
 
-    match args.subcommand {
-        Some(sub) => {
-            let conn = pool.get().await.context("Failed to get connection")?;
-            return conn
-                .interact(move |conn| cli::run_subcommand(sub, conn))
-                .await
-                .unwrap();
-        }
-        None => (),
+    if let Some(sub) = args.subcommand {
+        let conn = pool.get().await.context("Failed to get connection")?;
+        return conn
+            .interact(move |conn| cli::run_subcommand(sub, conn))
+            .await
+            .unwrap();
     }
 
     let data_path = std::env::var("DATA_PATH")
@@ -89,6 +76,7 @@ async fn run() -> anyhow::Result<()> {
         .nest("/api/images/", api::image::api_route())
         .nest("/api/albums/", api::album::api_route())
         .nest("/data/image/", data::image::api_route())
+        .layer(TraceLayer::new_for_http())
         .layer(Extension(Arc::new(AppState { pool, data_path })));
 
     info!("listening on {}", bind_addr);

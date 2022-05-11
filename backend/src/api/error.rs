@@ -38,7 +38,11 @@ impl IntoResponse for Error {
             Error::InvalidLogin => StatusCode::UNAUTHORIZED,
             Error::NotFound => StatusCode::NOT_FOUND,
             Error::InternalError(e) => {
-                error!("API encountered error: {}", e);
+                let err = e
+                    .chain()
+                    .skip(1)
+                    .fold(e.to_string(), |acc, cause| format!("{}: {}\n", acc, cause));
+                error!("API encountered error: {}", err);
 
                 StatusCode::INTERNAL_SERVER_ERROR
             }
@@ -48,7 +52,7 @@ impl IntoResponse for Error {
         };
 
         let body = Json(json!({
-            "error": self.to_string(),
+            "message": self.to_string(),
         }))
         .into_response();
 
