@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// import MenuIcon from 'vue-material-design-icons/Menu.vue';
+
 import { computed, ref } from "vue"
 import { useRoute } from "vue-router"
 
@@ -25,10 +27,14 @@ const bread = computed(() => {
 
     <span class="user"> dolanske </span>
 
-    <button data-title-bottom="Your albums" class="material-symbols-rounded">photo_library</button>
-
-    <button data-title-bottom="Settings" class="material-symbols-rounded">settings</button>
-
-    <button data-title-bottom="Log out" class="material-symbols-rounded">logout</button>
+    <button data-title-bottom="Your albums">
+      <span class="material-icons">&#xe413;</span>
+    </button>
+    <button data-title-bottom="Settings">
+      <span class="material-icons">&#xe8b8;</span>
+    </button>
+    <button data-title-bottom="Log out">
+      <span class="material-icons">&#xe9ba;</span>
+    </button>
   </div>
 </template>

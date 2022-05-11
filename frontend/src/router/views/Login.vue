@@ -70,12 +70,6 @@ const { errors, validate, reset } = useFormValidation(form, rules, { autoclear: 
           placeholder="***************"
         />
 
-        <!-- <Btn class="btn-login" type="submit" size="56px" :class="{ 'btn-disabled': !form.username || !form.password }">
-          <template #default>
-            <span>Sign In</span>
-          </template>
-        </Btn> -->
-
         <Btn class="btn-login" type="submit" size="56px">
           <template #default>
             <span>Sign In</span>
