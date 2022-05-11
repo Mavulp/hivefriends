@@ -1,6 +1,6 @@
 CREATE TABLE images (
     id INTEGER PRIMARY KEY NOT NULL,
-    key TEXT NOT NULL, -- used for filesystem path and in API responses
+    key TEXT NOT NULL UNIQUE, -- used for filesystem path and in API responses
     uploader_id INTEGER NOT NULL,
     created_at INTEGER NOT NULL, -- time since unix epoch
 
@@ -15,7 +15,7 @@ ON images (key);
 
 CREATE TABLE albums (
     id INTEGER PRIMARY KEY NOT NULL,
-    key TEXT NOT NULL, -- used in API responses
+    key TEXT NOT NULL UNIQUE, -- used in API responses
     title TEXT NOT NULL,
     created_at INTEGER NOT NULL -- time since unix epoch
 ) STRICT;
@@ -40,7 +40,7 @@ CREATE TABLE album_image_associations (
 
 CREATE TABLE users (
     id INTEGER PRIMARY KEY NOT NULL,
-    username TEXT NOT NULL,
+    username TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
     created_at INTEGER NOT NULL -- time since unix epoch
 ) STRICT;
