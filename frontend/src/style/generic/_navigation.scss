@@ -3,7 +3,7 @@
   width: 100%;
   position: relative;
   height: 56px;
-  line-height: 56px;
+  // line-height: 56px;
   border-bottom: 1px solid rgb(var(--color-border-light));
   padding: 0 24px;
 
@@ -17,6 +17,20 @@
       max-height: 40px;
     }
   }
+
+  a {
+    height: 24px;
+    line-height: 24px;
+    text-decoration: none !important;
+  }
+
+  // a {
+  //   @include flex($align: center, $gap: 0);
+  // }
+
+  // a {
+  //   line-height: 0 !important;
+  // }
 
   span {
     color: rgb(var(--color-text));

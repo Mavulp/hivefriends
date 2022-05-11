@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useAuth } from "../../store/auth"
 
@@ -19,9 +18,9 @@ function signOut() {
 
 <template>
   <div class="hi-header">
-    <div class="logo-wrap" title="嘿，伙计，我在哪里可以买到火腿和鸡蛋">
+    <router-link :to="{ name: 'Home' }" class="logo-wrap" title="嘿，伙计，我在哪里可以买到火腿和鸡蛋">
       <img src="/Sharp.png" alt="" />
-    </div>
+    </router-link>
 
     <div class="flex-1"></div>
 
@@ -32,14 +31,20 @@ function signOut() {
     <!-- <span>Sign In to see your user</span> -->
 
     <template v-if="auth.isLoggedIn">
-      <span class="user"> dolanske </span>
+      <router-link
+        class="hover-bubble"
+        data-title-bottom="Your profile"
+        :to="{ name: 'UserProfile', params: { id: auth.user.username } }"
+      >
+        <span class="user"> dolanske </span>
+      </router-link>
 
-      <button data-title-bottom="Your albums">
+      <router-link data-title-bottom="Your albums" :to="{ name: 'UserAlbums', params: { id: auth.user.username } }">
         <span class="material-icons">&#xe413;</span>
-      </button>
-      <button data-title-bottom="Settings">
+      </router-link>
+      <router-link data-title-bottom="Settings" :to="{ name: 'UserSettings' }">
         <span class="material-icons">&#xe8b8;</span>
-      </button>
+      </router-link>
       <button data-title-bottom="Log out" @click="signOut()">
         <span class="material-icons">&#xe9ba;</span>
       </button>

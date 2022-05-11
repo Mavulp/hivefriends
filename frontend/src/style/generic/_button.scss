@@ -6,7 +6,6 @@
   background-color: rgb(var(--color-background-dark));
   color: rgb(var(--color-text-white));
   font-size: 1.4rem;
-  // border: 1px solid rgb(var(--color-border));
   text-transform: uppercase;
   letter-spacing: 0.2em;
 
@@ -37,5 +36,34 @@
   &.btn-disabled {
     pointer-events: none;
     background-color: rgba(var(--color-background-dark), 0.8);
+  }
+}
+
+.hover-bubble {
+  z-index: 2;
+  position: relative;
+
+  &:hover {
+    &:after {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  &:after {
+    content: "";
+    @include t(0.1s);
+    @include radius(6px);
+    display: block;
+    position: absolute;
+    z-index: -1;
+    // inset: -4px -8px;
+    top: -4px;
+    bottom: -4px;
+    right: -8px;
+    left: -8px;
+    transform: scale(0.9);
+    opacity: 0;
+    background-color: rgb(var(--color-border-light));
   }
 }

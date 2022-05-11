@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import InputText from "../../components/form/InputText.vue"
 import Btn from "../../components/Button.vue"
-import { ref, reactive, computed } from "vue"
+import { ref, reactive, computed, nextTick } from "vue"
 import { getRanMinMax } from "../../js/utils"
 import { useAuth } from "../../store/auth"
 import { useFormValidation, required, minLength, asyncValidation } from "../../js/error"
@@ -33,9 +33,12 @@ async function submit() {
     .then(async () => {
       // Submit
       if (form.username && form.password) {
-        auth.signIn(form)
+        await auth.signIn(form)
         reset()
-        router.push({ name: "Home" })
+
+        nextTick(() => {
+          router.push({ name: "Home" })
+        })
       }
     })
     .catch((errors) => {

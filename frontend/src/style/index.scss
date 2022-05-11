@@ -1,5 +1,5 @@
-@import "./setup/index";
-@import "./generic/index";
+@import "./setup/";
+@import "./generic/";
 
 html {
   @include font(400);
@@ -40,6 +40,6 @@ html {
   }
 }
 
-@import "./app/index.scss";
+@import "./app/";
 
 @import "./overrides/";
