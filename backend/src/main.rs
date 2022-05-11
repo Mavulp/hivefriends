@@ -68,15 +68,12 @@ async fn run() -> anyhow::Result<()> {
     let db_path = std::env::var("DB_PATH").context("DB_PATH not set")?;
     let pool = setup_database(&db_path).await?;
 
-    match args.subcommand {
-        Some(sub) => {
-            let conn = pool.get().await.context("Failed to get connection")?;
-            return conn
-                .interact(move |conn| cli::run_subcommand(sub, conn))
-                .await
-                .unwrap();
-        }
-        None => (),
+    if let Some(sub) = args.subcommand {
+        let conn = pool.get().await.context("Failed to get connection")?;
+        return conn
+            .interact(move |conn| cli::run_subcommand(sub, conn))
+            .await
+            .unwrap();
     }
 
     let data_path = std::env::var("DATA_PATH")

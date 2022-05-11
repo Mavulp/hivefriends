@@ -11,12 +11,11 @@ use rusqlite::{params, OptionalExtension};
 use serde::{Deserialize, Serialize};
 use serde_rusqlite::from_row;
 
-use tracing::debug;
-
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use crate::{api::error::Error, AppState};
+use crate::api::{error::Error, user::User};
+use crate::AppState;
 
 pub fn api_route() -> Router {
     Router::new().route("/", post(post_login))
@@ -33,12 +32,7 @@ struct LoginRequest {
 #[serde(rename_all = "camelCase")]
 struct LoginResponse {
     bearer_token: String,
-    username: String,
-    avatar_url: Option<String>,
-    bio: Option<String>,
-    met: Vec<i64>,
-    albums_uploaded: Vec<String>,
-    created_at: i64,
+    user: User,
 }
 
 #[derive(Deserialize, Debug, PartialEq)]
@@ -102,12 +96,14 @@ async fn post_login(
 
             Ok(Json(LoginResponse {
                 bearer_token,
-                username: req.username,
-                avatar_url: db_user.avatar_url,
-                bio: db_user.bio,
-                met: Vec::new(),
-                albums_uploaded: Vec::new(),
-                created_at: db_user.created_at,
+                user: User {
+                    username: req.username,
+                    avatar_url: db_user.avatar_url,
+                    bio: db_user.bio,
+                    met: Vec::new(),
+                    albums_uploaded: Vec::new(),
+                    created_at: db_user.created_at,
+                },
             }))
         } else {
             Err(Error::InvalidLogin)

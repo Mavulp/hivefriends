@@ -1,8 +1,20 @@
 use argon2::{password_hash::SaltString, Argon2, PasswordHasher};
 use rand::rngs::OsRng;
 use rusqlite::{params, Connection};
+use serde::Serialize;
 
 use std::time::SystemTime;
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct User {
+    pub username: String,
+    pub avatar_url: Option<String>,
+    pub bio: Option<String>,
+    pub met: Vec<i64>,
+    pub albums_uploaded: Vec<String>,
+    pub created_at: i64,
+}
 
 pub fn create_account(username: &str, password: &str, conn: &mut Connection) -> anyhow::Result<()> {
     let salt = SaltString::generate(&mut OsRng);
