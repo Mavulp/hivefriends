@@ -33,10 +33,7 @@ pub struct EditUserArgs {
     pub username: String,
 }
 
-pub fn run_subcommand(
-    subcommand: SubCommands,
-    conn: &mut Connection,
-) -> Result<(), anyhow::Error> {
+pub fn run_subcommand(subcommand: SubCommands, conn: &mut Connection) -> Result<(), anyhow::Error> {
     match subcommand {
         SubCommands::AddUser(args) => {
             let password =

@@ -1,16 +1,15 @@
+use anyhow::Context;
 use axum::{
     extract::{
         multipart::MultipartRejection, rejection::ContentLengthLimitRejection, ContentLengthLimit,
-        Multipart,
-        Path,
+        Multipart, Path,
     },
-    routing::{post, get},
+    routing::{get, post},
     Extension, Json, Router,
 };
-use rusqlite::{OptionalExtension, params};
+use rusqlite::{params, OptionalExtension};
 use serde::Serialize;
 use tokio::fs;
-use anyhow::Context;
 
 use std::io::Cursor;
 use std::path::PathBuf;
@@ -37,18 +36,21 @@ async fn get_image(
     Path(key): Path<String>,
     Authorize(_): Authorize,
     Extension(state): Extension<Arc<AppState>>,
-    ) -> Result<Json<ImageMetadata>, Error> {
-
+) -> Result<Json<ImageMetadata>, Error> {
     let conn = state.pool.get().await.context("Failed to get connection")?;
     let ckey = key.clone();
-    let result = conn.interact(move |conn| {
-        conn.query_row(
-            r"SELECT uploader_id, created_at FROM images WHERE key = ?1",
-            params![&ckey],
-            |row| Ok((row.get::<_, i32>(0)?, row.get::<_, i32>(1)?)),
-        )
-        .optional()
-    }).await.unwrap().context("Failed to query database")?;
+    let result = conn
+        .interact(move |conn| {
+            conn.query_row(
+                r"SELECT uploader_id, created_at FROM images WHERE key = ?1",
+                params![&ckey],
+                |row| Ok((row.get::<_, i32>(0)?, row.get::<_, i32>(1)?)),
+            )
+            .optional()
+        })
+        .await
+        .unwrap()
+        .context("Failed to query database")?;
 
     if let Some((uploader_id, created_at)) = result {
         Ok(Json(ImageMetadata {
