@@ -4,15 +4,10 @@ import "./style/index.scss"
 </script>
 
 <template>
-  <!-- <div class="dev-screen">
-    <h2>Under Consturction</h2>
-    <p>Leave.</p>
-  </div> -->
-
-  <div class="irl-layout">
+  <div class="hi-layout">
     <Navigation />
 
-    <div class="irl-router-layout">
+    <div class="hi-router-layout">
       <router-view></router-view>
     </div>
   </div>

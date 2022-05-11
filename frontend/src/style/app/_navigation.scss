@@ -1,5 +1,5 @@
-.irl-header {
-  @include flex($align: center);
+.hi-header {
+  @include flex($align: center, $gap: 24px);
   width: 100%;
   position: relative;
   height: 56px;
@@ -23,7 +23,7 @@
 
     &.user {
       font-size: 1.4rem;
-      margin-right: 24px;
+      // margin-right: 24px;
     }
 
     &.bread {

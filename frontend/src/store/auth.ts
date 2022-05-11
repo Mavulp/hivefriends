@@ -1,9 +1,21 @@
 import { defineStore } from "pinia"
+import { post } from "../js/fetch"
 
-export const authStore = defineStore("auth", {
+export const useAuth = defineStore("auth", {
   state: () => ({
-    user: null
+    user: null,
+    logged: false
   }),
-  actions: {},
-  getters: {}
+  actions: {
+    signIn(credentials: { username: string; password: string }) {
+      post("/api/login", { credentials })
+        .then((res) => {
+          console.log(res)
+        })
+        .catch((error) => console.log(error))
+    }
+  },
+  getters: {
+    isLoggedIn: (state) => state.logged
+  }
 })
