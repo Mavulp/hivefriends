@@ -81,8 +81,7 @@ async fn run() -> anyhow::Result<()> {
     let db_path = std::env::var("DB_PATH").context("DB_PATH not set")?;
     let pool = setup_database(&db_path).await?;
 
-    match args.subcommand {
-        Some(SubCommands::Account(args)) => {
+    if let Some(SubCommands::Account(args)) = args.subcommand {
             let password =
                 rpassword::prompt_password(&format!("Password for {}: ", args.username))?;
 
@@ -92,8 +91,6 @@ async fn run() -> anyhow::Result<()> {
                 .unwrap()?;
 
             return Ok(());
-        }
-        None => (),
     }
 
     let data_path = std::env::var("DATA_PATH")

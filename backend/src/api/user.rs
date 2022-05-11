@@ -4,11 +4,7 @@ use rusqlite::{params, Connection};
 
 use std::time::SystemTime;
 
-pub fn create_account(
-    username: &str,
-    password: &str,
-    conn: &mut Connection,
-) -> anyhow::Result<()> {
+pub fn create_account(username: &str, password: &str, conn: &mut Connection) -> anyhow::Result<()> {
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
     let phc_string = argon2
