@@ -27,6 +27,10 @@ pub mod api {
     pub mod user;
 }
 
+pub mod data {
+    pub mod image;
+}
+
 #[tokio::main]
 async fn main() {
     dotenv::dotenv().ok();
@@ -106,6 +110,7 @@ async fn run() -> anyhow::Result<()> {
         .nest("/api/login", api::login::api_route())
         .nest("/api/images/", api::image::api_route())
         .nest("/api/albums/", api::album::api_route())
+        .nest("/data/image/", data::image::api_route())
         .layer(Extension(Arc::new(AppState { pool, data_path })));
 
     info!("listening on {}", bind_addr);
