@@ -635,10 +635,10 @@ dependencies = [
  "serde_rusqlite",
  "thiserror",
  "tokio",
+ "tower-http",
  "tracing",
  "tracing-appender",
  "tracing-bunyan-formatter",
- "tracing-log",
  "tracing-subscriber",
 ]
 
@@ -1447,6 +1447,7 @@ dependencies = [
  "tower",
  "tower-layer",
  "tower-service",
+ "tracing",
 ]
 
 [[package]]
