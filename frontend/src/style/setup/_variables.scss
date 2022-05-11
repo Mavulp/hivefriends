@@ -1,16 +1,18 @@
 :root {
-  --color-background: 250, 250, 250;
-  --color-background-dimmed: 128, 128, 128;
+  --color-background: 250, 250, 250; /* #fafafa */
+  --color-background-dimmed: 128, 128, 128; /* #808080 */
   --color-background-dark: 25, 23, 22; /* #191716 */
   --color-text: 25, 23, 22; /* #191716 */
-  --color-text-light: 128, 128, 128;
-  --color-text-white: 255, 255, 255;
-  --color-border: 90, 90, 90;
-  --color-border-light: 224, 226, 219;
-  --color-white: 254, 254, 254;
-  // --color-highlight: 181, 116, 42;
+  --color-text-light: 128, 128, 128; /* #808080 */
+  --color-text-white: 255, 255, 255; /* #ffffff */
+  --color-border: 90, 90, 90; /* #5a5a5a */
+  --color-border-light: 224, 226, 219; /* #e0e2db */
+  --color-white: 254, 254, 254; /* #fefefe */
+  --color-highlight: 49, 192, 185;
 
   --color-error: 255, 72, 72;
   --color-success: 60, 218, 126;
   --color-info: 130, 132, 255;
 }
+
+$c: rgb(49, 85, 192);

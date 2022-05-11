@@ -18,19 +18,6 @@ html {
     box-sizing: border-box;
   }
 
-  body {
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6,
-    b,
-    strong {
-      @include font(700);
-    }
-  }
-
   a {
     text-decoration: none;
 
@@ -41,5 +28,4 @@ html {
 }
 
 @import "./app/";
-
 @import "./overrides/";

@@ -1,0 +1,33 @@
+.loading-bar {
+  @include radius(2px);
+  height: 6px;
+  // background-color: rgba(5, 114, 206, 0.2);
+  background-color: rgb(var(--color-border-light));
+  width: 100%;
+  max-width: 256px;
+  overflow: hidden;
+
+  .loading-bar-value {
+    animation: none;
+  }
+}
+
+.loading-bar-value {
+  width: 100%;
+  height: 100%;
+  background-color: rgb(var(--color-border));
+  animation: indeterminateAnimation 1s infinite ease-in-out;
+  transform-origin: 0% 50%;
+}
+
+@keyframes indeterminateAnimation {
+  0% {
+    transform: translateX(0) scaleX(0);
+  }
+  40% {
+    transform: translateX(0) scaleX(0.4);
+  }
+  100% {
+    transform: translateX(100%) scaleX(0.5);
+  }
+}

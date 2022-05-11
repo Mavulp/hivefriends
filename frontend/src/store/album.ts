@@ -34,7 +34,9 @@ export const useAlbums = defineStore("album", {
         })
 
       delLoading("albums")
-    }
+    },
+
+    async fetchAlbums() {}
   },
   getters: {
     getAlbums: (state) => state.albums,

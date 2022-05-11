@@ -1,4 +1,4 @@
-const rootUrl = "https://friends.hivecom.net"
+export const rootUrl = "https://friends.hivecom.net"
 
 export function get(url: string, options?: object) {
   return _handleFetch(

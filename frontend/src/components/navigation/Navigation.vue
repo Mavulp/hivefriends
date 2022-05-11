@@ -6,10 +6,6 @@ const route = useRoute()
 const router = useRouter()
 const auth = useAuth()
 
-// const bread = computed(() => {
-//   return route.meta.title
-// })
-
 function signOut() {
   auth.signOut()
   router.push({ name: "Login" })
@@ -28,24 +24,30 @@ function signOut() {
 
     <div class="flex-1"></div>
 
-    <!-- <span>Sign In to see your user</span> -->
-
     <template v-if="auth.isLoggedIn">
       <router-link
         class="hover-bubble"
         data-title-bottom="Your profile"
         :to="{ name: 'UserProfile', params: { id: auth.user.username } }"
       >
-        <span class="user"> dolanske </span>
+        <span class="user"> {{ auth.user.username }} </span>
       </router-link>
 
-      <router-link data-title-bottom="Your albums" :to="{ name: 'UserAlbums', params: { id: auth.user.username } }">
+      <router-link class="hover-bubble" data-title-bottom="Upload Album" :to="{ name: 'Upload' }">
+        <span class="material-icons">&#xe2cc;</span>
+      </router-link>
+
+      <router-link
+        class="hover-bubble"
+        data-title-bottom="Your albums"
+        :to="{ name: 'UserAlbums', params: { id: auth.user.username } }"
+      >
         <span class="material-icons">&#xe413;</span>
       </router-link>
-      <router-link data-title-bottom="Settings" :to="{ name: 'UserSettings' }">
+      <router-link class="hover-bubble" data-title-bottom="Settings" :to="{ name: 'UserSettings' }">
         <span class="material-icons">&#xe8b8;</span>
       </router-link>
-      <button data-title-bottom="Log out" @click="signOut()">
+      <button class="hover-bubble" data-title-bottom="Log out" @click="signOut()">
         <span class="material-icons">&#xe9ba;</span>
       </button>
     </template>

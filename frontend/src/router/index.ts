@@ -6,6 +6,12 @@ import AlbumDetail from "./views/AlbumDetail.vue"
 import ImageDetail from "./views/ImageDetail.vue"
 import AlbumList from "./views/AlbumList.vue"
 import User from "./views/User.vue"
+import AlbumUpload from "./views/AlbumUpload.vue"
+
+// Subchildren for user pages
+import UserAlbums from "../components/user/UserAlbums.vue"
+import UserProfile from "../components/user/UserProfile.vue"
+import UserSettings from "../components/user/UserSettings.vue"
 
 import { useAuth } from "../store/auth"
 
@@ -70,6 +76,16 @@ const router = createRouter({
       }
     },
     {
+      path: "/upload",
+      name: "Upload",
+      component: AlbumUpload,
+      meta: {
+        title: "Upload",
+        bread: "Upload a new album",
+        requiresAuth: true
+      }
+    },
+    {
       path: "/user/",
       name: "User",
       component: User,
@@ -77,7 +93,7 @@ const router = createRouter({
         {
           path: "/user/:id/profile",
           name: "UserProfile",
-          component: {},
+          component: UserProfile,
           meta: {
             title: "_user_profile_",
             bread: "_user_profile_",
@@ -87,7 +103,7 @@ const router = createRouter({
         {
           path: "/user/settings",
           name: "UserSettings",
-          component: {},
+          component: UserSettings,
           meta: {
             title: "_user_settings_",
             bread: "_user_settings_",
@@ -97,7 +113,7 @@ const router = createRouter({
         {
           path: "/user/:id/albums",
           name: "UserAlbums",
-          component: {},
+          component: UserAlbums,
           meta: {
             title: "_user_albums_",
             bread: "_user_albums_",
@@ -119,12 +135,13 @@ router.afterEach((to) => {
 router.beforeResolve(async (to, from, next) => {
   if (to.meta.requiresAuth) {
     const token = localStorage.getItem("bearer_token")
+    const user = localStorage.getItem("user")
 
-    if (!token) {
+    if (!token || !user) {
       return next({ name: "Login" })
     } else {
       const auth = useAuth()
-      auth.signInToken(token)
+      auth.signInUserFromStorage(JSON.parse(user))
     }
   }
 

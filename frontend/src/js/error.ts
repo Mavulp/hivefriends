@@ -153,7 +153,7 @@ export const asyncValidation = (executable: Function) => {
       return await executable(value)
     },
     _message() {
-      return "async cum"
+      return "not implemented"
     }
   }
 }

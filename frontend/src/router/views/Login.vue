@@ -24,7 +24,8 @@ const placeholders = [
   "apjriehat",
   "stormtrooper11",
   "clobatenjoyer",
-  "quoteshater"
+  "quoteshater",
+  "zealseal"
 ]
 const placeholder = ref(placeholders[getRanMinMax(0, 5)])
 

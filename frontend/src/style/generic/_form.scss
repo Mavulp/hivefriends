@@ -9,7 +9,9 @@
     }
   }
 
+  textarea,
   input {
+    @include font(400);
     display: block;
     height: 56px;
     line-height: 56px;
@@ -19,16 +21,19 @@
     border: 1px solid rgb(var(--color-border-light));
     color: rgb(var(--color-text));
     background-color: transparent;
-
-    // &:hover,
-    // &:active,
-    // &:focus {
-    //   background-color: rgb(var(--color-white));
-    // }
   }
 
   ::placeholder {
     color: rgba(var(--color-text), 0.35);
+  }
+
+  textarea {
+    height: unset;
+    line-height: unset;
+    min-height: 156px;
+    padding: 24px;
+    width: 100%;
+    resize: vertical;
   }
 
   label {
@@ -58,6 +63,19 @@
         margin-bottom: 0;
       }
     }
+  }
+}
+
+.form-date {
+  @include grid(16px, 2);
+  position: relative;
+
+  input[type="date"] {
+    height: 44px;
+    line-height: 44px;
+    font-size: 1.4rem;
+    padding: 0 16px;
+    border: 1px solid rgb(var(--color-border-light));
   }
 }
 
