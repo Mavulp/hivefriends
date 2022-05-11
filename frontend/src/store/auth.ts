@@ -8,7 +8,7 @@ export const useAuth = defineStore("auth", {
   }),
   actions: {
     signIn(credentials: { username: string; password: string }) {
-      post("/api/login", { credentials })
+      post("/api/login", credentials)
         .then((res) => {
           console.log(res)
         })
