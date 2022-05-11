@@ -19,8 +19,10 @@ async fn get_image(
 ) -> Result<(HeaderMap<HeaderValue>, Vec<u8>), Error> {
     let conn = state.pool.get().await.context("Failed to get connection")?;
 
-    if !["original", "small", "tiny"].contains(&&size[..]) {
-        return Err(Error::InvalidArguments(anyhow::format_err!("Path parameter 'size' should be one of: 'original', 'small', 'tiny'")));
+    if !["original", "medium", "tiny"].contains(&&size[..]) {
+        return Err(Error::InvalidArguments(anyhow::format_err!(
+            "Path parameter 'size' should be one of: 'original', 'small', 'tiny'"
+        )));
     }
 
     let ckey = key.clone();
