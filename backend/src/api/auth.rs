@@ -36,7 +36,7 @@ where
         let user_id = conn
             .interact(move |conn| {
                 conn.query_row(
-                    r"SELECT user_id FROM auth_session WHERE token=?1",
+                    r"SELECT user_id FROM auth_sessions WHERE token=?1",
                     params![bearer.token()],
                     |row| row.get::<_, i64>(0),
                 )
