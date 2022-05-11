@@ -5,6 +5,9 @@ import { ref, reactive, computed } from "vue"
 import { getRanMinMax } from "../../js/utils"
 import { useAuth } from "../../store/auth"
 import { useFormValidation, required, minLength, asyncValidation } from "../../js/error"
+import { useRouter } from "vue-router"
+
+const router = useRouter()
 
 const auth = useAuth()
 
@@ -27,15 +30,16 @@ const placeholder = ref(placeholders[getRanMinMax(0, 5)])
 
 async function submit() {
   validate()
-    .then(() => {
+    .then(async () => {
       // Submit
       if (form.username && form.password) {
         auth.signIn(form)
         reset()
+        router.push({ name: "Home" })
       }
     })
     .catch((errors) => {
-      console.log(errors)
+      console.log("test", errors)
     })
 }
 

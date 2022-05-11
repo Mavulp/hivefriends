@@ -1,0 +1,76 @@
+.hi-toasts {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  // width: 512px;
+  width: 50vw;
+  max-width: 656px;
+
+  .hi-toast-item {
+    @include t();
+    @include flex($gap: 16px, $align: center);
+    width: 100%;
+    text-align: left;
+    height: 44px;
+    position: relative;
+    line-height: 44px;
+    padding-left: 24px;
+    padding-right: 16px;
+    margin-bottom: 8px;
+    background-color: rgb(var(--color-background-dark));
+    color: rgb(var(--color-text-white));
+    overflow: hidden;
+
+    &:before {
+      content: "";
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 8px;
+      background-color: transparent;
+    }
+
+    &.error {
+      &:before {
+        background-color: rgb(var(--color-error));
+      }
+    }
+
+    &.success {
+      &:before {
+        background-color: rgb(var(--color-success));
+      }
+    }
+
+    &.info {
+      &:before {
+        background-color: rgb(var(--color-info));
+      }
+    }
+
+    p {
+      display: block;
+      flex: 1;
+      font-size: 1.4rem;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      max-width: 95%;
+    }
+
+    span {
+      font-size: 1.4rem;
+
+      &:hover {
+        opacity: 0.75;
+      }
+    }
+
+    span,
+    p {
+      color: rgb(var(--color-text-white));
+    }
+  }
+}

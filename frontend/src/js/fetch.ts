@@ -67,6 +67,7 @@ async function _handleFetch(url: string, options: object) {
   const token = localStorage.getItem("bearer_token")
 
   Object.assign(options, {
+    mode: "cors",
     Authorization: `Bearer ${token}`
   })
 
