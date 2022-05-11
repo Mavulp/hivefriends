@@ -3,6 +3,12 @@
   position: relative;
   margin-bottom: 40px;
 
+  &.input-error {
+    input {
+      border-color: rgb(var(--color-error));
+    }
+  }
+
   input {
     display: block;
     height: 56px;
@@ -35,6 +41,23 @@
     color: rgb(var(--color-text-light));
     padding: 2px 8px;
     background-color: rgb(var(--color-background));
+  }
+
+  .input-error-list {
+    display: block;
+    margin-top: 4px;
+    margin-bottom: 4px;
+
+    p {
+      font-size: 1.2rem;
+      color: rgb(var(--color-error));
+      display: block;
+      margin-bottom: 2px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
   }
 }
 

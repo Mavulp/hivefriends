@@ -1,5 +1,5 @@
-import { reactive, ref } from "vue"
-import { isEmpty, isFunc, isNil } from "./utils"
+import { reactive, ref, watch } from "vue"
+import { isEmpty, isNil } from "./utils"
 
 /**
  * Types
@@ -8,7 +8,7 @@ import { isEmpty, isFunc, isNil } from "./utils"
 export type Error = {
   type: string | null
   invalid: boolean
-  errors: Array<string>
+  errors: Set<string>
 }
 
 export interface Errors {
@@ -24,57 +24,88 @@ export type Rule = {
   [key: string]: ValidationRule
 }
 
+interface ValidationOptions {
+  // Perform validation on each value update
+  proactive?: boolean
+  autoclear?: boolean
+}
+
 /**
  * Composable
  */
 
-export function useFormValidation(form: object, rules: any) {
-  // Create default errors object
+export function useFormValidation(
+  form: object,
+  rules: any,
+  { proactive = false, autoclear = false }: ValidationOptions
+) {
+  const errors = reactive<Errors>({})
 
-  // TODO: add option to reset form on each keystroke
-  // FIXME: fix errors adding onto each other (do a Set instead of array)
-  // FIXME required should also check if length > 0
+  const root = reactive({ anyError: false, pending: false })
 
-  const anyError = ref<boolean>(false)
-
-  const errors = reactive<Errors>({
-    ...Object.keys(form).reduce(
-      (a, v) => ({
-        ...a,
-        [v]: {
-          type: null,
-          invalid: false,
-          errors: []
-        }
-      }),
-      {}
+  if (autoclear) {
+    watch(
+      form,
+      () => {
+        reset()
+      },
+      { deep: true }
     )
-  })
+  }
+
+  // Initial assignment
+  _resetErrorObject()
+
+  function _resetErrorObject() {
+    Object.assign(errors, {
+      ...Object.keys(form).reduce(
+        (a, v) => ({
+          ...a,
+          [v]: {
+            type: null,
+            invalid: false,
+            errors: new Set()
+          }
+        }),
+        {}
+      )
+    })
+
+    Object.assign(root, { anyError: false, pending: false })
+  }
+
+  function reset() {
+    // Resets the form
+    _resetErrorObject()
+  }
 
   function validate() {
+    _resetErrorObject()
+
+    root.pending = true
+
     return new Promise(async (resolve, reject) => {
-      anyError.value = false
       for (const [key, value] of Object.entries(form)) {
         const itemRules: Rule = rules.value[key]
 
-        for (const [ruleKey, ruleData] of Object.entries(itemRules)) {
+        Object.entries(itemRules).map(async ([ruleKey, ruleData]) => {
           const { _message, _validate }: ValidationRule = ruleData
 
           const result = await _validate(value)
 
           if (!result) {
-            anyError.value = true
+            root.anyError = true
 
             // Is error
             errors[key].type = ruleKey
             errors[key].invalid = true
-            errors[key].errors.push(_message())
+            errors[key].errors.add(_message())
           }
-        }
+        })
       }
 
-      if (anyError.value) {
-        reject()
+      if (root.anyError) {
+        reject(errors)
       } else {
         resolve(true)
       }
@@ -83,6 +114,7 @@ export function useFormValidation(form: object, rules: any) {
 
   return {
     errors,
+    reset,
     validate
   }
 }
@@ -95,7 +127,7 @@ export function useFormValidation(form: object, rules: any) {
 
 export const required = {
   _validate(value: any) {
-    return !isEmpty(value)
+    return !isEmpty(value) && value.length > 0
   },
   _message() {
     return "Value is required"
@@ -112,5 +144,38 @@ export const minLength = (len: number) => {
     _message() {
       return `Value must be at least ${len} characters long`
     }
+  }
+}
+
+export const asyncValidation = (executable: Function) => {
+  return {
+    async _validate(value: any) {
+      return await executable(value)
+    },
+    _message() {
+      return "async cum"
+    }
+  }
+}
+
+export const maxLength = (len: number) => {
+  return {
+    _validate(value: any) {
+      if (isNil(value)) return false
+
+      return value?.length ? value.length <= len : false
+    },
+    _message() {
+      return `Value must be equal or smaller than ${len} characters`
+    }
+  }
+}
+
+export const email = {
+  _validate(value: any) {
+    return /^\S+@\S+\.\S+$/.test(value)
+  },
+  _message() {
+    return "Value must be in a valid email format"
   }
 }

@@ -4,11 +4,16 @@ import Btn from "../../components/Button.vue"
 import { ref, reactive, computed } from "vue"
 import { getRanMinMax } from "../../js/utils"
 import { useAuth } from "../../store/auth"
-import { useFormValidation, required, minLength } from "../../js/error"
+import { useFormValidation, required, minLength, asyncValidation } from "../../js/error"
 
-// const auth = useAuth()
+const auth = useAuth()
 
-const form = reactive({ username: "", password: "" })
+type SignInForm = {
+  username: string
+  password: string
+}
+
+const form = reactive<SignInForm>({ username: "", password: "" })
 
 const placeholders = [
   "dolanspaghetti",
@@ -21,13 +26,17 @@ const placeholders = [
 const placeholder = ref(placeholders[getRanMinMax(0, 5)])
 
 async function submit() {
-  validate().then(() => {
-    // Submit
-    if (form.username && form.password) {
-      // auth.signIn(form)
-      console.log("passed")
-    }
-  })
+  validate()
+    .then(() => {
+      // Submit
+      if (form.username && form.password) {
+        auth.signIn(form)
+        reset()
+      }
+    })
+    .catch((errors) => {
+      console.log(errors)
+    })
 }
 
 const rules = computed(() => ({
@@ -41,7 +50,7 @@ const rules = computed(() => ({
 }))
 
 // Setup validation
-const { errors, validate } = useFormValidation(form, rules)
+const { errors, validate, reset } = useFormValidation(form, rules, { autoclear: true })
 </script>
 
 <template>
@@ -52,7 +61,7 @@ const { errors, validate } = useFormValidation(form, rules)
 
     <div class="route-login-split has-form">
       <form @submit.prevent="submit" class="form-wrap">
-        <InputText :error="errors.name" v-model:value="form.username" label="Username" :placeholder="placeholder" />
+        <InputText :error="errors.username" v-model:value="form.username" label="Username" :placeholder="placeholder" />
         <InputText
           :error="errors.password"
           v-model:value="form.password"
