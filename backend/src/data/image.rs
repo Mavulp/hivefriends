@@ -10,18 +10,18 @@ use std::sync::Arc;
 use crate::{api::error::Error, AppState};
 
 pub fn api_route() -> Router {
-    Router::new().route("/:key/:size", get(get_image))
+    Router::new().route("/:key/:filename", get(get_image))
 }
 
 async fn get_image(
-    Path((key, size)): Path<(String, String)>,
+    Path((key, filename)): Path<(String, String)>,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<(HeaderMap<HeaderValue>, Vec<u8>), Error> {
     let conn = state.pool.get().await.context("Failed to get connection")?;
 
-    if !["original", "medium", "tiny"].contains(&&size[..]) {
+    if !["original.png", "medium.png", "tiny.png"].contains(&&filename[..]) {
         return Err(Error::InvalidArguments(anyhow::format_err!(
-            "Path parameter 'size' should be one of: 'original', 'small', 'tiny'"
+            "Path parameter 'filename' should be one of: 'original.png', 'small.png', 'tiny.png'"
         )));
     }
 
@@ -41,7 +41,7 @@ async fn get_image(
 
     let mut image_path = state.data_path.clone();
     image_path.push(key);
-    image_path.push(format!("{}.png", size));
+    image_path.push(filename);
 
     let mut reader = BufReader::new(File::open(image_path).unwrap());
 
