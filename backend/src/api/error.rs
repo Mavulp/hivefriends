@@ -35,7 +35,7 @@ pub enum Error {
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
         let status = match &self {
-            Error::InvalidLogin => StatusCode::BAD_REQUEST,
+            Error::InvalidLogin => StatusCode::UNAUTHORIZED,
             Error::NotFound => StatusCode::NOT_FOUND,
             Error::InternalError(e) => {
                 error!("API encountered error: {}", e);
