@@ -107,6 +107,8 @@ async fn upload_image(
     user_id: i64,
     state: &Arc<AppState>,
 ) -> anyhow::Result<ImageCreationResponse> {
+    let now = SystemTime::UNIX_EPOCH.elapsed()?.as_secs() as u32;
+
     let field = multipart
         .next_field()
         .await?
@@ -114,7 +116,6 @@ async fn upload_image(
 
     let data = field.bytes().await?;
 
-    let now = SystemTime::UNIX_EPOCH.elapsed()?.as_secs() as u32;
     let key = blob_uuid::random_blob();
     store_image(state.data_path.clone(), &key, &data).await?;
 
