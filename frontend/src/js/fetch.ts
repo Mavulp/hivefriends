@@ -64,6 +64,12 @@ export function makeQuery(options: object) {
 // Private handler functions
 
 async function _handleFetch(url: string, options: object) {
+  const token = localStorage.getItem("bearer_token")
+
+  Object.assign(options, {
+    Authorization: `Bearer ${token}`
+  })
+
   return fetch(rootUrl + url, options).then(_handleResponse)
 }
 

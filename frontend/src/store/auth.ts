@@ -10,7 +10,7 @@ export const useAuth = defineStore("auth", {
     signIn(credentials: { username: string; password: string }) {
       post("/api/login", credentials)
         .then((res) => {
-          console.log(res)
+          localStorage.setItem("bearer_token", res)
         })
         .catch((error) => console.log(error))
     }
