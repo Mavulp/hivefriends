@@ -49,7 +49,7 @@ where
         if let Some(user_id) = user_id {
             Ok(Authorize(user_id))
         } else {
-            Err(AuthorizationRejection::TokenNotFound)
+            Err(AuthorizationRejection::InvalidToken)
         }
     }
 }
@@ -60,8 +60,8 @@ pub enum AuthorizationRejection {
     Extension(#[from] ExtensionRejection),
     #[error("{0}")]
     Headers(#[from] TypedHeaderRejection),
-    #[error("Bearer token not found")]
-    TokenNotFound,
+    #[error("Bearer token is invalid")]
+    InvalidToken,
     #[error("{0}")]
     Generic(#[from] anyhow::Error),
 }
@@ -72,7 +72,7 @@ impl IntoResponse for AuthorizationRejection {
             AuthorizationRejection::Extension(_) => StatusCode::INTERNAL_SERVER_ERROR,
             AuthorizationRejection::Generic(_) => StatusCode::INTERNAL_SERVER_ERROR,
             AuthorizationRejection::Headers(_) => StatusCode::BAD_REQUEST,
-            AuthorizationRejection::TokenNotFound => StatusCode::UNAUTHORIZED,
+            AuthorizationRejection::InvalidToken => StatusCode::UNAUTHORIZED,
         };
 
         let body = Json(json!({
