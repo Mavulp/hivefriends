@@ -1,5 +1,4 @@
 use anyhow::Context;
-use argh::FromArgs;
 use axum::{routing::Router, Extension};
 use deadpool_sqlite::{Config, Pool, Runtime};
 use rusqlite_migration::{Migrations, M};
@@ -17,6 +16,8 @@ pub struct AppState {
     pool: Pool,
     data_path: PathBuf,
 }
+
+pub mod cli;
 
 pub mod api {
     pub mod album;
@@ -57,44 +58,21 @@ async fn main() {
     }
 }
 
-#[derive(FromArgs, PartialEq, Debug)]
-/// Top-level command.
-struct Args {
-    #[argh(subcommand)]
-    subcommand: Option<SubCommands>,
-}
-
-#[derive(FromArgs, PartialEq, Debug)]
-#[argh(subcommand)]
-enum SubCommands {
-    Account(AccountArgs),
-}
-
-#[derive(FromArgs, PartialEq, Debug)]
-/// create account.
-#[argh(subcommand, name = "adduser")]
-pub struct AccountArgs {
-    #[argh(positional)]
-    /// username
-    username: String,
-}
-
 async fn run() -> anyhow::Result<()> {
-    let args: Args = argh::from_env();
+    let args: cli::Args = argh::from_env();
 
     let db_path = std::env::var("DB_PATH").context("DB_PATH not set")?;
     let pool = setup_database(&db_path).await?;
 
-    if let Some(SubCommands::Account(args)) = args.subcommand {
-            let password =
-                rpassword::prompt_password(&format!("Password for {}: ", args.username))?;
-
+    match args.subcommand {
+        Some(sub) => {
             let conn = pool.get().await.context("Failed to get connection")?;
-            conn.interact(move |conn| api::user::create_account(&args.username, &password, conn))
+            return conn
+                .interact(move |conn| cli::run_subcommand(sub, conn))
                 .await
-                .unwrap()?;
-
-            return Ok(());
+                .unwrap();
+        }
+        None => (),
     }
 
     let data_path = std::env::var("DATA_PATH")
