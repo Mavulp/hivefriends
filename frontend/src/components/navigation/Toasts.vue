@@ -9,8 +9,6 @@ const toast = useToast()
     <transition-group name="toast">
       <div v-for="(item, index) in toast.items" :key="item.text + index" class="hi-toast-item" :class="[item.type]">
         <p>{{ item.text }}</p>
-        {{ index }}
-
         <button @click="toast.del(index)">
           <span class="material-icons">&#xe5cd;</span>
         </button>
