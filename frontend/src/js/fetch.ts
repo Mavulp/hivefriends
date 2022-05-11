@@ -19,7 +19,7 @@ export function post(url: string, body: object, options?: object) {
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body
+        body: JSON.stringify(body)
       },
       options
     )
@@ -33,7 +33,7 @@ export function put(url: string, body: object, options?: object) {
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body
+        body: JSON.stringify(body)
       },
       options
     )
