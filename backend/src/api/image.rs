@@ -2,13 +2,15 @@ use axum::{
     extract::{
         multipart::MultipartRejection, rejection::ContentLengthLimitRejection, ContentLengthLimit,
         Multipart,
+        Path,
     },
-    routing::post,
+    routing::{post, get},
     Extension, Json, Router,
 };
-use rusqlite::params;
+use rusqlite::{OptionalExtension, params};
 use serde::Serialize;
 use tokio::fs;
+use anyhow::Context;
 
 use std::io::Cursor;
 use std::path::PathBuf;
@@ -18,7 +20,45 @@ use std::time::SystemTime;
 use crate::{api::auth::Authorize, api::error::Error, AppState};
 
 pub fn api_route() -> Router {
-    Router::new().route("/", post(post_upload_image))
+    Router::new()
+        .route("/", post(post_upload_image))
+        .route("/:id", get(get_image))
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct ImageMetadata {
+    key: String,
+    uploader_id: i32,
+    created_at: i32,
+}
+
+async fn get_image(
+    Path(key): Path<String>,
+    Authorize(_): Authorize,
+    Extension(state): Extension<Arc<AppState>>,
+    ) -> Result<Json<ImageMetadata>, Error> {
+
+    let conn = state.pool.get().await.context("Failed to get connection")?;
+    let ckey = key.clone();
+    let result = conn.interact(move |conn| {
+        conn.query_row(
+            r"SELECT uploader_id, created_at FROM images WHERE key = ?1",
+            params![&ckey],
+            |row| Ok((row.get::<_, i32>(0)?, row.get::<_, i32>(1)?)),
+        )
+        .optional()
+    }).await.unwrap().context("Failed to query database")?;
+
+    if let Some((uploader_id, created_at)) = result {
+        Ok(Json(ImageMetadata {
+            key,
+            uploader_id,
+            created_at,
+        }))
+    } else {
+        Err(Error::NotFound)
+    }
 }
 
 #[derive(Serialize)]
