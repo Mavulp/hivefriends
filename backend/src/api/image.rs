@@ -50,7 +50,7 @@ async fn get_image(
         })
         .await
         .unwrap()
-        .context("Failed to query database")?;
+        .context("Failed to query image metadata")?;
 
     if let Some((uploader_id, created_at)) = result {
         Ok(Json(ImageMetadata {

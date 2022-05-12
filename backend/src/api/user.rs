@@ -53,9 +53,10 @@ async fn get_user(
             .optional()
         })
         .await
-        .unwrap();
+        .unwrap()
+        .context("Failed to query users")?;
 
-    if let Some(db_user) = result.context("Failed to query database")? {
+    if let Some(db_user) = result {
         let albums_uploaded = conn
             .interact(move |conn| {
                 let mut stmt = conn.prepare(
@@ -72,8 +73,7 @@ async fn get_user(
             })
             .await
             .unwrap()
-            .context("Failed to query database")?;
-
+            .context("Failed to query albums uploaded")?;
 
         let met = conn
             .interact(move |conn| {
@@ -94,8 +94,7 @@ async fn get_user(
             })
             .await
             .unwrap()
-            .context("Failed to query database")?;
-
+            .context("Failed to query met users")?;
 
         Ok(Json(User {
             username,

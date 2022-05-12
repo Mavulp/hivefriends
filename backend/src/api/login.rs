@@ -63,9 +63,10 @@ async fn post_login(
             .optional()
         })
         .await
-        .unwrap();
+        .unwrap()
+        .context("Failed to query user metadata")?;
 
-    if let Some(db_user) = result.context("Failed to query database")? {
+    if let Some(db_user) = result {
         let argon2 = Argon2::default();
         let parsed_hash =
             PasswordHash::new(&db_user.password_hash).context("Failed creating hash")?;
