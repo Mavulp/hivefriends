@@ -15,7 +15,7 @@ use crate::api::{error::Error, auth::Authorize};
 pub fn api_route() -> Router {
     Router::new()
         .route("/", post(post_create_album))
-        .route("/:id", get(album_by_id))
+        .route("/:key", get(album_by_key))
 }
 
 #[derive(Deserialize)]
@@ -28,7 +28,7 @@ pub struct CreateAlbumRequest {
     image_keys: Vec<String>,
 }
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Timeframe {
     from: Option<i64>,
@@ -104,7 +104,8 @@ async fn create_album(
 
         for image_key in request.image_keys {
             tx.execute(
-                r"INSERT INTO album_image_associations (album_id, image_id) SELECT ?1, id FROM images WHERE key = ?2",
+                "INSERT INTO album_image_associations (album_id, image_id) \
+                SELECT ?1, id FROM images WHERE key = ?2",
                 params![album_id, image_key])?;
         }
 
@@ -120,6 +121,7 @@ async fn create_album(
 #[serde(rename_all = "camelCase")]
 struct Image {
     key: String,
+    uploader_key: String,
     created_at: u32,
 }
 
@@ -127,6 +129,10 @@ struct Image {
 #[serde(rename_all = "camelCase")]
 struct Album {
     key: String,
+    title: String,
+    description: Option<String>,
+    locations: Option<String>,
+    timeframe: Timeframe,
     created_at: u32,
     images: Vec<Image>,
 }
@@ -138,46 +144,63 @@ struct Album {
 /// {
 /// }
 /// ```
-async fn album_by_id(
+async fn album_by_key(
     Path(id): Path<String>,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<Album>, Error> {
-    match get_album_by_id(id, &state).await {
+    match get_album_by_key(id, &state).await {
         Ok(Some(album)) => Ok(Json(album)),
         Ok(None) => Err(Error::NotFound),
         Err(e) => Err(Error::InternalError(e)),
     }
 }
 
-async fn get_album_by_id(album_id: String, state: &Arc<AppState>) -> anyhow::Result<Option<Album>> {
+async fn get_album_by_key(album_key: String, state: &Arc<AppState>) -> anyhow::Result<Option<Album>> {
     let conn = state.pool.get().await?;
 
     conn.interact(move |conn| {
         let result = conn
             .query_row(
-                r"SELECT id, created_at FROM albums 
-WHERE key=?1",
-                params![album_id],
-                |row| Ok((row.get::<_, i32>(0)?, row.get(1)?)),
+                "SELECT id, title, description, locations, timeframe_from, timeframe_to, created_at \
+                FROM albums \
+                WHERE key=?1",
+                params![album_key],
+                |row| Ok((
+                        row.get::<_, i32>(0)?,
+                        row.get(1)?,
+                        row.get(2)?,
+                        row.get(3)?,
+                        row.get(4)?,
+                        row.get(5)?,
+                        row.get(6)?,
+                )),
             )
             .optional()?;
 
-        if let Some((id, created_at)) = result {
+        if let Some((id, title, description, locations, timeframe_from, timeframe_to, created_at)) = result {
             let mut stmt = conn.prepare(
-                r"SELECT key, created_at FROM images 
-INNER JOIN album_image_associations ON image_id=id 
-WHERE album_id=?1",
+                "SELECT i.key, i.uploader_key, i.created_at FROM images i \
+                INNER JOIN album_image_associations aia ON aia.image_id=i.id \
+                WHERE aia.album_id=?1",
             )?;
             let image_iter = stmt.query_map(params![id], |row| {
                 Ok(Image {
                     key: row.get(0)?,
-                    created_at: row.get(1)?,
+                    uploader_key: row.get(1)?,
+                    created_at: row.get(2)?,
                 })
             })?;
 
             let images = image_iter.collect::<Result<Vec<_>, _>>()?;
             Ok(Some(Album {
-                key: album_id,
+                key: album_key,
+                title,
+                description,
+                locations,
+                timeframe: Timeframe {
+                    from: timeframe_from,
+                    to: timeframe_to,
+                },
                 created_at,
                 images,
             }))
