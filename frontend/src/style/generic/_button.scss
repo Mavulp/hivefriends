@@ -8,15 +8,20 @@
   font-size: 1.4rem;
   text-transform: uppercase;
   letter-spacing: 0.2em;
+  text-decoration: none !important;
 
   &:hover {
-    background-color: rgba(var(--color-background-dark), 0.8);
+    background-color: rgba(var(--color-background-dark), 0.9);
   }
 
   &:hover {
     &:after {
       width: 50%;
     }
+  }
+
+  &.btn-icon {
+    @include flex($justify: space-between);
   }
 
   &.btn-login {
@@ -36,6 +41,14 @@
   &.btn-disabled {
     pointer-events: none;
     background-color: rgba(var(--color-background-dark), 0.8);
+  }
+
+  &.btn-blue {
+    background-color: rgb(var(--color-highlight));
+
+    &:hover {
+      background-color: rgba(var(--color-highlight), 0.9);
+    }
   }
 }
 

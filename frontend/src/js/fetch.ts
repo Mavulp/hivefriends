@@ -97,7 +97,7 @@ export function makeQuery(options: object) {
 
   let q = ""
 
-  Object.entries(options).map(([value, key]) => {
+  Object.entries(options).map(([key, value]) => {
     q += `&${key}=${value}`
   })
 

@@ -1,24 +1,43 @@
 <script setup lang="ts">
-import { ref } from "vue"
+import { onBeforeMount, reactive } from "vue"
+import { useRoute } from "vue-router"
+import { useAlbums } from "../../store/album"
+import { useLoading } from "../../store/loading"
+import { rootUrl } from "../../js/fetch"
 
-const comments = ref(false)
+const albums = useAlbums()
+const { getLoading } = useLoading()
+const route = useRoute()
 
-const album = {
-  title: "That time in Butjadingen Nothing Happened",
-  description: "Cum laude",
-  users: ["user-id-0", "user-id-1", "user-id-2", "user-id-3"],
-  timestamps: {
-    from: "14/07/2021",
-    to: "21/07/2021",
-    created: "32/08/2021"
-  },
-  photos: 73
-}
+const album = reactive({})
+
+onBeforeMount(async () => {
+  // console.log(route.params.id)
+  const id = route.params.id
+
+  if (id) {
+    const data = await albums.fetchAlbum(id)
+    Object.assign(album, data)
+  }
+})
+
+// Generate columns by splitting array of images into 3 and iterating over those to generate a bit more natural masonry
 </script>
 
 <template>
   <div class="hi-album-detail">
-    <div class="hi-album-detail-layout">
+    <span v-if="getLoading('get-album')">Loading</span>
+
+    <div v-else>
+      <pre>
+        {{ album }}
+      </pre>
+
+      <div v-for="image in album.images">
+        <img :src="rootUrl + `/data/image/${image.key}/medium.png`" alt="" />
+      </div>
+    </div>
+    <!-- <div class="hi-album-detail-layout">
       <div class="col-query">
         <div class="hi-album-header">
           <div class="album-timestamp">
@@ -44,8 +63,7 @@ const album = {
           </div>
         </div>
         <div class="hi-album-images">
-          <!-- Generate columns by splitting array of images into 3
-          and iterating over those to generate a bit more natural masonry -->
+          
 
           <div class="col"></div>
           <div class="col"></div>
@@ -54,6 +72,6 @@ const album = {
       </div>
 
       <div class="hi-album-comments"></div>
-    </div>
+    </div> -->
   </div>
 </template>

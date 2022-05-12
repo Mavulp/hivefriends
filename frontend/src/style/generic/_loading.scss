@@ -41,3 +41,22 @@
     transform: translateX(100%) scaleX(0.5);
   }
 }
+
+.loading-spinner {
+  // margin: auto;
+  border: 5px solid transparent;
+  border-radius: 50%;
+  border-top: 5px solid rgb(var(--color-text-white));
+  width: 28px;
+  height: 28px;
+  animation: spinner 1.5s linear infinite;
+}
+
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

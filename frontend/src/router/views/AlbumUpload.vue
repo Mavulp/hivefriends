@@ -2,14 +2,31 @@
 import InputText from "../../components/form/InputText.vue"
 import InputTextarea from "../../components/form/InputTextarea.vue"
 import ImageUploadItem from "../../components/upload/ImageUploadItem.vue"
+import Button from "../../components/Button.vue"
+import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 
 import { onBeforeUnmount, onMounted, reactive, ref, computed } from "vue"
-import Button from "../../components/Button.vue"
-import { upload } from "../../js/fetch"
+import { post, upload } from "../../js/fetch"
+import { useFormValidation, required } from "../../js/error"
+import { useAlbums } from "../../store/album"
+
+const store = useAlbums()
 
 /**
  * Interface & setup
  */
+
+interface newAlbum {
+  title: string
+  description?: string
+  locations?: Array<string>
+  timeframe: {
+    from: number
+    to: number
+  }
+  imageKeys: Array<string>
+  userKeys?: Array<string>
+}
 
 interface File {
   values: Array<{
@@ -22,20 +39,8 @@ interface File {
   }>
 }
 
-interface Album {
-  title: string
-  description?: string
-  locations?: Array<string>
-  timeframe: {
-    from: number
-    to: number
-  }
-  imageKeys: Array<string>
-  userKeys: Array<string>
-}
-
 const files = reactive<File>({ values: [] })
-const meta = reactive<Album>({
+const album = reactive<newAlbum>({
   title: "",
   description: "",
   locations: [],
@@ -47,6 +52,9 @@ const meta = reactive<Album>({
   userKeys: []
 })
 
+// If album was successfuly generated, this will get populated
+const albumKey = ref()
+
 // TODO: Compute global loading progress by
 // checking loading states of all files and add a loading bar / percentagle somewhere in the upload
 // TODO: add option to select 1 day
@@ -56,6 +64,7 @@ const draggingOver = ref(false)
 const dragShrink = ref(false)
 
 const isLoading = computed(() => files.values.some((file) => file.loading))
+const imageKeys = computed<Array<any>>(() => files.values.map((file) => file.key))
 
 /**
  * Lifecycle
@@ -105,7 +114,7 @@ function fileHandler(_files: any) {
   for (let i = 0; i <= _files.length; i++) {
     const file = _files[i]
 
-    if (!file) return
+    if (!file) continue
 
     let formData = new FormData()
     formData.append("file", file)
@@ -120,18 +129,20 @@ function fileHandler(_files: any) {
 
     upload("/api/images", formData)
       .then((response: any) => {
-        console.log("upload done", response)
-
         Object.assign(files.values[i], {
           loading: false,
           key: response.key
         })
+
+        console.log("ok upload", response, files.values[i])
       })
       .catch((error) => {
         Object.assign(files.values[i], {
           loading: false,
           error
         })
+
+        console.log("erorr upload", error, files.values[i])
       })
   }
 }
@@ -142,9 +153,33 @@ function delImage(index: number) {
   }
 }
 
+const rules = computed(() => ({
+  title: { required }
+}))
+
+const { validate, errors } = useFormValidation(album, rules)
+
 async function submit() {
-  // Validate form
-  // Iterate over all active images, add them to imageKeys array
+  validate().then(async () => {
+    // Iterate over all active images, add them to imageKeys array
+    album.imageKeys = imageKeys.value
+
+    const { key } = await store.addAlbum(
+      Object.assign(album, {
+        locations: album.locations?.join(","),
+        timeframe: {
+          from: new Date(album.timeframe.from).getTime(),
+          to: new Date(album.timeframe.to).getTime()
+        }
+      })
+    )
+
+    if (key) {
+      // was ok
+      albumKey.value = key
+    }
+  })
+
   //
 }
 </script>
@@ -162,14 +197,20 @@ async function submit() {
         >
           <input id="draginput" name="draginput" type="file" multiple accept="image/*" />
           <label for="draginput">
-            <span class="material-icons">&#xe9a3;</span>
+            <span class="material-icons">&#xe2cc;</span>
             <span>{{ draggingOver ? "Drop the files!" : "Cllick me / Drag files over here" }}</span>
           </label>
         </div>
 
         <div class="album-upload-items-list">
           <template v-if="files.values.length > 0">
-            <ImageUploadItem v-for="(item, index) in files.values" :data="item" :index="index" @remove="delImage" />
+            <ImageUploadItem
+              v-for="(item, index) in files.values"
+              :data="item"
+              :key="item.name"
+              :index="index"
+              @remove="delImage"
+            />
           </template>
         </div>
       </div>
@@ -177,29 +218,41 @@ async function submit() {
       <div class="album-upload-metadata">
         <h3>Create an album</h3>
 
-        <InputText v-model:value="meta.title" placeholder="That time in Finland" label="Title" />
-        <InputTextarea v-model:value="meta.description" placeholder="How was it?" label="Description" />
+        <InputText v-model:value="album.title" placeholder="That time in Finland" label="Title" :error="errors.title" />
+        <InputTextarea v-model:value="album.description" placeholder="How was it?" label="Description" />
 
         <h6>Event Dates</h6>
         <div class="form-date">
           <div class="form-input">
-            <input type="date" v-model="meta.timeframe.from" />
+            <input type="date" v-model="album.timeframe.from" />
             <label>Start</label>
           </div>
 
           <div class="form-input">
-            <input type="date" v-model="meta.timeframe.to" />
+            <input type="date" v-model="album.timeframe.to" />
             <label>End</label>
           </div>
         </div>
 
-        <Button :class="{ 'btn-disabled': files.values.length === 0 || isLoading }" style="width: 100%" @click="submit"
-          >Upload</Button
+        <Button
+          class="btn-icon"
+          :class="{ 'btn-disabled': files.values.length === 0 || isLoading }"
+          style="width: 100%"
+          @click="submit"
         >
+          Upload
+          <LoadingSpin v-if="isLoading" />
+        </Button>
 
-        <pre style="padding-top: 32px">
-          {{ meta }}
-        </pre>
+        <Button class="btn-blue mt-20 btn-icon" v-if="albumKey" :to="{ name: 'AlbumDetail', params: { id: albumKey } }">
+          View Album
+
+          <span class="material-icons"> &#xe941; </span>
+        </Button>
+
+        <!-- <pre style="padding-top: 32px">
+          {{ album }}
+        </pre> -->
       </div>
     </div>
   </div>

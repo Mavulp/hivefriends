@@ -37,7 +37,7 @@ interface ValidationOptions {
 export function useFormValidation(
   form: object,
   rules: any,
-  { proactive = false, autoclear = false }: ValidationOptions
+  { proactive = false, autoclear = false }: ValidationOptions = {}
 ) {
   const errors = reactive<Errors>({})
 
@@ -54,7 +54,7 @@ export function useFormValidation(
   }
 
   // Initial assignment
-  _resetErrorObject()
+  reset()
 
   function _resetErrorObject() {
     Object.assign(errors, {
@@ -86,6 +86,8 @@ export function useFormValidation(
 
     return new Promise(async (resolve, reject) => {
       for (const [key, value] of Object.entries(form)) {
+        if (!Reflect.has(rules.value, key)) continue
+
         const itemRules: Rule = rules.value[key]
 
         Object.entries(itemRules).map(async ([ruleKey, ruleData]) => {
@@ -107,6 +109,8 @@ export function useFormValidation(
       if (root.anyError) {
         reject(errors)
       } else {
+        console.log("is ok")
+
         resolve(true)
       }
     })

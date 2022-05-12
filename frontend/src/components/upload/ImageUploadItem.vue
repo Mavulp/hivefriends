@@ -39,9 +39,8 @@ const size = () => {
 
     <div class="album-upload-content" v-if="open">
       <pre>
-      {{ data }}
-    </pre
-      >
+        {{ data }}
+      </pre>
     </div>
   </div>
 </template>
