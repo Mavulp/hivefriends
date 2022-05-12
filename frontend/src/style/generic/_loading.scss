@@ -7,8 +7,18 @@
   max-width: 256px;
   overflow: hidden;
 
-  .loading-bar-value {
-    animation: none;
+  &.loading-done {
+    .loading-bar-value {
+      animation: none;
+    }
+
+    &.loading-success .loading-bar-value {
+      background-color: rgb(var(--color-success));
+    }
+
+    &.loading-error .loading-bar-value {
+      background-color: rgb(var(--color-error));
+    }
   }
 }
 

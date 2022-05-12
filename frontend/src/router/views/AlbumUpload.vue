@@ -3,13 +3,13 @@ import InputText from "../../components/form/InputText.vue"
 import InputTextarea from "../../components/form/InputTextarea.vue"
 import ImageUploadItem from "../../components/upload/ImageUploadItem.vue"
 
-import { onMounted, reactive, ref } from "vue"
+import { onBeforeUnmount, onMounted, reactive, ref, computed } from "vue"
 import Button from "../../components/Button.vue"
-import { rootUrl } from "../../js/fetch"
+import { upload } from "../../js/fetch"
 
-// TODO: type
-
-const draggingOver = ref(false)
+/**
+ * Interface & setup
+ */
 
 interface File {
   values: Array<{
@@ -18,23 +18,48 @@ interface File {
     size: number
     loading: boolean
     error?: string
+    key: string | null
   }>
 }
 
-// const files = ref<Array<File>>([])
-
-// TODO: move these files into the album.store so that they can be accessed globally
-const files = reactive<File>({ values: [] })
-
-const meta = reactive({
-  albumName: "",
-  albumDescription: "",
-  location: "",
+interface Album {
+  title: string
+  description?: string
+  locations?: Array<string>
   timeframe: {
-    from: "",
-    to: ""
+    from: number
+    to: number
   }
+  imageKeys: Array<string>
+  userKeys: Array<string>
+}
+
+const files = reactive<File>({ values: [] })
+const meta = reactive<Album>({
+  title: "",
+  description: "",
+  locations: [],
+  timeframe: {
+    from: 0,
+    to: 0
+  },
+  imageKeys: [],
+  userKeys: []
 })
+
+// TODO: Compute global loading progress by
+// checking loading states of all files and add a loading bar / percentagle somewhere in the upload
+// TODO: add option to select 1 day
+// TODO: add multiple locations
+
+const draggingOver = ref(false)
+const dragShrink = ref(false)
+
+const isLoading = computed(() => files.values.some((file) => file.loading))
+
+/**
+ * Lifecycle
+ */
 
 onMounted(() => {
   const el = document.getElementById("drop-area")
@@ -45,7 +70,25 @@ onMounted(() => {
     el.addEventListener("dragover", uploadHandler, false)
     el.addEventListener("drop", uploadHandler, false)
   }
+
+  document.addEventListener("scroll", handleScroll, { passive: true })
 })
+
+onBeforeUnmount(() => {
+  document.removeEventListener("scroll", handleScroll)
+})
+
+function handleScroll() {
+  if (window.scrollY > 96) {
+    dragShrink.value = true
+  } else {
+    dragShrink.value = false
+  }
+}
+
+/**
+ * File Handling
+ */
 
 function uploadHandler(e: any) {
   e.preventDefault()
@@ -59,10 +102,6 @@ function uploadHandler(e: any) {
 }
 
 function fileHandler(_files: any) {
-  // let i = 0
-
-  console.log(_files.length)
-
   for (let i = 0; i <= _files.length; i++) {
     const file = _files[i]
 
@@ -71,49 +110,55 @@ function fileHandler(_files: any) {
     let formData = new FormData()
     formData.append("file", file)
 
-    // let reader = new FileReader()
-    // reader.readAsDataURL(file)
-
-    console.log(file)
-
     files.values.push({
       name: file.name,
       size: file.size,
       type: file.type,
-      loading: true
+      loading: true,
+      key: null
     })
 
-    console.log(files.values)
+    upload("/api/images", formData)
+      .then((response: any) => {
+        console.log("upload done", response)
 
-    fetch(rootUrl + "/api/images", {
-      method: "POST",
-      body: formData
-    }).then((response) => {
-      console.log("upload done", response)
-
-      files.values[i].loading = false
-
-      if (response.status !== 200) {
-        files.values[i].error = response.statusText
-      }
-    })
+        Object.assign(files.values[i], {
+          loading: false,
+          key: response.key
+        })
+      })
+      .catch((error) => {
+        Object.assign(files.values[i], {
+          loading: false,
+          error
+        })
+      })
   }
 }
 
-function submit() {}
+function delImage(index: number) {
+  if (files.values[index]) {
+    files.values.splice(index, 1)
+  }
+}
+
+async function submit() {
+  // Validate form
+  // Iterate over all active images, add them to imageKeys array
+  //
+}
 </script>
 
 <template>
   <div class="hi-album-upload">
     <div class="album-upload-layout">
       <div class="album-upload-items">
-        <!-- <form action=""> -->
         <div
           class="album-drag-input"
           id="drop-area"
           @dragenter="draggingOver = true"
-          @dragleave="draggingOver = false"
-          :class="{ hovering: draggingOver }"
+          @mouseleave="draggingOver = false"
+          :class="{ hovering: draggingOver, shrink: dragShrink }"
         >
           <input id="draginput" name="draginput" type="file" multiple accept="image/*" />
           <label for="draginput">
@@ -121,11 +166,10 @@ function submit() {}
             <span>{{ draggingOver ? "Drop the files!" : "Cllick me / Drag files over here" }}</span>
           </label>
         </div>
-        <!-- </form> -->
 
         <div class="album-upload-items-list">
           <template v-if="files.values.length > 0">
-            <ImageUploadItem v-for="item in files.values" :data="item" />
+            <ImageUploadItem v-for="(item, index) in files.values" :data="item" :index="index" @remove="delImage" />
           </template>
         </div>
       </div>
@@ -133,9 +177,10 @@ function submit() {}
       <div class="album-upload-metadata">
         <h3>Create an album</h3>
 
-        <InputText v-model:value="meta.albumName" placeholder="That time in Finland" label="Name" />
-        <InputTextarea v-model:value="meta.albumDescription" placeholder="How was it?" label="Description" />
+        <InputText v-model:value="meta.title" placeholder="That time in Finland" label="Title" />
+        <InputTextarea v-model:value="meta.description" placeholder="How was it?" label="Description" />
 
+        <h6>Event Dates</h6>
         <div class="form-date">
           <div class="form-input">
             <input type="date" v-model="meta.timeframe.from" />
@@ -148,7 +193,13 @@ function submit() {}
           </div>
         </div>
 
-        <Button style="width: 100%" @click="submit">Upload</Button>
+        <Button :class="{ 'btn-disabled': files.values.length === 0 || isLoading }" style="width: 100%" @click="submit"
+          >Upload</Button
+        >
+
+        <pre style="padding-top: 32px">
+          {{ meta }}
+        </pre>
       </div>
     </div>
   </div>
