@@ -1,9 +1,11 @@
+import { merge } from "lodash"
+
 export const rootUrl = "https://friends.hivecom.net"
 
 export function get(url: string, options?: object) {
   return _handleFetch(
     url,
-    Object.assign(
+    merge(
       {
         method: "GET"
       },
@@ -15,7 +17,7 @@ export function get(url: string, options?: object) {
 export function post(url: string, body: object, options?: object) {
   return _handleFetch(
     url,
-    Object.assign(
+    merge(
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -29,7 +31,7 @@ export function post(url: string, body: object, options?: object) {
 export function put(url: string, body: object, options?: object) {
   return _handleFetch(
     url,
-    Object.assign(
+    merge(
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -65,12 +67,14 @@ export function del(url: string) {
 async function _handleFetch(url: string, options: object) {
   const token = localStorage.getItem("bearer_token")
 
-  Object.assign(options, {
+  merge(options, {
     mode: "cors",
     headers: {
       Authorization: `Bearer ${token}`
     }
   })
+
+  console.log(options)
 
   return fetch(rootUrl + url, options).then(_handleResponse)
 }

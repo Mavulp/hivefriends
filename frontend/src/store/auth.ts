@@ -1,6 +1,6 @@
 import { isObject } from "@vue/shared"
 import { defineStore } from "pinia"
-import { post } from "../js/fetch"
+import { get, post } from "../js/fetch"
 import { useToast } from "./toast"
 
 interface State {
@@ -26,17 +26,24 @@ export const useAuth = defineStore("auth", {
   actions: {
     async signIn(credentials: { username: string; password: string }) {
       return post("/api/login", credentials)
-        .then((res) => {
-          this.user = res.user
+        .then(async (res) => {
+          await this.fetchUser(res.userKey)
 
           localStorage.setItem("bearer_token", res.bearerToken)
-          localStorage.setItem("user", JSON.stringify(res.user))
+
           this.logged = true
         })
         .catch((error) => {
           const toast = useToast()
           toast.add(isObject(error) ? error.message : String(error), "error")
         })
+    },
+    async fetchUser(key: string | number) {
+      return get(`/api/users/${key}`).then((response) => {
+        console.log(response)
+        this.user = response
+        localStorage.setItem("user", JSON.stringify(response))
+      })
     },
     signInUserFromStorage(user: User) {
       this.user = user
