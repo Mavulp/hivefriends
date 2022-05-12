@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onBeforeMount, reactive } from "vue"
 import { useRoute } from "vue-router"
-import { useAlbums } from "../../store/album"
+import { useAlbums, Album } from "../../store/album"
 import { useLoading } from "../../store/loading"
 import { rootUrl } from "../../js/fetch"
 
@@ -9,7 +9,11 @@ const albums = useAlbums()
 const { getLoading } = useLoading()
 const route = useRoute()
 
-const album = reactive({})
+const album = reactive<Album>({
+  key: "",
+  createdAt: 0,
+  images: []
+})
 
 onBeforeMount(async () => {
   // console.log(route.params.id)

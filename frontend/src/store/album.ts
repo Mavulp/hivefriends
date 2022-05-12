@@ -16,6 +16,18 @@ interface State {
   albums: Array<Album>
 }
 
+export interface NewAlbum {
+  title: string
+  description?: string
+  locations?: Array<string>
+  timeframe: {
+    from: number
+    to: number
+  }
+  imageKeys: Array<string>
+  userKeys?: Array<string>
+}
+
 export const useAlbums = defineStore("album", {
   state: () =>
     ({
@@ -43,7 +55,7 @@ export const useAlbums = defineStore("album", {
     },
 
     async fetchAlbums() {},
-    async addAlbum(album: Album) {
+    async addAlbum(album: NewAlbum) {
       const { addLoading, delLoading } = useLoading()
 
       addLoading("add-album")

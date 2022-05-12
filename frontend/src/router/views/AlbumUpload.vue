@@ -8,25 +8,13 @@ import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 import { onBeforeUnmount, onMounted, reactive, ref, computed } from "vue"
 import { post, upload } from "../../js/fetch"
 import { useFormValidation, required } from "../../js/error"
-import { useAlbums } from "../../store/album"
+import { useAlbums, NewAlbum } from "../../store/album"
 
 const store = useAlbums()
 
 /**
  * Interface & setup
  */
-
-interface newAlbum {
-  title: string
-  description?: string
-  locations?: Array<string>
-  timeframe: {
-    from: number
-    to: number
-  }
-  imageKeys: Array<string>
-  userKeys?: Array<string>
-}
 
 interface File {
   values: Array<{
@@ -40,7 +28,7 @@ interface File {
 }
 
 const files = reactive<File>({ values: [] })
-const album = reactive<newAlbum>({
+const album = reactive<NewAlbum>({
   title: "",
   description: "",
   locations: [],
@@ -164,15 +152,17 @@ async function submit() {
     // Iterate over all active images, add them to imageKeys array
     album.imageKeys = imageKeys.value
 
-    const { key } = await store.addAlbum(
-      Object.assign(album, {
-        locations: album.locations?.join(","),
-        timeframe: {
-          from: new Date(album.timeframe.from).getTime(),
-          to: new Date(album.timeframe.to).getTime()
-        }
-      })
-    )
+    const model = { ...album }
+
+    Object.assign(model, {
+      locations: album.locations?.join(","),
+      timeframe: {
+        from: new Date(album.timeframe.from).getTime(),
+        to: new Date(album.timeframe.to).getTime()
+      }
+    })
+
+    const { key } = await store.addAlbum(model)
 
     if (key) {
       // was ok
