@@ -1,8 +1,8 @@
 use anyhow::Context;
 use axum::{routing::Router, Extension};
-use tower_http::trace::TraceLayer;
 use deadpool_sqlite::{Config, Pool, Runtime};
 use rusqlite_migration::{Migrations, M};
+use tower_http::trace::TraceLayer;
 use tracing::*;
 
 use std::net::SocketAddr;
@@ -75,6 +75,7 @@ async fn run() -> anyhow::Result<()> {
         .nest("/api/login", api::login::api_route())
         .nest("/api/images/", api::image::api_route())
         .nest("/api/albums/", api::album::api_route())
+        .nest("/api/users/", api::user::api_route())
         .nest("/data/image/", data::image::api_route())
         .layer(TraceLayer::new_for_http())
         .layer(Extension(Arc::new(AppState { pool, data_path })));
