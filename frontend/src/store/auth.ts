@@ -27,9 +27,9 @@ export const useAuth = defineStore("auth", {
     async signIn(credentials: { username: string; password: string }) {
       return post("/api/login", credentials)
         .then(async (res) => {
-          await this.fetchUser(res.userKey)
-
           localStorage.setItem("bearer_token", res.bearerToken)
+
+          await this.fetchUser(res.userKey)
 
           this.logged = true
         })
