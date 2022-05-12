@@ -138,6 +138,9 @@ router.beforeResolve(async (to, from, next) => {
     const user = localStorage.getItem("user")
 
     if (!token || !user) {
+      localStorage.removeItem("user")
+      localStorage.removeItem("bearer_token")
+
       return next({ name: "Login" })
     } else {
       const auth = useAuth()
