@@ -17,7 +17,7 @@ use std::sync::Arc;
 
 use crate::AppState;
 
-pub struct Authorize(pub i64);
+pub struct Authorize(pub String);
 
 #[async_trait]
 impl<B> FromRequest<B> for Authorize
@@ -33,12 +33,12 @@ where
 
         let conn = state.pool.get().await.map_err(anyhow::Error::new)?;
 
-        let user_id = conn
+        let user_key = conn
             .interact(move |conn| {
                 conn.query_row(
-                    r"SELECT user_id FROM auth_sessions WHERE token=?1",
+                    r"SELECT user_key FROM auth_sessions WHERE token=?1",
                     params![bearer.token()],
-                    |row| row.get::<_, i64>(0),
+                    |row| row.get::<_, String>(0),
                 )
                 .optional()
             })
@@ -46,8 +46,8 @@ where
             .unwrap()
             .map_err(anyhow::Error::new)?;
 
-        if let Some(user_id) = user_id {
-            Ok(Authorize(user_id))
+        if let Some(user_key) = user_key {
+            Ok(Authorize(user_key))
         } else {
             Err(AuthorizationRejection::InvalidToken)
         }

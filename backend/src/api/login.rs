@@ -9,12 +9,11 @@ use rand::rngs::OsRng;
 use rand::seq::SliceRandom;
 use rusqlite::{params, OptionalExtension};
 use serde::{Deserialize, Serialize};
-use serde_rusqlite::from_row;
 
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use crate::api::{error::Error, user::User};
+use crate::api::error::Error;
 use crate::AppState;
 
 pub fn api_route() -> Router {
@@ -32,16 +31,6 @@ struct LoginRequest {
 #[serde(rename_all = "camelCase")]
 struct LoginResponse {
     bearer_token: String,
-    user: User,
-}
-
-#[derive(Deserialize, Debug, PartialEq)]
-struct DbUser {
-    id: i64,
-    password_hash: String,
-    avatar_url: Option<String>,
-    bio: Option<String>,
-    created_at: i64,
 }
 
 async fn post_login(
@@ -55,21 +44,21 @@ async fn post_login(
     let result = conn
         .interact(move |conn| {
             conn.query_row(
-                "SELECT id, password_hash, avatar_url, bio, created_at \
+                "SELECT key, password_hash \
                 FROM users WHERE username=?1",
                 params![username],
-                |row| Ok(from_row::<DbUser>(row).expect("DbUser is for post_login")),
+                |row| Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?)),
             )
             .optional()
         })
         .await
         .unwrap()
-        .context("Failed to query user metadata")?;
+        .context("Failed to query user key")?;
 
-    if let Some(db_user) = result {
+    if let Some((key, password_hash)) = result {
         let argon2 = Argon2::default();
         let parsed_hash =
-            PasswordHash::new(&db_user.password_hash).context("Failed creating hash")?;
+            PasswordHash::new(&password_hash).context("Failed creating hash")?;
 
         if argon2
             .verify_password(req.password.as_bytes(), &parsed_hash)
@@ -86,9 +75,9 @@ async fn post_login(
                 .context("Failed getting DB connection")?;
             conn.interact(move |conn| {
                 conn.execute(
-                    "INSERT INTO auth_sessions (user_id, token, created_at) \
+                    "INSERT INTO auth_sessions (user_key, token, created_at) \
                     VALUES (?1, ?2, ?3)",
-                    params![db_user.id, token, now],
+                    params![key, token, now],
                 )
             })
             .await
@@ -97,14 +86,6 @@ async fn post_login(
 
             Ok(Json(LoginResponse {
                 bearer_token,
-                user: User {
-                    username: req.username,
-                    avatar_url: db_user.avatar_url,
-                    bio: db_user.bio,
-                    met: Vec::new(),
-                    albums_uploaded: Vec::new(),
-                    created_at: db_user.created_at,
-                },
             }))
         } else {
             Err(Error::InvalidLogin)

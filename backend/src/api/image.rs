@@ -21,14 +21,14 @@ use crate::{api::auth::Authorize, api::error::Error, AppState};
 pub fn api_route() -> Router {
     Router::new()
         .route("/", post(post_upload_image))
-        .route("/:id", get(get_image))
+        .route("/:key", get(get_image))
 }
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 struct ImageMetadata {
     key: String,
-    uploader_id: i32,
+    uploader_key: String,
     created_at: i32,
 }
 
@@ -42,9 +42,9 @@ async fn get_image(
     let result = conn
         .interact(move |conn| {
             conn.query_row(
-                r"SELECT uploader_id, created_at FROM images WHERE key = ?1",
+                r"SELECT uploader_key, created_at FROM images WHERE key = ?1",
                 params![&ckey],
-                |row| Ok((row.get::<_, i32>(0)?, row.get::<_, i32>(1)?)),
+                |row| Ok((row.get::<_, String>(0)?, row.get::<_, i32>(1)?)),
             )
             .optional()
         })
@@ -52,10 +52,10 @@ async fn get_image(
         .unwrap()
         .context("Failed to query image metadata")?;
 
-    if let Some((uploader_id, created_at)) = result {
+    if let Some((uploader_key, created_at)) = result {
         Ok(Json(ImageMetadata {
             key,
-            uploader_id,
+            uploader_key,
             created_at,
         }))
     } else {
@@ -76,12 +76,12 @@ async fn post_upload_image(
         ContentLengthLimit<Multipart, { 5 * MB }>,
         ContentLengthLimitRejection<MultipartRejection>,
     >,
-    Authorize(user_id): Authorize,
+    Authorize(user_key): Authorize,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<ImageCreationResponse>, Error> {
     let multipart = multipart?.0;
 
-    match upload_image(multipart, user_id, &state).await {
+    match upload_image(multipart, user_key, &state).await {
         Ok(response) => Ok(Json(response)),
         Err(e) if e.is::<ImageCreationError>() => {
             match e.downcast_ref::<ImageCreationError>().unwrap() {
@@ -104,7 +104,7 @@ enum ImageCreationError {
 
 async fn upload_image(
     mut multipart: Multipart,
-    user_id: i64,
+    user_key: String,
     state: &Arc<AppState>,
 ) -> anyhow::Result<ImageCreationResponse> {
     let now = SystemTime::UNIX_EPOCH.elapsed()?.as_secs() as u32;
@@ -123,8 +123,8 @@ async fn upload_image(
     let conn = state.pool.get().await?;
     conn.interact(move |conn| {
         conn.execute(
-            r"INSERT INTO images (key, uploader_id, created_at) VALUES (?1, ?2, ?3)",
-            params![&image_key, user_id, now],
+            r"INSERT INTO images (key, uploader_key, created_at) VALUES (?1, ?2, ?3)",
+            params![&image_key, user_key, now],
         )
     })
     .await

@@ -13,12 +13,13 @@ use crate::api::{auth::Authorize, error::Error};
 use crate::AppState;
 
 pub fn api_route() -> Router {
-    Router::new().route("/:id", get(get_user))
+    Router::new().route("/:key", get(get_user))
 }
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct User {
+    pub key: String,
     pub username: String,
     pub avatar_url: Option<String>,
     pub bio: Option<String>,
@@ -29,25 +30,26 @@ pub struct User {
 
 #[derive(Deserialize, Debug, PartialEq)]
 struct DbUser {
-    id: i64,
+    key: String,
+    username: String,
     avatar_url: Option<String>,
     bio: Option<String>,
     created_at: i64,
 }
 
 async fn get_user(
-    Path(username): Path<String>,
+    Path(user_key): Path<String>,
+    Authorize(_): Authorize,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<User>, Error> {
     let conn = state.pool.get().await.context("Failed to get connection")?;
 
-    let cusername = username.clone();
     let result = conn
         .interact(move |conn| {
             conn.query_row(
-                "SELECT id, avatar_url, bio, created_at \
-                FROM users WHERE username = ?1",
-                params![cusername],
+                "SELECT key, username, avatar_url, bio, created_at \
+                FROM users WHERE key = ?1",
+                params![user_key],
                 |row| Ok(from_row::<DbUser>(row).unwrap()),
             )
             .optional()
@@ -57,15 +59,16 @@ async fn get_user(
         .context("Failed to query users")?;
 
     if let Some(db_user) = result {
+        let ckey = db_user.key.clone();
         let albums_uploaded = conn
             .interact(move |conn| {
                 let mut stmt = conn.prepare(
                     "SELECT a.\"key\" FROM users u \
-                INNER JOIN user_album_associations uaa ON uaa.user_id = u.id \
-                INNER JOIN albums a ON a.id = uaa.album_id \
-                WHERE u.id = ?1",
+                    INNER JOIN user_album_associations uaa ON uaa.user_key = u.key \
+                    INNER JOIN albums a ON a.id = uaa.album_id \
+                    WHERE u.key = ?1",
                 )?;
-                let album_key_iter = stmt.query_map(params![db_user.id], |row| {
+                let album_key_iter = stmt.query_map(params![ckey], |row| {
                     Ok(from_row::<String>(row).unwrap())
                 })?;
 
@@ -75,18 +78,19 @@ async fn get_user(
             .unwrap()
             .context("Failed to query albums uploaded")?;
 
+        let ckey = db_user.key.clone();
         let met = conn
             .interact(move |conn| {
                 let mut stmt = conn.prepare(
-                    "SELECT u2.username FROM users u1 \
-                    INNER JOIN user_album_associations uaa ON uaa.user_id = u1.id \
+                    "SELECT u2.key FROM users u1 \
+                    INNER JOIN user_album_associations uaa ON uaa.user_key = u1.key \
                     INNER JOIN albums a ON a.id = uaa.album_id \
                     INNER JOIN user_album_associations uaa2 ON uaa2.album_id = a.id \
-                    INNER JOIN users u2 ON uaa2.user_id = u2.id \
-                    WHERE u1.id = ?1 \
-                    AND u2.id != ?1",
+                    INNER JOIN users u2 ON uaa2.user_key = u2.key \
+                    WHERE u1.key = ?1 \
+                    AND u2.key != ?1",
                 )?;
-                let album_key_iter = stmt.query_map(params![db_user.id], |row| {
+                let album_key_iter = stmt.query_map(params![ckey], |row| {
                     Ok(from_row::<String>(row).unwrap())
                 })?;
 
@@ -97,7 +101,8 @@ async fn get_user(
             .context("Failed to query met users")?;
 
         Ok(Json(User {
-            username,
+            key: db_user.key,
+            username: db_user.username,
             avatar_url: db_user.avatar_url,
             bio: db_user.bio,
             met,
@@ -105,11 +110,12 @@ async fn get_user(
             created_at: db_user.created_at,
         }))
     } else {
-        Err(Error::InvalidLogin)
+        Err(Error::NotFound)
     }
 }
 
 pub fn create_account(username: &str, password: &str, conn: &mut Connection) -> anyhow::Result<()> {
+    let key = blob_uuid::random_blob();
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
     let phc_string = argon2
@@ -118,8 +124,8 @@ pub fn create_account(username: &str, password: &str, conn: &mut Connection) -> 
     let now = SystemTime::UNIX_EPOCH.elapsed()?.as_secs() as u32;
 
     conn.execute(
-        "INSERT INTO users (username, password_hash, created_at) VALUES (?1, ?2, ?3)",
-        params![username, phc_string, now],
+        "INSERT INTO users (key, username, password_hash, created_at) VALUES (?1, ?2, ?3, ?4)",
+        params![key, username, phc_string, now],
     )?;
 
     Ok(())
@@ -133,10 +139,9 @@ pub fn update_account(username: &str, password: &str, conn: &mut Connection) -> 
         .to_string();
 
     conn.execute(
-        r"
-UPDATE users
-SET password_hash = ?1
-WHERE username = ?2",
+        "UPDATE users \
+        SET password_hash = ?1 \
+        WHERE username = ?2",
         params![phc_string, username],
     )?;
 

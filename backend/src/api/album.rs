@@ -9,7 +9,8 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use crate::{api::error::Error, AppState};
+use crate::AppState;
+use crate::api::{error::Error, auth::Authorize};
 
 pub fn api_route() -> Router {
     Router::new()
@@ -21,7 +22,17 @@ pub fn api_route() -> Router {
 #[serde(rename_all = "camelCase")]
 pub struct CreateAlbumRequest {
     title: String,
+    description: Option<String>,
+    locations: Option<String>,
+    timeframe: Timeframe,
     image_keys: Vec<String>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Timeframe {
+    from: Option<i64>,
+    to: Option<i64>,
 }
 
 #[derive(Serialize)]
@@ -52,11 +63,12 @@ pub struct CreateAlbumResponse {
 /// ```
 async fn post_create_album(
     request: Result<Json<CreateAlbumRequest>, JsonRejection>,
+    Authorize(uploader_key): Authorize,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<CreateAlbumResponse>, Error> {
     let Json(request) = request?;
 
-    match create_album(request, &state).await {
+    match create_album(request, uploader_key, &state).await {
         Ok(response) => Ok(Json(response)),
         /*Err(e) if e.is::<CreateAlbumError>() => {
             match e.downcast_ref::<ImageCreationError>().unwrap() {
@@ -70,6 +82,7 @@ async fn post_create_album(
 
 async fn create_album(
     request: CreateAlbumRequest,
+    uploader_key: String,
     state: &Arc<AppState>,
 ) -> anyhow::Result<CreateAlbumResponse> {
     let conn = state.pool.get().await?;
@@ -82,8 +95,11 @@ async fn create_album(
         let tx = conn.transaction()?;
 
         tx.execute(
-            r"INSERT INTO albums (key, title, created_at) VALUES (?1, ?2, ?3)",
-            params![album_key, request.title, now])?;
+            "INSERT INTO albums \
+                (key, title, description, locations, uploader_key, timeframe_from, timeframe_to, created_at) \
+            VALUES \
+                (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
+            params![album_key, request.title, request.description, request.locations, uploader_key, request.timeframe.from, request.timeframe.to, now])?;
         let album_id = tx.last_insert_rowid();
 
         for image_key in request.image_keys {
