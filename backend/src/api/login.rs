@@ -31,6 +31,7 @@ struct LoginRequest {
 #[serde(rename_all = "camelCase")]
 struct LoginResponse {
     bearer_token: String,
+    user_key: String,
 }
 
 async fn post_login(
@@ -68,6 +69,7 @@ async fn post_login(
             let bearer_token = generate_token();
             let token = bearer_token.clone();
 
+            let ckey = key.clone();
             let conn = state
                 .pool
                 .get()
@@ -77,7 +79,7 @@ async fn post_login(
                 conn.execute(
                     "INSERT INTO auth_sessions (user_key, token, created_at) \
                     VALUES (?1, ?2, ?3)",
-                    params![key, token, now],
+                    params![ckey, token, now],
                 )
             })
             .await
@@ -86,6 +88,7 @@ async fn post_login(
 
             Ok(Json(LoginResponse {
                 bearer_token,
+                user_key: key,
             }))
         } else {
             Err(Error::InvalidLogin)
