@@ -19,15 +19,9 @@ pub fn api_route() -> Router {
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct CreateAlbumRequestImage {
-    key: String,
-}
-
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct CreateAlbumRequest {
     title: String,
-    images: Vec<CreateAlbumRequestImage>,
+    image_keys: Vec<String>,
 }
 
 #[derive(Serialize)]
@@ -42,10 +36,10 @@ pub struct CreateAlbumResponse {
 /// ```json
 /// {
 ///     "name": "My album!",
-///     "images": [
-///         { "key": "klaFLKF31" },
-///         { "key": "sia29mFKa" },
-///         { "key": "PqqQ3p1km" }
+///     "imageKeys": [
+///         "klaFLKF31",
+///         "sia29mFKa",
+///         "PqqQ3p1km"
 ///     ]
 /// }
 /// ```
@@ -92,10 +86,10 @@ async fn create_album(
             params![album_key, request.title, now])?;
         let album_id = tx.last_insert_rowid();
 
-        for image in request.images {
+        for image_key in request.image_keys {
             tx.execute(
                 r"INSERT INTO album_image_associations (album_id, image_id) SELECT ?1, id FROM images WHERE key = ?2",
-                params![album_id, image.key])?;
+                params![album_id, image_key])?;
         }
 
         tx.commit()?;
