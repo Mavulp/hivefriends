@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Error } from "../../js/error"
+import { Error } from "../../js/validation"
 
 interface Props {
   label: string | undefined | null

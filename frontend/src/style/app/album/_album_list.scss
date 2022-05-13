@@ -1,0 +1,9 @@
+.hi-album-list-user {
+  display: block;
+  width: 100%;
+  padding: 64px 128px;
+
+  .album-list-title {
+    @include flex($align: center, $justify: space-between);
+  }
+}

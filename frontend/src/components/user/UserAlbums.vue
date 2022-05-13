@@ -1,9 +1,23 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue"
-import { get, rootUrl } from "../../js/fetch"
+import { onBeforeMount, onMounted, ref } from "vue"
+import { useRoute } from "vue-router"
+// import { get, rootUrl } from "../../js/fetch"
 import { useAlbums } from "../../store/album"
 
-// const store = useAlbums()
+const store = useAlbums()
+const route = useRoute()
+
+const data = ref([])
+
+onBeforeMount(async () => {
+  const id = String(route.params.id)
+
+  // route.meta.title = id + " albums"
+
+  if (id) {
+    data.value = await store.fetchUserAlbums(id)
+  }
+})
 
 // store.fetchAlbum("0BpzhHisSUCNoqsNoB0SZg")
 
@@ -16,17 +30,14 @@ import { useAlbums } from "../../store/album"
 </script>
 
 <template>
-  <div style="padding: 40px">
-    <h2>User Albums</h2>
+  <div class="hi-album-list-user">
+    <div class="album-list-title">
+      <h2>Your Albums</h2>
+      <span>{{ data.length }} Albums</span>
+    </div>
 
     <!-- <pre>
-      {{ store.albums }}
-    </pre>
-
-    <div v-for="album in store.albums">
-      <div v-for="image in album.images">
-        <img :src="rootUrl + `/data/image/${image.key}/medium.png`" alt="" />
-      </div>
-    </div> -->
+      {{ data }}
+    </pre> -->
   </div>
 </template>

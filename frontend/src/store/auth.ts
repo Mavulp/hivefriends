@@ -1,7 +1,8 @@
-import { isObject } from "@vue/shared"
+import { isObject } from "lodash"
 import { defineStore } from "pinia"
 import { get, post } from "../js/fetch"
 import { useToast } from "./toast"
+import { FetchError } from "../js/types/errorTypes"
 
 interface State {
   user: User
@@ -33,7 +34,7 @@ export const useAuth = defineStore("auth", {
 
           this.logged = true
         })
-        .catch((error) => {
+        .catch((error: FetchError) => {
           const toast = useToast()
           toast.add(isObject(error) ? error.message : String(error), "error")
         })

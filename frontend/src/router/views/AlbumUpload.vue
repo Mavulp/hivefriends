@@ -7,7 +7,7 @@ import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 
 import { onBeforeUnmount, onMounted, reactive, ref, computed } from "vue"
 import { post, upload } from "../../js/fetch"
-import { useFormValidation, required } from "../../js/error"
+import { useFormValidation, required } from "../../js/validation"
 import { useAlbums, NewAlbum } from "../../store/album"
 
 const store = useAlbums()
@@ -115,7 +115,7 @@ function fileHandler(_files: any) {
       key: null
     })
 
-    upload("/api/images", formData)
+    upload("/api/images/", formData)
       .then((response: any) => {
         Object.assign(files.values[i], {
           loading: false,
@@ -169,8 +169,6 @@ async function submit() {
       albumKey.value = key
     }
   })
-
-  //
 }
 </script>
 

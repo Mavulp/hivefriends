@@ -1,7 +1,9 @@
 import { defineStore } from "pinia"
 import { get, makeQuery, post } from "../js/fetch"
 import { useLoading } from "./loading"
-
+import { useToast } from "./toast"
+import { isObject } from "lodash"
+import { FetchError } from "../js/types/errorTypes"
 export interface Image {
   key: string
   createdAT: number
@@ -14,6 +16,9 @@ export interface Album {
 
 interface State {
   albums: Array<Album>
+  userAlbums: {
+    [key: string]: Album
+  }
 }
 
 export interface NewAlbum {
@@ -31,7 +36,8 @@ export interface NewAlbum {
 export const useAlbums = defineStore("album", {
   state: () =>
     ({
-      albums: []
+      albums: [],
+      userAlbums: {}
     } as State),
   actions: {
     async fetchAlbum(id: string | string[]) {
@@ -39,38 +45,61 @@ export const useAlbums = defineStore("album", {
 
       addLoading("get-album")
 
-      await new Promise((resolve) => setTimeout(() => resolve(true), 1000))
-
-      return await get(`/api/albums/${id}`)
+      return get(`/api/albums/${id}`)
         .then((data) => {
           this.albums.push(data)
           return data
         })
-        .catch((error) => {
-          console.log(error)
+        .catch((error: FetchError) => {
+          const toast = useToast()
+          toast.add(isObject(error) ? error.message : String(error), "error")
         })
-        .finally(() => {
-          delLoading("get-album")
-        })
+        .finally(() => delLoading("get-album"))
     },
 
-    async fetchAlbums() {},
+    async fetchAlbums() {
+      const { addLoading, delLoading } = useLoading()
+      addLoading("albums")
+
+      return get("/api/albums/")
+        .then((albums) => {
+          return albums
+        })
+        .catch((error: FetchError) => {})
+        .finally(() => delLoading("albums"))
+    },
+
+    async fetchUserAlbums(user: string) {
+      const { addLoading, delLoading } = useLoading()
+      addLoading(`${user}-album`)
+
+      return get(`/api/albums?user=${user}`)
+        .then((albums) => {
+          this.userAlbums[user] = albums
+
+          return albums
+        })
+        .catch((error: FetchError) => {
+          const toast = useToast()
+          toast.add(isObject(error) ? error.message : String(error), "error")
+        })
+        .finally(() => delLoading(`${user}-album`))
+    },
+
     async addAlbum(album: NewAlbum) {
       const { addLoading, delLoading } = useLoading()
 
       addLoading("add-album")
 
-      return await post("/api/albums", album)
+      return post("/api/albums/", album)
         .then((key) => {
           // Redirect to page with data.key
           return key
         })
-        .catch((error) => {
+        .catch((error: FetchError) => {
           console.log(error)
         })
-        .finally(() => {
-          delLoading("add-album")
-        })
+        .finally(() => delLoading("add-album"))
     }
   },
   getters: {

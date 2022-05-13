@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import InputText from "../../components/form/InputText.vue"
 import Btn from "../../components/Button.vue"
-import { ref, reactive, computed, nextTick } from "vue"
+import { ref, reactive, computed, nextTick, onBeforeMount } from "vue"
 import { getRanMinMax } from "../../js/utils"
 import { useAuth } from "../../store/auth"
-import { useFormValidation, required, minLength, asyncValidation } from "../../js/error"
+import { useFormValidation, required, minLength, asyncValidation } from "../../js/validation"
 import { useRouter } from "vue-router"
 
 const router = useRouter()
@@ -59,6 +59,16 @@ const rules = computed(() => ({
 
 // Setup validation
 const { errors, validate, reset } = useFormValidation(form, rules, { autoclear: true })
+
+onBeforeMount(() => {
+  const token = localStorage.getItem("bearer_token")
+  const user = localStorage.getItem("user")
+
+  if (token && user) {
+    auth.signInUserFromStorage(JSON.parse(user))
+    router.push({ name: "Home" })
+  }
+})
 </script>
 
 <template>
