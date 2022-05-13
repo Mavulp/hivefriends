@@ -1,6 +1,6 @@
 use anyhow::Context;
 use axum::{
-    extract::{rejection::JsonRejection},
+    extract::{rejection::JsonRejection, Query},
     routing::{get, post},
     Extension, Json, Router,
 };
@@ -152,16 +152,40 @@ struct DbAlbum {
     created_at: u64,
 }
 
+mod comma_string {
+    use serde::{self, Deserialize, Deserializer};
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<Vec<String>>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s: Option<String> = Option::deserialize(deserializer)?;
+        if let Some(s) = s {
+            return Ok(Some(
+                s.split(',').map(|s| s.to_string()).collect::<Vec<_>>(),
+            ));
+        }
+
+        Ok(None)
+    }
+}
+
+#[derive(Deserialize)]
+struct AlbumFilters {
+    #[serde(default)]
+    #[serde(with = "comma_string")]
+    user: Option<Vec<String>>,
+}
 
 async fn get_albums(
     Authorize(_): Authorize,
-    Extension(state): Extension<Arc<AppState>>) -> Result<Json<Vec<Album>>, Error> {
+    Query(filter): Query<AlbumFilters>,
+    Extension(state): Extension<Arc<AppState>>,
+) -> Result<Json<Vec<Album>>, Error> {
     let conn = state.pool.get().await.context("Failed to get connection")?;
 
     conn.interact(move |conn| {
-        let mut stmt = conn
-            .prepare(
-                "SELECT \
+        let mut query = "SELECT \
                     id, \
                     key, \
                     title, \
@@ -170,11 +194,33 @@ async fn get_albums(
                     timeframe_from, \
                     timeframe_to, \
                     created_at \
-                FROM albums",
-            )
+                FROM albums \
+                "
+        .to_string();
+
+        let mut params: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
+        if let Some(users) = filter.user {
+            query += &format!(
+                "WHERE uploader_key IN ({}) \
+                ",
+                std::iter::repeat("?")
+                    .take(users.len())
+                    .collect::<Vec<_>>()
+                    .join(",")
+            );
+
+            for user in users {
+                params.push(Box::new(user));
+            }
+        }
+
+        let mut stmt = conn
+            .prepare(&query)
             .context("Failed to prepare statement for album query")?;
         let db_albums = stmt
-            .query_map(params![], |row| Ok(from_row::<DbAlbum>(row).unwrap()))
+            .query_map(rusqlite::params_from_iter(params.iter()), |row| {
+                Ok(from_row::<DbAlbum>(row).unwrap())
+            })
             .context("Failed to query images")?
             .collect::<Result<Vec<_>, _>>()
             .context("Failed to collect albums")?;
