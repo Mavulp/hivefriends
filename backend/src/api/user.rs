@@ -68,9 +68,8 @@ async fn get_user(
                     INNER JOIN albums a ON a.id = uaa.album_id \
                     WHERE u.key = ?1",
                 )?;
-                let album_key_iter = stmt.query_map(params![ckey], |row| {
-                    Ok(from_row::<String>(row).unwrap())
-                })?;
+                let album_key_iter =
+                    stmt.query_map(params![ckey], |row| Ok(from_row::<String>(row).unwrap()))?;
 
                 album_key_iter.collect::<Result<Vec<_>, _>>()
             })
@@ -90,9 +89,8 @@ async fn get_user(
                     WHERE u1.key = ?1 \
                     AND u2.key != ?1",
                 )?;
-                let album_key_iter = stmt.query_map(params![ckey], |row| {
-                    Ok(from_row::<String>(row).unwrap())
-                })?;
+                let album_key_iter =
+                    stmt.query_map(params![ckey], |row| Ok(from_row::<String>(row).unwrap()))?;
 
                 album_key_iter.collect::<Result<Vec<_>, _>>()
             })

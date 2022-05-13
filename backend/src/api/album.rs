@@ -1,21 +1,24 @@
+use anyhow::Context;
 use axum::{
-    extract::{rejection::JsonRejection, Path},
+    extract::{rejection::JsonRejection},
     routing::{get, post},
     Extension, Json, Router,
 };
 use rusqlite::{params, OptionalExtension};
 use serde::{Deserialize, Serialize};
+use serde_rusqlite::from_row;
 
 use std::sync::Arc;
 use std::time::SystemTime;
 
+use crate::api::{auth::Authorize, error::Error};
 use crate::AppState;
-use crate::api::{error::Error, auth::Authorize};
 
 pub fn api_route() -> Router {
     Router::new()
         .route("/", post(post_create_album))
-        .route("/:key", get(album_by_key))
+        .route("/", get(get_albums))
+        .route("/:key", get(get_album_by_key))
 }
 
 #[derive(Deserialize)]
@@ -31,8 +34,8 @@ pub struct CreateAlbumRequest {
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Timeframe {
-    from: Option<i64>,
-    to: Option<i64>,
+    from: Option<u64>,
+    to: Option<u64>,
 }
 
 #[derive(Serialize)]
@@ -133,8 +136,89 @@ struct Album {
     description: Option<String>,
     locations: Option<String>,
     timeframe: Timeframe,
-    created_at: u32,
+    created_at: u64,
     images: Vec<Image>,
+}
+
+#[derive(Deserialize)]
+struct DbAlbum {
+    id: i64,
+    key: String,
+    title: String,
+    description: Option<String>,
+    locations: Option<String>,
+    timeframe_from: Option<u64>,
+    timeframe_to: Option<u64>,
+    created_at: u64,
+}
+
+
+async fn get_albums(
+    Authorize(_): Authorize,
+    Extension(state): Extension<Arc<AppState>>) -> Result<Json<Vec<Album>>, Error> {
+    let conn = state.pool.get().await.context("Failed to get connection")?;
+
+    conn.interact(move |conn| {
+        let mut stmt = conn
+            .prepare(
+                "SELECT \
+                    id, \
+                    key, \
+                    title, \
+                    description, \
+                    locations, \
+                    timeframe_from, \
+                    timeframe_to, \
+                    created_at \
+                FROM albums",
+            )
+            .context("Failed to prepare statement for album query")?;
+        let db_albums = stmt
+            .query_map(params![], |row| Ok(from_row::<DbAlbum>(row).unwrap()))
+            .context("Failed to query images")?
+            .collect::<Result<Vec<_>, _>>()
+            .context("Failed to collect albums")?;
+
+        let mut albums = Vec::new();
+        for db_album in db_albums {
+            let mut stmt = conn
+                .prepare(
+                    "SELECT i.key, i.uploader_key, i.created_at FROM images i \
+                INNER JOIN album_image_associations aia ON aia.image_id=i.id \
+                WHERE aia.album_id=?1",
+                )
+                .context("Failed to prepare statement for image query")?;
+            let image_iter = stmt
+                .query_map(params![db_album.id], |row| {
+                    Ok(Image {
+                        key: row.get(0)?,
+                        uploader_key: row.get(1)?,
+                        created_at: row.get(2)?,
+                    })
+                })
+                .context("Failed to query images")?;
+
+            let images = image_iter
+                .collect::<Result<Vec<_>, _>>()
+                .context("Failed to collect images")?;
+
+            albums.push(Album {
+                key: db_album.key,
+                title: db_album.title,
+                description: db_album.description,
+                locations: db_album.locations,
+                timeframe: Timeframe {
+                    from: db_album.timeframe_from,
+                    to: db_album.timeframe_to,
+                },
+                created_at: db_album.created_at,
+                images,
+            })
+        }
+        Ok(Json(albums))
+    })
+    .await
+    .unwrap()
 }
 
 /// Gets album information.
@@ -144,19 +228,12 @@ struct Album {
 /// {
 /// }
 /// ```
-async fn album_by_key(
-    Path(id): Path<String>,
+
+async fn get_album_by_key(
+    album_key: String,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<Album>, Error> {
-    match get_album_by_key(id, &state).await {
-        Ok(Some(album)) => Ok(Json(album)),
-        Ok(None) => Err(Error::NotFound),
-        Err(e) => Err(Error::InternalError(e)),
-    }
-}
-
-async fn get_album_by_key(album_key: String, state: &Arc<AppState>) -> anyhow::Result<Option<Album>> {
-    let conn = state.pool.get().await?;
+    let conn = state.pool.get().await.context("Failed to get connection")?;
 
     conn.interact(move |conn| {
         let result = conn
@@ -165,47 +242,39 @@ async fn get_album_by_key(album_key: String, state: &Arc<AppState>) -> anyhow::R
                 FROM albums \
                 WHERE key=?1",
                 params![album_key],
-                |row| Ok((
-                        row.get::<_, i32>(0)?,
-                        row.get(1)?,
-                        row.get(2)?,
-                        row.get(3)?,
-                        row.get(4)?,
-                        row.get(5)?,
-                        row.get(6)?,
-                )),
+                |row| Ok(from_row::<DbAlbum>(row).unwrap()),
             )
-            .optional()?;
+            .optional().context("Failed to query albums")?;
 
-        if let Some((id, title, description, locations, timeframe_from, timeframe_to, created_at)) = result {
+        if let Some(db_album) = result {
             let mut stmt = conn.prepare(
                 "SELECT i.key, i.uploader_key, i.created_at FROM images i \
                 INNER JOIN album_image_associations aia ON aia.image_id=i.id \
                 WHERE aia.album_id=?1",
-            )?;
-            let image_iter = stmt.query_map(params![id], |row| {
+            ).context("Failed to prepare statement for image query")?;
+            let image_iter = stmt.query_map(params![db_album.id], |row| {
                 Ok(Image {
                     key: row.get(0)?,
                     uploader_key: row.get(1)?,
                     created_at: row.get(2)?,
                 })
-            })?;
+            }).context("Failed to query images for album")?;
 
-            let images = image_iter.collect::<Result<Vec<_>, _>>()?;
-            Ok(Some(Album {
+            let images = image_iter.collect::<Result<Vec<_>, _>>().context("Failed to collect album images")?;
+            Ok(Json(Album {
                 key: album_key,
-                title,
-                description,
-                locations,
+                title: db_album.title,
+                description: db_album.description,
+                locations: db_album.locations,
                 timeframe: Timeframe {
-                    from: timeframe_from,
-                    to: timeframe_to,
+                    from: db_album.timeframe_from,
+                    to: db_album.timeframe_to,
                 },
-                created_at,
+                created_at: db_album.created_at,
                 images,
             }))
         } else {
-            Ok(None)
+            Err(Error::NotFound)
         }
     })
     .await

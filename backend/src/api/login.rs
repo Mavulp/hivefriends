@@ -58,8 +58,7 @@ async fn post_login(
 
     if let Some((key, password_hash)) = result {
         let argon2 = Argon2::default();
-        let parsed_hash =
-            PasswordHash::new(&password_hash).context("Failed creating hash")?;
+        let parsed_hash = PasswordHash::new(&password_hash).context("Failed creating hash")?;
 
         if argon2
             .verify_password(req.password.as_bytes(), &parsed_hash)
