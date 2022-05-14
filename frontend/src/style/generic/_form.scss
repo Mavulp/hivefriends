@@ -104,10 +104,10 @@
 
 .form-search {
   @include flex($align: center, $gap: 0);
-  // flex: 1;
   width: 100%;
   padding: 0 32px;
   background-color: rgb(var(--color-white));
+  box-shadow: 0 2px 8px rgba(var(--color-background-dark), 0.025);
 
   &.has-input {
     .material-icons {

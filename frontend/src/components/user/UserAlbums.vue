@@ -2,12 +2,13 @@
 import { computed, onBeforeMount, onBeforeUnmount, ref } from "vue"
 import { useRoute } from "vue-router"
 import { useAlbums, Album } from "../../store/album"
+import { useLoading } from "../../store/loading"
+
 import Button from "../Button.vue"
 import Filters from "../form/Filters.vue"
 import LoadingSpin from "../loading/LoadingSpin.vue"
-
 import AlbumListItem from "../albums/AlbumListItem.vue"
-import { useLoading } from "../../store/loading"
+
 import Search from "../form/Search.vue"
 
 // TODO:
@@ -32,7 +33,7 @@ onBeforeMount(async () => {
 })
 
 const sortedAlbums = computed(() => {
-  if (!search.value) return data.value
+  if (!search.value || !data.value || data.value.length === 0) return data.value
 
   return data.value.filter((album) => {
     const searchString = `${album.title}`.toLowerCase()
@@ -72,8 +73,10 @@ const sortedAlbums = computed(() => {
       </div>
       <div class="album-list-status" v-else-if="data?.length === 0 || !data">
         <div>
-          <h3><span class="material-icons">&#xe88b;</span>Lmao</h3>
+          <!-- <span class="material-icons">&#xe88b;</span> -->
+          <h3>Lmao</h3>
           <p>No albums found</p>
+          <Button class="center auto" :to="{ name: 'Upload' }">Add New?</Button>
         </div>
       </div>
       <template v-else>

@@ -11,19 +11,14 @@ const { getLoading } = useLoading()
 const route = useRoute()
 // const user = useAuth()
 
-const album = reactive({})
-
-// const album = reactive<Album>({
-//   key: "",
-//   createdAt: 0,
-//   images: []
-// })
+const album = reactive<Album | {}>({})
 
 onBeforeMount(async () => {
   const id = route.params.id
 
   if (id) {
     const data = await albums.fetchAlbum(id)
+
     Object.assign(album, data)
   }
 })
@@ -70,8 +65,6 @@ onBeforeMount(async () => {
           </div>
         </div>
         <div class="hi-album-images">
-          
-
           <div class="col"></div>
           <div class="col"></div>
           <div class="col"></div>

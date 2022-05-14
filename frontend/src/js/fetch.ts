@@ -74,8 +74,6 @@ async function _handleFetch(url: string, options: object) {
     }
   })
 
-  console.log(options)
-
   return fetch(rootUrl + url, options).then(_handleResponse)
 }
 

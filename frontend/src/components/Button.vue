@@ -8,16 +8,19 @@ interface Props {
   pad?: string | undefined
   to?: string | object | undefined
   color?: string | undefined
+  center?: boolean
 }
 
-const { size = "44px", pad = "32px", to, color } = defineProps<Props>()
+const { size = "44px", pad = "32px", to, color, center } = defineProps<Props>()
 
 const style = computed(() => ({
   height: size,
   lineHeight: size,
   paddingLeft: pad,
   paddingRight: pad,
-  ...(color && { color })
+  // alignText: 'center',
+  ...(color && { color }),
+  ...(center && { alignText: "center" })
 }))
 </script>
 

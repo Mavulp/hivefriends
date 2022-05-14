@@ -43,6 +43,14 @@
     background-color: rgba(var(--color-background-dark), 0.8);
   }
 
+  &.center {
+    text-align: center;
+  }
+
+  &.auto {
+    display: inline-block;
+  }
+
   &.btn-blue {
     background-color: rgb(var(--color-highlight));
 

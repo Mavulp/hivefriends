@@ -66,6 +66,7 @@ onMounted(() => {
     el.addEventListener("dragleave", uploadHandler, false)
     el.addEventListener("dragover", uploadHandler, false)
     el.addEventListener("drop", uploadHandler, false)
+    el.addEventListener("input", (e) => uploadHandler(e, true), false)
   }
 
   document.addEventListener("scroll", handleScroll, { passive: true })
@@ -87,11 +88,11 @@ function handleScroll() {
  * File Handling
  */
 
-function uploadHandler(e: any) {
+function uploadHandler(e: any, fromField: boolean = false) {
   e.preventDefault()
   e.stopPropagation()
 
-  let files = e.dataTransfer.files
+  let files = fromField ? e.target.files : e.dataTransfer.files
 
   if (files.length > 0) {
     fileHandler(files)

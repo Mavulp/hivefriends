@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from "vue"
 import { imageUrl, Album } from "../../store/album"
 
 interface Props {
