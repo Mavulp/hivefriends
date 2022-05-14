@@ -4,3 +4,4 @@
 .DS_STORE
 .env
 *.db
+.bacon-locations

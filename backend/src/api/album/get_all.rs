@@ -1,6 +1,6 @@
 use anyhow::Context;
 use axum::{extract::Query, Extension, Json};
-use rusqlite::params;
+use rusqlite::{params, ToSql};
 use serde::Deserialize;
 use serde_rusqlite::from_row;
 
@@ -34,6 +34,9 @@ pub(super) struct AlbumFilters {
     #[serde(default)]
     #[serde(with = "comma_string")]
     user: Option<Vec<String>>,
+
+    from: Option<u64>,
+    to: Option<u64>,
 }
 
 pub(super) async fn get(
@@ -58,20 +61,8 @@ pub(super) async fn get(
         .to_string();
 
         let mut params: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
-        if let Some(users) = filter.user {
-            query += &format!(
-                "WHERE uploader_key IN ({}) \
-                ",
-                std::iter::repeat("?")
-                    .take(users.len())
-                    .collect::<Vec<_>>()
-                    .join(",")
-            );
 
-            for user in users {
-                params.push(Box::new(user));
-            }
-        }
+        apply_filters(&mut query, &mut params, filter);
 
         let mut stmt = conn
             .prepare(&query)
@@ -124,4 +115,52 @@ pub(super) async fn get(
     })
     .await
     .unwrap()
+}
+
+fn apply_filters(query: &mut String, parameters: &mut Vec<Box<dyn ToSql>>, filters: AlbumFilters) {
+    let mut filter_queries = Vec::new();
+
+    if let Some(users) = filters.user {
+        filter_queries.push(user_filter_query(parameters, users));
+    }
+
+    if let Some(from) = filters.from {
+        filter_queries.push(from_filter_query(parameters, from));
+    }
+
+    if let Some(to) = filters.to {
+        filter_queries.push(to_filter_query(parameters, to));
+    }
+
+    query.push_str(&format!("WHERE {}", filter_queries.join(" AND ")));
+}
+
+fn user_filter_query(parameters: &mut Vec<Box<dyn ToSql>>, users: Vec<String>) -> String {
+    let len = users.len();
+
+    for user in users {
+        parameters.push(Box::new(user));
+    }
+
+    format!(
+        "uploader_key IN ({}) ",
+        std::iter::repeat("?")
+            .take(len)
+            .collect::<Vec<_>>()
+            .join(",")
+    )
+}
+
+fn from_filter_query(parameters: &mut Vec<Box<dyn ToSql>>, from: u64) -> String {
+    parameters.push(Box::new(from));
+    let p = parameters.len();
+
+    format!("(timeframe_from >= ?{p} OR timeframe_to >= ?{p})")
+}
+
+fn to_filter_query(parameters: &mut Vec<Box<dyn ToSql>>, to: u64) -> String {
+    parameters.push(Box::new(to));
+    let p = parameters.len();
+
+    format!("(timeframe_to <= ?{p} OR timeframe_from <= ?{p})")
 }
