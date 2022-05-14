@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from "vue-router"
+import { createRouter, createWebHistory, RouteLocationNormalized } from "vue-router"
 
 import Login from "./views/Login.vue"
 import Home from "./views/Home.vue"
@@ -14,6 +14,9 @@ import UserProfile from "../components/user/UserProfile.vue"
 import UserSettings from "../components/user/UserSettings.vue"
 
 import { useAuth } from "../store/auth"
+import { useBread } from "../store/bread"
+
+import { isEmpty, clone } from "lodash"
 
 /**
  * Router Setup
@@ -31,7 +34,7 @@ const router = createRouter({
       component: Login,
       meta: {
         title: "Sign In",
-        bread: "Sign in to hi!friends",
+        breadcrumb: "Sign in to hi!friends",
         redirectOnAuth: "/home"
       }
     },
@@ -41,7 +44,7 @@ const router = createRouter({
       component: Home,
       meta: {
         title: "Home",
-        bread: "Latest albums",
+        breadcrumb: "Latest albums",
         requiresAuth: true
       }
     },
@@ -51,7 +54,7 @@ const router = createRouter({
       component: AlbumList,
       meta: {
         title: "All Albums",
-        bread: "All albums from all users",
+        breadcrumb: "All albums from all users",
         requiresAuth: true
       }
     },
@@ -61,7 +64,7 @@ const router = createRouter({
       component: AlbumDetail,
       meta: {
         title: "_album_name_",
-        bread: "_album_name_",
+        breadcrumb: "_album_name_",
         requiresAuth: true
       }
     },
@@ -70,8 +73,8 @@ const router = createRouter({
       name: "ImageDetail",
       component: ImageDetail,
       meta: {
-        title: "_image_name_",
-        bread: "_image_name_",
+        title: "_id_",
+        breadcrumb: "_id_",
         requiresAuth: true
       }
     },
@@ -81,7 +84,7 @@ const router = createRouter({
       component: AlbumUpload,
       meta: {
         title: "Upload",
-        bread: "Upload a new album",
+        breadcrumb: "Upload a new album",
         requiresAuth: true
       }
     },
@@ -95,8 +98,8 @@ const router = createRouter({
           name: "UserProfile",
           component: UserProfile,
           meta: {
-            title: "_user_profile_",
-            bread: "_user_profile_",
+            title: "_id_'s Profile",
+            breadcrumb: "_id_'s Profile",
             requiresAuth: true
           }
         },
@@ -105,8 +108,8 @@ const router = createRouter({
           name: "UserSettings",
           component: UserSettings,
           meta: {
-            title: "_user_settings_",
-            bread: "_user_settings_",
+            title: "User Settings",
+            breadcrumb: "User Settings",
             requiresAuth: true
           }
         },
@@ -115,8 +118,8 @@ const router = createRouter({
           name: "UserAlbums",
           component: UserAlbums,
           meta: {
-            title: "_user_albums_",
-            bread: "_user_albums_",
+            title: "_id_'s Albums",
+            breadcrumb: "All albums uploaded by _id_",
             requiresAuth: true
           }
         }
@@ -125,11 +128,28 @@ const router = createRouter({
   ]
 })
 
+function _formatMeta(field: string, route: RouteLocationNormalized) {
+  let val = `${route.meta[field]}`
+
+  if (!val) return ""
+
+  if (isEmpty(route.params)) return val
+
+  for (const key of Object.keys(route.params)) {
+    if (!val.includes(key)) continue
+
+    val = val.replace(`_${key}_`, `${route.params[key]}`)
+  }
+
+  return val
+}
+
 /**
  * Router Guards
  */
 router.afterEach((to) => {
-  document.title = `${to.meta.title} // hi!friends`
+  const bread = useBread()
+  bread.set(_formatMeta("breadcrumb", to), _formatMeta("title", to))
 })
 
 router.beforeResolve(async (to, from, next) => {
@@ -138,8 +158,6 @@ router.beforeResolve(async (to, from, next) => {
     const user = localStorage.getItem("user")
 
     if (!token || !user) {
-      console.log("hello?")
-
       localStorage.removeItem("user")
       localStorage.removeItem("bearer_token")
 

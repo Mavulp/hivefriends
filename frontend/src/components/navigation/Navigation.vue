@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router"
 import { useAuth } from "../../store/auth"
+import { useBread } from "../../store/bread"
 
-const route = useRoute()
 const router = useRouter()
 const auth = useAuth()
+const bread = useBread()
 
 function signOut() {
   auth.signOut()
@@ -18,9 +19,7 @@ function signOut() {
       <img src="/Sharp.png" alt="" />
     </router-link>
 
-    <div class="flex-1"></div>
-
-    <span class="bread">{{ route.meta.bread ?? route.meta.title }}</span>
+    <span class="bread" v-if="bread.title">{{ bread.title }}</span>
 
     <div class="flex-1"></div>
 

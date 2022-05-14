@@ -15,7 +15,7 @@ onBeforeMount(async () => {
   // route.meta.title = id + " albums"
 
   if (id) {
-    data.value = await store.fetchUserAlbums(id)
+    // data.value = await store.fetchUserAlbums(id)
   }
 })
 
@@ -33,7 +33,7 @@ onBeforeMount(async () => {
   <div class="hi-album-list-user">
     <div class="album-list-title">
       <h2>Your Albums</h2>
-      <span>{{ data.length }} Albums</span>
+      <!-- <span>{{ data.length }} Albums</span> -->
     </div>
 
     <!-- <pre>
