@@ -11,11 +11,13 @@ const { getLoading } = useLoading()
 const route = useRoute()
 // const user = useAuth()
 
-const album = reactive<Album>({
-  key: "",
-  createdAt: 0,
-  images: []
-})
+const album = reactive({})
+
+// const album = reactive<Album>({
+//   key: "",
+//   createdAt: 0,
+//   images: []
+// })
 
 onBeforeMount(async () => {
   const id = route.params.id
@@ -38,9 +40,9 @@ onBeforeMount(async () => {
         {{ album }}
       </pre>
 
-      <div v-for="image in album.images">
+      <!-- <div v-for="image in album.images">
         <img :src="rootUrl + `/data/image/${image.key}/medium.png`" alt="" />
-      </div>
+      </div> -->
     </div>
     <!-- <div class="hi-album-detail-layout">
       <div class="col-query">
