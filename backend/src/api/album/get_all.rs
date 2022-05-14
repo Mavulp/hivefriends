@@ -135,7 +135,7 @@ fn apply_filters(query: &mut String, parameters: &mut Vec<Box<dyn ToSql>>, filte
         filter_queries.push(to_filter_query(parameters, to));
     }
 
-    query.push_str(&format!("WHERE {}", filter_queries.join(" AND ")));
+    query.push_str(&format!(" WHERE {}", filter_queries.join(" AND ")));
 }
 
 fn user_filter_query(parameters: &mut Vec<Box<dyn ToSql>>, users: Vec<String>) -> String {
