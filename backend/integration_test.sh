@@ -14,13 +14,19 @@ printf "image response: %s\n" "$response"
 image_key=$(printf "%s\n" "$response" | jq -r '.key')
 printf "image key: %s\n" "$image_key"
 
-response=$(curl -v http://localhost:8080/api/albums/ -H "Content-Type: application/json" --oauth2-bearer $token --data "{\"title\":\"testalbum\",\"coverKey\":\"$image_key\",\"timeframe\": {\"from\": 0, \"to\": 10}, \"imageKeys\": [\"$image_key\"]}")
+response=$(curl -v http://localhost:8080/api/albums/ -H "Content-Type: application/json" --oauth2-bearer $token --data "{\"title\":\"draft\",\"coverKey\":\"$image_key\",\"draft\":true, \"timeframe\": {\"from\": 0, \"to\": 10}, \"imageKeys\": [\"$image_key\"]}")
 printf "album post response: %s\n" "$response"
 album_key=$(printf "%s\n" "$response" | jq -r '.key')
 printf "album key: %s\n" "$album_key"
+
+curl -v http://localhost:8080/api/albums/ -H "Content-Type: application/json" --oauth2-bearer $token --data "{\"title\":\"non draft\",\"coverKey\":\"$image_key\", \"timeframe\": {\"from\": 0, \"to\": 10}, \"imageKeys\": [\"$image_key\"]}"
 
 response=$(curl -v http://localhost:8080/api/albums/$album_key -H "Content-Type: application/json" --oauth2-bearer $token)
 printf "album get response: %s\n" "$(printf "%s" "$response" | jq)"
 
 response=$(curl -v http://localhost:8080/api/users/ -H "Content-Type: application/json" --oauth2-bearer $token)
 printf "users get response: %s\n" "$(printf "%s" "$response" | jq)"
+
+response=$(curl -v "http://localhost:8080/api/albums/?draft=true" -H "Content-Type: application/json" --oauth2-bearer $token)
+printf "albums get response: %s\n" "$(printf "%s" "$response" | jq)"
+

@@ -37,10 +37,13 @@ pub(super) struct AlbumFilters {
 
     from: Option<u64>,
     to: Option<u64>,
+
+    #[serde(default)]
+    draft: bool,
 }
 
 pub(super) async fn get(
-    Authorize(_): Authorize,
+    Authorize(user_key): Authorize,
     Query(filter): Query<AlbumFilters>,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<Vec<Album>>, Error> {
@@ -64,7 +67,7 @@ pub(super) async fn get(
 
         let mut params: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
 
-        apply_filters(&mut query, &mut params, filter);
+        apply_filters(&mut query, &mut params, filter, user_key);
 
         let mut stmt = conn
             .prepare(&query)
@@ -122,7 +125,7 @@ pub(super) async fn get(
     .unwrap()
 }
 
-fn apply_filters(query: &mut String, parameters: &mut Vec<Box<dyn ToSql>>, filters: AlbumFilters) {
+fn apply_filters(query: &mut String, parameters: &mut Vec<Box<dyn ToSql>>, filters: AlbumFilters, user_key: String) {
     let mut filter_queries = Vec::new();
 
     if let Some(users) = filters.user {
@@ -136,6 +139,8 @@ fn apply_filters(query: &mut String, parameters: &mut Vec<Box<dyn ToSql>>, filte
     if let Some(to) = filters.to {
         filter_queries.push(to_filter_query(parameters, to));
     }
+
+    filter_queries.push(draft_filter_query(parameters, filters.draft, user_key));
 
     if !filter_queries.is_empty() {
         query.push_str(&format!(" WHERE {}", filter_queries.join(" AND ")));
@@ -170,4 +175,15 @@ fn to_filter_query(parameters: &mut Vec<Box<dyn ToSql>>, to: u64) -> String {
     let p = parameters.len();
 
     format!("(timeframe_to <= ?{p} OR timeframe_from <= ?{p})")
+}
+
+fn draft_filter_query(parameters: &mut Vec<Box<dyn ToSql>>, draft: bool, user_key: String) -> String {
+    if draft {
+        parameters.push(Box::new(user_key));
+        let p = parameters.len();
+
+        format!("(uploader_key = ?{p} OR draft = false)")
+    } else {
+        format!("draft = false")
+    }
 }
