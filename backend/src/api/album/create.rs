@@ -18,6 +18,8 @@ pub(super) struct CreateAlbumRequest {
     locations: Option<String>,
     timeframe: Timeframe,
     image_keys: Vec<String>,
+    #[serde(default)]
+    draft: bool,
 }
 
 #[derive(Serialize)]
@@ -54,24 +56,45 @@ async fn create_album(
         let tx = conn.transaction()?;
 
         tx.execute(
-            "INSERT INTO albums \
-                (key, title, description, locations, uploader_key, timeframe_from, timeframe_to, created_at) \
-            VALUES \
-                (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
-            params![album_key, request.title, request.description, request.locations, uploader_key, request.timeframe.from, request.timeframe.to, now])?;
+            "INSERT INTO albums ( \
+                key, \
+                title, \
+                description, \
+                locations, \
+                uploader_key, \
+                draft, \
+                timeframe_from, \
+                timeframe_to, \
+                created_at \
+            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)",
+            params![
+                album_key,
+                request.title,
+                request.description,
+                request.locations,
+                uploader_key,
+                request.draft as i64,
+                request.timeframe.from,
+                request.timeframe.to,
+                now
+            ],
+        )?;
         let album_id = tx.last_insert_rowid();
 
         for image_key in request.image_keys {
             tx.execute(
                 "INSERT INTO album_image_associations (album_id, image_id) \
                 SELECT ?1, id FROM images WHERE key = ?2",
-                params![album_id, image_key])?;
+                params![album_id, image_key],
+            )?;
         }
 
         tx.commit()?;
 
         Ok(())
-    }).await.unwrap()?;
+    })
+    .await
+    .unwrap()?;
 
     Ok(CreateAlbumResponse { key })
 }

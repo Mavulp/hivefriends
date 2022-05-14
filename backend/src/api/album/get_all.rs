@@ -53,12 +53,13 @@ pub(super) async fn get(
                     title, \
                     description, \
                     locations, \
+                    uploader_key, \
+                    draft, \
                     timeframe_from, \
                     timeframe_to, \
                     created_at \
-                FROM albums \
-                "
-        .to_string();
+                FROM albums"
+            .to_string();
 
         let mut params: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
 
@@ -80,8 +81,8 @@ pub(super) async fn get(
             let mut stmt = conn
                 .prepare(
                     "SELECT i.key, i.uploader_key, i.created_at FROM images i \
-                INNER JOIN album_image_associations aia ON aia.image_id=i.id \
-                WHERE aia.album_id=?1",
+                    INNER JOIN album_image_associations aia ON aia.image_id=i.id \
+                    WHERE aia.album_id=?1",
                 )
                 .context("Failed to prepare statement for image query")?;
             let image_iter = stmt
@@ -103,6 +104,8 @@ pub(super) async fn get(
                 title: db_album.title,
                 description: db_album.description,
                 locations: db_album.locations,
+                uploader_key: db_album.uploader_key,
+                draft: db_album.draft != 0,
                 timeframe: Timeframe {
                     from: db_album.timeframe_from,
                     to: db_album.timeframe_to,

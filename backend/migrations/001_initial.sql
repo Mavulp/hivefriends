@@ -20,6 +20,7 @@ CREATE TABLE albums (
     description TEXT NULL,
     locations TEXT NULL,
     uploader_key TEXT NOT NULL,
+    draft INTEGER NOT NULL DEFAULT 0, -- boolean
 
     -- timeframe of the event covered by this album
     timeframe_from INTEGER NULL, -- unix ts

@@ -38,18 +38,22 @@ struct Album {
     title: String,
     description: Option<String>,
     locations: Option<String>,
+    uploader_key: String,
+    draft: bool,
     timeframe: Timeframe,
     created_at: u64,
     images: Vec<Image>,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 struct DbAlbum {
     id: i64,
     key: String,
     title: String,
     description: Option<String>,
     locations: Option<String>,
+    uploader_key: String,
+    draft: i64,
     timeframe_from: Option<u64>,
     timeframe_to: Option<u64>,
     created_at: u64,
