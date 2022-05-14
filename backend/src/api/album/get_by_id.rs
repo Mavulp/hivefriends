@@ -8,8 +8,9 @@ use std::sync::Arc;
 
 use crate::api::error::Error;
 use crate::AppState;
+use crate::api::auth::Authorize;
 
-use super::{Album, DbAlbum, Image, Timeframe, Authorize};
+use super::{Album, DbAlbum, Image, Timeframe};
 
 pub(super) async fn get(
     Path(album_key): Path<String>,
