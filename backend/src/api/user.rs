@@ -13,7 +13,9 @@ use crate::api::{auth::Authorize, error::Error};
 use crate::AppState;
 
 pub fn api_route() -> Router {
-    Router::new().route("/:key", get(get_user))
+    Router::new()
+        .route("/", get(get_users))
+        .route("/:key", get(get_user_by_key))
 }
 
 #[derive(Debug, Serialize)]
@@ -37,7 +39,85 @@ struct DbUser {
     created_at: i64,
 }
 
-async fn get_user(
+async fn get_users(
+    Authorize(_): Authorize,
+    Extension(state): Extension<Arc<AppState>>,
+) -> Result<Json<Vec<User>>, Error> {
+    let conn = state.pool.get().await.context("Failed to get connection")?;
+
+    conn.interact(move |conn| {
+        let query = "SELECT \
+                key, \
+                username, \
+                avatar_url, \
+                bio, \
+                created_at \
+                FROM users"
+            .to_string();
+
+        let params: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
+
+        let mut stmt = conn
+            .prepare(&query)
+            .context("Failed to prepare statement for album query")?;
+        let db_users = stmt
+            .query_map(rusqlite::params_from_iter(params.iter()), |row| {
+                Ok(from_row::<DbUser>(row).unwrap())
+            })
+            .context("Failed to query images")?
+            .collect::<Result<Vec<_>, _>>()
+            .context("Failed to collect albums")?;
+
+        let mut users = Vec::new();
+        for db_user in db_users {
+            let ckey = db_user.key.clone();
+            let mut stmt = conn.prepare(
+                "SELECT a.\"key\" FROM users u \
+                    INNER JOIN user_album_associations uaa ON uaa.user_key = u.key \
+                    INNER JOIN albums a ON a.id = uaa.album_id \
+                    WHERE u.key = ?1",
+            ).context("Failed to prepare user albums query")?;
+            let album_key_iter =
+                stmt.query_map(params![ckey], |row| Ok(from_row::<String>(row).unwrap())).context("Failed to query user albums")?;
+
+            let albums_uploaded = album_key_iter
+                .collect::<Result<Vec<_>, _>>()
+                .context("Failed to collect albums uploaded")?;
+
+            let ckey = db_user.key.clone();
+            let mut stmt = conn.prepare(
+                "SELECT u2.key FROM users u1 \
+                    INNER JOIN user_album_associations uaa ON uaa.user_key = u1.key \
+                    INNER JOIN albums a ON a.id = uaa.album_id \
+                    INNER JOIN user_album_associations uaa2 ON uaa2.album_id = a.id \
+                    INNER JOIN users u2 ON uaa2.user_key = u2.key \
+                    WHERE u1.key = ?1 \
+                    AND u2.key != ?1",
+            ).context("Failed to prepare met users query")?;
+            let met_key_iter =
+                stmt.query_map(params![ckey], |row| Ok(from_row::<String>(row).unwrap())).context("Failed to query met users")?;
+
+            let met = met_key_iter
+                .collect::<Result<Vec<_>, _>>()
+                .context("Failed to collect met users")?;
+
+            users.push(User {
+                key: db_user.key,
+                username: db_user.username,
+                avatar_url: db_user.avatar_url,
+                bio: db_user.bio,
+                met,
+                albums_uploaded,
+                created_at: db_user.created_at,
+            });
+        }
+        Ok(Json(users))
+    })
+    .await
+        .unwrap()
+}
+
+async fn get_user_by_key(
     Path(user_key): Path<String>,
     Authorize(_): Authorize,
     Extension(state): Extension<Arc<AppState>>,

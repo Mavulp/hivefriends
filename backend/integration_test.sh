@@ -21,3 +21,6 @@ printf "album key: %s\n" "$album_key"
 
 response=$(curl -v http://localhost:8080/api/albums/$album_key -H "Content-Type: application/json" --oauth2-bearer $token)
 printf "album get response: %s\n" "$(printf "%s" "$response" | jq)"
+
+response=$(curl -v http://localhost:8080/api/users/ -H "Content-Type: application/json" --oauth2-bearer $token)
+printf "users get response: %s\n" "$(printf "%s" "$response" | jq)"
