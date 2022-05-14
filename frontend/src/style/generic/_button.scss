@@ -64,11 +64,16 @@
   z-index: 2;
   position: relative;
 
+  &.router-link-active,
   &:hover {
     &:after {
       transform: scale(1);
       opacity: 1;
     }
+  }
+
+  &.router-link-active:after {
+    background-color: rgba(var(--color-highlight), 0.25);
   }
 
   &:after {

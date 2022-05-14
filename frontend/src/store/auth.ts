@@ -43,10 +43,14 @@ export const useAuth = defineStore("auth", {
         })
     },
     async fetchUser(key: string | number) {
-      return get(`/api/users/${key}`).then((response) => {
-        this.user = response
-        localStorage.setItem("user", JSON.stringify(response))
-      })
+      return get(`/api/users/${key}`)
+        .then((response) => {
+          this.user = response
+          localStorage.setItem("user", JSON.stringify(response))
+        })
+        .catch((error) => {
+          if (error.message === "Unauthorized") return "unauth"
+        })
     },
     signInUserFromStorage(user: User) {
       this.user = user

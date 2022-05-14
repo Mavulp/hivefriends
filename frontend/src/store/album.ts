@@ -4,10 +4,15 @@ import { useLoading } from "./loading"
 import { useToast } from "./toast"
 import { isObject } from "lodash"
 import { FetchError } from "../js/global-types"
+
 export interface Image {
   key: string
   createdAT: number
+  uploaderKey: string
 }
+
+export interface ImageMetadata {}
+
 export interface Album {
   key: string
   title: string
@@ -20,12 +25,17 @@ export interface Album {
     from: number
     to: number
   }
+  uploaderKey: string
+  coverKey: string | null
 }
 
 interface State {
   albums: Array<Album>
   userAlbums: {
     [key: string]: Album
+  }
+  imageMetadata: {
+    [key: string]: Image
   }
 }
 
@@ -45,7 +55,8 @@ export const useAlbums = defineStore("album", {
   state: () =>
     ({
       albums: [],
-      userAlbums: {}
+      userAlbums: {},
+      imageMetadata: {}
     } as State),
   actions: {
     async fetchAlbum(id: string | string[]) {
@@ -73,7 +84,10 @@ export const useAlbums = defineStore("album", {
         .then((albums) => {
           return albums
         })
-        .catch((error: FetchError) => {})
+        .catch((error: FetchError) => {
+          const toast = useToast()
+          toast.add(isObject(error) ? error.message : String(error), "error")
+        })
         .finally(() => delLoading("albums"))
     },
 
@@ -94,6 +108,23 @@ export const useAlbums = defineStore("album", {
         .finally(() => delLoading(`${user}-album`))
     },
 
+    async fetchImageMetadata(key: string) {
+      const { addLoading, delLoading } = useLoading()
+
+      addLoading(key)
+
+      return get(`/api/images/${key}`)
+        .then((data) => {
+          this.imageMetadata[key] = data
+          return data
+        })
+        .catch((error: FetchError) => {
+          const toast = useToast()
+          toast.add(isObject(error) ? error.message : String(error), "error")
+        })
+        .finally(() => delLoading(key))
+    },
+
     async addAlbum(album: NewAlbum) {
       const { addLoading, delLoading } = useLoading()
 
@@ -112,7 +143,8 @@ export const useAlbums = defineStore("album", {
   },
   getters: {
     getAlbums: (state) => state.albums,
-    getAlbum: (state) => (id: string) => state.albums.find((album) => album.key === id)
+    getAlbum: (state) => (key: string) => state.albums.find((album) => album.key === key),
+    getImageMetadata: (state) => (key: string) => state.imageMetadata[key] ?? null
   }
 })
 

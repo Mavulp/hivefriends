@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, RouteLocationNormalized } from "vue-router"
+import { createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized } from "vue-router"
 
 import Login from "./views/Login.vue"
 import Home from "./views/Home.vue"
@@ -151,21 +151,34 @@ function _formatMeta(field: string, route: RouteLocationNormalized) {
  */
 router.afterEach((to) => {
   const bread = useBread()
+
   bread.set(_formatMeta("breadcrumb", to), _formatMeta("title", to))
 })
 
+function _clearUser(next: NavigationGuardNext) {
+  localStorage.removeItem("user")
+  localStorage.removeItem("bearer_token")
+
+  return next({ name: "Login" })
+}
+
 router.beforeResolve(async (to, from, next) => {
+  const auth = useAuth()
+
   if (to.meta.requiresAuth) {
     const token = localStorage.getItem("bearer_token")
     const user = localStorage.getItem("user")
 
     if (!token || !user) {
-      localStorage.removeItem("user")
-      localStorage.removeItem("bearer_token")
-
-      return next({ name: "Login" })
+      return _clearUser(next)
     } else {
-      const auth = useAuth()
+      const userdata = JSON.parse(user)
+
+      // Verify if token is expired
+      const verify = await auth.fetchUser(userdata.key)
+
+      if (verify === "unauth") return _clearUser(next)
+
       auth.signInUserFromStorage(JSON.parse(user))
     }
   }

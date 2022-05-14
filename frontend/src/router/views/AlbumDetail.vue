@@ -1,77 +1,102 @@
 <script setup lang="ts">
-import { onBeforeMount, onBeforeUnmount, reactive } from "vue"
+import { onBeforeMount, computed, reactive } from "vue"
 import { useRoute } from "vue-router"
-import { useAlbums, Album } from "../../store/album"
+import { useAlbums, Album, imageUrl, Image } from "../../store/album"
 import { useLoading } from "../../store/loading"
-import { rootUrl } from "../../js/fetch"
-// import { useAuth } from "../../store/auth"
+import { isEmpty } from "lodash"
+import { useAuth } from "../../store/auth"
+import { formatDate } from "../../js/utils"
+
+import LoadingSpin from "../../components/loading/LoadingSpin.vue"
+import AlbumTimestamp from "../../components/albums/AlbumTimestamp.vue"
+import ImageListitem from "../../components/albums/ImageListitem.vue"
 
 const albums = useAlbums()
-const { getLoading } = useLoading()
 const route = useRoute()
-// const user = useAuth()
+const user = useAuth()
 
-const album = reactive<Album | {}>({})
+const { getLoading } = useLoading()
+
+const album = reactive<Album>({} as Album)
 
 onBeforeMount(async () => {
   const id = route.params.id
 
   if (id) {
     const data = await albums.fetchAlbum(id)
-
     Object.assign(album, data)
   }
 })
 
-// Generate columns by splitting array of images into 3 and iterating over those to generate a bit more natural masonry
+const chunks = computed(() => {
+  if (!album.images) return []
+
+  const images: any = album.images
+  const chunks: Array<Array<Image>> = [[], [], []]
+
+  let i: number = 0
+  let j: number = 0
+
+  while (i !== images.length) {
+    chunks[j].push(images[i])
+
+    if (j >= 2) j = 0
+    else j++
+
+    i++
+  }
+
+  return chunks
+})
 </script>
 
 <template>
   <div class="hi-album-detail">
-    <span v-if="getLoading('get-album')">Loading</span>
+    <LoadingSpin dark v-if="getLoading('get-album')" />
 
-    <div v-else>
-      <pre>
-        {{ album }}
-      </pre>
-
-      <!-- <div v-for="image in album.images">
-        <img :src="rootUrl + `/data/image/${image.key}/medium.png`" alt="" />
-      </div> -->
+    <div class="hi-album-detail-error" v-else-if="isEmpty(album)">
+      <div class="centered">
+        <h3>Lmao</h3>
+        <p>Error loading album</p>
+      </div>
     </div>
-    <!-- <div class="hi-album-detail-layout">
-      <div class="col-query">
-        <div class="hi-album-header">
-          <div class="album-timestamp">
-            <span>{{ album.timestamps.from }}</span>
-            <div class="timestamp-divider"></div>
-            <span>{{ album.timestamps.to }}</span>
-          </div>
 
-          <h2>{{ album.title }}</h2>
-          <p>{{ album.description }}</p>
+    <div class="hi-album-title" v-else>
+      <!-- <pre>
+        {{ album }}
+      </pre> -->
+      <div class="hi-album-title-meta">
+        <AlbumTimestamp class="dark" :timeframe="album.timeframe" />
 
-          <div class="album-description">
-            <span> Users: </span>
-            <div class="album-description-users">
-              <button class="album-description-user"></button>
-              <button class="album-description-user"></button>
-              <button class="album-description-user"></button>
-            </div>
+        <h1>{{ album.title }}</h1>
+        <p>{{ album.description }}</p>
 
-            <span> Photos: {{ album.photos }} </span>
+        <div class="album-meta-cells">
+          <span class="material-icons">&#xe3f4;</span>
+          <p class="mr-32">{{ album.images.length }} Images</p>
 
-            <span>Created: {{ album.timestamps.created }}</span>
-          </div>
-        </div>
-        <div class="hi-album-images">
-          <div class="col"></div>
-          <div class="col"></div>
-          <div class="col"></div>
+          <span class="material-icons">&#xe851;</span>
+          <router-link :to="{ name: 'UserProfile', params: { id: album.uploaderKey } }" class="mr-32">
+            by: {{ user.getUsername(album.uploaderKey) }}
+          </router-link>
+
+          <span class="material-icons">&#xe8df;</span>
+          <p>Uploaded</p>
+          <p>{{ formatDate(album.createdAt) }}</p>
         </div>
       </div>
 
-      <div class="hi-album-comments"></div>
-    </div> -->
+      <div class="hi-album-title-thumbnail">
+        <div class="thumbnail-image-wrap">
+          <img :src="imageUrl(album.images[0].key)" alt="" />
+        </div>
+      </div>
+    </div>
+
+    <div class="hi-album-images">
+      <div class="hi-album-image-col" v-for="chunk in chunks" :key="chunk.length">
+        <ImageListitem v-for="image in chunk" :key="image.key" :image="image" />
+      </div>
+    </div>
   </div>
 </template>

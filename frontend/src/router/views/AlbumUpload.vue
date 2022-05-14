@@ -9,6 +9,8 @@ import { onBeforeUnmount, onMounted, reactive, ref, computed } from "vue"
 import { post, upload } from "../../js/fetch"
 import { useFormValidation, required } from "../../js/validation"
 import { useAlbums, NewAlbum } from "../../store/album"
+import { clone } from "lodash"
+import { delay } from "../../js/utils"
 
 const store = useAlbums()
 
@@ -62,11 +64,11 @@ onMounted(() => {
   const el = document.getElementById("drop-area")
 
   if (el) {
-    el.addEventListener("dragenter", uploadHandler, false)
-    el.addEventListener("dragleave", uploadHandler, false)
-    el.addEventListener("dragover", uploadHandler, false)
-    el.addEventListener("drop", uploadHandler, false)
-    el.addEventListener("input", (e) => uploadHandler(e, true), false)
+    el.addEventListener("dragenter", onSubmitHandler, false)
+    el.addEventListener("dragleave", onSubmitHandler, false)
+    el.addEventListener("dragover", onSubmitHandler, false)
+    el.addEventListener("drop", onSubmitHandler, false)
+    el.addEventListener("input", (e) => onSubmitHandler(e, true), false)
   }
 
   document.addEventListener("scroll", handleScroll, { passive: true })
@@ -88,18 +90,18 @@ function handleScroll() {
  * File Handling
  */
 
-function uploadHandler(e: any, fromField: boolean = false) {
+function onSubmitHandler(e: any, fromField: boolean = false) {
   e.preventDefault()
   e.stopPropagation()
 
   let files = fromField ? e.target.files : e.dataTransfer.files
 
   if (files.length > 0) {
-    fileHandler(files)
+    uploadFiles(files)
   }
 }
 
-function fileHandler(_files: any) {
+async function uploadFiles(_files: any) {
   for (let i = 0; i <= _files.length; i++) {
     const file = _files[i]
 
@@ -108,33 +110,41 @@ function fileHandler(_files: any) {
     let formData = new FormData()
     formData.append("file", file)
 
-    files.values.push({
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      loading: true,
-      key: null
-    })
+    await delay(5)
 
-    upload("/api/images/", formData)
-      .then((response: any) => {
-        Object.assign(files.values[i], {
-          loading: false,
-          key: response.key
-        })
-
-        console.log("ok upload", response, files.values[i])
-      })
-      .catch((error) => {
-        Object.assign(files.values[i], {
-          loading: false,
-          error
-        })
-
-        console.log("erorr upload", error, files.values[i])
-      })
+    uploadFile(file, formData, clone(i))
   }
 }
+
+async function uploadFile(file: any, formData: any, index: number) {
+  files.values.push({
+    name: file.name,
+    size: file.size,
+    type: file.type,
+    loading: true,
+    key: null
+  })
+
+  return upload("/api/images/", formData)
+    .then((response: any) => {
+      Object.assign(files.values[index], {
+        loading: false,
+        key: response.key
+      })
+
+      console.log("ok upload", response, files.values[index])
+    })
+    .catch((error) => {
+      Object.assign(files.values[index], {
+        loading: false,
+        error
+      })
+
+      console.log("erorr upload", error, files.values[index])
+    })
+}
+
+// Spent an extended weekend hanging out and discovering Switzerland with my buddy. Did some tortellini tasting, some mountain climbing and some music making. Lot's of good meemories!!
 
 function delImage(index: number) {
   if (files.values[index]) {
@@ -158,8 +168,8 @@ async function submit() {
     Object.assign(model, {
       locations: album.locations?.join(","),
       timeframe: {
-        from: new Date(album.timeframe.from).getTime(),
-        to: new Date(album.timeframe.to).getTime()
+        from: new Date(album.timeframe.from).getTime() / 1000,
+        to: new Date(album.timeframe.to).getTime() / 1000
       }
     })
 
@@ -235,13 +245,8 @@ async function submit() {
 
         <Button class="btn-blue mt-20 btn-icon" v-if="albumKey" :to="{ name: 'AlbumDetail', params: { id: albumKey } }">
           View Album
-
           <span class="material-icons"> &#xe941; </span>
         </Button>
-
-        <!-- <pre style="padding-top: 32px">
-          {{ album }}
-        </pre> -->
       </div>
     </div>
   </div>

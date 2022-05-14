@@ -104,7 +104,18 @@
   margin-bottom: 8px;
   z-index: 5;
 
+  &.dark {
+    span {
+      color: rgb(var(--color-text));
+    }
+
+    .timestamp-divider {
+      border-color: rgb(var(--color-border));
+    }
+  }
+
   span {
+    @include font(200);
     color: rgb(var(--color-text-white));
   }
 
