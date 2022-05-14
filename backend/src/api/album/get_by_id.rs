@@ -9,10 +9,11 @@ use std::sync::Arc;
 use crate::api::error::Error;
 use crate::AppState;
 
-use super::{Album, DbAlbum, Image, Timeframe};
+use super::{Album, DbAlbum, Image, Timeframe, Authorize};
 
 pub(super) async fn get(
     Path(album_key): Path<String>,
+    Authorize(_): Authorize,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<Album>, Error> {
     let conn = state.pool.get().await.context("Failed to get connection")?;
