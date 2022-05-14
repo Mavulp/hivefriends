@@ -50,6 +50,10 @@
   width: 28px;
   height: 28px;
   animation: spinner 1.5s linear infinite;
+
+  &.dark {
+    border-top: 5px solid rgb(var(--color-text));
+  }
 }
 
 @keyframes spinner {

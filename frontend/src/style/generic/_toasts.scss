@@ -5,6 +5,7 @@
   // width: 512px;
   width: 50vw;
   max-width: 656px;
+  z-index: 1000;
 
   .hi-toast-item {
     @include t();

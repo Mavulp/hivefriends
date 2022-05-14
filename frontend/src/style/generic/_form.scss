@@ -86,3 +86,18 @@
     width: 100%;
   }
 }
+
+.form-filters {
+  @include flex();
+  @include t(0.15s);
+
+  overflow: hidden;
+  height: 0;
+  line-height: 0;
+
+  &.active {
+    height: 64px;
+    line-height: 64px;
+    padding-top: 32px;
+  }
+}

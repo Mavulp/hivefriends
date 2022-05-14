@@ -27,9 +27,9 @@ function signOut() {
       <router-link
         class="hover-bubble"
         data-title-bottom="Your profile"
-        :to="{ name: 'UserProfile', params: { id: auth.user.username } }"
+        :to="{ name: 'UserProfile', params: { id: auth.user.key } }"
       >
-        <span class="user"> {{ auth.user.username }} </span>
+        <span class="user"> {{ auth.user.key }} </span>
       </router-link>
 
       <router-link class="hover-bubble" data-title-bottom="Upload Album" :to="{ name: 'Upload' }">
@@ -39,7 +39,7 @@ function signOut() {
       <router-link
         class="hover-bubble"
         data-title-bottom="Your albums"
-        :to="{ name: 'UserAlbums', params: { id: auth.user.username } }"
+        :to="{ name: 'UserAlbums', params: { id: auth.user.key } }"
       >
         <span class="material-icons">&#xe413;</span>
       </router-link>

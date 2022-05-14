@@ -1,17 +1,25 @@
 import { defineStore } from "pinia"
-import { get, makeQuery, post } from "../js/fetch"
+import { get, rootUrl, post } from "../js/fetch"
 import { useLoading } from "./loading"
 import { useToast } from "./toast"
 import { isObject } from "lodash"
-import { FetchError } from "../js/types/errorTypes"
+import { FetchError } from "../js/global-types"
 export interface Image {
   key: string
   createdAT: number
 }
 export interface Album {
   key: string
+  title: string
+  description: string
   createdAt: number
+  draft?: boolean
   images: Array<Image>
+  locations?: Array<string>
+  timeframe: {
+    from: number
+    to: number
+  }
 }
 
 interface State {
@@ -73,7 +81,7 @@ export const useAlbums = defineStore("album", {
       const { addLoading, delLoading } = useLoading()
       addLoading(`${user}-album`)
 
-      return get(`/api/albums?user=${user}`)
+      return get(`/api/albums/?user=${user}`)
         .then((albums) => {
           this.userAlbums[user] = albums
 
@@ -107,3 +115,7 @@ export const useAlbums = defineStore("album", {
     getAlbum: (state) => (id: string) => state.albums.find((album) => album.key === id)
   }
 })
+
+export function imageUrl(key: string, size: string = "original") {
+  return rootUrl + `/data/image/${key}/${size}.png`
+}

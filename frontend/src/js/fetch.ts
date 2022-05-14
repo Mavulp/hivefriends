@@ -91,16 +91,3 @@ async function _handleResponse(response: Response) {
     return data
   })
 }
-
-export function makeQuery(options: object) {
-  if (Object.keys(options).length === 0) return ""
-
-  let q = ""
-
-  Object.entries(options).map(([key, value]) => {
-    q += `&${key}=${value}`
-  })
-
-  // Replace first & with ?
-  return "?" + q.substring(1)
-}

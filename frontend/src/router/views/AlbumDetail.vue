@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { onBeforeMount, reactive } from "vue"
+import { onBeforeMount, onBeforeUnmount, reactive } from "vue"
 import { useRoute } from "vue-router"
 import { useAlbums, Album } from "../../store/album"
 import { useLoading } from "../../store/loading"
 import { rootUrl } from "../../js/fetch"
+// import { useAuth } from "../../store/auth"
 
 const albums = useAlbums()
 const { getLoading } = useLoading()
 const route = useRoute()
+// const user = useAuth()
 
 const album = reactive<Album>({
   key: "",
@@ -16,7 +18,6 @@ const album = reactive<Album>({
 })
 
 onBeforeMount(async () => {
-  // console.log(route.params.id)
   const id = route.params.id
 
   if (id) {

@@ -2,7 +2,7 @@ import { isObject } from "lodash"
 import { defineStore } from "pinia"
 import { get, post } from "../js/fetch"
 import { useToast } from "./toast"
-import { FetchError } from "../js/types/errorTypes"
+import { FetchError } from "../js/global-types"
 
 interface State {
   user: User
@@ -10,6 +10,7 @@ interface State {
 }
 
 interface User {
+  key: string
   username: string
   avatar: string
   albumsUploaded: Array<string>
@@ -26,7 +27,7 @@ export const useAuth = defineStore("auth", {
     } as State),
   actions: {
     async signIn(credentials: { username: string; password: string }) {
-      return post("/api/login", credentials)
+      return post("/api/login/", credentials)
         .then(async (res) => {
           localStorage.setItem("bearer_token", res.bearerToken)
 
@@ -41,7 +42,6 @@ export const useAuth = defineStore("auth", {
     },
     async fetchUser(key: string | number) {
       return get(`/api/users/${key}`).then((response) => {
-        console.log(response)
         this.user = response
         localStorage.setItem("user", JSON.stringify(response))
       })
@@ -56,6 +56,7 @@ export const useAuth = defineStore("auth", {
     }
   },
   getters: {
-    isLoggedIn: (state) => state.logged
+    isLoggedIn: (state) => state.logged,
+    getKey: (state) => state.user.key
   }
 })
