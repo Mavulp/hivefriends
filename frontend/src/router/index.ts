@@ -16,7 +16,7 @@ import UserSettings from "../components/user/UserSettings.vue"
 import { useAuth } from "../store/auth"
 import { useBread } from "../store/bread"
 
-import { isEmpty, clone } from "lodash"
+import { isEmpty } from "lodash"
 
 /**
  * Router Setup
@@ -129,6 +129,8 @@ const router = createRouter({
 })
 
 function _formatMeta(field: string, route: RouteLocationNormalized) {
+  const auth = useAuth()
+
   let val = `${route.meta[field]}`
 
   if (!val) return ""
@@ -138,7 +140,7 @@ function _formatMeta(field: string, route: RouteLocationNormalized) {
   for (const key of Object.keys(route.params)) {
     if (!val.includes(key)) continue
 
-    val = val.replace(`_${key}_`, `${route.params[key]}`)
+    val = val.replace(`_${key}_`, auth.getUsername(`${route.params[key]}`))
   }
 
   return val

@@ -29,7 +29,7 @@ function signOut() {
         data-title-bottom="Your profile"
         :to="{ name: 'UserProfile', params: { id: auth.user.key } }"
       >
-        <span class="user"> {{ auth.user.key }} </span>
+        <span class="user"> {{ auth.user.username }} </span>
       </router-link>
 
       <router-link class="hover-bubble" data-title-bottom="Upload Album" :to="{ name: 'Upload' }">

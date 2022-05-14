@@ -8,6 +8,7 @@ import LoadingSpin from "../loading/LoadingSpin.vue"
 
 import AlbumListItem from "../albums/AlbumListItem.vue"
 import { useLoading } from "../../store/loading"
+import Search from "../form/Search.vue"
 
 // TODO:
 // - split into components (header)
@@ -17,7 +18,7 @@ const store = useAlbums()
 const route = useRoute()
 const { getLoading } = useLoading()
 
-const headerShrink = ref(false)
+// const headerShrink = ref(false)
 const data = ref<Array<Album>>([])
 const search = ref("")
 const open = ref(false)
@@ -28,21 +29,7 @@ onBeforeMount(async () => {
   if (id) {
     data.value = await store.fetchUserAlbums(id)
   }
-
-  document.addEventListener("scroll", handleScroll)
 })
-
-onBeforeUnmount(() => {
-  document.removeEventListener("scroll", handleScroll)
-})
-
-function handleScroll() {
-  if (window.scrollY > 56) {
-    headerShrink.value = true
-  } else {
-    headerShrink.value = false
-  }
-}
 
 const sortedAlbums = computed(() => {
   if (!search.value) return data.value
@@ -56,8 +43,8 @@ const sortedAlbums = computed(() => {
 </script>
 
 <template>
-  <div class="hi-album-list-user alt">
-    <div class="album-list-title" :class="{ shrink: headerShrink }">
+  <div class="hi-album-list-user">
+    <div class="album-list-title">
       <div class="title-wrap">
         <div class="inline-wrap">
           <h3>Your Albums</h3>
@@ -70,10 +57,7 @@ const sortedAlbums = computed(() => {
           <p>{{ sortedAlbums?.length ?? 0 }} filtered</p>
         </div>
 
-        <div class="album-list-search" :class="{ 'has-input': search }">
-          <span class="material-icons">&#xe8b6;</span>
-          <input v-model="search" placeholder="Search for an album..." />
-        </div>
+        <Search placeholder="Search for albums..." v-model:value="search" />
       </div>
 
       <Filters :class="{ active: open }" />

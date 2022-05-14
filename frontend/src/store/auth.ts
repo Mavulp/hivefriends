@@ -6,6 +6,7 @@ import { FetchError } from "../js/global-types"
 
 interface State {
   user: User
+  users: Array<User> | []
   logged: boolean
 }
 
@@ -23,6 +24,7 @@ export const useAuth = defineStore("auth", {
   state: () =>
     ({
       user: {},
+      users: [],
       logged: false
     } as State),
   actions: {
@@ -57,6 +59,14 @@ export const useAuth = defineStore("auth", {
   },
   getters: {
     isLoggedIn: (state) => state.logged,
-    getKey: (state) => state.user.key
+    getKey: (state) => state.user.key,
+    getUsername: (state) => (key: string | undefined) => {
+      if (!key) return state.user.username
+
+      const userFromList = state.users.find((item) => item.key === key)
+      if (userFromList) return userFromList.username
+
+      return state.user.key === key ? state.user.username : key
+    }
   }
 })

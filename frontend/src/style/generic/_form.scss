@@ -101,3 +101,46 @@
     padding-top: 32px;
   }
 }
+
+.form-search {
+  @include flex($align: center, $gap: 0);
+  // flex: 1;
+  width: 100%;
+  padding: 0 32px;
+  background-color: rgb(var(--color-white));
+
+  &.has-input {
+    .material-icons {
+      color: rgb(var(--color-highlight));
+    }
+  }
+
+  .material-icons {
+    color: rgb(var(--color-border));
+    font-size: 2.4rem;
+  }
+
+  button {
+    &:hover {
+      .material-icons {
+        color: rgb(var(--color-text)) !important;
+      }
+    }
+
+    .material-icons {
+      font-size: 2rem;
+      color: rgb(var(--color-text));
+    }
+  }
+
+  input {
+    height: 64px;
+    width: 100%;
+    line-height: 64px;
+    border: none;
+    flex: 1;
+    font-size: 1.6rem;
+    padding: 0 16px;
+    background-color: transparent;
+  }
+}
