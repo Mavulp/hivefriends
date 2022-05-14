@@ -19,6 +19,9 @@ pub enum Error {
     #[error("Invalid username or password")]
     InvalidLogin,
 
+    #[error("coverKey is not an image in this album")]
+    InvalidCoverKey,
+
     #[error("Invalid argument(s): {0}")]
     InvalidArguments(anyhow::Error),
 
@@ -46,9 +49,10 @@ impl IntoResponse for Error {
 
                 StatusCode::INTERNAL_SERVER_ERROR
             }
-            Error::JsonRejection(_) => StatusCode::BAD_REQUEST,
-            Error::MultipartSizeRejection(_) => StatusCode::BAD_REQUEST,
-            Error::InvalidArguments(_) => StatusCode::BAD_REQUEST,
+            Error::InvalidCoverKey
+            | Error::JsonRejection(_)
+            | Error::MultipartSizeRejection(_)
+            | Error::InvalidArguments(_) => StatusCode::BAD_REQUEST,
         };
 
         let body = Json(json!({

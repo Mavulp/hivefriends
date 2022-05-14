@@ -14,7 +14,7 @@ printf "image response: %s\n" "$response"
 image_key=$(printf "%s\n" "$response" | jq -r '.key')
 printf "image key: %s\n" "$image_key"
 
-response=$(curl -v http://localhost:8080/api/albums/ -H "Content-Type: application/json" --oauth2-bearer $token --data "{\"title\":\"testalbum\",\"timeframe\": {\"from\": 0, \"to\": 10}, \"imageKeys\": [\"$image_key\"]}")
+response=$(curl -v http://localhost:8080/api/albums/ -H "Content-Type: application/json" --oauth2-bearer $token --data "{\"title\":\"testalbum\",\"coverKey\":\"$image_key\",\"timeframe\": {\"from\": 0, \"to\": 10}, \"imageKeys\": [\"$image_key\"]}")
 printf "album post response: %s\n" "$response"
 album_key=$(printf "%s\n" "$response" | jq -r '.key')
 printf "album key: %s\n" "$album_key"

@@ -18,6 +18,7 @@ CREATE TABLE albums (
     key TEXT NOT NULL UNIQUE, -- used in API responses
     title TEXT NOT NULL,
     description TEXT NULL,
+    cover_key TEXT NULL,
     locations TEXT NULL,
     uploader_key TEXT NOT NULL,
     draft INTEGER NOT NULL DEFAULT 0, -- boolean
@@ -32,6 +33,10 @@ CREATE TABLE albums (
         FOREIGN KEY (uploader_key)
         REFERENCES users (key)
         ON DELETE CASCADE
+
+    CONSTRAINT fk_cover_key_assoc
+        FOREIGN KEY (cover_key)
+        REFERENCES images (key)
 ) STRICT;
 
 CREATE INDEX albums_key_idx

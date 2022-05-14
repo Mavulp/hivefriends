@@ -1,3 +1,4 @@
+use anyhow::Context;
 use axum::{extract::rejection::JsonRejection, Extension, Json};
 use rusqlite::params;
 use serde::{Deserialize, Serialize};
@@ -15,6 +16,7 @@ use super::Timeframe;
 pub(super) struct CreateAlbumRequest {
     title: String,
     description: Option<String>,
+    cover_key: Option<String>,
     locations: Option<String>,
     timeframe: Timeframe,
     image_keys: Vec<String>,
@@ -34,21 +36,18 @@ pub(super) async fn post(
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<CreateAlbumResponse>, Error> {
     let Json(request) = request?;
+    let conn = state.pool.get().await.context("Failed to get connection")?;
 
-    match create_album(request, uploader_key, &state).await {
-        Ok(response) => Ok(Json(response)),
-        Err(e) => Err(Error::InternalError(e)),
+    if let Some(cover_key) = &request.cover_key {
+        if !request.image_keys.contains(&cover_key) {
+            return Err(Error::InvalidCoverKey);
+        }
     }
-}
 
-async fn create_album(
-    request: CreateAlbumRequest,
-    uploader_key: String,
-    state: &Arc<AppState>,
-) -> anyhow::Result<CreateAlbumResponse> {
-    let conn = state.pool.get().await?;
-
-    let now = SystemTime::UNIX_EPOCH.elapsed()?.as_secs() as u32;
+    let now = SystemTime::UNIX_EPOCH
+        .elapsed()
+        .context("Failed to get current time")?
+        .as_secs() as u32;
     let key = blob_uuid::random_blob();
 
     let album_key = key.clone();
@@ -60,17 +59,19 @@ async fn create_album(
                 key, \
                 title, \
                 description, \
+                cover_key, \
                 locations, \
                 uploader_key, \
                 draft, \
                 timeframe_from, \
                 timeframe_to, \
                 created_at \
-            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)",
+            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
             params![
                 album_key,
                 request.title,
                 request.description,
+                request.cover_key,
                 request.locations,
                 uploader_key,
                 request.draft as i64,
@@ -96,5 +97,5 @@ async fn create_album(
     .await
     .unwrap()?;
 
-    Ok(CreateAlbumResponse { key })
+    Ok(Json(CreateAlbumResponse { key }))
 }

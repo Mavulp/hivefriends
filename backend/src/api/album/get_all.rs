@@ -52,6 +52,7 @@ pub(super) async fn get(
                     key, \
                     title, \
                     description, \
+                    cover_key, \
                     locations, \
                     uploader_key, \
                     draft, \
@@ -103,6 +104,7 @@ pub(super) async fn get(
                 key: db_album.key,
                 title: db_album.title,
                 description: db_album.description,
+                cover_key: db_album.cover_key,
                 locations: db_album.locations,
                 uploader_key: db_album.uploader_key,
                 draft: db_album.draft != 0,
