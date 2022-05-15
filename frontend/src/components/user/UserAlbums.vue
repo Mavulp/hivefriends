@@ -11,6 +11,7 @@ import AlbumListItem from "../albums/AlbumListItem.vue"
 
 import Search from "../form/Search.vue"
 import { useAuth } from "../../store/auth"
+import { useBread } from "../../store/bread"
 
 // TODO:
 // - split into components (header)
@@ -18,6 +19,7 @@ import { useAuth } from "../../store/auth"
 
 const store = useAlbums()
 const route = useRoute()
+
 const { getLoading } = useLoading()
 const { getKey, getUsername } = useAuth()
 

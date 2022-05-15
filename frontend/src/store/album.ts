@@ -71,7 +71,7 @@ export const useAlbums = defineStore("album", {
         })
         .catch((error: FetchError) => {
           const toast = useToast()
-          toast.add(isObject(error) ? error.message : String(error), "error")
+          toast.add(error.message, "error")
         })
         .finally(() => delLoading("get-album"))
     },
@@ -86,7 +86,7 @@ export const useAlbums = defineStore("album", {
         })
         .catch((error: FetchError) => {
           const toast = useToast()
-          toast.add(isObject(error) ? error.message : String(error), "error")
+          toast.add(error.message, "error")
         })
         .finally(() => delLoading("albums"))
     },
@@ -103,7 +103,7 @@ export const useAlbums = defineStore("album", {
         })
         .catch((error: FetchError) => {
           const toast = useToast()
-          toast.add(isObject(error) ? error.message : String(error), "error")
+          toast.add(error.message, "error")
         })
         .finally(() => delLoading(`${user}-album`))
     },
@@ -120,7 +120,7 @@ export const useAlbums = defineStore("album", {
         })
         .catch((error: FetchError) => {
           const toast = useToast()
-          toast.add(isObject(error) ? error.message : String(error), "error")
+          toast.add(error.message, "error")
         })
         .finally(() => delLoading(key))
     },
@@ -136,7 +136,8 @@ export const useAlbums = defineStore("album", {
           return key
         })
         .catch((error: FetchError) => {
-          console.log(error)
+          const toast = useToast()
+          toast.add(error.message, "error")
         })
         .finally(() => delLoading("add-album"))
     }

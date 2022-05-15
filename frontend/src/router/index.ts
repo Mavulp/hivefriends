@@ -34,7 +34,6 @@ const router = createRouter({
       component: Login,
       meta: {
         title: "Sign In",
-        breadcrumb: "Sign in to hi!friends",
         redirectOnAuth: "/home"
       }
     },
@@ -44,7 +43,6 @@ const router = createRouter({
       component: Home,
       meta: {
         title: "Home",
-        breadcrumb: "Latest albums",
         requiresAuth: true
       }
     },
@@ -54,7 +52,6 @@ const router = createRouter({
       component: AlbumList,
       meta: {
         title: "All Albums",
-        breadcrumb: "All albums from all users",
         requiresAuth: true
       }
     },
@@ -63,18 +60,16 @@ const router = createRouter({
       name: "AlbumDetail",
       component: AlbumDetail,
       meta: {
-        title: "_album_name_",
-        breadcrumb: "_album_name_",
+        title: "Album Detail",
         requiresAuth: true
       }
     },
     {
-      path: "/album/:id/image/:image",
+      path: "/album/:album/image/:image",
       name: "ImageDetail",
       component: ImageDetail,
       meta: {
-        title: "_id_",
-        breadcrumb: "_id_",
+        title: "Image Detail",
         requiresAuth: true
       }
     },
@@ -84,7 +79,6 @@ const router = createRouter({
       component: AlbumUpload,
       meta: {
         title: "Upload",
-        breadcrumb: "Upload a new album",
         requiresAuth: true
       }
     },
@@ -98,8 +92,7 @@ const router = createRouter({
           name: "UserProfile",
           component: UserProfile,
           meta: {
-            title: "_id_'s Profile",
-            breadcrumb: "_id_'s Profile",
+            title: "User Profile",
             requiresAuth: true
           }
         },
@@ -109,7 +102,6 @@ const router = createRouter({
           component: UserSettings,
           meta: {
             title: "User Settings",
-            breadcrumb: "User Settings",
             requiresAuth: true
           }
         },
@@ -118,8 +110,7 @@ const router = createRouter({
           name: "UserAlbums",
           component: UserAlbums,
           meta: {
-            title: "_id_'s Albums",
-            breadcrumb: "All albums uploaded by _id_",
+            title: "User Albums",
             requiresAuth: true
           }
         }
@@ -128,32 +119,9 @@ const router = createRouter({
   ]
 })
 
-function _formatMeta(field: string, route: RouteLocationNormalized) {
-  const auth = useAuth()
-
-  let val = `${route.meta[field]}`
-
-  if (!val) return ""
-
-  if (isEmpty(route.params)) return val
-
-  for (const key of Object.keys(route.params)) {
-    if (!val.includes(key)) continue
-
-    val = val.replace(`_${key}_`, auth.getUsername(`${route.params[key]}`))
-  }
-
-  return val
-}
-
 /**
  * Router Guards
  */
-router.afterEach((to) => {
-  const bread = useBread()
-
-  bread.set(_formatMeta("breadcrumb", to), _formatMeta("title", to))
-})
 
 function _clearUser(next: NavigationGuardNext) {
   localStorage.removeItem("user")

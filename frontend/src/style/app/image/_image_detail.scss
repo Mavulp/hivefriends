@@ -1,0 +1,109 @@
+.hi-image-detail {
+  display: block;
+  width: 100%;
+  min-height: calc(100vh - 56px);
+  position: relative;
+
+  .centered,
+  .loading-spinner {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .hi-album-detail-erorr {
+    h3 {
+      @include flex($align: center);
+      font-size: 4.2rem;
+      color: rgb(var(--color-text-light));
+    }
+
+    p {
+      font-size: 2.4rem;
+      color: rgb(var(--color-text-light));
+      margin-bottom: 32px;
+    }
+  }
+
+  .hi-image-wrapper {
+    // display: block;
+    @include flex($align: center);
+    padding: 64px;
+    width: 100%;
+    height: calc(100vh - 56px);
+    padding-bottom: 128px;
+    position: relative;
+
+    .image-loading {
+      @include t(0.15s);
+      @include flex($justify: center);
+      width: 50%;
+      height: 50%;
+      margin: auto;
+      // background-color: rgb(var(--color-white));
+    }
+
+    img {
+      @include t(0.15s);
+      display: block;
+      margin: auto;
+      max-width: 100%;
+      max-height: 100%;
+      object-position: center;
+      object-fit: contain;
+    }
+
+    .hi-image-context {
+      @include flex($align: center, $gap: 32px);
+      position: absolute;
+      bottom: 56px;
+      right: 64px;
+      left: 64px;
+
+      a,
+      p {
+        @include font(200);
+        font-size: 1.4rem;
+        margin: 0;
+        margin-right: 40px;
+      }
+
+      a {
+        @include flex($gap: 8px);
+        color: rgb(var(--color-highlight));
+        margin: 0;
+
+        .material-icons {
+          font-size: 1.4rem;
+        }
+      }
+
+      button {
+        @include font(200);
+        font-size: 1.4rem;
+
+        &:hover {
+          img {
+            opacity: 1;
+          }
+        }
+
+        &.disabled {
+          pointer-events: none;
+
+          img {
+            opacity: 0.3;
+          }
+        }
+
+        img {
+          display: block;
+          object-position: center;
+          object-fit: contain;
+          opacity: 0.7;
+        }
+      }
+    }
+  }
+}

@@ -10,10 +10,12 @@ import { formatDate } from "../../js/utils"
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 import AlbumTimestamp from "../../components/albums/AlbumTimestamp.vue"
 import ImageListitem from "../../components/albums/ImageListitem.vue"
+import { useBread } from "../../store/bread"
 
 const albums = useAlbums()
 const route = useRoute()
 const user = useAuth()
+const bread = useBread()
 
 const { getLoading } = useLoading()
 
@@ -25,6 +27,8 @@ onBeforeMount(async () => {
   if (id) {
     const data = await albums.fetchAlbum(id)
     Object.assign(album, data)
+
+    bread.set(`${data.title} by ${user.getUsername(data.uploaderKey)}`, `${data.title} // hi!friends`)
   }
 })
 
@@ -62,9 +66,6 @@ const chunks = computed(() => {
     </div>
 
     <div class="hi-album-title" v-else>
-      <!-- <pre>
-        {{ album }}
-      </pre> -->
       <div class="hi-album-title-meta">
         <AlbumTimestamp class="dark" :timeframe="album.timeframe" />
 
@@ -95,7 +96,7 @@ const chunks = computed(() => {
 
     <div class="hi-album-images">
       <div class="hi-album-image-col" v-for="chunk in chunks" :key="chunk.length">
-        <ImageListitem v-for="image in chunk" :key="image.key" :image="image" />
+        <ImageListitem v-for="image in chunk" :key="image.key" :image="image" :album-key="album.key" />
       </div>
     </div>
   </div>
