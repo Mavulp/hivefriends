@@ -39,7 +39,7 @@ export const useAuth = defineStore("auth", {
         })
         .catch((error: FetchError) => {
           const toast = useToast()
-          toast.add(isObject(error) ? error.message : String(error), "error")
+          toast.add(error.message, "error")
         })
     },
     async fetchUser(key: string | number) {
@@ -61,7 +61,7 @@ export const useAuth = defineStore("auth", {
         })
         .catch((error: FetchError) => {
           const toast = useToast()
-          toast.add(isObject(error) ? error.message : String(error), "error")
+          toast.add(error.message, "error")
         })
     },
     signInUserFromStorage(user: User) {

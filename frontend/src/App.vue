@@ -17,6 +17,8 @@ onBeforeMount(() => {
   Promise.allSettled([auth.fetchUsers()]).then(() => {
     loading.delLoading("app")
   })
+
+  document.title = "hi!friends"
 })
 </script>
 
