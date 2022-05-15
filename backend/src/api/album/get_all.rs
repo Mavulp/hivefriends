@@ -125,7 +125,12 @@ pub(super) async fn get(
     .unwrap()
 }
 
-fn apply_filters(query: &mut String, parameters: &mut Vec<Box<dyn ToSql>>, filters: AlbumFilters, user_key: String) {
+fn apply_filters(
+    query: &mut String,
+    parameters: &mut Vec<Box<dyn ToSql>>,
+    filters: AlbumFilters,
+    user_key: String,
+) {
     let mut filter_queries = Vec::new();
 
     if let Some(users) = filters.user {
@@ -177,7 +182,11 @@ fn to_filter_query(parameters: &mut Vec<Box<dyn ToSql>>, to: u64) -> String {
     format!("(timeframe_to <= ?{p} OR timeframe_from <= ?{p})")
 }
 
-fn draft_filter_query(parameters: &mut Vec<Box<dyn ToSql>>, draft: bool, user_key: String) -> String {
+fn draft_filter_query(
+    parameters: &mut Vec<Box<dyn ToSql>>,
+    draft: bool,
+    user_key: String,
+) -> String {
     if draft {
         parameters.push(Box::new(user_key));
         let p = parameters.len();

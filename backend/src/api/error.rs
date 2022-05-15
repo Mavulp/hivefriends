@@ -55,11 +55,20 @@ impl IntoResponse for Error {
             | Error::InvalidArguments(_) => StatusCode::BAD_REQUEST,
         };
 
-        let body = Json(json!({
-            "message": self.to_string(),
-        }))
-        .into_response();
+        let message = if let Error::JsonRejection(rej) = self {
+            use std::error::Error;
+            match rej {
+                JsonRejection::JsonDataError(e) => e.source().unwrap().to_string(),
+                JsonRejection::JsonSyntaxError(e) => e.source().unwrap().to_string(),
+                _ => rej.to_string(),
+            }
+        } else {
+            self.to_string()
+        };
 
+        let body = Json(json!({
+            "message": message,
+        }));
         (status, body).into_response()
     }
 }
