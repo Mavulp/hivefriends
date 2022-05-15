@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { imageUrl, Album } from "../../store/album"
+import AlbumTimestamp from "../../components/albums/AlbumTimestamp.vue"
 
 interface Props {
   data: Album
@@ -15,21 +16,8 @@ const { data } = defineProps<Props>()
       <img :src="imageUrl(data.images[0].key, 'original')" alt="" />
     </div>
 
-    <div class="album-timestamp" v-if="data.timeframe.from && data.timeframe.to">
-      <!-- Single day -->
-      <span v-if="data.timeframe.from === data.timeframe.to">
-        {{ data.timeframe.from }}
-      </span>
-
-      <!-- Start to end -->
-      <template v-else>
-        <span v-if="data.timeframe.from">{{ data.timeframe.from }}</span>
-        <div class="timestamp-divider"></div>
-        <span v-if="data.timeframe.to">{{ data.timeframe.to }}</span>
-      </template>
-    </div>
-
     <div class="album-meta">
+      <AlbumTimestamp class="dark-light" :timeframe="data.timeframe" />
       <h2>{{ data.title }}</h2>
       <!-- <span>by: dolanske</span> -->
       <p>

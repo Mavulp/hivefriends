@@ -52,6 +52,18 @@ export const useAuth = defineStore("auth", {
           if (error.message === "Unauthorized") return "unauth"
         })
     },
+
+    async fetchUsers() {
+      return get("/api/users/")
+        .then((response) => {
+          this.users = response
+          return response
+        })
+        .catch((error: FetchError) => {
+          const toast = useToast()
+          toast.add(isObject(error) ? error.message : String(error), "error")
+        })
+    },
     signInUserFromStorage(user: User) {
       this.user = user
       this.logged = true
@@ -64,7 +76,7 @@ export const useAuth = defineStore("auth", {
   getters: {
     isLoggedIn: (state) => state.logged,
     getKey: (state) => state.user.key,
-    getUsername: (state) => (key: string | undefined) => {
+    getUsername: (state) => (key: string | string[]) => {
       if (!key) return state.user.username
 
       const userFromList = state.users.find((item) => item.key === key)

@@ -114,9 +114,20 @@
     }
   }
 
+  &.dark-light {
+    span {
+      color: rgb(var(--color-text-light)) !important;
+    }
+
+    .timestamp-divider {
+      border-color: rgb(var(--color-border-light));
+    }
+  }
+
   span {
     @include font(200);
     color: rgb(var(--color-text-white));
+    margin: 0 !important;
   }
 
   .timestamp-divider {

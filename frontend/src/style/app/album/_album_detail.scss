@@ -44,7 +44,7 @@
 
       p {
         font-size: 2.2rem;
-        margin-bottom: 0px;
+        margin-bottom: 4px;
       }
 
       .album-meta-cells {
@@ -59,8 +59,15 @@
           margin: 0;
         }
 
+        a {
+          &:hover {
+            color: rgb(var(--color-highlight));
+          }
+        }
+
         .material-icons {
           color: rgb(var(--color-text-light));
+          pointer-events: none;
         }
 
         .mr-32 {

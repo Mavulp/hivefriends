@@ -10,6 +10,7 @@ import LoadingSpin from "../loading/LoadingSpin.vue"
 import AlbumListItem from "../albums/AlbumListItem.vue"
 
 import Search from "../form/Search.vue"
+import { useAuth } from "../../store/auth"
 
 // TODO:
 // - split into components (header)
@@ -18,6 +19,7 @@ import Search from "../form/Search.vue"
 const store = useAlbums()
 const route = useRoute()
 const { getLoading } = useLoading()
+const { getKey, getUsername } = useAuth()
 
 // const headerShrink = ref(false)
 const data = ref<Array<Album>>([])
@@ -48,7 +50,9 @@ const sortedAlbums = computed(() => {
     <div class="album-list-title">
       <div class="title-wrap">
         <div class="inline-wrap">
-          <h3>Your Albums</h3>
+          <h3>
+            {{ route.params.id === getKey ? "Your albums" : `${getUsername(route.params.id)}'s Albums` }}
+          </h3>
           <!-- <Button @click="open = !open">{{ open ? "Close" : "Filter" }}</Button> -->
         </div>
 
