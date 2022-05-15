@@ -1,7 +1,10 @@
 .hi-image-detail {
   display: block;
   width: 100%;
-  min-height: calc(100vh - 56px);
+  max-width: 1920px;
+  margin: auto;
+  // min-height: calc(100vh - 56px);
+  height: 100vh;
   position: relative;
 
   .centered,
@@ -29,10 +32,9 @@
   .hi-image-wrapper {
     // display: block;
     @include flex($align: center);
-    padding: 64px;
+    padding: 128px 64px;
     width: 100%;
-    height: calc(100vh - 56px);
-    padding-bottom: 128px;
+    height: 100vh;
     position: relative;
 
     .image-loading {
@@ -61,6 +63,12 @@
       right: 64px;
       left: 64px;
 
+      &.context-top {
+        bottom: unset;
+        top: 56px;
+      }
+
+      button,
       a,
       p {
         @include font(200);
@@ -80,8 +88,10 @@
       }
 
       button {
+        @include flex($gap: 8px);
         @include font(200);
         font-size: 1.4rem;
+        margin: 0;
 
         &:hover {
           img {

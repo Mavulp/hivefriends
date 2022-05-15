@@ -1,0 +1,75 @@
+:root.dark-theme {
+  .hi-album-upload .album-upload-layout .album-upload-metadata {
+    border-left: 1px solid rgb(var(--color-border-light));
+  }
+
+  [data-title-left],
+  [data-title-right],
+  [data-title-bottom],
+  [data-title-bottom-left],
+  [data-title-bottom-right],
+  [data-title-top],
+  [data-title-top-left],
+  [data-title-top-right] {
+    &:before {
+      color: rgb(var(--color-text));
+      background-color: rgb(var(--color-background-dimmed));
+      border: 1px solid rgb(var(--color-border-light));
+    }
+  }
+
+  .form-search {
+    border: 1px solid rgb(var(--color-border-light));
+  }
+
+  .hi-header {
+    .logo-wrap {
+      img {
+        filter: invert(1);
+      }
+    }
+  }
+
+  .route-login {
+    .route-login-split {
+      .block {
+        color: rgb(var(--color-text));
+      }
+    }
+  }
+
+  .button {
+    color: rgb(var(--color-text));
+
+    &:hover {
+      background-color: rgba(var(--color-background-dark), 0.75);
+    }
+
+    &.btn-login {
+      &:after {
+        border-bottom: 1px solid rgb(var(--color-text));
+      }
+    }
+
+    &.btn-disabled {
+      opacity: 0.75;
+    }
+  }
+
+  .hi-toasts {
+    .hi-toast-item {
+      p,
+      span {
+        color: rgb(var(--color-text));
+      }
+    }
+  }
+
+  .hi-image-detail .hi-image-wrapper .hi-image-context button img {
+    filter: invert(1);
+  }
+
+  .hi-album-upload .album-upload-layout .album-upload-items .album-upload-item {
+    background-color: rgb(var(--color-background-dark));
+  }
+}

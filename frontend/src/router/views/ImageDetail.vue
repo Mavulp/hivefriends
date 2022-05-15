@@ -8,9 +8,6 @@ import { useLoading } from "../../store/loading"
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 
 onBeforeMount(() => {
-  // TODO
-  // If album is not in the list, first load it, then display content
-
   if (!albums.getAlbum(albumKey.value)) {
     albums.fetchAlbum(albumKey.value)
   }
@@ -95,6 +92,14 @@ watch(
           </div>
         </transition>
 
+        <div class="hi-image-context context-top">
+          <div class="flex-1"></div>
+          <button class="hover-bubble">
+            <span class="material-icons">&#xe88e;</span>
+            Details
+          </button>
+        </div>
+
         <div class="hi-image-context">
           <router-link :to="{ name: 'AlbumDetail', params: { id: albumKey } }">
             <span class="material-icons"> &#xe2ea; </span>
@@ -106,7 +111,7 @@ watch(
           <p>Image {{ index + 1 }} / {{ album.images.length }}</p>
 
           <button
-            class="nav-prev"
+            class="nav-prev hover-bubble"
             data-title-top="Previous Image"
             :class="{ disabled: isNil(prevIndex) }"
             @click="setIndex('prev')"
@@ -115,7 +120,7 @@ watch(
           </button>
 
           <button
-            class="nav-left"
+            class="nav-left hover-bubble"
             data-title-top="Next Image"
             :class="{ disabled: isNil(nextIndex) }"
             @click="setIndex('next')"

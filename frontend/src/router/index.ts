@@ -70,7 +70,8 @@ const router = createRouter({
       component: ImageDetail,
       meta: {
         title: "Image Detail",
-        requiresAuth: true
+        requiresAuth: true,
+        disableNav: true
       }
     },
     {

@@ -4,6 +4,7 @@ import InputTextarea from "../../components/form/InputTextarea.vue"
 import ImageUploadItem from "../../components/upload/ImageUploadItem.vue"
 import Button from "../../components/Button.vue"
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
+import InputCheckbox from "../../components/form/InputCheckbox.vue"
 
 import { onBeforeUnmount, onMounted, reactive, ref, computed } from "vue"
 import { post, upload } from "../../js/fetch"
@@ -47,13 +48,14 @@ const albumKey = ref()
 
 // TODO: Compute global loading progress by
 // checking loading states of all files and add a loading bar / percentagle somewhere in the upload
-// TODO: add option to select 1 day
 // TODO: add multiple locations
 
 const draggingOver = ref(false)
 const dragShrink = ref(false)
+const singleDate = ref(false)
 
 const isLoading = computed(() => files.values.some((file) => file.loading))
+// const loadingProgress = computed(() => [...files.values].filter((item) => !item.key).length)
 const imageKeys = computed<Array<any>>(() => files.values.map((file) => file.key))
 
 /**
@@ -131,20 +133,14 @@ async function uploadFile(file: any, formData: any, index: number) {
         loading: false,
         key: response.key
       })
-
-      // console.log("ok upload", response, files.values[index], index)
     })
     .catch((error) => {
       Object.assign(files.values[index], {
         loading: false,
         error
       })
-
-      // console.log("erorr upload", error, files.values[index], index)
     })
 }
-
-// Spent an extended weekend hanging out and discovering Switzerland with my buddy. Did some tortellini tasting, some mountain climbing and some music making. Lot's of good meemories!!
 
 function delImage(index: number) {
   if (files.values[index]) {
@@ -169,14 +165,13 @@ async function submit() {
       locations: album.locations?.join(","),
       timeframe: {
         from: new Date(album.timeframe.from).getTime() / 1000,
-        to: new Date(album.timeframe.to).getTime() / 1000
+        to: new Date(singleDate.value ? album.timeframe.from : album.timeframe.to).getTime() / 1000
       }
     })
 
     const { key } = await store.addAlbum(model)
 
     if (key) {
-      // was ok
       albumKey.value = key
     }
   })
@@ -221,21 +216,24 @@ async function submit() {
         <InputTextarea v-model:value="album.description" placeholder="How was it?" label="Description" />
 
         <h6>Event Dates</h6>
-        <div class="form-date">
-          <div class="form-input">
-            <input type="date" v-model="album.timeframe.from" />
-            <label>Start</label>
-          </div>
+        <div class="form-date" :class="{ single: singleDate }">
+          <div class="form-inputs">
+            <div class="form-input">
+              <input type="date" v-model="album.timeframe.from" />
+              <label>{{ singleDate ? "Date" : "Start" }}</label>
+            </div>
 
-          <div class="form-input">
-            <input type="date" v-model="album.timeframe.to" />
-            <label>End</label>
+            <div class="form-input" v-if="!singleDate">
+              <input type="date" v-model="album.timeframe.to" />
+              <label>End</label>
+            </div>
           </div>
+          <InputCheckbox v-model:check="singleDate" label="Set date in the same day" />
         </div>
 
         <Button
-          class="btn-icon"
           :class="{ 'btn-disabled': files.values.length === 0 || isLoading }"
+          class="btn-icon"
           style="width: 100%"
           @click="submit"
         >

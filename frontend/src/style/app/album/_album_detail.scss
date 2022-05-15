@@ -1,6 +1,8 @@
 .hi-album-detail {
   display: block;
   width: 100%;
+  max-width: 1920px;
+  margin: auto;
   position: relative;
   min-height: calc(100vh - 56px);
 

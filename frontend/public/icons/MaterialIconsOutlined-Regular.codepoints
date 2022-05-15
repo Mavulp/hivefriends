@@ -993,7 +993,6 @@ inbox e156
 incomplete_circle e79b
 indeterminate_check_box e909
 info e88e
-info_outline e88f
 input e890
 insert_chart e24b
 insert_chart_outlined e26a
@@ -1052,9 +1051,7 @@ kitchen eb47
 kitesurfing e50d
 label e892
 label_important e937
-label_important_outline e948
 label_off e9b6
-label_outline e893
 lan eb2f
 landscape e3f7
 landslide ebd7
@@ -1082,7 +1079,6 @@ light f02a
 light_mode e518
 lightbulb e0f0
 lightbulb_circle ebfe
-lightbulb_outline e90f
 line_axis ea9a
 line_style e919
 line_weight e91a
@@ -1139,7 +1135,6 @@ location_searching e1b7
 lock e897
 lock_clock ef57
 lock_open e898
-lock_outline e899
 lock_person f8f3
 lock_reset eade
 login ea77

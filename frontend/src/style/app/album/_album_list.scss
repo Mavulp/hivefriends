@@ -2,6 +2,8 @@
   @include flex($align: start, $gap: 0);
   position: relative;
   width: 100%;
+  max-width: 1920px;
+  margin: auto;
 
   .album-list-title {
     @include t(0.15s);
@@ -53,6 +55,7 @@
     width: 60%;
     border-left: 1px solid rgb(var(--color-border-light));
     padding: 64px;
+    min-height: calc(100vh - 56px);
 
     .album-list-status {
       @include flex($gap: 0, $align: center, $justify: center);

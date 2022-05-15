@@ -7,9 +7,11 @@ import { useAuth } from "./store/auth"
 import Navigation from "./components/navigation/Navigation.vue"
 import Toasts from "./components/navigation/Toasts.vue"
 import { useLoading } from "./store/loading"
+import { useRoute } from "vue-router"
 
 const auth = useAuth()
 const loading = useLoading()
+const route = useRoute()
 
 onBeforeMount(() => {
   loading.addLoading("app")
@@ -24,7 +26,7 @@ onBeforeMount(() => {
 
 <template>
   <div class="hi-layout">
-    <Navigation />
+    <Navigation v-if="!route.meta.disableNav" />
 
     <Toasts />
 

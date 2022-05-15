@@ -123,7 +123,6 @@
 
           .loading-bar {
             max-width: 156px;
-            // margin-right: 32px;
           }
         }
 
@@ -135,9 +134,8 @@
 
     .album-upload-metadata {
       display: block;
-      height: 100vh;
+      min-height: calc(100vh - 56px);
       padding: 40px;
-      // border-left: 1px solid rgb(var(--color-border-light));
       background-color: rgb(var(--color-white));
 
       h3 {
