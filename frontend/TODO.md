@@ -47,7 +47,7 @@
   - [ ] Each album would have a world view with each location is pinned on the map
 
 - [ ] Image detail
-  - [ ] Option to switch off header (for presentation mode)
+  - [x] Option to switch off header (for presentation mode)
   - [ ] Optiona to rotate image
   - [ ] Option to download image (list all qualities)
   - [ ] top right button "metadata" which switches to 75 x 25 view with stuff about the image and controls on the right

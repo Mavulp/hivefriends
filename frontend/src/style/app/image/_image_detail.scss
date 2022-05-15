@@ -7,12 +7,34 @@
   height: 100vh;
   position: relative;
 
+  @include flex($gap: 0, $wrap: nowrap, $align: flex-start);
+
   .centered,
   .loading-spinner {
     position: absolute;
     top: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
+  }
+
+  .hi-image-meta-wrap {
+    @include t(0.15s);
+    width: 0;
+    max-width: 0;
+    overflow: hidden;
+    display: block;
+    height: 100vh;
+
+    border-left: 1px solid rgb(var(--color-border-light));
+
+    &.active {
+      width: 356px;
+      max-width: 356px;
+    }
+
+    .hi-image-meta {
+      padding: 128px 40px;
+    }
   }
 
   .hi-album-detail-erorr {
@@ -92,6 +114,7 @@
         @include font(200);
         font-size: 1.4rem;
         margin: 0;
+        color: rgb(var(--color-text));
 
         &:hover {
           img {

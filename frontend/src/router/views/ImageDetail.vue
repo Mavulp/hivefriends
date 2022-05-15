@@ -18,7 +18,11 @@ const url = ref<string | null>(null)
 const route = useRoute()
 const router = useRouter()
 const albums = useAlbums()
-const { getLoading, addLoading, delLoading } = useLoading()
+const { getLoading } = useLoading()
+
+const showMeta = ref(false)
+
+// const data = album.getImageMetadata()
 
 // Shut the fuck up typescript
 const albumKey = computed(() => `${route.params.album}`)
@@ -26,6 +30,7 @@ const imageKey = computed(() => `${route.params.image}`)
 
 // Get album data
 const album = computed<Album>(() => albums.getAlbum(albumKey.value) as Album)
+const image = computed(() => album.value.images.find((item) => item.key === imageKey.value))
 
 // Get image's index from the current album's images
 const index = computed<number>(() => album.value?.images.findIndex((item) => item.key === imageKey.value))
@@ -56,14 +61,15 @@ function setIndex(where: string) {
 watch(
   imageKey,
   (key) => {
+    // Reset
     url.value = null
-    // addLoading("get-image")
+
+    // Create new image and load it
     let img = new Image()
     img.src = imageUrl(key)
     img.onload = () => {
+      // Append src to image element, end loading
       url.value = img.src
-
-      // delLoading("get-image")
     }
   },
   {
@@ -94,25 +100,26 @@ watch(
 
         <div class="hi-image-context context-top">
           <div class="flex-1"></div>
-          <button class="hover-bubble">
-            <span class="material-icons">&#xe88e;</span>
-            Details
+          <button class="hover-bubble" @click="showMeta = !showMeta">
+            <span class="material-icons" v-if="showMeta">&#xe5cd;</span>
+            <span class="material-icons" v-else>&#xe88e;</span>
+            {{ showMeta ? "Close" : "Details" }}
           </button>
         </div>
 
         <div class="hi-image-context">
           <router-link :to="{ name: 'AlbumDetail', params: { id: albumKey } }">
             <span class="material-icons"> &#xe2ea; </span>
-            View Album
+            Go to album
           </router-link>
 
           <div class="flex-1"></div>
 
-          <p>Image {{ index + 1 }} / {{ album.images.length }}</p>
+          <p>Photo {{ index + 1 }} / {{ album.images.length }}</p>
 
           <button
             class="nav-prev hover-bubble"
-            data-title-top="Previous Image"
+            data-title-top="Previous photo"
             :class="{ disabled: isNil(prevIndex) }"
             @click="setIndex('prev')"
           >
@@ -121,7 +128,7 @@ watch(
 
           <button
             class="nav-left hover-bubble"
-            data-title-top="Next Image"
+            data-title-top="Next photo"
             :class="{ disabled: isNil(nextIndex) }"
             @click="setIndex('next')"
           >
@@ -130,8 +137,13 @@ watch(
         </div>
       </div>
 
-      <!-- <div class="hi-image-controls">
-      </div> -->
+      <div class="hi-image-meta-wrap" :class="{ active: showMeta }">
+        <div class="hi-image-meta">
+          <pre>
+            {{ image }}
+          </pre>
+        </div>
+      </div>
     </template>
   </div>
 </template>
