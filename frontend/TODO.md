@@ -18,7 +18,14 @@
   - [ ] Save album as draft (exclude from all lists except user albums)
 
 - [ ] Album editing
+
   - [ ] Add "edit album" and "delete album" for albums that the user created
+
+- [ ] Album Detail
+
+  - [ ] Some scrolling header with title & metadata? (mayhaps sidebar?)
+
+- [ ] Album Comments
 
 # Pages To do
 

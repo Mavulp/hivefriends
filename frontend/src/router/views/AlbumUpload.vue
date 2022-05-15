@@ -102,28 +102,28 @@ function onSubmitHandler(e: any, fromField: boolean = false) {
 }
 
 async function uploadFiles(_files: any) {
-  for (let i = 0; i <= _files.length; i++) {
-    const file = _files[i]
+  let i = files.values.length
 
+  for (const file of _files) {
     if (!file) continue
 
     let formData = new FormData()
     formData.append("file", file)
 
-    await delay(5)
-
     uploadFile(file, formData, clone(i))
+
+    i++
   }
 }
 
 async function uploadFile(file: any, formData: any, index: number) {
-  files.values.push({
+  files.values[index] = {
     name: file.name,
     size: file.size,
     type: file.type,
     loading: true,
     key: null
-  })
+  }
 
   return upload("/api/images/", formData)
     .then((response: any) => {
@@ -132,7 +132,7 @@ async function uploadFile(file: any, formData: any, index: number) {
         key: response.key
       })
 
-      console.log("ok upload", response, files.values[index])
+      // console.log("ok upload", response, files.values[index], index)
     })
     .catch((error) => {
       Object.assign(files.values[index], {
@@ -140,7 +140,7 @@ async function uploadFile(file: any, formData: any, index: number) {
         error
       })
 
-      console.log("erorr upload", error, files.values[index])
+      // console.log("erorr upload", error, files.values[index], index)
     })
 }
 
