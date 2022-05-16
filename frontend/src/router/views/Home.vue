@@ -22,6 +22,6 @@ import Button from "../../components/Button.vue"
       👫
     </p>
 
-    <Button class="btn-red">Delete</Button>
+    <!-- <Button class="btn-red">Delete</Button> -->
   </div>
 </template>

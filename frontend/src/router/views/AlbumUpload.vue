@@ -233,7 +233,7 @@ async function submit() {
 
         <Button
           :class="{ 'btn-disabled': files.values.length === 0 || isLoading }"
-          class="btn-icon"
+          class="btn-icon btn-black"
           style="width: 100%"
           @click="submit"
         >

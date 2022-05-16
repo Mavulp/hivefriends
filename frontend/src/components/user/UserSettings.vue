@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue"
-import ButtonVue from "../Button.vue"
+import Button from "../Button.vue"
 
 import InputCheckbox from "../form/InputCheckbox.vue"
 
@@ -45,9 +45,9 @@ const themeOptions = ["light-theme", "dark-contrast", "dark-normal"]
         </li>
       </ul>
 
-      <div class="user-actions">
-        <Button>Delete Albums</Button>
-        <Button>Delete User</Button>
+      <div class="user-actions buttons">
+        <!-- <Button class="btn-red">Delete Albums</Button> -->
+        <Button class="btn-red">Delete User</Button>
       </div>
     </div>
   </div>

@@ -125,14 +125,16 @@
 
       .hi-album-image {
         display: block;
+        width: 100%;
         margin-bottom: 32px;
 
         .image-wrap {
           display: block;
+          width: 100%;
 
           img {
             display: block;
-            max-width: 100%;
+            width: 100%;
           }
         }
       }

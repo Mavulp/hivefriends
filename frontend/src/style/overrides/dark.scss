@@ -72,4 +72,16 @@
   .hi-album-upload .album-upload-layout .album-upload-items .album-upload-item {
     background-color: rgb(var(--color-background-dark));
   }
+
+  .form-checkbox {
+    input[type="checkbox"] {
+      & + label {
+        .material-icons {
+          &:before {
+            background-color: rgb(var(--color-background-dark));
+          }
+        }
+      }
+    }
+  }
 }

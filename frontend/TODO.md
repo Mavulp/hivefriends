@@ -26,8 +26,8 @@
 
 - [ ] Album Detail
 
-  - [ ] Some scrolling header with title & metadata? (mayhaps sidebar?)
   - [ ] Tagged users
+  - [ ] locations
 
 - [ ] Album Comments
 
@@ -38,7 +38,7 @@
 - [ ] Dark mode
 
   - [ ] High Contrast (very dark)
-  - [ ] Normal dak
+  - [x] Normal dak
 
 - [ ] Location on steroids
 
@@ -47,10 +47,16 @@
   - [ ] Each album would have a world view with each location is pinned on the map
 
 - [ ] Image detail
+
   - [x] Option to switch off header (for presentation mode)
   - [ ] Optiona to rotate image
   - [ ] Option to download image (list all qualities)
   - [ ] top right button "metadata" which switches to 75 x 25 view with stuff about the image and controls on the right
+
+  - [x] Arrow keys in albun detail navigation
+  - [x] esc fucks off
+
+  - [ ] Slideshow mode (set delay in details)
 
 # Pages To do
 

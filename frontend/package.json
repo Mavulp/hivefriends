@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vueuse/core": "^8.5.0",
     "lodash": "^4.17.21",
     "pinia": "^2.0.14",
     "sass": "^1.51.0",

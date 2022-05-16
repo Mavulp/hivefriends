@@ -82,7 +82,7 @@ const sortedAlbums = computed(() => {
           <!-- <span class="material-icons">&#xe88b;</span> -->
           <h3>Lmao</h3>
           <p>No albums found</p>
-          <Button class="center auto" :to="{ name: 'Upload' }">Add New?</Button>
+          <Button class="center auto btn-black" :to="{ name: 'Upload' }">Add New?</Button>
         </div>
       </div>
       <template v-else>

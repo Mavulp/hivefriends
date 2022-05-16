@@ -4,6 +4,7 @@ import { useRoute, useRouter } from "vue-router"
 import { imageUrl, useAlbums, Album } from "../../store/album"
 import { isEmpty, isNil } from "lodash"
 import { useLoading } from "../../store/loading"
+import { onKeyStroke } from "@vueuse/core"
 
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 
@@ -76,6 +77,13 @@ watch(
     immediate: true
   }
 )
+
+// Arrow keys
+onKeyStroke("ArrowLeft", () => setIndex("prev"))
+onKeyStroke("ArrowRight", () => setIndex("next"))
+onKeyStroke("Escape", () => {
+  router.push({ name: "AlbumDetail", params: { id: albumKey.value } })
+})
 </script>
 
 <template>
