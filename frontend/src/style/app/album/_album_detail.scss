@@ -118,15 +118,14 @@
     padding: 0 64px;
     min-height: 50vh;
 
-    @include grid(32px, 3);
+    @include grid(40px, 3);
 
     .hi-album-image-col {
-      @include flex($direction: column, $gap: 32px);
+      @include flex($direction: column, $gap: 40px);
 
       .hi-album-image {
         display: block;
         width: 100%;
-        margin-bottom: 32px;
 
         .image-wrap {
           display: block;

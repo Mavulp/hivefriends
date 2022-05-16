@@ -31,7 +31,11 @@ onBeforeMount(() => {
     <Toasts />
 
     <div class="hi-router-layout">
-      <router-view></router-view>
+      <router-view v-slot="{ Component }">
+        <transition name="pagetransition" mode="out-in">
+          <component :is="Component" :key="route.fullPath" />
+        </transition>
+      </router-view>
     </div>
   </div>
 </template>
