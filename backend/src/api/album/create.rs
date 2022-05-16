@@ -47,7 +47,7 @@ pub(super) async fn post(
     let now = SystemTime::UNIX_EPOCH
         .elapsed()
         .context("Failed to get current time")?
-        .as_secs() as u32;
+        .as_secs();
     let key = blob_uuid::random_blob();
 
     let album_key = key.clone();

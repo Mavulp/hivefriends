@@ -205,7 +205,7 @@ pub fn create_account(username: &str, password: &str, conn: &mut Connection) -> 
     let phc_string = argon2
         .hash_password(password.as_bytes(), &salt)?
         .to_string();
-    let now = SystemTime::UNIX_EPOCH.elapsed()?.as_secs() as u32;
+    let now = SystemTime::UNIX_EPOCH.elapsed()?.as_secs();
 
     conn.execute(
         "INSERT INTO users (key, username, password_hash, created_at) VALUES (?1, ?2, ?3, ?4)",

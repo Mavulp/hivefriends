@@ -60,7 +60,7 @@ async fn upload_image(
     user_key: String,
     state: &Arc<AppState>,
 ) -> anyhow::Result<ImageCreationResponse> {
-    let now = SystemTime::UNIX_EPOCH.elapsed()?.as_secs() as u32;
+    let now = SystemTime::UNIX_EPOCH.elapsed()?.as_secs();
 
     let field = multipart
         .next_field()

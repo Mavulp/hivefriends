@@ -64,7 +64,7 @@ async fn post_login(
             .verify_password(req.password.as_bytes(), &parsed_hash)
             .is_ok()
         {
-            let now = SystemTime::UNIX_EPOCH.elapsed().unwrap().as_secs() as u32;
+            let now = SystemTime::UNIX_EPOCH.elapsed().unwrap().as_secs();
             let bearer_token = generate_token();
             let token = bearer_token.clone();
 
