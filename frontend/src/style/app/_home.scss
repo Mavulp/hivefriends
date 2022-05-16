@@ -1,26 +1,5 @@
 .hi-home {
-  @include flex($direction: column);
+  // @include flex($direction: column);
   width: 100%;
   padding: 64px 128px;
-
-  .album-column {
-    &.small {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 32px;
-      grid-template-rows: 1fr 1fr;
-      // @include grid(32px, 3);
-    }
-
-    &.large {
-      .album {
-        height: 100%;
-      }
-    }
-  }
-
-  .hi-home-button {
-    @include flex($justify: center);
-    padding-top: 32px;
-  }
 }

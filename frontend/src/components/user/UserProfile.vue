@@ -3,5 +3,5 @@ import { ref } from "vue"
 </script>
 
 <template>
-  <div>user profal</div>
+  <div class="hi-user-page">user profal</div>
 </template>

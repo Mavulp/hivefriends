@@ -38,6 +38,10 @@
     }
   }
 
+  &.btn-red {
+    background-color: rgb(var(--color-error));
+  }
+
   &.btn-disabled {
     pointer-events: none;
     background-color: rgba(var(--color-background-dark), 0.8);

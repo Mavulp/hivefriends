@@ -32,7 +32,7 @@ function signOut() {
         <span class="user"> {{ auth.user.username }} </span>
       </router-link>
 
-      <router-link class="hover-bubble" data-title-bottom="Upload Album" :to="{ name: 'Upload' }">
+      <router-link class="hover-bubble" data-title-bottom="Upload album" :to="{ name: 'Upload' }">
         <span class="material-icons">&#xe2cc;</span>
       </router-link>
 

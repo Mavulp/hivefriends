@@ -14,7 +14,7 @@
 
   - [ ] Tag locations
   - [ ] Tag users
-  - [ ] Set timeframe as a day (checkbox, but sets still from and to with the same date)
+  - [x] Set timeframe as a day (checkbox, but sets still from and to with the same date)
   - [ ] Save album as draft (exclude from all lists except user albums)
 
   - [ ] Add option to update metadata per image

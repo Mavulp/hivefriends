@@ -74,7 +74,7 @@ const chunks = computed(() => {
 
         <div class="album-meta-cells">
           <span class="material-icons">&#xe3f4;</span>
-          <p class="mr-32">{{ album.images.length }} Images</p>
+          <p class="mr-32">{{ album.images.length }} {{ album.images.length === 1 ? "Photo" : "Photos" }}</p>
 
           <span class="material-icons">&#xe851;</span>
           <router-link :to="{ name: 'UserProfile', params: { id: album.uploaderKey } }" class="mr-32">

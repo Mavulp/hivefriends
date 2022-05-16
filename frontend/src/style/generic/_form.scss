@@ -179,6 +179,15 @@ input:-webkit-autofill:active {
       @include flex($gap: 16px);
       cursor: pointer;
 
+      &:hover {
+        .material-icons {
+          &:before {
+            opacity: 1;
+            inset: -4px;
+          }
+        }
+      }
+
       p {
         font-size: 1.4rem;
         margin: 0;
@@ -187,6 +196,20 @@ input:-webkit-autofill:active {
       .material-icons {
         color: rgb(var(--color-border));
         font-size: 2.6rem;
+        position: relative;
+        z-index: 5;
+
+        &:before {
+          @include t(0.15s);
+          @include radius(50%);
+          content: "";
+          display: block;
+          inset: -2px;
+          position: absolute;
+          background-color: rgba(var(--color-background-dimmed), 0.12);
+          z-index: -1;
+          opacity: 0;
+        }
       }
     }
 
