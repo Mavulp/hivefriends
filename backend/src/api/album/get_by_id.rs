@@ -46,8 +46,8 @@ pub(super) async fn get(
             let mut stmt = conn
                 .prepare(
                     "SELECT i.key, i.uploader_key, i.created_at FROM images i \
-                INNER JOIN album_image_associations aia ON aia.image_id=i.id \
-                WHERE aia.album_id=?1",
+                    INNER JOIN album_image_associations aia ON aia.image_id=i.id \
+                    WHERE aia.album_id=?1",
                 )
                 .context("Failed to prepare statement for image query")?;
             let image_iter = stmt

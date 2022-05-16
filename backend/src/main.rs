@@ -2,12 +2,14 @@ use anyhow::Context;
 use axum::{routing::Router, Extension};
 use deadpool_sqlite::{Config, Pool, Runtime};
 use rusqlite_migration::{Migrations, M};
+use rusqlite::params;
 use tower_http::trace::TraceLayer;
 use tracing::*;
 
 use std::net::SocketAddr;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::time::{SystemTime, Duration};
 
 pub struct AppState {
     pool: Pool,
@@ -28,6 +30,8 @@ pub mod api {
 pub mod data {
     pub mod image;
 }
+
+const AUTH_TIME_SECONDS: u64 = 3600 * 24 * 7;
 
 #[tokio::main]
 async fn main() {
@@ -97,6 +101,18 @@ async fn setup_database(path: &str) -> anyhow::Result<Pool> {
 
     let conn = pool.get().await?;
     conn.interact(move |conn| migrations.to_latest(conn))
+        .await
+        .unwrap()?;
+
+    info!("Clearing old auth sessions");
+    let now = SystemTime::UNIX_EPOCH.elapsed().unwrap();
+    let oldest_auth_time = now - Duration::from_secs(AUTH_TIME_SECONDS);
+    conn.interact(move |conn| 
+                conn.execute(
+                    "DELETE FROM auth_sessions WHERE created_at<?1",
+                    params![oldest_auth_time.as_secs()],
+                )
+        )
         .await
         .unwrap()?;
 

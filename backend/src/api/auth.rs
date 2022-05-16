@@ -12,12 +12,22 @@ use headers::{authorization::Bearer, Authorization};
 use rusqlite::{params, OptionalExtension};
 use serde_json::json;
 use thiserror::Error;
+use serde_rusqlite::from_row;
+use serde::Deserialize;
+use tracing::error;
 
 use std::sync::Arc;
+use std::time::{SystemTime, Duration};
 
 use crate::AppState;
 
 pub struct Authorize(pub String);
+
+#[derive(Deserialize)]
+struct DbSession {
+    user_key: String,
+    created_at: u64,
+}
 
 #[async_trait]
 impl<B> FromRequest<B> for Authorize
@@ -33,12 +43,13 @@ where
 
         let conn = state.pool.get().await.map_err(anyhow::Error::new)?;
 
-        let user_key = conn
+        let bearer_token = bearer.token().to_owned();
+        let db_session = conn
             .interact(move |conn| {
                 conn.query_row(
-                    r"SELECT user_key FROM auth_sessions WHERE token=?1",
+                    r"SELECT user_key, created_at FROM auth_sessions WHERE token=?1",
                     params![bearer.token()],
-                    |row| row.get::<_, String>(0),
+                    |row| Ok(from_row::<DbSession>(row).unwrap()),
                 )
                 .optional()
             })
@@ -46,8 +57,26 @@ where
             .unwrap()
             .map_err(anyhow::Error::new)?;
 
-        if let Some(user_key) = user_key {
-            Ok(Authorize(user_key))
+        if let Some(session) = db_session {
+            let created_at = Duration::from_secs(session.created_at);
+            let now = SystemTime::UNIX_EPOCH.elapsed().unwrap();
+
+            if now < created_at + Duration::from_secs(crate::AUTH_TIME_SECONDS) {
+                Ok(Authorize(session.user_key))
+            } else {
+        conn
+            .interact(move |conn| {
+                if let Err(e) = conn.execute(
+                    "DELETE FROM auth_sessions WHERE token=?1",
+                    params![bearer_token],
+                ) {
+                    error!("Failed to delete auth token: {}", e);
+                }
+            }).await.unwrap();
+
+                Err(AuthorizationRejection::ExpiredToken)
+            }
+
         } else {
             Err(AuthorizationRejection::InvalidToken)
         }
@@ -62,6 +91,8 @@ pub enum AuthorizationRejection {
     Headers(#[from] TypedHeaderRejection),
     #[error("Bearer token is invalid")]
     InvalidToken,
+    #[error("Bearer token has expired, login again")]
+    ExpiredToken,
     #[error("{0}")]
     Generic(#[from] anyhow::Error),
 }
@@ -72,7 +103,8 @@ impl IntoResponse for AuthorizationRejection {
             AuthorizationRejection::Extension(_) => StatusCode::INTERNAL_SERVER_ERROR,
             AuthorizationRejection::Generic(_) => StatusCode::INTERNAL_SERVER_ERROR,
             AuthorizationRejection::Headers(_) => StatusCode::BAD_REQUEST,
-            AuthorizationRejection::InvalidToken => StatusCode::UNAUTHORIZED,
+            AuthorizationRejection::InvalidToken |
+            AuthorizationRejection::ExpiredToken => StatusCode::UNAUTHORIZED,
         };
 
         let body = Json(json!({
