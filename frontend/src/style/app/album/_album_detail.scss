@@ -117,6 +117,7 @@
     max-width: 1920px;
     padding: 0 64px;
     min-height: 50vh;
+    padding-bottom: 50vh;
 
     @include grid(40px, 3);
 
