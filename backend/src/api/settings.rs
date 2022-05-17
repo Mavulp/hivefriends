@@ -42,6 +42,18 @@ pub struct Settings {
     pub color_theme: Option<String>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DbSettings {
+    pub display_name: Option<String>,
+    pub bio: Option<String>,
+    pub avatar_key: Option<String>,
+    pub banner_key: Option<String>,
+    pub accent_color: Option<String>,
+    pub featured_album_key: Option<String>,
+    pub private: Option<bool>,
+    pub color_theme: Option<String>,
+}
+
 async fn get_settings(
     Authorize(user_key): Authorize,
     Extension(state): Extension<Arc<AppState>>,
@@ -62,7 +74,7 @@ async fn get_settings(
                     color_theme \
                 FROM users WHERE key = ?1",
                 params![user_key],
-                |row| Ok(from_row::<Settings>(row).unwrap()),
+                |row| Ok(from_row::<DbSettings>(row).unwrap()),
             )
             .optional()
         })
@@ -70,8 +82,17 @@ async fn get_settings(
         .unwrap()
         .context("Failed to query settings")?;
 
-    if let Some(settings) = result {
-        Ok(Json(settings))
+    if let Some(db_settings) = result {
+        Ok(Json(Settings {
+            display_name: db_settings.display_name,
+            bio: db_settings.bio,
+            avatar_key: db_settings.avatar_key,
+            banner_key: db_settings.banner_key,
+            accent_color: db_settings.accent_color,
+            featured_album_key: db_settings.featured_album_key,
+            private: db_settings.private,
+            color_theme: db_settings.color_theme,
+        }))
     } else {
         Err(Error::NotFound)
     }
