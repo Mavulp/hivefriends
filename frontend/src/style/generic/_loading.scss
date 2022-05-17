@@ -54,6 +54,12 @@
   &.dark {
     border-top: 5px solid rgb(var(--color-text));
   }
+
+  &.center-page {
+    position: fixed;
+    top: calc(50% - 14px);
+    left: calc(50% - 14px);
+  }
 }
 
 @keyframes spinner {

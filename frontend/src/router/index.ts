@@ -13,7 +13,7 @@ import UserAlbums from "../components/user/UserAlbums.vue"
 import UserProfile from "../components/user/UserProfile.vue"
 import UserSettings from "../components/user/UserSettings.vue"
 
-import { useAuth } from "../store/auth"
+import { useUser } from "../store/user"
 import { useBread } from "../store/bread"
 
 import { isEmpty } from "lodash"
@@ -132,7 +132,7 @@ function _clearUser(next: NavigationGuardNext) {
 }
 
 router.beforeResolve(async (to, from, next) => {
-  const auth = useAuth()
+  const auth = useUser()
 
   if (to.meta.requiresAuth) {
     const token = localStorage.getItem("bearer_token")

@@ -1,4 +1,4 @@
-:root.dark-theme {
+:root.dark-normal {
   .hi-album-upload .album-upload-layout .album-upload-metadata {
     border-left: 1px solid rgb(var(--color-border-light));
   }
@@ -45,6 +45,14 @@
       background-color: rgba(var(--color-background-dark), 0.75);
     }
 
+    &.btn-black {
+      background-color: rgb(var(--color-border-light));
+
+      &:hover {
+        background-color: rgb(var(--color-border));
+      }
+    }
+
     &.btn-login {
       &:after {
         border-bottom: 1px solid rgb(var(--color-text));
@@ -80,6 +88,24 @@
           &:before {
             background-color: rgb(var(--color-background-dark));
           }
+        }
+      }
+    }
+  }
+
+  .form-select {
+    .select-dropdown {
+      button {
+        &.is-selected {
+          background-color: rgba(var(--color-border-light), 0.5);
+
+          &:hover {
+            background-color: rgba(var(--color-border), 0.5);
+          }
+        }
+
+        &:hover {
+          background-color: rgba(var(--color-border-light), 0.3);
         }
       }
     }

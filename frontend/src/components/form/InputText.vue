@@ -2,13 +2,13 @@
 import { Error } from "../../js/validation"
 
 interface Props {
-  label: string | undefined | null
-  value: string | undefined | null
+  label?: string
+  value: string | undefined
   type?: string
   error?: Error
 }
 
-const { label = "", value, type = "text", error } = defineProps<Props>()
+const { label, value, type = "text", error } = defineProps<Props>()
 const emit = defineEmits<{
   (e: "update:value", value: string): void
 }>()
@@ -21,7 +21,7 @@ function updateValue(e: any) {
 <template>
   <div class="form-input" :class="{ 'input-error': error && error.invalid }">
     <label v-if="label">{{ label }}</label>
-    <input v-bind="$attrs" tabindex="0" class="border-smoke font-14" :type="type" @input="updateValue" />
+    <input v-bind="$attrs" tabindex="0" class="border-smoke font-14" :type="type" @input="updateValue" :value="value" />
     <div class="input-error-list" v-if="error && error.invalid">
       <p v-for="item in error.errors">{{ item }}</p>
     </div>

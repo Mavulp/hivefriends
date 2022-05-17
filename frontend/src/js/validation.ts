@@ -1,4 +1,4 @@
-import { reactive, ref, watch } from "vue"
+import { reactive, ref, watch, watchEffect } from "vue"
 import { isEmpty, isNil } from "lodash"
 
 /**
@@ -79,7 +79,7 @@ export function useFormValidation(
     _resetErrorObject()
   }
 
-  function validate() {
+  async function validate() {
     _resetErrorObject()
 
     root.pending = true
@@ -90,7 +90,7 @@ export function useFormValidation(
 
         const itemRules: Rule = rules.value[key]
 
-        Object.entries(itemRules).map(async ([ruleKey, ruleData]) => {
+        for (const [ruleKey, ruleData] of Object.entries(itemRules)) {
           const { _message, _validate }: ValidationRule = ruleData
 
           const result = await _validate(value)
@@ -103,23 +103,24 @@ export function useFormValidation(
             errors[key].invalid = true
             errors[key].errors.add(_message())
           }
-        })
+        }
       }
 
       if (root.anyError) {
         reject(errors)
       } else {
-        console.log("is ok")
-
         resolve(true)
       }
+
+      root.pending = false
     })
   }
 
   return {
     errors,
     reset,
-    validate
+    validate,
+    status: root
   }
 }
 

@@ -3,13 +3,13 @@ import InputText from "../../components/form/InputText.vue"
 import Btn from "../../components/Button.vue"
 import { ref, reactive, computed, nextTick, onBeforeMount } from "vue"
 import { getRanMinMax } from "../../js/utils"
-import { useAuth } from "../../store/auth"
+import { useUser } from "../../store/user"
 import { useFormValidation, required, minLength, asyncValidation } from "../../js/validation"
 import { useRouter } from "vue-router"
 
 const router = useRouter()
 
-const auth = useAuth()
+const auth = useUser()
 
 type SignInForm = {
   username: string
@@ -88,7 +88,7 @@ onBeforeMount(() => {
           placeholder="***************"
         />
 
-        <Btn class="btn-login" type="submit" size="56px">
+        <Btn class="btn-login btn-black" type="submit" size="56px">
           <template #default>
             <span>Sign In</span>
           </template>

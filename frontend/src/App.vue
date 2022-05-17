@@ -1,22 +1,23 @@
 <script setup lang="ts">
 import "./style/index.scss"
 
-import { onBeforeMount } from "vue"
-import { useAuth } from "./store/auth"
-
 import Navigation from "./components/navigation/Navigation.vue"
 import Toasts from "./components/navigation/Toasts.vue"
+
+import { onBeforeMount } from "vue"
+import { useUser } from "./store/user"
+
 import { useLoading } from "./store/loading"
 import { useRoute } from "vue-router"
 
-const auth = useAuth()
+const auth = useUser()
 const loading = useLoading()
 const route = useRoute()
 
 onBeforeMount(() => {
   loading.addLoading("app")
 
-  Promise.allSettled([auth.fetchUsers()]).then(() => {
+  Promise.allSettled([auth.fetchUsers(), auth.fetchSettings]).then(() => {
     loading.delLoading("app")
   })
 

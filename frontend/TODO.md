@@ -58,6 +58,8 @@
 
   - [ ] Slideshow mode (set delay in details)
 
+  - [ ] Add programatical transition based on if the next image is prev or next (opacity slide left, opacity slide right)
+
 # Pages To do
 
 - [ ] Image Detail

@@ -10,7 +10,7 @@ import LoadingSpin from "../loading/LoadingSpin.vue"
 import AlbumListItem from "../albums/AlbumListItem.vue"
 
 import Search from "../form/Search.vue"
-import { useAuth } from "../../store/auth"
+import { useUser } from "../../store/user"
 import { useBread } from "../../store/bread"
 
 // TODO:
@@ -21,7 +21,7 @@ const store = useAlbums()
 const route = useRoute()
 
 const { getLoading } = useLoading()
-const { getKey, getUsername } = useAuth()
+const { getKey, getUsername } = useUser()
 
 // const headerShrink = ref(false)
 const data = ref<Array<Album>>([])

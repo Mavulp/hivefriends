@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue"
+import { computed } from "vue"
 
 interface Props {
   label: string
@@ -15,14 +15,19 @@ const emit = defineEmits<{
 
 const { check, label } = defineProps<Props>()
 
-function updateValue(e: any) {
-  emit("update:check", e.target.checked)
-}
+const data = computed<boolean>({
+  get() {
+    return check
+  },
+  set(value) {
+    emit("update:check", value)
+  }
+})
 </script>
 
 <template>
   <div class="form-checkbox">
-    <input type="checkbox" :name="d" :id="d" @input="updateValue" />
+    <input type="checkbox" :name="d" :id="d" v-model="data" />
     <label :for="d">
       <div class="icon">
         <span v-if="check" class="material-icons">&#xe834;</span>

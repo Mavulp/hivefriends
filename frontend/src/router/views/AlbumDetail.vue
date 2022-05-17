@@ -4,7 +4,7 @@ import { useRoute } from "vue-router"
 import { useAlbums, Album, imageUrl, Image } from "../../store/album"
 import { useLoading } from "../../store/loading"
 import { isEmpty } from "lodash"
-import { useAuth } from "../../store/auth"
+import { useUser } from "../../store/user"
 import { formatDate } from "../../js/utils"
 
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
@@ -14,7 +14,7 @@ import { useBread } from "../../store/bread"
 
 const albums = useAlbums()
 const route = useRoute()
-const user = useAuth()
+const user = useUser()
 const bread = useBread()
 
 const { getLoading } = useLoading()

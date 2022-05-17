@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router"
-import { useAuth } from "../../store/auth"
+import { useUser } from "../../store/user"
 import { useBread } from "../../store/bread"
 
 const router = useRouter()
-const auth = useAuth()
+const auth = useUser()
 const bread = useBread()
 
 function signOut() {
@@ -29,7 +29,7 @@ function signOut() {
         data-title-bottom="Your profile"
         :to="{ name: 'UserProfile', params: { id: auth.user.key } }"
       >
-        <span class="user"> {{ auth.user.username }} </span>
+        <span class="user"> {{ auth.getUsername() }} </span>
       </router-link>
 
       <router-link class="hover-bubble" data-title-bottom="Upload album" :to="{ name: 'Upload' }">
