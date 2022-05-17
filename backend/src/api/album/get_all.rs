@@ -193,6 +193,6 @@ fn draft_filter_query(
 
         format!("(uploader_key = ?{p} OR draft = false)")
     } else {
-        format!("draft = false")
+        String::from("draft = false")
     }
 }

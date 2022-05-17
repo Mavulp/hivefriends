@@ -39,7 +39,7 @@ pub(super) async fn post(
     let conn = state.pool.get().await.context("Failed to get connection")?;
 
     if let Some(cover_key) = &request.cover_key {
-        if !request.image_keys.contains(&cover_key) {
+        if !request.image_keys.contains(cover_key) {
             return Err(Error::InvalidCoverKey);
         }
     }

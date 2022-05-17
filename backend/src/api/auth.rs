@@ -6,12 +6,13 @@ use axum::{
     },
     http::StatusCode,
     response::{IntoResponse, Response},
+    routing::{get, Router},
     Extension, Json, TypedHeader,
 };
 use headers::{authorization::Bearer, Authorization};
 use rusqlite::{params, OptionalExtension};
 use serde::Deserialize;
-use serde_json::json;
+use serde_json::{json, Value};
 use serde_rusqlite::from_row;
 use thiserror::Error;
 use tracing::error;
@@ -115,4 +116,14 @@ impl IntoResponse for AuthorizationRejection {
 
         (status, body).into_response()
     }
+}
+
+pub fn api_route() -> Router {
+    Router::new().route("/", get(get_auth_state))
+}
+
+pub async fn get_auth_state(Authorize(user_key): Authorize) -> Json<Value> {
+    Json(json!({
+        "userKey": user_key,
+    }))
 }

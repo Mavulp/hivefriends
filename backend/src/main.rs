@@ -77,6 +77,7 @@ async fn run() -> anyhow::Result<()> {
         .context("BIND_ADDRESS could not be parsed")?;
 
     let app = Router::new()
+        .nest("/api/auth", api::auth::api_route())
         .nest("/api/login", api::login::api_route())
         .nest("/api/images/", api::image::api_route())
         .nest("/api/albums/", api::album::api_route())
