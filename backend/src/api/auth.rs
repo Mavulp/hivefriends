@@ -10,14 +10,14 @@ use axum::{
 };
 use headers::{authorization::Bearer, Authorization};
 use rusqlite::{params, OptionalExtension};
-use serde_json::json;
-use thiserror::Error;
-use serde_rusqlite::from_row;
 use serde::Deserialize;
+use serde_json::json;
+use serde_rusqlite::from_row;
+use thiserror::Error;
 use tracing::error;
 
 use std::sync::Arc;
-use std::time::{SystemTime, Duration};
+use std::time::{Duration, SystemTime};
 
 use crate::AppState;
 
@@ -64,19 +64,19 @@ where
             if now < created_at + Duration::from_secs(crate::AUTH_TIME_SECONDS) {
                 Ok(Authorize(session.user_key))
             } else {
-        conn
-            .interact(move |conn| {
-                if let Err(e) = conn.execute(
-                    "DELETE FROM auth_sessions WHERE token=?1",
-                    params![bearer_token],
-                ) {
-                    error!("Failed to delete auth token: {}", e);
-                }
-            }).await.unwrap();
+                conn.interact(move |conn| {
+                    if let Err(e) = conn.execute(
+                        "DELETE FROM auth_sessions WHERE token=?1",
+                        params![bearer_token],
+                    ) {
+                        error!("Failed to delete auth token: {}", e);
+                    }
+                })
+                .await
+                .unwrap();
 
                 Err(AuthorizationRejection::ExpiredToken)
             }
-
         } else {
             Err(AuthorizationRejection::InvalidToken)
         }
@@ -103,8 +103,9 @@ impl IntoResponse for AuthorizationRejection {
             AuthorizationRejection::Extension(_) => StatusCode::INTERNAL_SERVER_ERROR,
             AuthorizationRejection::Generic(_) => StatusCode::INTERNAL_SERVER_ERROR,
             AuthorizationRejection::Headers(_) => StatusCode::BAD_REQUEST,
-            AuthorizationRejection::InvalidToken |
-            AuthorizationRejection::ExpiredToken => StatusCode::UNAUTHORIZED,
+            AuthorizationRejection::InvalidToken | AuthorizationRejection::ExpiredToken => {
+                StatusCode::UNAUTHORIZED
+            }
         };
 
         let body = Json(json!({

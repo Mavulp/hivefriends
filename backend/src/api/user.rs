@@ -23,8 +23,12 @@ pub fn api_route() -> Router {
 pub struct User {
     pub key: String,
     pub username: String,
-    pub avatar_url: Option<String>,
+    pub display_name: Option<String>,
     pub bio: Option<String>,
+    pub avatar_key: Option<String>,
+    pub banner_key: Option<String>,
+    pub accent_color: Option<String>,
+    pub featured_album_key: Option<String>,
     pub met: Vec<String>,
     pub albums_uploaded: Vec<String>,
     pub created_at: i64,
@@ -34,8 +38,12 @@ pub struct User {
 struct DbUser {
     key: String,
     username: String,
-    avatar_url: Option<String>,
+    display_name: Option<String>,
     bio: Option<String>,
+    avatar_key: Option<String>,
+    banner_key: Option<String>,
+    accent_color: Option<String>,
+    featured_album_key: Option<String>,
     created_at: i64,
 }
 
@@ -49,8 +57,12 @@ async fn get_users(
         let query = "SELECT \
                 key, \
                 username, \
-                avatar_url, \
+                display_name, \
                 bio, \
+                avatar_key, \
+                banner_key, \
+                accent_color, \
+                featured_album_key, \
                 created_at \
                 FROM users"
             .to_string();
@@ -110,7 +122,11 @@ async fn get_users(
             users.push(User {
                 key: db_user.key,
                 username: db_user.username,
-                avatar_url: db_user.avatar_url,
+                display_name: db_user.display_name,
+                avatar_key: db_user.avatar_key,
+                banner_key: db_user.banner_key,
+                accent_color: db_user.accent_color,
+                featured_album_key: db_user.featured_album_key,
                 bio: db_user.bio,
                 met,
                 albums_uploaded,
@@ -133,7 +149,7 @@ async fn get_user_by_key(
     let result = conn
         .interact(move |conn| {
             conn.query_row(
-                "SELECT key, username, avatar_url, bio, created_at \
+                "SELECT key, username, display_name, avatar_key, bio, created_at \
                 FROM users WHERE key = ?1",
                 params![user_key],
                 |row| Ok(from_row::<DbUser>(row).unwrap()),
@@ -187,7 +203,11 @@ async fn get_user_by_key(
         Ok(Json(User {
             key: db_user.key,
             username: db_user.username,
-            avatar_url: db_user.avatar_url,
+            display_name: db_user.display_name,
+            avatar_key: db_user.avatar_key,
+            banner_key: db_user.banner_key,
+            accent_color: db_user.accent_color,
+            featured_album_key: db_user.featured_album_key,
             bio: db_user.bio,
             met,
             albums_uploaded,
@@ -210,23 +230,6 @@ pub fn create_account(username: &str, password: &str, conn: &mut Connection) -> 
     conn.execute(
         "INSERT INTO users (key, username, password_hash, created_at) VALUES (?1, ?2, ?3, ?4)",
         params![key, username, phc_string, now],
-    )?;
-
-    Ok(())
-}
-
-pub fn update_account(username: &str, password: &str, conn: &mut Connection) -> anyhow::Result<()> {
-    let salt = SaltString::generate(&mut OsRng);
-    let argon2 = Argon2::default();
-    let phc_string = argon2
-        .hash_password(password.as_bytes(), &salt)?
-        .to_string();
-
-    conn.execute(
-        "UPDATE users \
-        SET password_hash = ?1 \
-        WHERE username = ?2",
-        params![phc_string, username],
     )?;
 
     Ok(())

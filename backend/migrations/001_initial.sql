@@ -60,10 +60,30 @@ CREATE TABLE album_image_associations (
 CREATE TABLE users (
     key TEXT PRIMARY KEY NOT NULL,
     username TEXT NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
-    avatar_url TEXT NULL,
+    display_name TEXT  NULL UNIQUE,
     bio TEXT NULL,
-    created_at INTEGER NOT NULL -- unix ts
+    avatar_key TEXT NULL,
+    banner_key TEXT NULL,
+    accent_color TEXT NULL,
+    featured_album_key TEXT NULL,
+    created_at INTEGER NOT NULL, -- unix ts
+
+    -- private
+    password_hash TEXT NOT NULL,
+    private INTEGER NOT NULL DEFAULT 0,
+    color_theme TEXT NULL,
+
+    CONSTRAINT fk_avatar_key_assoc
+        FOREIGN KEY (avatar_key)
+        REFERENCES images (key),
+
+    CONSTRAINT fk_banner_key_assoc
+        FOREIGN KEY (banner_key)
+        REFERENCES images (key),
+
+    CONSTRAINT fk_featured_album_key_assoc
+        FOREIGN KEY (featured_album_key)
+        REFERENCES albums (key)
 ) STRICT;
 
 CREATE TABLE auth_sessions (

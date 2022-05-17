@@ -22,6 +22,9 @@ pub enum Error {
     #[error("coverKey is not an image in this album")]
     InvalidCoverKey,
 
+    #[error("One of the album or image keys is not valid")]
+    InvalidKey,
+
     #[error("Invalid argument(s): {0}")]
     InvalidArguments(anyhow::Error),
 
@@ -50,6 +53,7 @@ impl IntoResponse for Error {
                 StatusCode::INTERNAL_SERVER_ERROR
             }
             Error::InvalidCoverKey
+            | Error::InvalidKey
             | Error::JsonRejection(_)
             | Error::MultipartSizeRejection(_)
             | Error::InvalidArguments(_) => StatusCode::BAD_REQUEST,
