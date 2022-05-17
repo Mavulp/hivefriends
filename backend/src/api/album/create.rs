@@ -80,13 +80,12 @@ pub(super) async fn post(
                 now
             ],
         )?;
-        let album_id = tx.last_insert_rowid();
 
         for image_key in request.image_keys {
             tx.execute(
-                "INSERT INTO album_image_associations (album_id, image_id) \
-                SELECT ?1, id FROM images WHERE key = ?2",
-                params![album_id, image_key],
+                "INSERT INTO album_image_associations (album_key, image_key) \
+                SELECT ?1, key FROM images WHERE key = ?2",
+                params![album_key, image_key],
             )?;
         }
 

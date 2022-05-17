@@ -23,7 +23,6 @@ pub(super) async fn get(
         let result = conn
             .query_row(
                 "SELECT \
-                    id, \
                     key, \
                     title, \
                     description, \
@@ -46,12 +45,12 @@ pub(super) async fn get(
             let mut stmt = conn
                 .prepare(
                     "SELECT i.key, i.uploader_key, i.created_at FROM images i \
-                    INNER JOIN album_image_associations aia ON aia.image_id=i.id \
-                    WHERE aia.album_id=?1",
+                    INNER JOIN album_image_associations aia ON aia.image_key=i.key \
+                    WHERE aia.album_key=?1",
                 )
                 .context("Failed to prepare statement for image query")?;
             let image_iter = stmt
-                .query_map(params![db_album.id], |row| {
+                .query_map(params![db_album.key], |row| {
                     Ok(Image {
                         key: row.get(0)?,
                         uploader_key: row.get(1)?,
@@ -70,7 +69,7 @@ pub(super) async fn get(
                 cover_key: db_album.cover_key,
                 locations: db_album.locations,
                 uploader_key: db_album.uploader_key,
-                draft: db_album.draft != 0,
+                draft: db_album.draft,
                 timeframe: Timeframe {
                     from: db_album.timeframe_from,
                     to: db_album.timeframe_to,

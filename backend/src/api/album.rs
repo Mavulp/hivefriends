@@ -7,13 +7,13 @@ use serde::{Deserialize, Serialize};
 
 mod create;
 mod get_all;
-mod get_by_id;
+mod get_by_key;
 
 pub fn api_route() -> Router {
     Router::new()
         .route("/", post(create::post))
         .route("/", get(get_all::get))
-        .route("/:key", get(get_by_id::get))
+        .route("/:key", get(get_by_key::get))
 }
 
 #[derive(Serialize, Deserialize)]
@@ -48,14 +48,13 @@ struct Album {
 
 #[derive(Debug, Deserialize)]
 struct DbAlbum {
-    id: i64,
     key: String,
     title: String,
     description: Option<String>,
     cover_key: Option<String>,
     locations: Option<String>,
     uploader_key: String,
-    draft: i64,
+    draft: bool,
     timeframe_from: Option<u64>,
     timeframe_to: Option<u64>,
     created_at: u64,

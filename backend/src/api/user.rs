@@ -87,7 +87,7 @@ async fn get_users(
                 .prepare(
                     "SELECT a.\"key\" FROM users u \
                     INNER JOIN user_album_associations uaa ON uaa.user_key = u.key \
-                    INNER JOIN albums a ON a.id = uaa.album_id \
+                    INNER JOIN albums a ON a.key = uaa.album_key \
                     WHERE u.key = ?1",
                 )
                 .context("Failed to prepare user albums query")?;
@@ -104,8 +104,8 @@ async fn get_users(
                 .prepare(
                     "SELECT u2.key FROM users u1 \
                     INNER JOIN user_album_associations uaa ON uaa.user_key = u1.key \
-                    INNER JOIN albums a ON a.id = uaa.album_id \
-                    INNER JOIN user_album_associations uaa2 ON uaa2.album_id = a.id \
+                    INNER JOIN albums a ON a.key = uaa.album_key \
+                    INNER JOIN user_album_associations uaa2 ON uaa2.album_key = a.key \
                     INNER JOIN users u2 ON uaa2.user_key = u2.key \
                     WHERE u1.key = ?1 \
                     AND u2.key != ?1",
@@ -167,7 +167,7 @@ async fn get_user_by_key(
                 let mut stmt = conn.prepare(
                     "SELECT a.\"key\" FROM users u \
                     INNER JOIN user_album_associations uaa ON uaa.user_key = u.key \
-                    INNER JOIN albums a ON a.id = uaa.album_id \
+                    INNER JOIN albums a ON a.key = uaa.album_key \
                     WHERE u.key = ?1",
                 )?;
                 let album_key_iter =
@@ -185,8 +185,8 @@ async fn get_user_by_key(
                 let mut stmt = conn.prepare(
                     "SELECT u2.key FROM users u1 \
                     INNER JOIN user_album_associations uaa ON uaa.user_key = u1.key \
-                    INNER JOIN albums a ON a.id = uaa.album_id \
-                    INNER JOIN user_album_associations uaa2 ON uaa2.album_id = a.id \
+                    INNER JOIN albums a ON a.key = uaa.album_key \
+                    INNER JOIN user_album_associations uaa2 ON uaa2.album_key = a.key \
                     INNER JOIN users u2 ON uaa2.user_key = u2.key \
                     WHERE u1.key = ?1 \
                     AND u2.key != ?1",
