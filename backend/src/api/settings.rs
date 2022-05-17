@@ -25,20 +25,20 @@ pub fn api_route() -> Router {
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Settings {
-    #[serde(deserialize_with = "non_empty_str")]
+    #[serde(default, deserialize_with = "non_empty_str")]
     pub display_name: Option<String>,
-    #[serde(deserialize_with = "non_empty_str")]
+    #[serde(default, deserialize_with = "non_empty_str")]
     pub bio: Option<String>,
-    #[serde(deserialize_with = "non_empty_str")]
+    #[serde(default, deserialize_with = "non_empty_str")]
     pub avatar_key: Option<String>,
-    #[serde(deserialize_with = "non_empty_str")]
+    #[serde(default, deserialize_with = "non_empty_str")]
     pub banner_key: Option<String>,
-    #[serde(deserialize_with = "non_empty_str")]
+    #[serde(default, deserialize_with = "non_empty_str")]
     pub accent_color: Option<String>,
-    #[serde(deserialize_with = "non_empty_str")]
+    #[serde(default, deserialize_with = "non_empty_str")]
     pub featured_album_key: Option<String>,
     pub private: Option<bool>,
-    #[serde(deserialize_with = "non_empty_str")]
+    #[serde(default, deserialize_with = "non_empty_str")]
     pub color_theme: Option<String>,
 }
 

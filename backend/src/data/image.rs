@@ -28,9 +28,9 @@ async fn get_image(
     let ckey = key.clone();
     conn.interact(move |conn| {
         conn.query_row(
-            r"SELECT id FROM images WHERE key=?1",
+            r"SELECT key FROM images WHERE key=?1",
             params![ckey],
-            |row| row.get::<_, i32>(0),
+            |row| row.get::<_, String>(0),
         )
         .optional()
     })

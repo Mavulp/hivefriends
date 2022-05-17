@@ -30,3 +30,4 @@ printf "users get response: %s\n\n" "$(printf "%s" "$response" | jq)"
 response=$(curl -v "http://localhost:8080/api/albums/?draft=true" -H "Content-Type: application/json" --oauth2-bearer $token)
 printf "albums get response: %s\n\n" "$(printf "%s" "$response" | jq)"
 
+printf "Image URL: http://localhost:8080/data/image/%s/medium.png\n" $image_key
