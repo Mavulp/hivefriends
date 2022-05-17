@@ -63,7 +63,7 @@ CREATE TABLE users (
     -- private
     password_hash TEXT NOT NULL,
     private INTEGER NOT NULL DEFAULT 0,
-    color_theme TEXT NULL,
+    color_theme TEXT NOT NULL DEFAULT 'light-theme',
 
     CONSTRAINT fk_avatar_key_assoc
         FOREIGN KEY (avatar_key)
