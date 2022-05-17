@@ -7,6 +7,7 @@ use std::sync::Arc;
 use std::time::SystemTime;
 
 use crate::api::{auth::Authorize, error::Error};
+use crate::util::non_empty_str;
 use crate::AppState;
 
 use super::Timeframe;
@@ -15,8 +16,11 @@ use super::Timeframe;
 #[serde(rename_all = "camelCase")]
 pub(super) struct CreateAlbumRequest {
     title: String,
+    #[serde(deserialize_with = "non_empty_str")]
     description: Option<String>,
+    #[serde(deserialize_with = "non_empty_str")]
     cover_key: Option<String>,
+    #[serde(deserialize_with = "non_empty_str")]
     locations: Option<String>,
     timeframe: Timeframe,
     image_keys: Vec<String>,

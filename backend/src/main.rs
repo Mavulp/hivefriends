@@ -17,6 +17,7 @@ pub struct AppState {
 }
 
 pub mod cli;
+pub mod util;
 
 pub mod api {
     pub mod album;
