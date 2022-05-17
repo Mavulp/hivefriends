@@ -26,7 +26,7 @@ const MB: u64 = 1024 * 1024;
 
 pub(super) async fn post(
     multipart: Result<
-        ContentLengthLimit<Multipart, { 5 * MB }>,
+        ContentLengthLimit<Multipart, { 10 * MB }>,
         ContentLengthLimitRejection<MultipartRejection>,
     >,
     Authorize(user_key): Authorize,
