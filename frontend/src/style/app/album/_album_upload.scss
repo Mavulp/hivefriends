@@ -28,6 +28,10 @@
           }
         }
 
+        &.empty {
+          height: 580px;
+        }
+
         &.shrink {
           height: 96px;
           padding-bottom: 8px;

@@ -126,6 +126,9 @@ function _clearUser(next: NavigationGuardNext) {
   localStorage.removeItem("user")
   localStorage.removeItem("bearer_token")
 
+  // TODO: save url from which we redirect and upon logging in
+  // redirect to it
+
   return next({ name: "Login" })
 }
 

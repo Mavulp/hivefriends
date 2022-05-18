@@ -60,10 +60,10 @@
 
 - [ ] User Settings
 
-  - [ ] Image upload
+  - [x] Image upload
 
-    - [ ] Add preview (see new and old)
-    - [ ] Add error / loading
+    - [x] Add preview (see new and old)
+    - [x] Add error / loading
 
   - [ ] Add setting accent color
   - [ ] Add setting a feature key (select with all album names and save album key)

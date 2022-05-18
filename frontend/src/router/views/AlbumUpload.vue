@@ -187,7 +187,7 @@ async function submit() {
           id="drop-area"
           @dragenter="draggingOver = true"
           @mouseleave="draggingOver = false"
-          :class="{ hovering: draggingOver, shrink: dragShrink }"
+          :class="{ hovering: draggingOver, shrink: dragShrink, empty: files.values.length === 0 }"
         >
           <input id="draginput" name="draginput" type="file" multiple accept="image/*" />
           <label for="draginput">
