@@ -60,12 +60,13 @@ const rules = computed(() => ({
 // Setup validation
 const { errors, validate, reset } = useFormValidation(form, rules, { autoclear: true })
 
-onBeforeMount(() => {
+onBeforeMount(async () => {
   const token = localStorage.getItem("bearer_token")
-  const user = localStorage.getItem("user")
+  const key = localStorage.getItem("user")
 
-  if (token && user) {
-    auth.signInUserFromStorage(JSON.parse(user))
+  if (token && key) {
+    // auth.signInUserFromStorage(JSON.parse(user))
+    await auth.fetchUser(key)
     router.push({ name: "Home" })
   }
 })
