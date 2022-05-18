@@ -149,7 +149,16 @@ async fn get_user_by_key(
     let result = conn
         .interact(move |conn| {
             conn.query_row(
-                "SELECT key, username, display_name, avatar_key, bio, created_at \
+                "SELECT
+                    key, \
+                    username, \
+                    display_name, \
+                    bio, \
+                    avatar_key, \
+                    banner_key, \
+                    accent_color, \
+                    featured_album_key, \
+                    created_at \
                 FROM users WHERE key = ?1",
                 params![user_key],
                 |row| Ok(from_row::<DbUser>(row).unwrap()),
