@@ -5,19 +5,15 @@ import LoadingSpin from "../loading/LoadingSpin.vue"
 import InputSelect from "../form/InputSelect.vue"
 import InputText from "../form/InputText.vue"
 import InputTextarea from "../form/InputTextarea.vue"
+import UploadSettingsImage from "./modules/UploadSettingsImage.vue"
 
 import { computed, onBeforeMount, reactive } from "vue"
 import { useLoading } from "../../store/loading"
 import { useUser } from "../../store/user"
 import { useFormValidation, minLength } from "../../js/validation"
-import { upload } from "../../js/fetch"
-import { FetchError } from "../../js/global-types"
-import { useToast } from "../../store/toast"
-import { imageUrl } from "../../store/album"
 
 const { getLoading, addLoading, delLoading } = useLoading()
 const user = useUser()
-const toast = useToast()
 
 onBeforeMount(() => {
   user.fetchSettings()
@@ -72,34 +68,6 @@ async function submitUserInfo() {
       delLoading("user-form")
     })
 }
-
-/**
- * Image uploding
- */
-
-async function uploadImage(e: any, field: string) {
-  e.preventDefault()
-  e.stopPropagation()
-
-  let formData = new FormData()
-  formData.append("file", e.target.files[0])
-
-  addLoading(field)
-
-  upload("/api/images/", formData)
-    .then((response) => {
-      if (response.key) {
-        user.setSetting(field, response.key)
-        toast.add(`Successfuly uploaded ${field === "avatarKey" ? "avatar" : "banner"}`, "success")
-      }
-    })
-    .catch((error: FetchError) => {
-      toast.add(error.message, "error")
-    })
-    .finally(() => {
-      delLoading(field)
-    })
-}
 </script>
 
 <template>
@@ -137,16 +105,14 @@ async function uploadImage(e: any, field: string) {
           </form>
         </li>
         <li>
-          <h5>Avatar photo</h5>
-          <input type="file" id="avatar-upload" @input="(e) => uploadImage(e, 'avatarKey')" accept="image/*" />
-
-          <img :src="imageUrl(user.user.avatarKey, 'tiny')" alt="" />
+          <h5>Avatar image</h5>
+          <p>Will be used on your profile or if someone tags you in an album / photo</p>
+          <UploadSettingsImage field="avatarKey" key="one" />
         </li>
         <li>
-          <h5>Banner photo</h5>
-          <input type="file" id="avatar-upload" @input="(e) => uploadImage(e, 'bannerKey')" accept="image/*" />
-
-          <img :src="imageUrl(user.user.bannerKey, 'tiny')" alt="" />
+          <h5>Banner image</h5>
+          <p>Visible on your profile</p>
+          <UploadSettingsImage field="bannerKey" key="two" />
         </li>
       </ul>
 

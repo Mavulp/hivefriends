@@ -1,0 +1,133 @@
+.hi-user-settings {
+  // width: ;
+  width: 60%;
+  max-width: 808px;
+
+  h1 {
+    margin-bottom: 64px;
+  }
+
+  h4,
+  h5 {
+    margin-bottom: 40px;
+  }
+
+  h5 + p {
+    margin-top: -24px;
+    margin-bottom: 40px;
+  }
+
+  .user-settings-list {
+    display: block;
+    margin-bottom: 40px;
+
+    li {
+      margin-bottom: 40px;
+      padding-bottom: 40px;
+      padding-right: 32px;
+      padding-left: 32px;
+      border-bottom: 1px solid rgb(var(--color-border-light));
+
+      &:last-child {
+        border-bottom: 0;
+      }
+
+      &:before {
+        display: none;
+      }
+    }
+  }
+
+  .settings-upload-image {
+    @include grid(40px, 2);
+
+    .drop-section {
+      display: block;
+      height: 156px;
+      z-index: 100;
+
+      &.dragging {
+        .material-icons {
+          transform: translateY(-8px);
+        }
+      }
+
+      &.dragging,
+      &:hover {
+        input + label {
+          background-color: rgba(var(--color-info), 0.1);
+          border-color: rgb(var(--color-info));
+        }
+      }
+
+      input {
+        opacity: 0;
+        height: 0;
+        position: absolute;
+        // visibility: ;
+
+        & + label {
+          @include flex($align: center, $justify: center, $direction: column, $gap: 8px);
+          @include radius(32px);
+          width: 100%;
+          height: 100%;
+          border: 3px dashed rgb(var(--color-border));
+          cursor: pointer;
+
+          span {
+            color: rgb(var(--color-text));
+            font-size: 1.2rem;
+
+            &.material-icons {
+              @include t(0.15s);
+              font-size: 3rem;
+              margin-bottom: 8px;
+            }
+          }
+        }
+      }
+    }
+
+    .preview-section {
+      display: block;
+      position: relative;
+      overflow: hidden;
+
+      .remove-image {
+        @include radius(50%);
+        // @include ellipse(32px);
+        position: absolute;
+        right: 16px;
+        top: 16px;
+        background-color: rgb(var(--color-white));
+        color: rgb(var(--color-text));
+        width: 32px;
+        // line-height: 32px;
+
+        height: 32px;
+        z-index: 5;
+
+        &:hover {
+          background-color: rgb(var(--color-background));
+        }
+
+        .material-icons {
+          line-height: 32px;
+          font-size: 2rem;
+        }
+      }
+
+      img {
+        @include t();
+        max-width: 100%;
+        max-height: 324px;
+        display: block;
+        margin-bottom: 16px;
+        object-fit: contain;
+        object-position: center;
+        box-shadow: var(--shadow);
+        z-index: 1;
+      }
+    }
+  }
+}

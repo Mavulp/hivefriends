@@ -23,7 +23,7 @@ function signOut() {
 
     <div class="flex-1"></div>
 
-    <template v-if="auth.isLoggedIn">
+    <template v-if="auth.isLoggedIn && auth.user.key">
       <router-link
         class="hover-bubble"
         data-title-bottom="Your profile"

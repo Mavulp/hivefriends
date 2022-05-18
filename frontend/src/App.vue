@@ -4,21 +4,30 @@ import "./style/index.scss"
 import Navigation from "./components/navigation/Navigation.vue"
 import Toasts from "./components/navigation/Toasts.vue"
 
-import { onBeforeMount } from "vue"
+import { onBeforeMount, onMounted } from "vue"
 import { useUser } from "./store/user"
 
 import { useLoading } from "./store/loading"
 import { useRoute } from "vue-router"
 
-const auth = useUser()
+const user = useUser()
 const loading = useLoading()
 const route = useRoute()
 
 onBeforeMount(() => {
   loading.addLoading("app")
 
-  Promise.allSettled([auth.fetchUsers(), auth.fetchSettings]).then(() => {
+  Promise.all([user.fetchUsers(), user.fetchSettings()]).then(() => {
     loading.delLoading("app")
+
+    console.log(user.settings)
+
+    const theme = user.settings.colorTheme ?? "light-theme"
+    const r = document.querySelector(":root")
+    if (r) {
+      r.removeAttribute("class")
+      r.classList.add(theme)
+    }
   })
 
   document.title = "hi!friends"

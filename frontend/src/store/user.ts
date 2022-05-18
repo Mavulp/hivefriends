@@ -62,7 +62,7 @@ export const useUser = defineStore("user", {
       return get(`/api/users/${key}`)
         .then((response) => {
           this.user = response
-          localStorage.setItem("user", JSON.stringify(response))
+          localStorage.setItem("user", response.key)
         })
         .catch((error) => {
           if (error.message === "Unauthorized") return "unauth"
@@ -73,16 +73,14 @@ export const useUser = defineStore("user", {
       return get("/api/users/")
         .then((response) => {
           this.users = response
+          this.logged = true
+
           return response
         })
         .catch((error: FetchError) => {
           const toast = useToast()
           toast.add(error.message, "error")
         })
-    },
-    signInUserFromStorage(user: User) {
-      this.user = user
-      this.logged = true
     },
     signOut() {
       this.logged = false
@@ -124,10 +122,10 @@ export const useUser = defineStore("user", {
           // @ts-ignore
           this.settings[key] = value
 
-          if (Reflect.has(this.user, key)) {
-            // @ts-ignore
-            this.user[key] = value
-          }
+          // @ts-ignore
+          this.user[key] = value
+
+          console.log(this.user)
         })
         .catch((error: FetchError) => {
           const toast = useToast()

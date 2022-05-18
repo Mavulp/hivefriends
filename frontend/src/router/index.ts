@@ -5,7 +5,7 @@ import Home from "./views/Home.vue"
 import AlbumDetail from "./views/AlbumDetail.vue"
 import ImageDetail from "./views/ImageDetail.vue"
 import AlbumList from "./views/AlbumList.vue"
-import User from "./views/User.vue"
+import UserPage from "./views/User.vue"
 import AlbumUpload from "./views/AlbumUpload.vue"
 
 // Subchildren for user pages
@@ -14,9 +14,7 @@ import UserProfile from "../components/user/UserProfile.vue"
 import UserSettings from "../components/user/UserSettings.vue"
 
 import { useUser } from "../store/user"
-import { useBread } from "../store/bread"
-
-import { isEmpty } from "lodash"
+// import { useBread } from "../store/bread"
 
 /**
  * Router Setup
@@ -86,7 +84,7 @@ const router = createRouter({
     {
       path: "/user/",
       name: "User",
-      component: User,
+      component: UserPage,
       children: [
         {
           path: "/user/:id/profile",
@@ -136,19 +134,15 @@ router.beforeResolve(async (to, from, next) => {
 
   if (to.meta.requiresAuth) {
     const token = localStorage.getItem("bearer_token")
-    const user = localStorage.getItem("user")
+    const key = localStorage.getItem("user")
 
-    if (!token || !user) {
+    if (!token || !key) {
       return _clearUser(next)
     } else {
-      const userdata = JSON.parse(user)
-
       // Verify if token is expired
-      const verify = await auth.fetchUser(userdata.key)
+      const verify = await auth.fetchUser(key)
 
       if (verify === "unauth") return _clearUser(next)
-
-      auth.signInUserFromStorage(JSON.parse(user))
     }
   }
 

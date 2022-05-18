@@ -6,50 +6,15 @@
   width: 100%;
   max-width: 1920px;
   padding: 64px 128px;
-
-  img {
-    position: absolute;
-
-    &:first-of-type {
-      top: 50%;
-      left: 25%;
-      z-index: -1;
-    }
-  }
 }
 
-.hi-user-settings {
-  // width: ;
-  width: 60%;
-  max-width: 808px;
-
-  h1 {
-    margin-bottom: 64px;
-  }
-
-  h4,
-  h5 {
-    margin-bottom: 40px;
-  }
-
-  .user-settings-list {
-    display: block;
-    margin-bottom: 40px;
-
-    li {
-      margin-bottom: 40px;
-      padding-bottom: 40px;
-      padding-right: 32px;
-      padding-left: 32px;
-      border-bottom: 1px solid rgb(var(--color-border-light));
-
-      &:last-child {
-        border-bottom: 0;
-      }
-
-      &:before {
-        display: none;
-      }
+.hi-user-profile {
+  img {
+    &:first-of-type {
+      position: absolute;
+      top: 15%;
+      left: 25%;
+      z-index: -1;
     }
   }
 }

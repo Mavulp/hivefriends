@@ -99,7 +99,7 @@ onKeyStroke("Escape", () => {
 
     <template v-else-if="album">
       <div class="hi-image-wrapper">
-        <transition name="fade" mode="out-in" appear>
+        <transition name="imagetrans" mode="out-in" appear>
           <img v-if="url" :src="url" alt="" />
           <div v-else class="image-loading">
             <LoadingSpin dark />

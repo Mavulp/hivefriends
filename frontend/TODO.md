@@ -1,7 +1,5 @@
 # Fix
 
-- [x] Pull album username from user list, not from _me_
-- [x] Fix album timestamps in album list
 - [ ] Ask for album sorting (now is reversed)
 
 # Todo
@@ -60,11 +58,30 @@
 
   - [ ] Add programatical transition based on if the next image is prev or next (opacity slide left, opacity slide right)
 
-# Pages To do
+- [ ] User Settings
+
+  - [ ] Image upload
+
+    - [ ] Add preview (see new and old)
+    - [ ] Add error / loading
+
+  - [ ] Add setting accent color
+  - [ ] Add setting a feature key (select with all album names and save album key)
+
+  - [ ] Change password
+
+- [ ] User profile
+
+  - [ ] Show bio, username, profile picture, banner in a nice way
+  - [ ] Number of albums
+  - [ ] List albums
+
+  - [ ] Their locations (on a map)
+  - [ ] Users they met with
+
+# Pages To do Write up
 
 - [ ] Image Detail
-- [ ] User Profile
-- [ ] User Settings
 - [ ] Editing Album
 - [ ] Homepage
 - [ ] All albums ever

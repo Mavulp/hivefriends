@@ -16,6 +16,10 @@ export const useToast = defineStore("toast", {
   actions: {
     add(text: string, type: string = "info") {
       this.items.unshift({ text, type })
+
+      if (type !== "error") {
+        setTimeout(() => {}, 5000)
+      }
     },
     del(index: number) {
       this.items.splice(index, 1)

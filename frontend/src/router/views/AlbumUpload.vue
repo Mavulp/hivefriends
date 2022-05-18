@@ -191,7 +191,7 @@ async function submit() {
         >
           <input id="draginput" name="draginput" type="file" multiple accept="image/*" />
           <label for="draginput">
-            <span class="material-icons">&#xe2cc;</span>
+            <span class="material-icons">&#xe439;</span>
             <span>{{ draggingOver ? "Drop the files!" : "Cllick me / Drag files over here" }}</span>
           </label>
         </div>

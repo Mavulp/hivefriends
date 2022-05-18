@@ -1,19 +1,29 @@
+.imagetrans-enter-active,
+.imagetrans-leave-active {
+  transition: 0.15s all ease-in-out;
+  opacity: 1;
+}
+
+.imagetrans-enter-from {
+  opacity: 0;
+  transform: translateX(-8px);
+}
+
+.imagetrans-leave-to {
+  opacity: 0;
+  transform: translateX(8px);
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: 0.15s all ease-in-out;
   opacity: 1;
 }
 
-.fade-enter-from {
-  opacity: 0;
-  transform: translateX(-8px);
-}
-
+.fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-  transform: translateX(8px);
 }
-
 // .pagetransition-enter-active,
 // .pagetransition-leave-active {
 //   transition: 0.15s all ease-in-out;
