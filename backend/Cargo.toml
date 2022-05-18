@@ -30,3 +30,11 @@ headers = "0.3.7"
 argh = "0.1.7"
 argon2 = { version = "0.4.0", features = ["std"] }
 rpassword = "6.0.1"
+
+[dev-dependencies]
+reqwest = "0.11.10"
+tempdir = "0.3.7"
+
+[dev-dependencies.axum-test-helper]
+git = "https://github.com/jokler/axum-test-helper"
+branch = "remove-post-content-type"

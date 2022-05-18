@@ -103,7 +103,7 @@ fn generate_token() -> String {
                            1234567890";
     const AUTH_LENGTH: usize = 64;
 
-    let char_vec = AUTH_CHARSET.split("").collect::<Vec<&str>>();
+    let char_vec = AUTH_CHARSET.split("").filter(|c| !c.is_empty()).collect::<Vec<&str>>();
 
     std::iter::repeat_with(|| char_vec.choose(&mut OsRng).expect("CHARSET is not empty"))
         .take(AUTH_LENGTH)

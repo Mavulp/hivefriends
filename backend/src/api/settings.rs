@@ -50,8 +50,8 @@ pub struct DbSettings {
     pub banner_key: Option<String>,
     pub accent_color: Option<String>,
     pub featured_album_key: Option<String>,
-    pub private: Option<bool>,
-    pub color_theme: Option<String>,
+    pub private: bool,
+    pub color_theme: String,
 }
 
 async fn get_settings(
@@ -90,8 +90,8 @@ async fn get_settings(
             banner_key: db_settings.banner_key,
             accent_color: db_settings.accent_color,
             featured_album_key: db_settings.featured_album_key,
-            private: db_settings.private,
-            color_theme: db_settings.color_theme,
+            private: Some(db_settings.private),
+            color_theme: Some(db_settings.color_theme),
         }))
     } else {
         Err(Error::NotFound)

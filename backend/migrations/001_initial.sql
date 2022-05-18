@@ -52,7 +52,7 @@ CREATE TABLE album_image_associations (
 CREATE TABLE users (
     key TEXT PRIMARY KEY NOT NULL,
     username TEXT NOT NULL UNIQUE,
-    display_name TEXT  NULL UNIQUE,
+    display_name TEXT NULL UNIQUE,
     bio TEXT NULL,
     avatar_key TEXT NULL,
     banner_key TEXT NULL,

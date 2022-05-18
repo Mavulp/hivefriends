@@ -21,13 +21,20 @@ pub struct AddUserArgs {
     #[argh(positional)]
     /// username
     pub username: String,
+
+    #[argh(positional)]
+    /// password
+    pub password: Option<String>,
 }
 
 pub fn run_subcommand(subcommand: SubCommands, conn: &mut Connection) -> Result<(), anyhow::Error> {
     match subcommand {
         SubCommands::AddUser(args) => {
-            let password =
-                rpassword::prompt_password(&format!("Password for {}: ", args.username))?;
+            let password = if let Some(password) = args.password {
+                password
+            } else {
+                rpassword::prompt_password(&format!("Password for {}: ", args.username))?
+            };
 
             crate::api::user::create_account(&args.username, &password, conn)?;
         }

@@ -24,7 +24,7 @@ use crate::AppState;
 
 pub struct Authorize(pub String);
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 struct DbSession {
     user_key: String,
     created_at: u64,
