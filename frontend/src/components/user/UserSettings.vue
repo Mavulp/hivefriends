@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from "../Button.vue"
 import LoadingSpin from "../loading/LoadingSpin.vue"
-// import InputCheckbox from "../form/InputCheckbox.vue"
+import InputCheckbox from "../form/InputCheckbox.vue"
 import InputSelect from "../form/InputSelect.vue"
 import InputText from "../form/InputText.vue"
 import InputTextarea from "../form/InputTextarea.vue"
@@ -10,7 +10,7 @@ import UploadSettingsImage from "./modules/UploadSettingsImage.vue"
 import { computed, onBeforeMount, reactive } from "vue"
 import { useLoading } from "../../store/loading"
 import { useUser } from "../../store/user"
-import { useFormValidation, minLength } from "../../js/validation"
+import { useFormValidation, minLength, required, sameAs } from "../../js/validation"
 
 const { getLoading, addLoading, delLoading } = useLoading()
 const user = useUser()
@@ -50,16 +50,18 @@ const userForm = reactive({
   bio: user.user.bio
 })
 
-const rules = computed(() => ({
+const infoRules = computed(() => ({
   displayName: { minLength: minLength(3) }
 }))
 
-const { errors, validate, status } = useFormValidation(userForm, rules, { autoclear: true })
+// const { errors, validate, status } = useFormValidation(userForm, rules, { autoclear: true })
+const infoValidation = useFormValidation(userForm, infoRules, { autoclear: true })
 
 async function submitUserInfo() {
   addLoading("user-form")
 
-  validate()
+  infoValidation
+    .validate()
     .then(() => {
       user.setSetting("displayName", userForm.displayName)
       user.setSetting("bio", userForm.bio)
@@ -68,13 +70,59 @@ async function submitUserInfo() {
       delLoading("user-form")
     })
 }
+
+/**
+ * User password validation
+ */
+
+const passForm = reactive({
+  old: "",
+  new1: "",
+  new2: ""
+})
+
+const passIsEmpty = computed(
+  () => passForm.old.length === 0 || passForm.new1.length === 0 || passForm.new2.length === 0
+)
+
+const passRules = computed(() => ({
+  old: {
+    required
+  },
+  new1: {
+    required,
+    minLenght: minLength(8)
+  },
+  new2: {
+    required,
+    sameAs: sameAs(passForm.new1)
+  }
+}))
+
+const passValidation = useFormValidation(passForm, passRules, { autoclear: true })
+
+async function savePassword() {
+  addLoading("password")
+
+  passValidation
+    .validate()
+    .then(() => {
+      user.changePassword({
+        old: passForm.old,
+        new: passForm.new2
+      })
+    })
+    .finally(() => {
+      delLoading("password")
+    })
+}
 </script>
 
 <template>
   <div class="hi-user-page">
     <LoadingSpin class="center-page" v-if="getLoading('settings')" />
 
-    <div class="hi-user-settings" v-else>
+    <div class="hi-user-settings-items">
       <h1>Settings</h1>
 
       <ul class="user-settings-list">
@@ -88,7 +136,7 @@ async function submitUserInfo() {
               v-model:value="userForm.displayName"
               placeholder="Your display name"
               label="Display name"
-              :error="errors.displayName"
+              :error="infoValidation.errors.displayName"
             />
             <InputTextarea
               label="Bio"
@@ -99,7 +147,7 @@ async function submitUserInfo() {
             <Button
               class="btn-black"
               type="submit"
-              :class="{ 'btn-disabled': getLoading('user-form') || status.anyError }"
+              :class="{ 'btn-disabled': getLoading('user-form') || infoValidation.status.anyError }"
               >Save</Button
             >
           </form>
@@ -114,21 +162,15 @@ async function submitUserInfo() {
           <p>Visible on your profile</p>
           <UploadSettingsImage field="bannerKey" key="two" />
         </li>
-      </ul>
 
-      <!-- <pre>
-        {{ user.settings }}
-      </pre> -->
-
-      <ul class="user-settings-list">
-        <!-- <li>
-          <InputCheckbox
-            label="Set yourself as private. You won't be mentioned in albums, your albums won't be publicly available"
-            v-model:check="_private"
-          />
-        </li> -->
         <li>
           <h5>Application</h5>
+          <!-- <InputCheckbox
+            label="Set yourself as private. You won't be mentioned in albums & your albums won't be publicly available"
+            v-model:check="_private"
+          /> -->
+        </li>
+        <li>
           <InputSelect
             style="width: 356px"
             v-model:selected="_theme"
@@ -138,9 +180,36 @@ async function submitUserInfo() {
             canclear
           />
         </li>
-        <!-- <li>
-            <Button class="btn-red">Delete User</Button>
-          </li> -->
+        <li>
+          <h5>Password</h5>
+
+          <form @submit.prevent="savePassword">
+            <InputText
+              :error="passValidation.errors.old"
+              v-model:value="passForm.old"
+              label="Old password"
+              placeholder="Your current password"
+            />
+            <InputText
+              :error="passValidation.errors.new1"
+              v-model:value="passForm.new1"
+              label="New password"
+              placeholder="Your new password"
+            />
+            <InputText
+              :error="passValidation.errors.new2"
+              v-model:value="passForm.new2"
+              label="Confirm password"
+              placeholder="Confirm your new password"
+            />
+            <Button
+              class="btn-black"
+              type="submit"
+              :class="{ 'btn-disabled': getLoading('password') || passValidation.status.anyError || passIsEmpty }"
+              >Save</Button
+            >
+          </form>
+        </li>
       </ul>
     </div>
   </div>

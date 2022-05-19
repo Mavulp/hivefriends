@@ -78,7 +78,6 @@ export const useUser = defineStore("user", {
           return response
         })
         .catch((error: FetchError) => {
-          const toast = useToast()
           toast.add(error.message, "error")
         })
     },
@@ -113,22 +112,29 @@ export const useUser = defineStore("user", {
         })
     },
     async setSetting(key: string, value: any) {
-      console.log(key, value)
-
       return put("/api/settings/", {
         [key]: value
       })
-        .then((response) => {
-          // @ts-ignore
-          this.settings[key] = value
+        .then(() => {
+          Reflect.set(this.settings, key, value)
 
-          // @ts-ignore
-          this.user[key] = value
-
-          console.log(this.user)
+          this.fetchUsers()
+          this.fetchUser(this.user.key)
         })
         .catch((error: FetchError) => {
           const toast = useToast()
+          toast.add(error.message, "error")
+        })
+    },
+
+    async changePassword(form: { old: string | number; new: string | number }) {
+      const toast = useToast()
+
+      return put("/api/settings/password", form)
+        .then(() => {
+          toast.add("Succesfully updated password. Make sure you remember it", "success")
+        })
+        .catch((error: FetchError) => {
           toast.add(error.message, "error")
         })
     }
