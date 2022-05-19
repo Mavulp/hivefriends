@@ -38,6 +38,63 @@
     }
   }
 
+  .accent-color {
+    @include flex($gap: 24px);
+
+    input {
+      display: none;
+
+      & + label {
+        display: block;
+        width: 96px;
+        height: 40px;
+        font-size: 1.6rem;
+        text-align: center;
+        line-height: 40px;
+        cursor: pointer;
+        background-color: rgb(var(--color-highlight));
+
+        &:hover {
+          background-color: rgba(var(--color-highlight), 0.75);
+        }
+
+        & > * {
+          pointer-events: none;
+        }
+      }
+    }
+
+    .divider {
+      display: block;
+      height: 20px;
+      border-right: 1px solid rgb(var(--color-border-light));
+    }
+
+    .example-block {
+      @include radius(4px);
+      display: block;
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      background-color: rgb(var(--color-highlight));
+
+      &.text {
+        width: unset;
+        padding: 0 16px;
+        background-color: rgba(var(--color-highlight), 0.25);
+        color: rgb(var(--color-text));
+
+        span {
+          transform: translateY(6px);
+        }
+
+        &.color {
+          color: rgb(var(--color-highlight));
+        }
+      }
+    }
+  }
+
   .settings-upload-image {
     @include grid(40px, 2);
 

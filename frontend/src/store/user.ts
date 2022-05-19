@@ -62,6 +62,10 @@ export const useUser = defineStore("user", {
       return get(`/api/users/${key}`)
         .then((response) => {
           this.user = response
+
+          // Set app accent
+          document.documentElement.style.setProperty("--color-highlight", response.accentColor)
+
           localStorage.setItem("user", response.key)
         })
         .catch((error) => {
@@ -78,6 +82,7 @@ export const useUser = defineStore("user", {
           return response
         })
         .catch((error: FetchError) => {
+          const toast = useToast()
           toast.add(error.message, "error")
         })
     },

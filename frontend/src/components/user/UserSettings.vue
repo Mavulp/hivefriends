@@ -11,6 +11,8 @@ import { computed, onBeforeMount, reactive } from "vue"
 import { useLoading } from "../../store/loading"
 import { useUser } from "../../store/user"
 import { useFormValidation, minLength, required, sameAs } from "../../js/validation"
+import { debounce } from "lodash"
+import { HEX_to_RGB, TEXT_CONTRAST } from "../../js/utils"
 
 const { getLoading, addLoading, delLoading } = useLoading()
 const user = useUser()
@@ -32,7 +34,7 @@ const _private = computed<boolean>({
 
 const _theme = computed<string>({
   get: () => user.settings.colorTheme ?? "light-theme",
-  set(value: string) {
+  set: (value: string) => {
     user.setSetting("colorTheme", value)
     const r = document.querySelector(":root")
     if (r) {
@@ -42,6 +44,20 @@ const _theme = computed<string>({
   }
 })
 
+const _accent = computed<string>({
+  get: () => user.settings.accentColor ?? "229,125,35",
+  set: (value: string) => {
+    const [r, g, b] = HEX_to_RGB(value)
+
+    user.setSetting("accentColor", `${r},${g},${b}`)
+    document.documentElement.style.setProperty("--color-highlight", `${r},${g},${b}`)
+  }
+})
+
+const buttonColor = computed(() => {
+  const [r, g, b] = _accent.value.split(",")
+  return TEXT_CONTRAST(Number(r), Number(g), Number(b))
+})
 /**
  * User information validation
  */
@@ -163,22 +179,46 @@ async function savePassword() {
           <UploadSettingsImage field="bannerKey" key="two" />
         </li>
 
-        <li>
-          <h5>Application</h5>
-          <!-- <InputCheckbox
+        <!-- <li> -->
+
+        <!-- <InputCheckbox
             label="Set yourself as private. You won't be mentioned in albums & your albums won't be publicly available"
             v-model:check="_private"
           /> -->
-        </li>
+        <!-- </li> -->
         <li>
+          <h5>Color theme</h5>
           <InputSelect
-            style="width: 356px"
+            style="width: 356px; margin-bottom: 40px"
             v-model:selected="_theme"
             :options="themeOptions"
             label="Theme"
             placeholder="Select a theme"
             canclear
           />
+
+          <h5>Accent Color</h5>
+          <p>Personalize the site by changing the accent color</p>
+
+          <div class="accent-color">
+            <input
+              :value="_accent"
+              type="color"
+              name="color"
+              id="color"
+              @change="(e: any) => _accent = e.target.value"
+            />
+            <label for="color" :style="{ color: buttonColor }"> Change</label>
+
+            <div class="divider"></div>
+
+            <div class="example-block"></div>
+            <div class="example-block text color">
+              <span class="material-icons">&#xe40a;</span>
+            </div>
+            <div class="example-block text">Example</div>
+            <div class="example-block text color">Example</div>
+          </div>
         </li>
         <li>
           <h5>Password</h5>

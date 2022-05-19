@@ -17,3 +17,13 @@ export function formatDate(date: Date | number) {
 export function delay(ms: number) {
   return new Promise((resolve) => setTimeout(() => resolve(true), ms))
 }
+
+export function HEX_to_RGB(hex: string): [number, number, number] {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : [0, 0, 0]
+}
+
+export function TEXT_CONTRAST(r: number, g: number, b: number): string {
+  var yiq = (r * 299 + g * 587 + b * 114) / 1000
+  return yiq >= 128 ? "black" : "white"
+}
