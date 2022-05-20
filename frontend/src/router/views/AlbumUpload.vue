@@ -205,7 +205,7 @@ async function submit() {
         <div class="album-upload-items-list">
           <template v-if="files.values.length > 0">
             <ImageUploadItem
-              v-for="(item, index) in files.values"
+              v-for="(item, index) in [...files.values].reverse()"
               :data="item"
               :key="item.name"
               :index="index"

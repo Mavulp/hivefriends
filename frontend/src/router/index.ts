@@ -14,6 +14,7 @@ import UserProfile from "../components/user/UserProfile.vue"
 import UserSettings from "../components/user/UserSettings.vue"
 
 import { useUser } from "../store/user"
+import { useBread } from "../store/bread"
 // import { useBread } from "../store/bread"
 
 /**
@@ -134,6 +135,9 @@ function _clearUser(next: NavigationGuardNext) {
 
 router.beforeResolve(async (to, from, next) => {
   const auth = useUser()
+  const bread = useBread()
+
+  bread.clear()
 
   if (to.meta.requiresAuth) {
     const token = localStorage.getItem("bearer_token")

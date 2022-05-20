@@ -17,14 +17,13 @@ const _id = computed(() => `${route.params.id}`)
 
 const user = computed<User>(() => users.users.find((item) => item.key === _id.value) as User)
 const accent = computed(() => user.value.accentColor.split(",").map((item) => Number(item)))
-const userAlbums = computed(() => Object.keys(albums.userAlbums[_id.value]).length)
 
 onBeforeMount(() => {
   addLoading("user-profile")
 
   Promise.all([albums.fetchUserAlbums(user.value.key), users.fetchUsers()])
     .then(() => {
-      console.log(albums.userAlbums)
+      // console.log(albums.userAlbums)
     })
     .catch(() => {})
     .finally(() => {
@@ -49,7 +48,7 @@ onBeforeMount(() => {
               Joined <b>{{ formatDate(user.createdAt) }}</b>
             </p>
             <p>
-              <b>{{ userAlbums }}</b> {{ userAlbums === 1 ? "album" : "albums" }}
+              <b>{{ user.albumsUploaded.length }}</b> {{ user.albumsUploaded.length === 1 ? "album" : "albums" }}
             </p>
           </div>
         </div>

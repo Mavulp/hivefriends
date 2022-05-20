@@ -4,6 +4,8 @@
 - [ ] Instead 100vh, use like 95 to show users can scroll
 - [ ] Dont check for token on each page change
 - [ ] Fix using MY accent color on other user's profiles (user profile)
+- [ ] Add toast error on image album uplad
+  - [ ] Auto-clear of toasts
 
 # Todo
 
@@ -38,8 +40,8 @@
 
 - [ ] Dark mode
 
-  - [ ] High Contrast (very dark)
-  - [x] Normal dak
+  - [ ] Medium Dark
+  - [x] Normal dak -> rename to dark contast
 
 - [ ] Location on steroids
 
@@ -67,12 +69,11 @@
 
 - [ ] User profile
 
-  - [ ] Show bio, username, profile picture, banner in a nice way
-  - [ ] Number of albums
+  - [x] Show bio, username, profile picture, banner in a nice way
+  - [x] Number of albums
   - [ ] List albums
-
-  - [ ] Their locations (on a map)
-  - [ ] Users they met with
+  - [ ] Users they met with (just a number)
+    - [ ] maybe in a tooltip
 
 # Pages To do Write up
 
