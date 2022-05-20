@@ -69,7 +69,12 @@ pub(super) async fn get(
         apply_filters(&mut query, &mut params, filter, user_key);
 
         let mut stmt = conn
-            .prepare(&query)
+            .prepare(&format!(
+                "{query} \
+                ORDER BY \
+                    timeframe_from DESC, \
+                    timeframe_to DESC"
+            ))
             .context("Failed to prepare statement for album query")?;
         let db_albums = stmt
             .query_map(rusqlite::params_from_iter(params.iter()), |row| {

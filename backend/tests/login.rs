@@ -1,7 +1,7 @@
 use serde_json::{json, Value};
 
-mod utils;
-use utils::setup_test_client;
+mod util;
+use util::setup_test_client;
 
 #[tokio::test]
 async fn invalid_password() {

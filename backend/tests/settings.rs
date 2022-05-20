@@ -1,8 +1,8 @@
 use axum::http::header::AUTHORIZATION;
 use serde_json::*;
 
-mod utils;
-use utils::*;
+mod util;
+use util::*;
 
 #[tokio::test]
 async fn put_password() {
