@@ -69,7 +69,7 @@ CREATE TABLE users (
     bio TEXT NULL,
     avatar_key TEXT NULL,
     banner_key TEXT NULL,
-    accent_color TEXT NULL,
+    accent_color TEXT NOT NULL DEFAULT '229, 125, 35',
     featured_album_key TEXT NULL,
     created_at INTEGER NOT NULL, -- unix ts
 
