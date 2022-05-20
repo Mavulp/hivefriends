@@ -1,12 +1,12 @@
 use anyhow::Context;
-use argon2::{password_hash::SaltString, Argon2, PasswordHasher};
+use argon2::{password_hash::SaltString, Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
 use axum::{
     extract::rejection::JsonRejection,
     routing::{get, put},
     Extension, Json, Router,
 };
 use rand::rngs::OsRng;
-use rusqlite::{params, OptionalExtension, ToSql};
+use rusqlite::{params, Connection, OptionalExtension, ToSql};
 use serde::{Deserialize, Serialize};
 use serde_rusqlite::from_row;
 
@@ -20,6 +20,7 @@ pub fn api_route() -> Router {
     Router::new()
         .route("/", get(get_settings))
         .route("/", put(put_settings))
+        .route("/password", put(put_password))
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -101,7 +102,6 @@ async fn get_settings(
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PutSettingsRequest {
-    pub password: Option<String>,
     pub display_name: Option<String>,
     pub bio: Option<String>,
     pub avatar_key: Option<String>,
@@ -146,13 +146,78 @@ async fn put_settings(
     Ok(Json("Success"))
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PutPasswordRequest {
+    pub old: String,
+    pub new: String,
+}
+
+async fn put_password(
+    request: Result<Json<PutPasswordRequest>, JsonRejection>,
+    Authorize(user_key): Authorize,
+    Extension(state): Extension<Arc<AppState>>,
+) -> Result<Json<&'static str>, Error> {
+    let Json(request) = request?;
+    let conn = state.pool.get().await.context("Failed to get connection")?;
+
+    let cuser_key = user_key.clone();
+    let result = conn
+        .interact(move |conn| {
+            conn.query_row(
+                "SELECT password_hash \
+                FROM users WHERE key=?1",
+                params![cuser_key],
+                |row| row.get::<_, String>(0),
+            )
+            .optional()
+        })
+        .await
+        .unwrap()
+        .context("Failed to query user key")?;
+
+    if let Some(password_hash) = result {
+        let argon2 = Argon2::default();
+        let parsed_hash = PasswordHash::new(&password_hash).context("Failed creating hash")?;
+
+        if argon2
+            .verify_password(request.old.as_bytes(), &parsed_hash)
+            .is_ok()
+        {
+            conn.interact(move |conn| set_password(&user_key, &request.new, conn))
+                .await
+                .unwrap()
+                .context("Failed to set password")?;
+
+            Ok(Json("Success"))
+        } else {
+            Err(Error::InvalidLogin)
+        }
+    } else {
+        Err(Error::NotFound)
+    }
+}
+
+fn set_password(user_key: &str, password: &str, conn: &Connection) -> Result<(), Error> {
+    let salt = SaltString::generate(&mut OsRng);
+    let argon2 = Argon2::default();
+    let phc_string = argon2
+        .hash_password(password.as_bytes(), &salt)
+        .unwrap()
+        .to_string();
+
+    conn.execute(
+        "UPDATE users SET password_hash = ? WHERE key = ?",
+        params![phc_string, user_key],
+    )
+    .context("Failed to update password hash")?;
+
+    Ok(())
+}
+
 impl PutSettingsRequest {
     fn update_str(&self) -> String {
         let mut result = Vec::new();
-
-        if self.password.is_some() {
-            result.push("password_hash = ?")
-        }
 
         if self.display_name.is_some() {
             result.push("display_name = ?")
@@ -191,17 +256,6 @@ impl PutSettingsRequest {
 
     fn update_params(mut self) -> Vec<Box<dyn ToSql>> {
         let mut params: Vec<Box<dyn ToSql>> = Vec::new();
-
-        if let Some(password) = self.password.take() {
-            let salt = SaltString::generate(&mut OsRng);
-            let argon2 = Argon2::default();
-            let phc_string = argon2
-                .hash_password(password.as_bytes(), &salt)
-                .unwrap()
-                .to_string();
-
-            params.push(Box::new(phc_string))
-        }
 
         if let Some(display_name) = self.display_name.take() {
             params.push(Box::new(display_name))
