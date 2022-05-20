@@ -7,12 +7,15 @@ import { useLoading } from "./loading"
 
 export interface User {
   key: string
-  displayName: string
   username: string
-  albumsUploaded: Array<string>
+  displayName: string
+  bio: string
   avatarKey: string
   bannerKey: string
-  bio: string
+  accentColor: string
+  featredAlbumKey: string
+  met: Array<string> | []
+  albumsUploaded: Array<string> | []
   createdAt: number
 }
 
@@ -69,7 +72,7 @@ export const useUser = defineStore("user", {
           localStorage.setItem("user", response.key)
         })
         .catch((error) => {
-          if (error.message === "Unauthorized") return "unauth"
+          if (error.message === "Unauthorized" || error.message === "Bearer token is invalid") return "unauth"
         })
     },
 

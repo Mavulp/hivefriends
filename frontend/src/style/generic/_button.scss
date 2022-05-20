@@ -10,9 +10,6 @@
   text-decoration: none !important;
 
   &:hover {
-  }
-
-  &:hover {
     &:after {
       width: 50%;
     }
@@ -86,8 +83,10 @@
     }
   }
 
-  &.router-link-active:after {
-    background-color: rgba(var(--color-highlight), 0.25);
+  &.router-link-active {
+    &:after {
+      background-color: rgba(var(--color-highlight), 0.25);
+    }
   }
 
   &:after {
@@ -104,7 +103,8 @@
     left: -8px;
     transform: scale(0.9);
     opacity: 0;
-    background-color: rgb(var(--color-border-light));
+    // background-color: rgb(var(--color-border-light));
+    background-color: rgba(var(--color-highlight), 0.25);
   }
 }
 

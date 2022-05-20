@@ -1,33 +1,78 @@
 <script setup lang="ts">
-import { ref, computed } from "vue"
+import LoadingSpin from "../loading/LoadingSpin.vue"
+
+import { computed, onBeforeMount } from "vue"
 import { useUser, User } from "../../store/user"
-
-import { imageUrl } from "../../store/album"
+import { imageUrl, useAlbums } from "../../store/album"
 import { useRoute } from "vue-router"
+import { TEXT_CONTRAST, formatDate } from "../../js/utils"
+import { useLoading } from "../../store/loading"
 
+const { addLoading, delLoading, getLoading } = useLoading()
 const users = useUser()
 const route = useRoute()
+const albums = useAlbums()
 
 const user = computed<User>(() => users.users.find((item) => item.key === `${route.params.id}`) as User)
+const accent = computed(() => user.value.accentColor.split(",").map((item) => Number(item)))
+const userAlbums = computed(() => Object.keys(albums.userAlbums).length)
+
+onBeforeMount(() => {
+  addLoading("user-profile")
+
+  Promise.all([albums.fetchUserAlbums(user.value.key), users.fetchUsers()])
+    .then(() => {})
+    .catch(() => {})
+    .finally(() => {
+      delLoading("user-profile")
+    })
+})
 </script>
 
 <template>
-  <div class="hi-user-page hi-user-profile" v-if="user">
-    <h1>{{ user.displayName ?? user.username }}</h1>
-    <!-- <pre>
-      {{ user }}
-    </pre> -->
-    <!-- 
+  <div class="hi-user-profile" v-if="user">
+    <LoadingSpin class="center-page" v-if="getLoading('user-profile')" />
 
-    <hr />
-    <pre>
-      {{ settings }}
-    </pre> -->
+    <template v-else>
+      <!-- <div class="hi-user-info" >
+        <img :src="imageUrl(user.avatarKey)" alt="" />
 
-    <img :src="imageUrl(user.avatarKey)" alt="" />
+        
+        <div class="user-info">
 
-    <div v-html="user.bio"></div>
 
-    <img :src="imageUrl(user.bannerKey)" alt="" />
+        </div>
+        <hr />
+        
+      </div>
+
+      <div class="hi-user-banner">
+        <div class="banner-image-wrap">
+          
+        </div>
+      </div> -->
+
+      <div class="hi-user-banner">
+        <img class="banner" :src="imageUrl(user.bannerKey, 'medium')" alt="" />
+
+        <div class="avatar-wrap">
+          <img class="avatar" :src="imageUrl(user.avatarKey, 'medium')" alt="" />
+
+          <div class="avatar-info">
+            <p>
+              Joined <b>{{ formatDate(user.createdAt) }}</b>
+            </p>
+            <p>
+              <b>{{ userAlbums }}</b> {{ userAlbums === 1 ? "album" : "albums" }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="user-information">
+        <h1>{{ user.displayName ?? user.username }}</h1>
+        <p :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]">{{ user.bio }}</p>
+      </div>
+    </template>
   </div>
 </template>
