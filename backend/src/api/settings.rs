@@ -191,7 +191,7 @@ async fn put_password(
 
             Ok(Json("Success"))
         } else {
-            Err(Error::InvalidLogin)
+            Err(Error::InvalidPassword)
         }
     } else {
         Err(Error::NotFound)

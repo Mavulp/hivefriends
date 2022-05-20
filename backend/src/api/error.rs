@@ -19,6 +19,9 @@ pub enum Error {
     #[error("Invalid username or password")]
     InvalidLogin,
 
+    #[error("Invalid password")]
+    InvalidPassword,
+
     #[error("coverKey is not an image in this album")]
     InvalidCoverKey,
 
@@ -41,7 +44,7 @@ pub enum Error {
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
         let status = match &self {
-            Error::InvalidLogin => StatusCode::UNAUTHORIZED,
+            Error::InvalidLogin | Error::InvalidPassword => StatusCode::UNAUTHORIZED,
             Error::NotFound => StatusCode::NOT_FOUND,
             Error::InternalError(e) => {
                 let err = e
