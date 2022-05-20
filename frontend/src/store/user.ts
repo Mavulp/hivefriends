@@ -136,10 +136,11 @@ export const useUser = defineStore("user", {
       const toast = useToast()
 
       return put("/api/settings/password", form)
-        .then(() => {
+        .then((res) => {
           toast.add("Succesfully updated password. Make sure you remember it", "success")
         })
         .catch((error: FetchError) => {
+          console.log(error)
           toast.add(error.message, "error")
         })
     }
