@@ -5,9 +5,11 @@ use axum::{
     },
     Extension, Json,
 };
-use rusqlite::params;
+use chrono::NaiveDateTime;
+use serde_rusqlite::to_params_named;
 use serde::Serialize;
 use tokio::fs;
+use tracing::warn;
 
 use std::io::Cursor;
 use std::path::PathBuf;
@@ -15,6 +17,7 @@ use std::sync::Arc;
 use std::time::SystemTime;
 
 use crate::{api::auth::Authorize, api::error::Error, AppState};
+use super::DbImageMetadata;
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -57,33 +60,155 @@ enum ImageCreationError {
 
 async fn upload_image(
     mut multipart: Multipart,
-    user_key: String,
+    uploader_key: String,
     state: &Arc<AppState>,
 ) -> anyhow::Result<ImageCreationResponse> {
-    let now = SystemTime::UNIX_EPOCH.elapsed()?.as_secs();
+    let uploaded_at = SystemTime::UNIX_EPOCH.elapsed()?.as_secs();
 
     let field = multipart
         .next_field()
         .await?
         .ok_or(ImageCreationError::NoImage)?;
 
+    let file_name = field.file_name().map(|s| s.to_owned());
     let data = field.bytes().await?;
+    let size_bytes = data.len() as u64;
 
     let key = blob_uuid::random_blob();
     store_image(state.data_path.clone(), &key, &data).await?;
 
     let image_key = key.clone();
+
+    let mut metadata = DbImageMetadata {
+        key: image_key,
+        uploader_key,
+        file_name,
+        size_bytes,
+        taken_at: None,
+        location_latitude: None,
+        location_longitude: None,
+        camera_brand: None,
+        camera_model: None,
+        exposure_time: None,
+        f_number: None,
+        focal_length: None,
+
+        uploaded_at,
+    };
+
+    let mut bufreader = std::io::BufReader::new(Cursor::new(&*data));
+    let exifreader = exif::Reader::new();
+    if let Ok(exif) = exifreader.read_from_container(&mut bufreader) {
+        populate_metadata_from_exif(&mut metadata, exif);
+    }
+
     let conn = state.pool.get().await?;
     conn.interact(move |conn| {
         conn.execute(
-            r"INSERT INTO images (key, uploader_key, created_at) VALUES (?1, ?2, ?3)",
-            params![&image_key, user_key, now],
+            "INSERT INTO images ( \
+                key, \
+                uploader_key, \
+                file_name, \
+                size_bytes, \
+                taken_at, \
+                location_latitude, \
+                location_longitude, \
+                camera_brand, \
+                camera_model, \
+                exposure_time, \
+                f_number, \
+                focal_length, \
+                uploaded_at \
+            ) VALUES ( \
+                :key, \
+                :uploader_key, \
+                :file_name, \
+                :size_bytes, \
+                :taken_at, \
+                :location_latitude, \
+                :location_longitude, \
+                :camera_brand, \
+                :camera_model, \
+                :exposure_time, \
+                :f_number, \
+                :focal_length, \
+                :uploaded_at \
+            )",
+            to_params_named(&metadata).unwrap().to_slice().as_slice()
         )
     })
     .await
     .unwrap()?;
 
     Ok(ImageCreationResponse { key })
+}
+
+fn populate_metadata_from_exif(metadata: &mut DbImageMetadata, exif: exif::Exif) {
+    use exif::{In, Tag};
+
+    let latitude_field = exif.get_field(Tag::GPSLatitude, In::PRIMARY);
+    let longitude_field = exif.get_field(Tag::GPSLongitude, In::PRIMARY);
+
+    let lat_ref = exif
+        .get_field(Tag::GPSLatitudeRef, In::PRIMARY)
+        .map(|f| f.display_value().to_string());
+
+    let long_ref = exif
+        .get_field(Tag::GPSLongitudeRef, In::PRIMARY)
+        .map(|f| f.display_value().to_string());
+
+    match (latitude_field, longitude_field, lat_ref, long_ref) {
+        (Some(latitude), Some(longitude), Some(lat_ref), Some(long_ref)) => {
+            let mut lat_deg = value_to_deg(&latitude.value);
+            let mut long_deg = value_to_deg(&longitude.value);
+
+            if lat_ref == "S" {
+                lat_deg = lat_deg.map(|d| d * -1.0);
+            }
+            if long_ref == "W" {
+                long_deg = long_deg.map(|d| d * -1.0);
+            }
+
+            if lat_deg.is_some() && long_deg.is_some() {
+                metadata.location_latitude = lat_deg.map(|d| d.to_string());
+                metadata.location_longitude = long_deg.map(|d| d.to_string());
+            }
+        }
+        _ => (),
+    };
+
+    metadata.taken_at = exif
+        .get_field(Tag::DateTimeOriginal, In::PRIMARY)
+        .map(|f| f.display_value().with_unit(&exif).to_string())
+        .and_then(|s| NaiveDateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S").ok())
+        .map(|t| t.timestamp() as u64);
+
+    metadata.camera_brand = exif
+        .get_field(Tag::Make, In::PRIMARY)
+        .map(|f| f.display_value().with_unit(&exif).to_string())
+        .map(|s| s.trim_matches('"').to_owned());
+    metadata.camera_model = exif
+        .get_field(Tag::Model, In::PRIMARY)
+        .map(|f| f.display_value().with_unit(&exif).to_string())
+        .map(|s| s.trim_matches('"').to_owned());
+    metadata.exposure_time = exif
+        .get_field(Tag::ExposureTime, In::PRIMARY)
+        .map(|f| f.display_value().with_unit(&exif).to_string());
+    metadata.f_number = exif
+        .get_field(Tag::FNumber, In::PRIMARY)
+        .map(|f| f.display_value().with_unit(&exif).to_string());
+    metadata.focal_length = exif
+        .get_field(Tag::FocalLength, In::PRIMARY)
+        .map(|f| f.display_value().with_unit(&exif).to_string());
+}
+
+fn value_to_deg(value: &exif::Value) -> Option<f64> {
+    if let exif::Value::Rational(parts) = value {
+        Some(parts[0].to_f64() + parts[1].to_f64() / 60.0 + parts[2].to_f64() / 3600.0)
+    } else {
+        warn!("Unexpected format of latitude, ignoring");
+        None
+    }
 }
 
 async fn store_image(directory: PathBuf, key: &str, data: &[u8]) -> anyhow::Result<()> {

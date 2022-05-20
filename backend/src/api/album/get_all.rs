@@ -1,7 +1,7 @@
 use anyhow::Context;
 use axum::{extract::Query, Extension, Json};
 use rusqlite::{params, ToSql};
-use serde::Deserialize;
+use serde::{Serialize, Deserialize};
 use serde_rusqlite::from_row;
 
 use std::sync::Arc;
@@ -9,7 +9,7 @@ use std::sync::Arc;
 use crate::api::{auth::Authorize, error::Error};
 use crate::AppState;
 
-use super::{Album, DbAlbum, Image, Timeframe};
+use super::{DbAlbum, Timeframe};
 
 mod comma_string {
     use serde::{self, Deserialize, Deserializer};
@@ -42,11 +42,25 @@ pub(super) struct AlbumFilters {
     draft: bool,
 }
 
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(super) struct AlbumResponse {
+    key: String,
+    title: String,
+    description: Option<String>,
+    cover_key: Option<String>,
+    locations: Option<String>,
+    uploader_key: String,
+    draft: bool,
+    timeframe: Timeframe,
+    created_at: u64,
+}
+
 pub(super) async fn get(
     Authorize(user_key): Authorize,
     Query(filter): Query<AlbumFilters>,
     Extension(state): Extension<Arc<AppState>>,
-) -> Result<Json<Vec<Album>>, Error> {
+) -> Result<Json<Vec<AlbumResponse>>, Error> {
     let conn = state.pool.get().await.context("Failed to get connection")?;
 
     conn.interact(move |conn| {
@@ -86,28 +100,7 @@ pub(super) async fn get(
 
         let mut albums = Vec::new();
         for db_album in db_albums {
-            let mut stmt = conn
-                .prepare(
-                    "SELECT i.key, i.uploader_key, i.created_at FROM images i \
-                    INNER JOIN album_image_associations aia ON aia.image_key=i.key \
-                    WHERE aia.album_key=?1",
-                )
-                .context("Failed to prepare statement for image query")?;
-            let image_iter = stmt
-                .query_map(params![db_album.key], |row| {
-                    Ok(Image {
-                        key: row.get(0)?,
-                        uploader_key: row.get(1)?,
-                        created_at: row.get(2)?,
-                    })
-                })
-                .context("Failed to query images")?;
-
-            let images = image_iter
-                .collect::<Result<Vec<_>, _>>()
-                .context("Failed to collect images")?;
-
-            albums.push(Album {
+            albums.push(AlbumResponse {
                 key: db_album.key,
                 title: db_album.title,
                 description: db_album.description,
@@ -120,7 +113,6 @@ pub(super) async fn get(
                     to: db_album.timeframe_to,
                 },
                 created_at: db_album.created_at,
-                images,
             })
         }
         Ok(Json(albums))

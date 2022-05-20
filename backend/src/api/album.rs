@@ -23,29 +23,6 @@ struct Timeframe {
     to: Option<u64>,
 }
 
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-struct Image {
-    key: String,
-    uploader_key: String,
-    created_at: u32,
-}
-
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-struct Album {
-    key: String,
-    title: String,
-    description: Option<String>,
-    cover_key: Option<String>,
-    locations: Option<String>,
-    uploader_key: String,
-    draft: bool,
-    timeframe: Timeframe,
-    created_at: u64,
-    images: Vec<Image>,
-}
-
 #[derive(Debug, Deserialize)]
 struct DbAlbum {
     key: String,

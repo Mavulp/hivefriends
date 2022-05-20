@@ -71,8 +71,8 @@ pub async fn authenticate(client: &TestClient) -> (String, String) {
     (token.into(), user_key.into())
 }
 
-pub async fn upload_test_image(client: &TestClient, token: &str) -> String {
-    let mut file = File::open("./tests/testimage.png").unwrap();
+pub async fn upload_test_image(path: &str, client: &TestClient, token: &str) -> String {
+    let mut file = File::open(path).unwrap();
     let mut data = Vec::new();
     file.read_to_end(&mut data).unwrap();
 
@@ -102,7 +102,7 @@ pub async fn upload_test_image(client: &TestClient, token: &str) -> String {
 }
 
 pub async fn create_test_album(client: &TestClient, token: &str) -> String {
-    let image_key = upload_test_image(&client, &token).await;
+    let image_key = upload_test_image("./tests/testimage.png", &client, &token).await;
 
     let res = client
         .post(&format!("/api/albums/"))

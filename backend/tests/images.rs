@@ -9,15 +9,70 @@ async fn upload() {
     let (client, _temp) = setup_test_client().await;
     let (token, _) = authenticate(&client).await;
 
-    upload_test_image(&client, &token).await;
+    upload_test_image("./tests/testimage.png", &client, &token).await;
 }
 
 #[tokio::test]
-async fn get_by_id() {
+async fn upload_with_exif() {
+    let (client, _temp) = setup_test_client().await;
+    let (token, _) = authenticate(&client).await;
+
+    let image_key = upload_test_image("./tests/exif.jpg", &client, &token).await;
+
+    let res = client
+        .get(&format!("/api/images/{image_key}"))
+        .header(AUTHORIZATION, format!("Bearer {token}"))
+        .send()
+        .await;
+
+    let status = dbg!(res.status());
+
+    let json = res.json::<Value>().await;
+    dbg!(&json);
+    assert_eq!(status, 200);
+
+    assert_eq!(
+        json.get("takenAt").unwrap().as_u64().unwrap().to_owned(),
+        1224692919,
+    );
+
+    let location = json
+        .as_object()
+        .unwrap()
+        .get("location")
+        .unwrap()
+        .as_object()
+        .unwrap();
+
+    assert_eq!(
+        location
+            .get("latitude")
+            .unwrap()
+            .as_str()
+            .unwrap()
+            .to_owned(),
+        "43.46744833333334",
+    );
+
+    assert_eq!(
+        location
+            .get("longitude")
+            .unwrap()
+            .as_str()
+            .unwrap()
+            .to_owned(),
+        "11.885126666663888",
+    );
+
+    panic!()
+}
+
+#[tokio::test]
+async fn get_by_key() {
     let (client, _temp) = setup_test_client().await;
     let (token, uploader_key) = authenticate(&client).await;
 
-    let image_key = upload_test_image(&client, &token).await;
+    let image_key = upload_test_image("./tests/testimage.png", &client, &token).await;
 
     let res = client
         .get(&format!("/api/images/{image_key}"))

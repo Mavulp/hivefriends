@@ -1,19 +1,12 @@
 use anyhow::Context;
 use axum::{extract::Path, Extension, Json};
 use rusqlite::{params, OptionalExtension};
-use serde::Serialize;
+use serde_rusqlite::from_row;
 
 use std::sync::Arc;
 
 use crate::{api::auth::Authorize, api::error::Error, AppState};
-
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-pub(super) struct ImageMetadata {
-    key: String,
-    uploader_key: String,
-    created_at: i32,
-}
+use super::{DbImageMetadata, ImageMetadata};
 
 pub(super) async fn get(
     Path(key): Path<String>,
@@ -25,9 +18,24 @@ pub(super) async fn get(
     let result = conn
         .interact(move |conn| {
             conn.query_row(
-                r"SELECT uploader_key, created_at FROM images WHERE key = ?1",
+                "SELECT \
+                    key, \
+                    uploader_key, \
+                    uploaded_at, \
+                    file_name, \
+                    size_bytes, \
+                    taken_at, \
+                    location_latitude, \
+                    location_longitude, \
+                    camera_brand, \
+                    camera_model, \
+                    exposure_time, \
+                    f_number, \
+                    focal_length \
+                FROM images \
+                WHERE key = ?1",
                 params![&ckey],
-                |row| Ok((row.get::<_, String>(0)?, row.get::<_, i32>(1)?)),
+                |row| Ok(from_row::<DbImageMetadata>(row).unwrap()),
             )
             .optional()
         })
@@ -35,12 +43,8 @@ pub(super) async fn get(
         .unwrap()
         .context("Failed to query image metadata")?;
 
-    if let Some((uploader_key, created_at)) = result {
-        Ok(Json(ImageMetadata {
-            key,
-            uploader_key,
-            created_at,
-        }))
+    if let Some(image_metadata) = result {
+        Ok(Json(ImageMetadata::from_db(image_metadata)))
     } else {
         Err(Error::NotFound)
     }

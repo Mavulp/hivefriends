@@ -1,7 +1,20 @@
 CREATE TABLE images (
     key TEXT PRIMARY KEY NOT NULL, -- used for filesystem path and in API responses
+
+    -- metadata
+    file_name TEXT NULL,
+    size_bytes INTEGER NOT NULL,
+    taken_at INTEGER NULL, -- unix ts
+    location_latitude TEXT NULL, -- gps data
+    location_longitude TEXT NULL, -- gps data
+    camera_brand TEXT NULL,
+    camera_model TEXT NULL,
+    exposure_time TEXT NULL,
+    f_number TEXT NULL,
+    focal_length TEXT NULL,
+
     uploader_key TEXT NOT NULL,
-    created_at INTEGER NOT NULL, -- time since unix epoch (unix ts)
+    uploaded_at INTEGER NOT NULL, -- time since unix epoch (unix ts)
 
     CONSTRAINT fk_uploader_key_assoc
         FOREIGN KEY (uploader_key)

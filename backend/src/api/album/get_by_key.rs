@@ -1,6 +1,7 @@
 use anyhow::Context;
 use axum::{extract::Path, Extension, Json};
 use rusqlite::{params, OptionalExtension};
+use serde::Serialize;
 
 use serde_rusqlite::from_row;
 
@@ -9,14 +10,30 @@ use std::sync::Arc;
 use crate::api::auth::Authorize;
 use crate::api::error::Error;
 use crate::AppState;
+use crate::api::image::{DbImageMetadata, ImageMetadata};
 
-use super::{Album, DbAlbum, Image, Timeframe};
+use super::{DbAlbum, Timeframe};
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(super) struct AlbumResponse {
+    key: String,
+    title: String,
+    description: Option<String>,
+    cover_key: Option<String>,
+    locations: Option<String>,
+    uploader_key: String,
+    draft: bool,
+    timeframe: Timeframe,
+    created_at: u64,
+    images: Vec<ImageMetadata>,
+}
 
 pub(super) async fn get(
     Path(album_key): Path<String>,
     Authorize(_): Authorize,
     Extension(state): Extension<Arc<AppState>>,
-) -> Result<Json<Album>, Error> {
+) -> Result<Json<AlbumResponse>, Error> {
     let conn = state.pool.get().await.context("Failed to get connection")?;
 
     conn.interact(move |conn| {
@@ -44,25 +61,36 @@ pub(super) async fn get(
         if let Some(db_album) = result {
             let mut stmt = conn
                 .prepare(
-                    "SELECT i.key, i.uploader_key, i.created_at FROM images i \
+                    "SELECT \
+                        i.key, \
+                        i.uploader_key, \
+                        i.uploaded_at, \
+                        i.file_name, \
+                        i.size_bytes, \
+                        i.taken_at, \
+                        i.location_latitude, \
+                        i.location_longitude, \
+                        i.camera_brand, \
+                        i.camera_model, \
+                        i.exposure_time, \
+                        i.f_number, \
+                        i.focal_length \
+                    FROM images i \
                     INNER JOIN album_image_associations aia ON aia.image_key=i.key \
                     WHERE aia.album_key=?1",
                 )
                 .context("Failed to prepare statement for image query")?;
             let image_iter = stmt
                 .query_map(params![db_album.key], |row| {
-                    Ok(Image {
-                        key: row.get(0)?,
-                        uploader_key: row.get(1)?,
-                        created_at: row.get(2)?,
-                    })
+                    Ok(ImageMetadata::from_db(from_row::<DbImageMetadata>(row).unwrap()))
                 })
                 .context("Failed to query images for album")?;
 
             let images = image_iter
                 .collect::<Result<Vec<_>, _>>()
                 .context("Failed to collect album images")?;
-            Ok(Json(Album {
+
+            Ok(Json(AlbumResponse {
                 key: album_key,
                 title: db_album.title,
                 description: db_album.description,
