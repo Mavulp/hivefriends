@@ -1,7 +1,7 @@
 use anyhow::Context;
 use axum::{extract::Query, Extension, Json};
-use rusqlite::{params, ToSql};
-use serde::{Serialize, Deserialize};
+use rusqlite::ToSql;
+use serde::{Deserialize, Serialize};
 use serde_rusqlite::from_row;
 
 use std::sync::Arc;

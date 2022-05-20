@@ -6,8 +6,8 @@ use axum::{
     Extension, Json,
 };
 use chrono::NaiveDateTime;
-use serde_rusqlite::to_params_named;
 use serde::Serialize;
+use serde_rusqlite::to_params_named;
 use tokio::fs;
 use tracing::warn;
 
@@ -16,8 +16,8 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use crate::{api::auth::Authorize, api::error::Error, AppState};
 use super::DbImageMetadata;
+use crate::{api::auth::Authorize, api::error::Error, AppState};
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -134,7 +134,7 @@ async fn upload_image(
                 :focal_length, \
                 :uploaded_at \
             )",
-            to_params_named(&metadata).unwrap().to_slice().as_slice()
+            to_params_named(&metadata).unwrap().to_slice().as_slice(),
         )
     })
     .await
@@ -157,24 +157,23 @@ fn populate_metadata_from_exif(metadata: &mut DbImageMetadata, exif: exif::Exif)
         .get_field(Tag::GPSLongitudeRef, In::PRIMARY)
         .map(|f| f.display_value().to_string());
 
-    match (latitude_field, longitude_field, lat_ref, long_ref) {
-        (Some(latitude), Some(longitude), Some(lat_ref), Some(long_ref)) => {
-            let mut lat_deg = value_to_deg(&latitude.value);
-            let mut long_deg = value_to_deg(&longitude.value);
+    if let (Some(latitude), Some(longitude), Some(lat_ref), Some(long_ref)) =
+        (latitude_field, longitude_field, lat_ref, long_ref)
+    {
+        let mut lat_deg = value_to_deg(&latitude.value);
+        let mut long_deg = value_to_deg(&longitude.value);
 
-            if lat_ref == "S" {
-                lat_deg = lat_deg.map(|d| d * -1.0);
-            }
-            if long_ref == "W" {
-                long_deg = long_deg.map(|d| d * -1.0);
-            }
-
-            if lat_deg.is_some() && long_deg.is_some() {
-                metadata.location_latitude = lat_deg.map(|d| d.to_string());
-                metadata.location_longitude = long_deg.map(|d| d.to_string());
-            }
+        if lat_ref == "S" {
+            lat_deg = lat_deg.map(|d| d * -1.0);
         }
-        _ => (),
+        if long_ref == "W" {
+            long_deg = long_deg.map(|d| d * -1.0);
+        }
+
+        if lat_deg.is_some() && long_deg.is_some() {
+            metadata.location_latitude = lat_deg.map(|d| d.to_string());
+            metadata.location_longitude = long_deg.map(|d| d.to_string());
+        }
     };
 
     metadata.taken_at = exif

@@ -5,8 +5,8 @@ use serde_rusqlite::from_row;
 
 use std::sync::Arc;
 
-use crate::{api::auth::Authorize, api::error::Error, AppState};
 use super::{DbImageMetadata, ImageMetadata};
+use crate::{api::auth::Authorize, api::error::Error, AppState};
 
 pub(super) async fn get(
     Path(key): Path<String>,

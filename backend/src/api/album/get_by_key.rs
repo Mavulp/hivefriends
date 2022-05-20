@@ -9,8 +9,8 @@ use std::sync::Arc;
 
 use crate::api::auth::Authorize;
 use crate::api::error::Error;
-use crate::AppState;
 use crate::api::image::{DbImageMetadata, ImageMetadata};
+use crate::AppState;
 
 use super::{DbAlbum, Timeframe};
 
@@ -82,7 +82,9 @@ pub(super) async fn get(
                 .context("Failed to prepare statement for image query")?;
             let image_iter = stmt
                 .query_map(params![db_album.key], |row| {
-                    Ok(ImageMetadata::from_db(from_row::<DbImageMetadata>(row).unwrap()))
+                    Ok(ImageMetadata::from_db(
+                        from_row::<DbImageMetadata>(row).unwrap(),
+                    ))
                 })
                 .context("Failed to query images for album")?;
 

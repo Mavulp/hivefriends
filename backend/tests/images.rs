@@ -63,8 +63,6 @@ async fn upload_with_exif() {
             .to_owned(),
         "11.885126666663888",
     );
-
-    panic!()
 }
 
 #[tokio::test]
