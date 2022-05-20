@@ -18,8 +18,7 @@ pub(super) struct CreateAlbumRequest {
     title: String,
     #[serde(default, deserialize_with = "non_empty_str")]
     description: Option<String>,
-    #[serde(default, deserialize_with = "non_empty_str")]
-    cover_key: Option<String>,
+    cover_key: String,
     #[serde(default, deserialize_with = "non_empty_str")]
     locations: Option<String>,
     timeframe: Timeframe,
@@ -42,10 +41,8 @@ pub(super) async fn post(
     let Json(request) = request?;
     let conn = state.pool.get().await.context("Failed to get connection")?;
 
-    if let Some(cover_key) = &request.cover_key {
-        if !request.image_keys.contains(cover_key) {
-            return Err(Error::InvalidCoverKey);
-        }
+    if !request.image_keys.contains(&request.cover_key) {
+        return Err(Error::InvalidCoverKey);
     }
 
     let now = SystemTime::UNIX_EPOCH

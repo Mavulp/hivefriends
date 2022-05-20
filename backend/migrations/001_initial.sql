@@ -26,7 +26,7 @@ CREATE TABLE albums (
     key TEXT PRIMARY KEY NOT NULL, -- used in API responses
     title TEXT NOT NULL,
     description TEXT NULL,
-    cover_key TEXT NULL,
+    cover_key TEXT NOT NULL,
     locations TEXT NULL,
     uploader_key TEXT NOT NULL,
     draft INTEGER NOT NULL DEFAULT 0, -- boolean

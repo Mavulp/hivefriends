@@ -28,7 +28,7 @@ struct DbAlbum {
     key: String,
     title: String,
     description: Option<String>,
-    cover_key: Option<String>,
+    cover_key: String,
     locations: Option<String>,
     uploader_key: String,
     draft: bool,
