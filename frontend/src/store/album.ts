@@ -26,7 +26,7 @@ export interface Album {
     to: number
   }
   uploaderKey: string
-  coverKey: string | null
+  coverKey: string
 }
 
 interface State {
@@ -49,6 +49,7 @@ export interface NewAlbum {
   }
   imageKeys: Array<string>
   userKeys?: Array<string>
+  coverKey: string
 }
 
 export const useAlbums = defineStore("album", {

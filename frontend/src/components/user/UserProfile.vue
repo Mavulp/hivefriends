@@ -13,15 +13,19 @@ const users = useUser()
 const route = useRoute()
 const albums = useAlbums()
 
-const user = computed<User>(() => users.users.find((item) => item.key === `${route.params.id}`) as User)
+const _id = computed(() => `${route.params.id}`)
+
+const user = computed<User>(() => users.users.find((item) => item.key === _id.value) as User)
 const accent = computed(() => user.value.accentColor.split(",").map((item) => Number(item)))
-const userAlbums = computed(() => Object.keys(albums.userAlbums).length)
+const userAlbums = computed(() => Object.keys(albums.userAlbums[_id.value]).length)
 
 onBeforeMount(() => {
   addLoading("user-profile")
 
   Promise.all([albums.fetchUserAlbums(user.value.key), users.fetchUsers()])
-    .then(() => {})
+    .then(() => {
+      console.log(albums.userAlbums)
+    })
     .catch(() => {})
     .finally(() => {
       delLoading("user-profile")
@@ -34,24 +38,6 @@ onBeforeMount(() => {
     <LoadingSpin class="center-page" v-if="getLoading('user-profile')" />
 
     <template v-else>
-      <!-- <div class="hi-user-info" >
-        <img :src="imageUrl(user.avatarKey)" alt="" />
-
-        
-        <div class="user-info">
-
-
-        </div>
-        <hr />
-        
-      </div>
-
-      <div class="hi-user-banner">
-        <div class="banner-image-wrap">
-          
-        </div>
-      </div> -->
-
       <div class="hi-user-banner">
         <img class="banner" :src="imageUrl(user.bannerKey, 'medium')" alt="" />
 

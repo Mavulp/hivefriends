@@ -31,17 +31,20 @@ interface File {
 }
 
 const files = reactive<File>({ values: [] })
-const album = reactive<NewAlbum>({
-  title: "",
-  description: "",
-  locations: [],
-  timeframe: {
-    from: 0,
-    to: 0
-  },
-  imageKeys: [],
-  userKeys: []
-})
+// const album = reactive<NewAlbum>({
+//   title: "",
+//   description: "",
+//   locations: [],
+//   timeframe: {
+//     from: 0,
+//     to: 0
+//   },
+//   imageKeys: [],
+//   userKeys: [],
+//   coverKey: null
+// } as NewAlbum)
+
+const album = reactive<NewAlbum>({} as NewAlbum)
 
 // If album was successfuly generated, this will get populated
 const albumKey = ref()
@@ -166,7 +169,10 @@ async function submit() {
       timeframe: {
         from: new Date(album.timeframe.from).getTime() / 1000,
         to: new Date(singleDate.value ? album.timeframe.from : album.timeframe.to).getTime() / 1000
-      }
+      },
+      // TODO: implement
+      // coverKey: album.coverKey ?? files.values[0].key
+      coverKey: files.values[0].key
     })
 
     const { key } = await store.addAlbum(model)
