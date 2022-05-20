@@ -1,6 +1,8 @@
 # Fix
 
 - [ ] Ask for album sorting (now is reversed)
+- [ ] Instead 100vh, use like 95 to show users can scroll
+- [ ] Dont check for token on each page change
 
 # Todo
 

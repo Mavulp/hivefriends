@@ -4,7 +4,7 @@ import "./style/index.scss"
 import Navigation from "./components/navigation/Navigation.vue"
 import Toasts from "./components/navigation/Toasts.vue"
 
-import { onBeforeMount, onMounted } from "vue"
+import { onBeforeMount } from "vue"
 import { useUser } from "./store/user"
 
 import { useLoading } from "./store/loading"
