@@ -110,7 +110,7 @@ impl IntoResponse for AuthorizationRejection {
         };
 
         let body = Json(json!({
-            "error": self.to_string(),
+            "message": self.to_string(),
         }))
         .into_response();
 
