@@ -88,8 +88,9 @@ async fn upload_image(
 
 async fn store_image(directory: PathBuf, key: &str, data: &[u8]) -> anyhow::Result<()> {
     let image = image::load_from_memory(data)?;
-    let medium = image.thumbnail(512, 512);
-    let tiny = medium.thumbnail(128, 128);
+    let large = image.thumbnail(1280, 1280);
+    let medium = large.thumbnail(800, 800);
+    let tiny = medium.thumbnail(360, 360);
 
     let mut image_dir = directory;
     image_dir.push(key);
@@ -100,6 +101,7 @@ async fn store_image(directory: PathBuf, key: &str, data: &[u8]) -> anyhow::Resu
 
     for (image, name) in &[
         (image, "original.png"),
+        (large, "large.png"),
         (medium, "medium.png"),
         (tiny, "tiny.png"),
     ] {
