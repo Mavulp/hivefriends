@@ -225,18 +225,21 @@ async function savePassword() {
 
           <form @submit.prevent="savePassword">
             <InputText
+              type="password"
               :error="passValidation.errors.old"
               v-model:value="passForm.old"
               label="Old password"
               placeholder="Your current password"
             />
             <InputText
+              type="password"
               :error="passValidation.errors.new1"
               v-model:value="passForm.new1"
               label="New password"
               placeholder="Your new password"
             />
             <InputText
+              type="password"
               :error="passValidation.errors.new2"
               v-model:value="passForm.new2"
               label="Confirm password"
