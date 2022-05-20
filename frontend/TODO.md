@@ -3,6 +3,7 @@
 - [ ] Ask for album sorting (now is reversed)
 - [ ] Instead 100vh, use like 95 to show users can scroll
 - [ ] Dont check for token on each page change
+- [ ] Fix using MY accent color on other user's profiles (user profile)
 
 # Todo
 

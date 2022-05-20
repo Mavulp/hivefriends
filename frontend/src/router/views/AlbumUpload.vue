@@ -31,20 +31,20 @@ interface File {
 }
 
 const files = reactive<File>({ values: [] })
-// const album = reactive<NewAlbum>({
-//   title: "",
-//   description: "",
-//   locations: [],
-//   timeframe: {
-//     from: 0,
-//     to: 0
-//   },
-//   imageKeys: [],
-//   userKeys: [],
-//   coverKey: null
-// } as NewAlbum)
+const album = reactive<NewAlbum>({
+  title: "",
+  description: "",
+  locations: [],
+  timeframe: {
+    from: 0,
+    to: 0
+  },
+  imageKeys: [],
+  userKeys: [],
+  coverKey: ""
+})
 
-const album = reactive<NewAlbum>({} as NewAlbum)
+// const album = reactive<NewAlbum>({} as NewAlbum)
 
 // If album was successfuly generated, this will get populated
 const albumKey = ref()
