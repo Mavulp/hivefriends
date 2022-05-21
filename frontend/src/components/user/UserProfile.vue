@@ -92,7 +92,7 @@ watchEffect(() => {
           </template>
           <div v-else>
             <p>
-              Looks like <b>{{ user.displayName ?? user.username }}</b> did not upload any albums yet. Is he touching
+              Looks like <b>{{ user.displayName ?? user.username }}</b> did not upload any albums yet. Are they touching
               grass rn?
             </p>
           </div>

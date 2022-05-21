@@ -85,12 +85,20 @@
       transform: scale(1);
       opacity: 1;
     }
+
+    .material-icons {
+      color: rgb(var(--color-highlight));
+    }
   }
 
   &.router-link-active {
     &:after {
       background-color: rgba(var(--color-highlight), 0.25);
     }
+  }
+
+  .material-icons {
+    @include t(0.1s);
   }
 
   &:after {

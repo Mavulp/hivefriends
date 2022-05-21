@@ -20,8 +20,6 @@ onBeforeMount(() => {
   Promise.all([user.fetchUsers(), user.fetchSettings()]).then(() => {
     loading.delLoading("app")
 
-    console.log(user.settings)
-
     const theme = user.settings.colorTheme ?? "light-theme"
     const r = document.querySelector(":root")
     if (r) {

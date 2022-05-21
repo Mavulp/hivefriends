@@ -30,7 +30,7 @@
   textarea {
     height: unset;
     line-height: unset;
-    min-height: 156px;
+    min-height: 124px;
     padding: 24px;
     width: 100%;
     resize: vertical;
@@ -256,6 +256,10 @@ input:-webkit-autofill:active {
     border: 1px solid rgb(var(--color-border-light));
     padding: 0 20px;
     color: rgb(var(--color-text));
+
+    .select-placeholder {
+      color: rgb(var(--color-text-light));
+    }
   }
 
   .select-dropdown {
@@ -264,27 +268,45 @@ input:-webkit-autofill:active {
     top: 100%;
     left: 0;
     right: 0;
-    max-height: 256px;
+    max-height: 216px;
     overflow-y: auto;
     scrollbar-width: 4px;
     scrollbar-width: thin;
     opacity: 0;
     visibility: hidden;
     z-index: -1;
-    // padding: 20px;
     background-color: rgb(var(--color-white));
     border: 1px solid rgb(var(--color-border-light));
     box-shadow: var(--shadow);
 
-    button {
+    button,
+    .select-no-options {
       display: block;
-      text-align: left;
       width: 100%;
       height: 56px;
       padding: 0 20px;
       line-height: 56px;
-      border-bottom: 1px solid rgb(var(--color-border-light));
       color: rgb(var(--color-text));
+    }
+
+    button {
+      text-align: left;
+      position: relative;
+      border-bottom: 1px solid rgb(var(--color-border-light));
+
+      .material-icons {
+        display: block;
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.8rem;
+        color: rgb(var(--color-text-light));
+
+        &.add-item {
+          opacity: 0;
+        }
+      }
 
       &.is-selected {
         background-color: rgba(var(--color-background-dimmed), 0.3);
@@ -296,6 +318,10 @@ input:-webkit-autofill:active {
 
       &:hover {
         background-color: rgba(var(--color-background-dimmed), 0.1);
+
+        .add-item {
+          opacity: 1;
+        }
       }
 
       &:last-child {

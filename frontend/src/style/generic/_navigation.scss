@@ -19,18 +19,20 @@
   }
 
   a {
+    @include flex($gap: 12px);
     height: 24px;
     line-height: 24px;
     text-decoration: none !important;
+
+    .user-image {
+      @include radius(50%);
+      display: block;
+      object-fit: cover;
+      object-position: center;
+      width: 28px;
+      height: 28px;
+    }
   }
-
-  // a {
-  //   @include flex($align: center, $gap: 0);
-  // }
-
-  // a {
-  //   line-height: 0 !important;
-  // }
 
   span {
     color: rgb(var(--color-text));

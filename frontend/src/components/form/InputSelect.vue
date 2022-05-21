@@ -2,8 +2,6 @@
 import { onClickOutside } from "@vueuse/core"
 import { computed, ref } from "vue"
 
-// TODO: implement multiple
-
 type Option = {
   label: string
   value: any
@@ -13,12 +11,12 @@ interface Props {
   label?: string
   placeholder?: string
   multiple?: boolean
-  options: Array<Option | string>
+  options?: Array<Option | string> | null
   selected: Array<string> | string
-  canclear?: boolean
+  cantclear?: boolean
 }
 
-const { label, placeholder, multiple, options, selected, canclear } = defineProps<Props>()
+const { label, placeholder, multiple, options, selected, cantclear = false } = defineProps<Props>()
 const open = ref(false)
 const self = ref(null)
 
@@ -31,6 +29,8 @@ const emit = defineEmits<{
 }>()
 
 const formattedOptions = computed(() => {
+  if (!options || options.length === 0) return null
+
   return options.map((item) => {
     if (typeof item === "string") {
       return {
@@ -44,28 +44,51 @@ const formattedOptions = computed(() => {
 })
 
 const selectedLabels = computed(() => {
-  if (!selected || selected.length === 0) return null
+  if (!selected || selected.length === 0 || !formattedOptions.value) return null
 
   if (typeof selected === "string") {
     const item = formattedOptions.value.find((item) => item.value === selected)
     if (item) return item.label
   } else {
-    return selected.map((select) => {
-      return formattedOptions.value.find((item) => item.value === select)?.label ?? select
-    })
+    return selected
+      .map((select) => {
+        const item = formattedOptions.value?.find((item) => item.value === select)
+        if (item) return item.label
+        return select
+      })
+      .join(", ")
   }
 })
 
 function setValue(item: Option) {
-  // TODO: multiple
+  // Multiple
+  if (multiple && Array.isArray(selected)) {
+    if (selected.find((sel) => sel === item.value)) {
+      // Clearing
+      if (cantclear && selected.length === 1) return
 
-  if (selected === item.value && canclear) {
-    emit("update:selected", null)
+      const filtered = selected.filter((sel) => sel !== item.value)
+      emit("update:selected", filtered)
+    } else {
+      // Setting
+      emit("update:selected", [...selected, item.value])
+    }
   } else {
-    emit("update:selected", item.value)
-  }
+    // Single
 
-  open.value = false
+    if (selected === item.value) {
+      //Clearing
+      if (cantclear) return
+
+      emit("update:selected", null)
+    } else {
+      // Setting
+      emit("update:selected", item.value)
+    }
+
+    // Only close if you can select just 1 item
+    open.value = false
+  }
 }
 </script>
 
@@ -74,21 +97,29 @@ function setValue(item: Option) {
     <label v-if="label">{{ label }}</label>
 
     <button class="select-button" @click="open = !open">
-      <template v-if="selected">
+      <template v-if="selected && selected.length > 0">
         {{ selectedLabels }}
       </template>
       <span class="select-placeholder" v-else-if="placeholder">{{ placeholder }}</span>
     </button>
 
     <div class="select-dropdown">
-      <button
-        v-for="item in formattedOptions"
-        :key="item.label"
-        :class="{ 'is-selected': selected.includes(item.value) }"
-        @click="setValue(item)"
-      >
-        <div v-html="item.label" />
-      </button>
+      <template v-if="formattedOptions">
+        <button
+          v-for="item in formattedOptions"
+          :key="item.label"
+          :class="{ 'is-selected': selected.includes(item.value) }"
+          @click="setValue(item)"
+        >
+          <div v-html="item.label" />
+
+          <template v-if="!cantclear">
+            <span class="remove-item material-icons" v-if="selected.includes(item.value)"> &#xe5cd; </span>
+            <span class="add-item material-icons" v-else>&#xe145;</span>
+          </template>
+        </button>
+      </template>
+      <span class="select-no-options" v-else>Nothing to select.</span>
     </div>
   </div>
 </template>

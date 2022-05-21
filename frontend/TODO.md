@@ -1,9 +1,9 @@
 # Fix
 
-- [ ] Ask for album sorting (now is reversed)
+- [x] Ask for album sorting (now is reversed)
 - [ ] Instead 100vh, use like 95 to show users can scroll
 - [ ] Dont check for token on each page change
-- [ ] Fix using MY accent color on other user's profiles (user profile)
+- [x] Fix using MY accent color on other user's profiles (user profile)
 - [ ] Add toast error on image album uplad
   - [ ] Auto-clear of toasts
 
@@ -30,7 +30,9 @@
 - [ ] Album Detail
 
   - [ ] Tagged users
-  - [ ] locations
+    - [ ] when clicked button, a white / dark block will slide from left or right
+    - over the cover image and shows a simple list of tagged users within
+  - [ ] map
 
 - [ ] Album Comments
 

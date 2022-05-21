@@ -180,11 +180,11 @@ async function savePassword() {
             :options="themeOptions"
             label="Theme"
             placeholder="Select a theme"
-            canclear
+            cantclear
           />
 
           <h5>Accent Color</h5>
-          <p>Personalize the site by changing the accent color</p>
+          <p>Personalize your profile and site by changing the accent color</p>
 
           <div class="accent-color">
             <input
@@ -210,6 +210,8 @@ async function savePassword() {
           <h5>Password</h5>
 
           <form @submit.prevent="savePassword">
+            <input id="username" style="display: none" type="text" name="fakeusernameremembered" />
+            <input id="password" style="display: none" type="password" name="fakepasswordremembered" />
             <InputText
               type="password"
               :error="passValidation.errors.old"

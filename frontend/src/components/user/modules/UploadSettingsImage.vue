@@ -61,7 +61,7 @@ function previewFile(e: any) {
     // Save file in case it should get uploaded
     data.file = file
 
-    console.log(data.file, preview.value)
+    // console.log(data.file, preview.value)
 
     if (preview.value) preview.value.src = URL.createObjectURL(file)
   }

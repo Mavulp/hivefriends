@@ -33,7 +33,7 @@ export interface UserSettings {
 
 export interface State {
   user: User
-  users: Array<User> | []
+  users: Array<User>
   logged: boolean
   settings: UserSettings
 }
@@ -42,7 +42,7 @@ export const useUser = defineStore("user", {
   state: () =>
     ({
       user: {},
-      users: [],
+      users: [{} as User],
       logged: false,
       settings: {}
     } as State),
@@ -156,6 +156,14 @@ export const useUser = defineStore("user", {
   getters: {
     isLoggedIn: (state) => state.logged,
     getKey: (state) => state.user.username,
+    getUser: (state) => (username: string, field?: string) => {
+      const u = state.users.find((item) => item.username === username)
+      if (!u) return null
+
+      if (!field) return u
+
+      return Reflect.get(u, field)
+    },
     getUsername: (state) => (username?: string | string[] | undefined) => {
       if (!username) return state.user.displayName ?? state.user.username
 

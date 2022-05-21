@@ -28,8 +28,6 @@ onBeforeMount(async () => {
     const data = await albums.fetchAlbum(id)
     Object.assign(album, data)
 
-    console.log(data)
-
     // bread.set(`${data.title} by ${user.getUsername(data.uploaderKey)}`, `${data.title} // hi!friends`)
   }
 })
@@ -90,6 +88,22 @@ const chunks = computed(() => {
       </div>
 
       <div class="hi-album-title-thumbnail">
+        <div class="detail-buttons">
+          <!-- <button class="hover-bubble">
+            <span class="material-icons">&#xe0b9;</span>
+            Comments
+          </button> -->
+          <!-- 
+          <button class="hover-bubble">
+            <span class="material-icons">&#xe55b;</span>
+            Map
+          </button>
+
+          <button class="hover-bubble">
+            <span class="material-icons">&#xe7fb;</span>
+            People
+          </button> -->
+        </div>
         <div class="thumbnail-image-wrap">
           <img :src="imageUrl(album.images[0].key)" alt="" />
         </div>

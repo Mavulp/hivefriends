@@ -3,11 +3,13 @@ import { defineStore } from "pinia"
 export type Toast = {
   text: string
   type?: string
+  timeout?: number
 }
 
 interface State {
   items: Array<Toast>
 }
+
 export const useToast = defineStore("toast", {
   state: () =>
     ({
@@ -15,11 +17,7 @@ export const useToast = defineStore("toast", {
     } as State),
   actions: {
     add(text: string, type: string = "info") {
-      this.items.unshift({ text, type })
-
-      if (type !== "error") {
-        setTimeout(() => {}, 5000)
-      }
+      this.items.unshift({ text, type, timeout: type === "error" ? 6000 : 3000 })
     },
     del(index: number) {
       this.items.splice(index, 1)

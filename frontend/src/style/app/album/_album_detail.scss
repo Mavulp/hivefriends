@@ -31,13 +31,14 @@
   .hi-album-title {
     // @include grid(0, )
     @include flex($gap: 0, $align: flex-start);
-    height: calc(100vh - 56px);
+    height: calc(95vh - 56px);
 
     .hi-album-title-meta {
       @include flex($align: flex-start, $direction: column, $justify: center);
-      height: calc(100vh - 56px);
+      height: calc(95vh - 56px);
       width: 45%;
       padding: 128px 64px;
+      padding-top: 64px;
 
       h1 {
         font-size: 6rem;
@@ -81,7 +82,7 @@
         margin-bottom: 0px;
 
         span {
-          color: rgb(var(--color-text-light));
+          color: rgb(var(--color-text));
         }
 
         .timestamp-divider {
@@ -96,9 +97,21 @@
       width: 55%;
       height: 100%;
 
+      .detail-buttons {
+        @include flex($gap: 64px, $justify: flex-start);
+        position: absolute;
+        bottom: 52px;
+        left: 0;
+
+        button {
+          @include flex($gap: 12px);
+        }
+      }
+
       .thumbnail-image-wrap {
         position: absolute;
         inset: 128px 0;
+        top: 64px;
         overflow: hidden;
 
         img {

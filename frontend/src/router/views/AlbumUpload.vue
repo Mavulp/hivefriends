@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import InputSelect from "../../components/form/InputSelect.vue"
 import InputText from "../../components/form/InputText.vue"
 import InputTextarea from "../../components/form/InputTextarea.vue"
 import ImageUploadItem from "../../components/upload/ImageUploadItem.vue"
@@ -6,14 +7,17 @@ import Button from "../../components/Button.vue"
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 import InputCheckbox from "../../components/form/InputCheckbox.vue"
 
-import { onBeforeUnmount, onMounted, reactive, ref, computed } from "vue"
-import { post, upload } from "../../js/fetch"
+import { onBeforeUnmount, onMounted, reactive, ref, computed, onBeforeMount } from "vue"
+import { upload } from "../../js/fetch"
 import { useFormValidation, required } from "../../js/validation"
-import { useAlbums, NewAlbum } from "../../store/album"
+import { useAlbums, NewAlbum, imageUrl } from "../../store/album"
 import { clone } from "lodash"
-import { delay } from "../../js/utils"
+import { useUser, User } from "../../store/user"
+import { useLoading } from "../../store/loading"
 
 const store = useAlbums()
+const user = useUser()
+const { addLoading, delLoading, getLoading } = useLoading()
 
 /**
  * Interface & setup
@@ -81,6 +85,12 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   document.removeEventListener("scroll", handleScroll)
+})
+
+onBeforeMount(async () => {
+  addLoading("users")
+  await user.fetchUsers()
+  delLoading("users")
 })
 
 function handleScroll() {
@@ -172,7 +182,8 @@ async function submit() {
       },
       // TODO: implement
       // coverKey: album.coverKey ?? files.values[0].key
-      coverKey: files.values[0].key
+      coverKey: files.values[0].key,
+      userKeys: userKeys.value
     })
 
     const { key } = await store.addAlbum(model)
@@ -182,6 +193,26 @@ async function submit() {
     }
   })
 }
+
+/**
+ * Tagging users
+ */
+
+const userKeys = ref([])
+// const users
+
+function getUserImageKey(name: string): string {
+  return user.users.find((item) => item.username === name)?.avatarKey ?? ""
+}
+
+const userOptions = computed(() => {
+  if (!user.users || user.users.length === 0) return null
+
+  return user.users.map((item: User) => ({
+    label: item.displayName ?? item.username,
+    value: item.username
+  }))
+})
 </script>
 
 <template>
@@ -218,8 +249,8 @@ async function submit() {
       <div class="album-upload-metadata">
         <h3>Create an album</h3>
 
-        <InputText v-model:value="album.title" placeholder="That time in Finland" label="Title" :error="errors.title" />
-        <InputTextarea v-model:value="album.description" placeholder="How was it?" label="Description" />
+        <InputText v-model:value="album.title" placeholder="Album name" label="Title*" :error="errors.title" />
+        <InputTextarea v-model:value="album.description" placeholder="Album description" label="Description" />
 
         <h6>Event Dates</h6>
         <div class="form-date" :class="{ single: singleDate }">
@@ -235,6 +266,32 @@ async function submit() {
             </div>
           </div>
           <InputCheckbox v-model:check="singleDate" label="Set date in the same day" />
+        </div>
+
+        <h6>Tagged people</h6>
+
+        <p>Select users tagged in this album</p>
+
+        <span v-if="getLoading('users')"> loading </span>
+
+        <InputSelect
+          v-else
+          label="Users"
+          :options="userOptions"
+          v-model:selected="userKeys"
+          placeholder="Select users"
+          multiple
+        />
+
+        <div class="tagged-users" v-if="userKeys">
+          <div class="tagged-user" v-for="item in userKeys" :data-title-top="user.getUsername(item)" :key="item">
+            <img
+              :src="imageUrl(getUserImageKey(item), 'tiny')"
+              alt=""
+              :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"
+            />
+          </div>
+          <!-- List users with their profile pictures, name in a tooltip -->
         </div>
 
         <Button

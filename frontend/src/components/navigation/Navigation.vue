@@ -2,6 +2,7 @@
 import { useRoute, useRouter } from "vue-router"
 import { useUser } from "../../store/user"
 import { useBread } from "../../store/bread"
+import { imageUrl } from "../../store/album"
 
 const router = useRouter()
 const auth = useUser()
@@ -24,11 +25,13 @@ function signOut() {
     <div class="flex-1"></div>
 
     <template v-if="auth.isLoggedIn && auth.user.username">
+      <!-- <div class="user-nav-image"></div> -->
       <router-link
         class="hover-bubble"
         data-title-bottom="Your profile"
         :to="{ name: 'UserProfile', params: { user: auth.user.username } }"
       >
+        <img class="user-image" :src="imageUrl(auth.user.avatarKey, 'tiny')" alt="" />
         <span class="user"> {{ auth.getUsername() }} </span>
       </router-link>
 

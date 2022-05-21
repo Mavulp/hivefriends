@@ -29,10 +29,10 @@ const search = ref("")
 const open = ref(false)
 
 onBeforeMount(async () => {
-  const id = String(route.params.id)
+  const username = String(route.params.user)
 
-  if (id) {
-    data.value = await store.fetchUserAlbums(id)
+  if (username) {
+    data.value = await store.fetchUserAlbums(username)
   }
 })
 
@@ -53,7 +53,7 @@ const sortedAlbums = computed(() => {
       <div class="title-wrap">
         <div class="inline-wrap">
           <h3>
-            {{ route.params.id === getKey ? "Your albums" : `${getUsername(route.params.id)}'s Albums` }}
+            {{ route.params.id === getKey ? "Your albums" : `${getUsername(route.params.id)}'s albums` }}
           </h3>
           <!-- <Button @click="open = !open">{{ open ? "Close" : "Filter" }}</Button> -->
         </div>
