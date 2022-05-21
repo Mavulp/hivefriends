@@ -6,7 +6,7 @@ import { FetchError } from "../js/global-types"
 import { useLoading } from "./loading"
 
 export interface User {
-  key: string
+  // key: string
   username: string
   displayName: string
   bio: string
@@ -52,7 +52,7 @@ export const useUser = defineStore("user", {
         .then(async (res) => {
           localStorage.setItem("bearer_token", res.bearerToken)
 
-          await this.fetchUser(res.userKey)
+          await this.fetchUser(res.username)
 
           this.logged = true
         })
@@ -61,11 +61,11 @@ export const useUser = defineStore("user", {
           toast.add(error.message, "error")
         })
     },
-    async fetchUser(key: string | number, notme?: boolean) {
-      return get(`/api/users/${key}`)
+    async fetchUser(username: string | number, notme?: boolean) {
+      return get(`/api/users/${username}`)
         .then((response) => {
           if (notme) {
-            const index = this.users.findIndex((item: User) => item.key === key)
+            const index = this.users.findIndex((item: User) => item.username === username)
             if (index > -1) {
               this.users[index] = response
             }
@@ -73,7 +73,7 @@ export const useUser = defineStore("user", {
             this.user = response
             // Set app accent
             document.documentElement.style.setProperty("--color-highlight", response.accentColor)
-            localStorage.setItem("user", response.key)
+            localStorage.setItem("user", response.username)
           }
         })
         .catch((error) => {
@@ -132,7 +132,7 @@ export const useUser = defineStore("user", {
           Reflect.set(this.settings, key, value)
 
           this.fetchUsers()
-          this.fetchUser(this.user.key)
+          this.fetchUser(this.user.username)
         })
         .catch((error: FetchError) => {
           const toast = useToast()
@@ -144,7 +144,7 @@ export const useUser = defineStore("user", {
       const toast = useToast()
 
       return put("/api/settings/password", form)
-        .then((res) => {
+        .then(() => {
           toast.add("Succesfully updated password. Make sure you remember it", "success")
         })
         .catch((error: FetchError) => {
@@ -155,14 +155,14 @@ export const useUser = defineStore("user", {
   },
   getters: {
     isLoggedIn: (state) => state.logged,
-    getKey: (state) => state.user.key,
-    getUsername: (state) => (key?: string | string[] | undefined) => {
-      if (!key) return state.user.displayName ?? state.user.username
+    getKey: (state) => state.user.username,
+    getUsername: (state) => (username?: string | string[] | undefined) => {
+      if (!username) return state.user.displayName ?? state.user.username
 
-      const userFromList = state.users.find((item) => item.key === key)
+      const userFromList = state.users.find((item) => item.username === username)
       if (userFromList) return userFromList.displayName ?? userFromList.username
 
-      return state.user.key === key ? state.user.displayName ?? state.user.username : key
+      return state.user.username === username ? state.user.displayName ?? state.user.username : username
     }
   }
 })

@@ -17,10 +17,10 @@ const albums = useAlbums()
 
 const wrap = ref(null)
 const color = useCssVar("--color-highlight", wrap)
-const _id = computed(() => `${route.params.id}`)
+const _id = computed(() => `${route.params.user}`)
 const userAlbums = ref<Array<Album>>([])
 
-const user = computed<User>(() => users.users.find((item) => item.key === _id.value) as User)
+const user = computed<User>(() => users.users.find((item) => item.username === _id.value) as User)
 const accent = computed(() => user.value.accentColor.split(",").map((item) => Number(item)))
 
 onBeforeMount(() => {
