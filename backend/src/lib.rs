@@ -1,8 +1,13 @@
-use axum::{routing::Router, Extension};
+use axum::{
+    http::StatusCode,
+    response::IntoResponse,
+    routing::{get_service, Router},
+    Extension,
+};
 use deadpool_sqlite::{Config, Pool, Runtime};
 use rusqlite::params;
 use rusqlite_migration::{Migrations, M};
-use tower_http::trace::TraceLayer;
+use tower_http::{services::ServeDir, trace::TraceLayer};
 use tracing::*;
 
 use std::path::{Path, PathBuf};
@@ -72,10 +77,6 @@ pub mod api {
     pub mod user;
 }
 
-pub mod data {
-    pub mod image;
-}
-
 const AUTH_TIME_SECONDS: u64 = 3600 * 24 * 7;
 
 pub fn api_route(pool: Pool, data_path: PathBuf) -> Router {
@@ -86,9 +87,16 @@ pub fn api_route(pool: Pool, data_path: PathBuf) -> Router {
         .nest("/api/albums/", api::album::api_route())
         .nest("/api/users/", api::user::api_route())
         .nest("/api/settings/", api::settings::api_route())
-        .nest("/data/image/", data::image::api_route())
+        .nest(
+            "/data/image/",
+            get_service(ServeDir::new(data_path.clone())).handle_error(handle_error),
+        )
         .layer(TraceLayer::new_for_http())
         .layer(Extension(Arc::new(AppState { pool, data_path })))
+}
+
+async fn handle_error(_err: std::io::Error) -> impl IntoResponse {
+    (StatusCode::INTERNAL_SERVER_ERROR, "Something went wrong...")
 }
 
 pub(crate) const MIGRATIONS: [M; 1] = [M::up(include_str!("../migrations/001_initial.sql"))];

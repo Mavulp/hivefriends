@@ -13,6 +13,7 @@ CREATE TABLE images (
     f_number TEXT NULL,
     focal_length TEXT NULL,
 
+    description TEXT NULL,
     uploader TEXT NOT NULL,
     uploaded_at INTEGER NOT NULL, -- time since unix epoch (unix ts)
 

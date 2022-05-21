@@ -1,11 +1,9 @@
 use anyhow::Context;
 use axum::{extract::Path, Extension, Json};
-use rusqlite::{params, OptionalExtension};
-use serde_rusqlite::from_row;
 
 use std::sync::Arc;
 
-use super::{DbImageMetadata, ImageMetadata};
+use super::ImageMetadata;
 use crate::{api::auth::Authorize, api::error::Error, AppState};
 
 pub(super) async fn get(
@@ -16,29 +14,7 @@ pub(super) async fn get(
     let conn = state.pool.get().await.context("Failed to get connection")?;
     let ckey = key.clone();
     let result = conn
-        .interact(move |conn| {
-            conn.query_row(
-                "SELECT \
-                    key, \
-                    uploader, \
-                    uploaded_at, \
-                    file_name, \
-                    size_bytes, \
-                    taken_at, \
-                    location_latitude, \
-                    location_longitude, \
-                    camera_brand, \
-                    camera_model, \
-                    exposure_time, \
-                    f_number, \
-                    focal_length \
-                FROM images \
-                WHERE key = ?1",
-                params![&ckey],
-                |row| Ok(from_row::<DbImageMetadata>(row).unwrap()),
-            )
-            .optional()
-        })
+        .interact(move |conn| super::select_image(&ckey, conn))
         .await
         .unwrap()
         .context("Failed to query image metadata")?;

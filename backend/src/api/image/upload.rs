@@ -7,7 +7,6 @@ use axum::{
 };
 use chrono::NaiveDateTime;
 use image::DynamicImage;
-use serde::Serialize;
 use tokio::fs;
 use tracing::warn;
 
@@ -18,13 +17,8 @@ use std::sync::Arc;
 use std::time::SystemTime;
 
 use super::DbImageMetadata;
-use crate::{api::auth::Authorize, api::error::Error, AppState};
-
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-pub(super) struct ImageCreationResponse {
-    key: String,
-}
+use crate::api::{auth::Authorize, error::Error, image::ImageMetadata};
+use crate::AppState;
 
 const MB: u64 = 1024 * 1024;
 
@@ -35,7 +29,7 @@ pub(super) async fn post(
     >,
     Authorize(username): Authorize,
     Extension(state): Extension<Arc<AppState>>,
-) -> Result<Json<ImageCreationResponse>, Error> {
+) -> Result<Json<ImageMetadata>, Error> {
     let multipart = multipart?.0;
 
     match upload_image(multipart, username, &state).await {
@@ -63,7 +57,7 @@ async fn upload_image(
     mut multipart: Multipart,
     uploader: String,
     state: &Arc<AppState>,
-) -> anyhow::Result<ImageCreationResponse> {
+) -> anyhow::Result<ImageMetadata> {
     let uploaded_at = SystemTime::UNIX_EPOCH.elapsed()?.as_secs();
 
     let field = multipart
@@ -94,6 +88,7 @@ async fn upload_image(
         f_number: None,
         focal_length: None,
 
+        description: None,
         uploaded_at,
     };
 
@@ -103,12 +98,13 @@ async fn upload_image(
         populate_metadata_from_exif(&mut metadata, exif);
     }
 
+    let cmetadata = metadata.clone();
     let conn = state.pool.get().await?;
-    conn.interact(move |conn| super::insert(&metadata, conn))
+    conn.interact(move |conn| super::insert(&cmetadata, conn))
         .await
         .unwrap()?;
 
-    Ok(ImageCreationResponse { key })
+    Ok(ImageMetadata::from_db(metadata))
 }
 
 fn populate_metadata_from_exif(metadata: &mut DbImageMetadata, exif: exif::Exif) {
@@ -200,7 +196,7 @@ fn generate_or_symlink_image(
     target_height: u32,
 ) -> ImageKind {
     if source_width < target_width && source_height < target_height {
-        ImageKind::Symlink(image.image().clone())
+        ImageKind::Symlink(image.image())
     } else {
         ImageKind::Generated(Arc::new(
             image.image().thumbnail(target_width, target_height),
