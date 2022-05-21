@@ -44,7 +44,7 @@ const album = reactive<NewAlbum>({
     to: 0
   },
   imageKeys: [],
-  userKeys: [],
+  taggedUsers: [],
   coverKey: ""
 })
 
@@ -58,7 +58,6 @@ const albumKey = ref()
 // TODO: add multiple locations
 
 const draggingOver = ref(false)
-const dragShrink = ref(false)
 const singleDate = ref(false)
 
 const isLoading = computed(() => files.values.some((file) => file.loading))
@@ -79,12 +78,6 @@ onMounted(() => {
     el.addEventListener("drop", onSubmitHandler, false)
     el.addEventListener("input", (e) => onSubmitHandler(e, true), false)
   }
-
-  document.addEventListener("scroll", handleScroll, { passive: true })
-})
-
-onBeforeUnmount(() => {
-  document.removeEventListener("scroll", handleScroll)
 })
 
 onBeforeMount(async () => {
@@ -92,14 +85,6 @@ onBeforeMount(async () => {
   await user.fetchUsers()
   delLoading("users")
 })
-
-function handleScroll() {
-  if (window.scrollY > 96) {
-    dragShrink.value = true
-  } else {
-    dragShrink.value = false
-  }
-}
 
 /**
  * File Handling
@@ -182,8 +167,8 @@ async function submit() {
       },
       // TODO: implement
       // coverKey: album.coverKey ?? files.values[0].key
-      coverKey: files.values[0].key,
-      userKeys: userKeys.value
+      coverKey: album.coverKey ?? files.values[0].key,
+      taggedUsers: taggedUsers.value
     })
 
     const { key } = await store.addAlbum(model)
@@ -198,7 +183,7 @@ async function submit() {
  * Tagging users
  */
 
-const userKeys = ref([])
+const taggedUsers = ref([])
 // const users
 
 function getUserImageKey(name: string): string {
@@ -224,7 +209,7 @@ const userOptions = computed(() => {
           id="drop-area"
           @dragenter="draggingOver = true"
           @mouseleave="draggingOver = false"
-          :class="{ hovering: draggingOver, shrink: dragShrink, empty: files.values.length === 0 }"
+          :class="{ hovering: draggingOver, empty: files.values.length === 0 }"
         >
           <input id="draginput" name="draginput" type="file" multiple accept="image/*" />
           <label for="draginput">
@@ -237,10 +222,12 @@ const userOptions = computed(() => {
           <template v-if="files.values.length > 0">
             <ImageUploadItem
               v-for="(item, index) in [...files.values].reverse()"
+              :class="{ 'is-cover': item.key === album.coverKey }"
               :data="item"
               :key="item.name"
               :index="index"
               @remove="delImage"
+              @setAsCover="(key: string) => album.coverKey = key"
             />
           </template>
         </div>
@@ -270,24 +257,23 @@ const userOptions = computed(() => {
 
         <h6>Tagged people</h6>
 
-        <p>Select users tagged in this album</p>
+        <p style="margin-bottom: 24px">Select people who you wish to tag in this album</p>
 
         <span v-if="getLoading('users')"> loading </span>
 
         <InputSelect
           v-else
-          label="Users"
+          label="People"
           :options="userOptions"
-          v-model:selected="userKeys"
-          placeholder="Select users"
+          v-model:selected="taggedUsers"
+          placeholder="Click to select people"
           multiple
         />
 
-        <div class="tagged-users" v-if="userKeys">
-          <div class="tagged-user" v-for="item in userKeys" :data-title-top="user.getUsername(item)" :key="item">
+        <div class="tagged-users" v-if="taggedUsers">
+          <div class="tagged-user" v-for="item in taggedUsers" :data-title-top="user.getUsername(item)" :key="item">
             <img
               :src="imageUrl(getUserImageKey(item), 'tiny')"
-              alt=""
               :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"
             />
           </div>
@@ -301,7 +287,7 @@ const userOptions = computed(() => {
           @click="submit"
         >
           Upload
-          <LoadingSpin v-if="isLoading" />
+          <LoadingSpin class="dark" v-if="isLoading" />
         </Button>
 
         <Button class="btn-blue mt-20 btn-icon" v-if="albumKey" :to="{ name: 'AlbumDetail', params: { id: albumKey } }">

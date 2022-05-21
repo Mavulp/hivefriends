@@ -1,17 +1,33 @@
-.imagetrans-enter-active,
-.imagetrans-leave-active {
+.imagenext-enter-active,
+.imagenext-leave-active {
   transition: 0.15s all ease-in-out;
   opacity: 1;
 }
 
-.imagetrans-enter-from {
+.imagenext-enter-from {
   opacity: 0;
   transform: translateX(-8px);
 }
 
-.imagetrans-leave-to {
+.imagenext-leave-to {
   opacity: 0;
   transform: translateX(8px);
+}
+
+.imageprev-enter-active,
+.imageprev-leave-active {
+  transition: 0.15s all ease-in-out;
+  opacity: 1;
+}
+
+.imageprev-enter-from {
+  opacity: 0;
+  transform: translateX(8px);
+}
+
+.imageprev-leave-to {
+  opacity: 0;
+  transform: translateX(-8px);
 }
 
 .fade-enter-active,

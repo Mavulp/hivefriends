@@ -21,6 +21,10 @@
     &.btn-black {
       background-color: rgba(var(--color-background-dark), 0.9);
     }
+
+    &.btn-white {
+      background-color: rgba(var(--color-background-dark), 0.1);
+    }
   }
 
   &.btn-icon {
@@ -53,6 +57,10 @@
     background-color: rgba(var(--color-error), 0.8);
   }
 
+  &.btn-white {
+    color: rgb(var(--color-text));
+  }
+
   &.btn-disabled {
     pointer-events: none;
     background-color: rgba(var(--color-background-dark), 0.8);
@@ -79,6 +87,7 @@
   z-index: 2;
   position: relative;
 
+  &.active,
   &.router-link-active,
   &:hover {
     &:after {
@@ -91,6 +100,7 @@
     }
   }
 
+  &.active,
   &.router-link-active {
     &:after {
       background-color: rgba(var(--color-highlight), 0.25);

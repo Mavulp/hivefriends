@@ -3,7 +3,7 @@ import { Error } from "../../js/validation"
 
 interface Props {
   label?: string
-  value: string | undefined
+  value: string | number | undefined
   type?: string
   error?: Error
 }

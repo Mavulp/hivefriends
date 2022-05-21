@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, computed, reactive } from "vue"
+import { onBeforeMount, computed, reactive, ref } from "vue"
 import { useRoute } from "vue-router"
 import { useAlbums, Album, imageUrl, Image } from "../../store/album"
 import { useLoading } from "../../store/loading"
@@ -16,6 +16,8 @@ const albums = useAlbums()
 const route = useRoute()
 const user = useUser()
 // const bread = useBread()
+
+const showUsers = ref(false)
 
 const { getLoading } = useLoading()
 
@@ -93,19 +95,47 @@ const chunks = computed(() => {
             <span class="material-icons">&#xe0b9;</span>
             Comments
           </button> -->
-          <!-- 
-          <button class="hover-bubble">
+
+          <!-- <button class="hover-bubble">
             <span class="material-icons">&#xe55b;</span>
             Map
-          </button>
-
-          <button class="hover-bubble">
-            <span class="material-icons">&#xe7fb;</span>
-            People
           </button> -->
+
+          <button class="hover-bubble" @click="showUsers = !showUsers" :class="{ active: showUsers }">
+            <span class="material-icons">&#xe7fb;</span>
+            People {{ album.taggedUsers?.length ?? 0 }}
+          </button>
         </div>
         <div class="thumbnail-image-wrap">
-          <img :src="imageUrl(album.images[0].key)" alt="" />
+          <div class="album-tagged-users" :class="{ active: showUsers }">
+            <button @click="showUsers = false">
+              <span class="material-icons">&#xe5cd;</span>
+            </button>
+
+            <h6>Tagged people</h6>
+
+            <router-link
+              v-for="item in [album.author, ...album.taggedUsers]"
+              :key="item"
+              class="album-tagged-user"
+              :to="{ name: 'UserProfile', params: { user: item } }"
+            >
+              <img
+                class="user-image"
+                :src="imageUrl(user.getUser(item, 'avatarKey'), 'tiny')"
+                :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"
+              />
+              <span>{{ user.getUsername(item) }}</span>
+
+              <div class="tag tag-blue" v-if="item === album.author">Author</div>
+
+              <div class="background"></div>
+
+              <div class="background" :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"></div>
+            </router-link>
+          </div>
+
+          <img class="cover-image" :src="imageUrl(album.images[0].key)" alt="" />
         </div>
       </div>
     </div>

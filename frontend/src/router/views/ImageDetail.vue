@@ -22,7 +22,7 @@ const albums = useAlbums()
 const { getLoading } = useLoading()
 
 const showMeta = ref(false)
-
+const transDir = ref("imagenext")
 // const data = album.getImageMetadata()
 
 // Shut the fuck up typescript
@@ -40,6 +40,8 @@ const prevIndex = computed(() => album.value.images[index.value - 1])
 const nextIndex = computed(() => album.value.images[index.value + 1])
 
 function setIndex(where: string) {
+  transDir.value = `image${where}`
+
   let newIndex
 
   if (where === "prev" && prevIndex) {
@@ -99,7 +101,7 @@ onKeyStroke("Escape", () => {
 
     <template v-else-if="album">
       <div class="hi-image-wrapper">
-        <transition name="imagetrans" mode="out-in" appear>
+        <transition :name="transDir" mode="out-in" appear>
           <img v-if="url" :src="url" alt="" />
           <div v-else class="image-loading">
             <LoadingSpin dark />
@@ -116,7 +118,7 @@ onKeyStroke("Escape", () => {
         </div>
 
         <div class="hi-image-context">
-          <router-link :to="{ name: 'AlbumDetail', params: { id: albumKey } }">
+          <router-link class="hover-bubble" :to="{ name: 'AlbumDetail', params: { id: albumKey } }">
             <span class="material-icons"> &#xe2ea; </span>
             Go to album
           </router-link>

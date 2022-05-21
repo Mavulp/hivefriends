@@ -4,8 +4,8 @@
 - [ ] Instead 100vh, use like 95 to show users can scroll
 - [ ] Dont check for token on each page change
 - [x] Fix using MY accent color on other user's profiles (user profile)
-- [ ] Add toast error on image album uplad
-  - [ ] Auto-clear of toasts
+- [x] Add toast error on image album uplad
+  - [x] Auto-clear of toasts
 
 # Todo
 
@@ -16,12 +16,12 @@
 - [ ] Album creation
 
   - [ ] Tag locations
-  - [ ] Tag users
+  - [x] Tag users
   - [x] Set timeframe as a day (checkbox, but sets still from and to with the same date)
   - [ ] Save album as draft (exclude from all lists except user albums)
 
-  - [ ] Add option to update metadata per image
-  - [ ] Select a cover image
+  - [x] Add option to update metadata per image
+  - [x] Select a cover image
 
 - [ ] Album editing
 
@@ -29,8 +29,8 @@
 
 - [ ] Album Detail
 
-  - [ ] Tagged users
-    - [ ] when clicked button, a white / dark block will slide from left or right
+  - [x] Tagged users
+    - [x] when clicked button, a white / dark block will slide from left or right
     - over the cover image and shows a simple list of tagged users within
   - [ ] map
 
@@ -55,15 +55,11 @@
 
   - [x] Option to switch off header (for presentation mode)
   - [ ] Optiona to rotate image
-  - [ ] Option to download image (list all qualities)
   - [ ] top right button "metadata" which switches to 75 x 25 view with stuff about the image and controls on the right
-
   - [x] Arrow keys in albun detail navigation
   - [x] esc fucks off
-
   - [ ] Slideshow mode (set delay in details)
-
-  - [ ] Add programatical transition based on if the next image is prev or next (opacity slide left, opacity slide right)
+  - [x] Add programatical transition based on if the next image is prev or next (opacity slide left, opacity slide right)
 
 - [ ] User Settings
 

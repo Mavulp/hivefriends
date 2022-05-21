@@ -17,9 +17,7 @@
         @include t(0.1s);
         display: block;
         width: 100%;
-        height: 192px;
-        position: sticky;
-        top: 16px;
+        height: 256px;
         z-index: 100;
 
         &.dragging {
@@ -29,13 +27,7 @@
         }
 
         &.empty {
-          height: 580px;
-        }
-
-        &.shrink {
-          height: 96px;
-          padding-bottom: 8px;
-          background-color: rgb(var(--color-background));
+          height: calc(100vh - 132px);
         }
 
         &:hover,
@@ -95,6 +87,16 @@
           border-color: rgb(var(--color-border-light));
         }
 
+        &.is-cover {
+          .tag {
+            display: block;
+          }
+        }
+
+        .tag {
+          display: none;
+        }
+
         .album-upload-item-header {
           @include flex($gap: 32px, $align: center);
           padding: 0 24px;
@@ -132,7 +134,32 @@
         }
 
         .album-upload-content {
-          padding: 16px;
+          padding: 24px;
+
+          .grid-view {
+            @include grid(40px, 2);
+          }
+
+          img {
+            max-height: 480px;
+            object-fit: contain;
+            object-position: center;
+          }
+
+          strong,
+          h6 {
+            display: block;
+            margin-bottom: 24px;
+          }
+
+          form {
+            display: block;
+            // max-width: 516px;
+
+            .double-input {
+              @include grid(32px, 2);
+            }
+          }
         }
       }
     }

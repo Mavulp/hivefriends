@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import { get, rootUrl, post } from "../js/fetch"
+import { get, rootUrl, post, put } from "../js/fetch"
 import { useLoading } from "./loading"
 import { useToast } from "./toast"
 import { isObject } from "lodash"
@@ -27,6 +27,7 @@ export interface Album {
   }
   author: string
   coverKey: string
+  taggedUsers: Array<string>
 }
 
 interface State {
@@ -48,7 +49,7 @@ export interface NewAlbum {
     to: number
   }
   imageKeys: Array<string>
-  userKeys?: Array<string>
+  taggedUsers?: Array<string>
   coverKey: string
 }
 
@@ -119,6 +120,20 @@ export const useAlbums = defineStore("album", {
           this.imageMetadata[key] = data
           return data
         })
+        .catch((error: FetchError) => {
+          const toast = useToast()
+          toast.add(error.message, "error")
+        })
+        .finally(() => delLoading(key))
+    },
+
+    async saveImageMetadata(key: string, form: object) {
+      const { addLoading, delLoading } = useLoading()
+
+      addLoading(key)
+
+      return put(`/api/images/${key}`, { form })
+        .then(() => {})
         .catch((error: FetchError) => {
           const toast = useToast()
           toast.add(error.message, "error")

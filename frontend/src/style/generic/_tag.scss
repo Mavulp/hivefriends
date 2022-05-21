@@ -1,0 +1,17 @@
+.tag {
+  @include radius(4px);
+  display: block;
+  height: 22px;
+  line-height: 22px;
+  padding: 0 8px;
+
+  &.tag-highlight {
+    background-color: rgba(var(--color-highlight), 0.25);
+    color: rgb(var(--color-highlight));
+  }
+
+  &.tag-blue {
+    background-color: rgba(var(--color-info), 0.25);
+    color: rgb(var(--color-info));
+  }
+}
