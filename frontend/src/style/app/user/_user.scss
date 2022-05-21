@@ -127,9 +127,11 @@
     }
 
     .user-albums-list {
-      @include grid(40px, 1fr 1fr);
+      @include grid(128px, 1fr 1fr);
 
       .album-list-item {
+        margin-bottom: 0;
+
         .album-image {
           height: 356px;
         }

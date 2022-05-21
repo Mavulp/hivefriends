@@ -96,10 +96,10 @@ const chunks = computed(() => {
             Comments
           </button> -->
 
-          <!-- <button class="hover-bubble">
+          <button class="hover-bubble">
             <span class="material-icons">&#xe55b;</span>
             Map
-          </button> -->
+          </button>
 
           <button class="hover-bubble" @click="showUsers = !showUsers" :class="{ active: showUsers }">
             <span class="material-icons">&#xe7fb;</span>

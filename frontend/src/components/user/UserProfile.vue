@@ -53,7 +53,7 @@ watchEffect(() => {
         <div class="hi-user-banner">
           <img
             class="banner"
-            :src="imageUrl(user.bannerKey)"
+            :src="imageUrl(user.bannerKey, 'large')"
             alt=""
             @error="(e: any) => e.target.classList.add('image-error')"
           />
@@ -61,7 +61,7 @@ watchEffect(() => {
           <div class="avatar-wrap">
             <img
               class="avatar"
-              :src="imageUrl(user.avatarKey, 'medium')"
+              :src="imageUrl(user.avatarKey, 'large')"
               alt=""
               @error="(e: any) => e.target.classList.add('image-error')"
             />
@@ -99,5 +99,9 @@ watchEffect(() => {
         </div>
       </div>
     </template>
+  </div>
+  <div v-else class="hi-user-profile" style="padding: 128px">
+    <h1>Bruh</h1>
+    <p>Unfortunately user does not exist</p>
   </div>
 </template>

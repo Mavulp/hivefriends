@@ -69,7 +69,7 @@ watch(
 
     // Create new image and load it
     let img = new Image()
-    img.src = imageUrl(key)
+    img.src = imageUrl(key, "large")
     img.onload = () => {
       // Append src to image element, end loading
       url.value = img.src
