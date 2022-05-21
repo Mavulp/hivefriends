@@ -72,8 +72,10 @@
   - [x] Show bio, username, profile picture, banner in a nice way
   - [x] Number of albums
   - [ ] List albums
-  - [ ] Users they met with (just a number)
+  - [x] Users they met with (just a number)
     - [ ] maybe in a tooltip
+
+- [ ] Create a wrapper for every <img> element which will display a loading, instead of the white cube unfolding
 
 # Pages To do Write up
 

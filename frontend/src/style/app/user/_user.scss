@@ -8,37 +8,64 @@
 .hi-user-profile {
   // @include grid(0, 1.5fr 1fr);
   width: 100%;
+  margin: 0 auto;
   max-width: 1920px;
 
-  .hi-user-banner {
-    display: block;
-    width: 100%;
-    height: 464px;
-    // overflow: hidden;
-    position: relative;
-    padding: 64px 128px;
-    padding-left: 256px;
-    padding-bottom: 0;
+  .user-profile-upper {
+    background-color: rgb(var(--color-highlight));
 
-    .banner {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
+    &.black * {
+      // color: rgb(var(--colo));
+      color: #191716;
     }
 
-    .avatar-wrap {
+    &.white {
+      color: #fff;
+    }
+
+    .hi-user-banner {
       display: block;
-      top: 50%;
-      position: absolute;
-      right: 256px;
+      width: 100%;
+      height: 392px;
+      position: relative;
 
-      .avatar-info {
-        @include flex($gap: 32px, $align: flex-start);
+      .banner {
+        display: block;
         width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
 
-        p {
+      .avatar-wrap {
+        display: block;
+        top: 40%;
+        position: absolute;
+        right: 128px;
+        // right: 10%;
+
+        img {
+          display: block;
+          width: 556px;
+          height: 556px;
+          object-fit: cover;
+          object-position: center;
+          margin-bottom: 32px;
+          border: 20px solid rgb(var(--color-highlight));
+        }
+      }
+    }
+
+    .user-information {
+      padding: 64px 128px;
+      width: 60%;
+
+      .user-info-meta {
+        @include flex($gap: 40px, $align: flex-start);
+        width: 100%;
+        margin-bottom: 64px;
+
+        span {
           display: block;
           margin: 0;
           font-size: 1.6rem;
@@ -50,79 +77,59 @@
         }
       }
 
-      img {
-        display: block;
-        width: 512px;
-        height: 512px;
-        object-fit: cover;
-        object-position: center;
-        margin-bottom: 32px;
-        border: 8px solid rgb(var(--color-highlight));
+      h1 {
+        font-size: 6.4rem;
+        margin-bottom: 20px;
+      }
+
+      p {
+        font-size: 2rem;
+        line-height: 1.8em;
+        // padding: 32px;
+        // background-color: rgb(var(--color-highlight));
+
+        &.black {
+          color: #000 !important;
+        }
+
+        &.white {
+          color: #fff !important;
+        }
       }
     }
   }
 
-  .user-information {
-    padding: 32px 128px;
-    width: 55%;
+  .user-albums {
+    padding: 64px 128px;
 
-    h1 {
-      font-size: 6.4rem;
+    h2 {
+      color: rgb(var(--color-highlight));
       margin-bottom: 40px;
     }
 
     p {
       font-size: 2rem;
-      line-height: 1.8em;
-      padding: 32px;
-      background-color: rgb(var(--color-highlight));
 
-      &.black {
-        color: #000 !important;
+      b {
+        font-size: 2rem;
+        display: inline;
       }
+    }
 
-      &.white {
-        color: #fff !important;
+    .user-albums-list {
+      @include grid(40px, 1fr 1fr);
+
+      .album-list-item {
+        .album-image {
+          height: 356px;
+        }
+
+        .album-meta {
+          h2 {
+            font-size: 3.6rem;
+          }
+        }
       }
     }
   }
-
-  // .hi-user-info {
-  //   padding: 64px;
-  //   background-color: rgb(var(--color-highlight));
-
-  //   img {
-  //     max-height: 356px;
-  //     margin-bottom: 32px;
-  //     max-width: 356px;
-  //   }
-
-  //   hr {
-  //     margin: 64px 0;
-  //   }
-  // }
-
-  // .hi-user-banner {
-  //   width: 100%;
-
-  //   .banner-image-wrap {
-  //     display: block;
-  //     height: 100%;
-  //     height: 100vh;
-  //     overflow: hidden;
-  //     position: relative;
-  //     position: sticky;
-  //     top: 0px;
-
-  //     img {
-  //       display: block;
-  //       position: absolute;
-  //       // inset: 0;
-  //       width: 100%;
-  //       height: 100%;
-  //       object-fit: cover;
-  //       object-position: center;
-  //     }
-  //   }
-  // }
 }
