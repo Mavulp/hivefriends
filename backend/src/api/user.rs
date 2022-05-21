@@ -82,24 +82,19 @@ async fn get_users(
 
         let mut users = Vec::new();
         for db_user in db_users {
-            let ckey = db_user.key.clone();
-            let mut stmt = conn
-                .prepare(
-                    "SELECT a.\"key\" FROM users u \
-                    INNER JOIN user_album_associations uaa ON uaa.user_key = u.key \
-                    INNER JOIN albums a ON a.key = uaa.album_key \
-                    WHERE u.key = ?1",
-                )
-                .context("Failed to prepare user albums query")?;
+            let mut stmt = conn.prepare(
+                "SELECT a.\"key\" FROM albums a \
+                WHERE a.uploader_key = ?1",
+            )
+            .context("Failed to prepare user albums query")?;
             let album_key_iter = stmt
-                .query_map(params![ckey], |row| Ok(from_row::<String>(row).unwrap()))
+                .query_map(params![db_user.key], |row| Ok(from_row::<String>(row).unwrap()))
                 .context("Failed to query user albums")?;
 
             let albums_uploaded = album_key_iter
                 .collect::<Result<Vec<_>, _>>()
                 .context("Failed to collect albums uploaded")?;
 
-            let ckey = db_user.key.clone();
             let mut stmt = conn
                 .prepare(
                     "SELECT u2.key FROM users u1 \
@@ -112,7 +107,7 @@ async fn get_users(
                 )
                 .context("Failed to prepare met users query")?;
             let met_key_iter = stmt
-                .query_map(params![ckey], |row| Ok(from_row::<String>(row).unwrap()))
+                .query_map(params![db_user.key], |row| Ok(from_row::<String>(row).unwrap()))
                 .context("Failed to query met users")?;
 
             let met = met_key_iter
