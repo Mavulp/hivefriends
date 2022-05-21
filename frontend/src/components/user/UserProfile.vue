@@ -21,7 +21,7 @@ const accent = computed(() => user.value.accentColor.split(",").map((item) => Nu
 onBeforeMount(() => {
   addLoading("user-profile")
 
-  Promise.all([albums.fetchUserAlbums(user.value.key), users.fetchUsers()])
+  Promise.all([albums.fetchUserAlbums(_id.value), users.fetchUser(_id.value, true)])
     .then(() => {
       // console.log(albums.userAlbums)
     })
@@ -34,9 +34,12 @@ onBeforeMount(() => {
 
 <template>
   <div class="hi-user-profile" v-if="user">
-    <LoadingSpin class="center-page" v-if="getLoading('user-profile')" />
+    <LoadingSpin class="center-page dark" v-if="getLoading('user-profile')" />
 
     <template v-else>
+      <!-- <pre>
+        {{ user }}
+      </pre> -->
       <div class="hi-user-banner">
         <img class="banner" :src="imageUrl(user.bannerKey, 'medium')" alt="" />
 

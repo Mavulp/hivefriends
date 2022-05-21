@@ -27,7 +27,7 @@ export interface UserSettings {
   bannerKey: string
   accentColor: string
   featredAlbumKey: string
-  private: boolean
+  // private: boolean
   colorTheme: "light-theme" | "dark-theme" | "dark-contrast"
 }
 
@@ -61,15 +61,20 @@ export const useUser = defineStore("user", {
           toast.add(error.message, "error")
         })
     },
-    async fetchUser(key: string | number) {
+    async fetchUser(key: string | number, notme?: boolean) {
       return get(`/api/users/${key}`)
         .then((response) => {
-          this.user = response
-
-          // Set app accent
-          document.documentElement.style.setProperty("--color-highlight", response.accentColor)
-
-          localStorage.setItem("user", response.key)
+          if (notme) {
+            const index = this.users.findIndex((item: User) => item.key === key)
+            if (index > -1) {
+              this.users[index] = response
+            }
+          } else {
+            this.user = response
+            // Set app accent
+            document.documentElement.style.setProperty("--color-highlight", response.accentColor)
+            localStorage.setItem("user", response.key)
+          }
         })
         .catch((error) => {
           if (error.message === "Unauthorized" || error.message === "Bearer token is invalid") return "unauth"

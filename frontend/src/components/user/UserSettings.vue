@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from "../Button.vue"
 import LoadingSpin from "../loading/LoadingSpin.vue"
-import InputCheckbox from "../form/InputCheckbox.vue"
+// import InputCheckbox from "../form/InputCheckbox.vue"
 import InputSelect from "../form/InputSelect.vue"
 import InputText from "../form/InputText.vue"
 import InputTextarea from "../form/InputTextarea.vue"
@@ -11,7 +11,6 @@ import { computed, onBeforeMount, reactive } from "vue"
 import { useLoading } from "../../store/loading"
 import { useUser } from "../../store/user"
 import { useFormValidation, minLength, required, sameAs } from "../../js/validation"
-import { debounce } from "lodash"
 import { HEX_to_RGB, TEXT_CONTRAST } from "../../js/utils"
 
 const { getLoading, addLoading, delLoading } = useLoading()
@@ -26,11 +25,6 @@ const themeOptions = [
   // { label: "Dark Theme; High Contrast", value: "dark-contrast" },
   { label: "Dark Theme", value: "dark-normal" }
 ]
-
-const _private = computed<boolean>({
-  get: () => user.settings.private,
-  set: (value: boolean) => user.setSetting("private", value)
-})
 
 const _theme = computed<string>({
   get: () => user.settings.colorTheme ?? "light-theme",
@@ -178,14 +172,6 @@ async function savePassword() {
           <p>Visible on your profile</p>
           <UploadSettingsImage field="bannerKey" key="two" />
         </li>
-
-        <!-- <li> -->
-
-        <!-- <InputCheckbox
-            label="Set yourself as private. You won't be mentioned in albums & your albums won't be publicly available"
-            v-model:check="_private"
-          /> -->
-        <!-- </li> -->
         <li>
           <h5>Color theme</h5>
           <InputSelect
