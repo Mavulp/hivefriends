@@ -67,7 +67,9 @@
 
   - [ ] Add setting a feature key (select with all album names and save album key)
 
-- [ ] Create a wrapper for every <img> element which will display a loading, instead of the white cube unfolding
+- [ ] IMG improvement
+  - [ ] Create a wrapper for every <img> element which will display a loading, instead of the white cube unfolding
+  - [ ] @error handler to handle failed loads
 
 # Pages To do Write up
 

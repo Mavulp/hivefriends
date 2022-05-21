@@ -29,12 +29,24 @@
       height: 392px;
       position: relative;
 
+      button {
+        @include flex($gap: 4px);
+        position: absolute;
+        left: 64px;
+        top: 64px;
+      }
+
       .banner {
         display: block;
         width: 100%;
         height: 100%;
         object-fit: cover;
         object-position: center;
+
+        &.image-error {
+          opacity: 0.25;
+          background-color: rgba(var(--color-background), 0.95);
+        }
       }
 
       .avatar-wrap {
@@ -44,7 +56,7 @@
         right: 128px;
         // right: 10%;
 
-        img {
+        .avatar {
           display: block;
           width: 556px;
           height: 556px;
@@ -52,6 +64,11 @@
           object-position: center;
           margin-bottom: 32px;
           border: 20px solid rgb(var(--color-highlight));
+
+          &.image-error {
+            border-color: rgb(var(--color-background));
+            background-color: rgba(var(--color-background), 1);
+          }
         }
       }
     }
@@ -89,7 +106,7 @@
         // background-color: rgb(var(--color-highlight));
 
         &.black {
-          color: #000 !important;
+          color: #191716 !important;
         }
 
         &.white {

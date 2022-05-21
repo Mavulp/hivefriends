@@ -21,7 +21,7 @@ const _id = computed(() => `${route.params.user}`)
 const userAlbums = ref<Array<Album>>([])
 
 const user = computed<User>(() => users.users.find((item) => item.username === _id.value) as User)
-const accent = computed(() => user.value.accentColor.split(",").map((item) => Number(item)))
+const accent = computed(() => color.value.split(",").map((item) => Number(item)))
 
 onBeforeMount(() => {
   addLoading("user-profile")
@@ -52,10 +52,22 @@ watchEffect(() => {
     <template v-else>
       <div class="user-profile-upper" :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]">
         <div class="hi-user-banner">
-          <img class="banner" :src="imageUrl(user.bannerKey, 'medium')" alt="" />
+          <img
+            class="banner"
+            :src="imageUrl(user.bannerKey, 'medium')"
+            alt=""
+            @error="(e: any) => e.target.classList.add('image-error')"
+          />
+
+          <button class="hover-bubble"><span class="material-icons">&#xe8b8;</span>Settings</button>
 
           <div class="avatar-wrap">
-            <img class="avatar" :src="imageUrl(user.avatarKey, 'medium')" alt="" />
+            <img
+              class="avatar"
+              :src="imageUrl(user.avatarKey, 'medium')"
+              alt=""
+              @error="(e: any) => e.target.classList.add('image-error')"
+            />
           </div>
         </div>
 
