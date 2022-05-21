@@ -31,57 +31,21 @@ async fn get_by_id() {
     dbg!(&json);
     assert_eq!(status, 200);
 
+    assert_eq!(json["key"].as_str().unwrap().to_owned(), album_key);
     assert_eq!(
-        json.as_object()
-            .unwrap()
-            .get("key")
-            .unwrap()
-            .as_str()
-            .unwrap()
-            .to_owned(),
-        album_key
-    );
-    assert_eq!(
-        json.as_object()
-            .unwrap()
-            .get("uploaderKey")
-            .unwrap()
-            .as_str()
-            .unwrap()
-            .to_owned(),
+        json["uploaderKey"].as_str().unwrap().to_owned(),
         uploader_key
     );
 
-    assert_eq!(
-        json.as_object()
-            .unwrap()
-            .get("title")
-            .unwrap()
-            .as_str()
-            .unwrap()
-            .to_owned(),
-        "Test Title"
-    );
+    assert_eq!(json["title"].as_str().unwrap().to_owned(), "Test Title");
 
     assert_eq!(
-        json.as_object()
-            .unwrap()
-            .get("description")
-            .unwrap()
-            .as_str()
-            .unwrap()
-            .to_owned(),
+        json["description"].as_str().unwrap().to_owned(),
         "Test Description"
     );
 
     assert_eq!(
-        json.as_object()
-            .unwrap()
-            .get("locations")
-            .unwrap()
-            .as_str()
-            .unwrap()
-            .to_owned(),
+        json["locations"].as_str().unwrap().to_owned(),
         "home,outside"
     );
 }
@@ -109,24 +73,9 @@ async fn get_all_with_drafts() {
     assert_eq!(array.len(), 1);
     let json = array.pop().unwrap();
 
+    assert_eq!(json["key"].as_str().unwrap().to_owned(), album_key);
     assert_eq!(
-        json.as_object()
-            .unwrap()
-            .get("key")
-            .unwrap()
-            .as_str()
-            .unwrap()
-            .to_owned(),
-        album_key
-    );
-    assert_eq!(
-        json.as_object()
-            .unwrap()
-            .get("uploaderKey")
-            .unwrap()
-            .as_str()
-            .unwrap()
-            .to_owned(),
+        json["uploaderKey"].as_str().unwrap().to_owned(),
         uploader_key
     );
 }

@@ -42,14 +42,5 @@ async fn put_password() {
     dbg!(&json);
     assert_eq!(status, 200);
 
-    assert_eq!(
-        json.as_object()
-            .unwrap()
-            .get("userKey")
-            .unwrap()
-            .as_str()
-            .unwrap()
-            .to_owned(),
-        user_key
-    );
+    assert_eq!(json["userKey"].as_str().unwrap().to_owned(), user_key);
 }

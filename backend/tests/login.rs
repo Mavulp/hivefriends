@@ -40,13 +40,7 @@ async fn authenticate() {
 
     let json = res.json::<Value>().await;
     dbg!(&json);
-    let token = json
-        .as_object()
-        .unwrap()
-        .get("bearerToken")
-        .unwrap()
-        .as_str()
-        .unwrap();
+    let token = json["bearerToken"].as_str().unwrap();
 
     assert_eq!(status, 200);
     assert_eq!(token.len(), 64);

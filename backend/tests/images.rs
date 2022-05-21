@@ -31,10 +31,7 @@ async fn upload_with_exif() {
     dbg!(&json);
     assert_eq!(status, 200);
 
-    assert_eq!(
-        json.get("takenAt").unwrap().as_u64().unwrap().to_owned(),
-        1224692919,
-    );
+    assert_eq!(json["takenAt"].as_u64().unwrap().to_owned(), 1224692919,);
 
     let location = json
         .as_object()
@@ -45,22 +42,12 @@ async fn upload_with_exif() {
         .unwrap();
 
     assert_eq!(
-        location
-            .get("latitude")
-            .unwrap()
-            .as_str()
-            .unwrap()
-            .to_owned(),
+        location["latitude"].as_str().unwrap().to_owned(),
         "43.46744833333334",
     );
 
     assert_eq!(
-        location
-            .get("longitude")
-            .unwrap()
-            .as_str()
-            .unwrap()
-            .to_owned(),
+        location["longitude"].as_str().unwrap().to_owned(),
         "11.885126666663888",
     );
 }
@@ -85,13 +72,7 @@ async fn get_by_key() {
     assert_eq!(status, 200);
 
     assert_eq!(
-        json.as_object()
-            .unwrap()
-            .get("uploaderKey")
-            .unwrap()
-            .as_str()
-            .unwrap()
-            .to_owned(),
+        json["uploaderKey"].as_str().unwrap().to_owned(),
         uploader_key
     );
 }

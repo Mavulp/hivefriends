@@ -53,20 +53,8 @@ pub async fn authenticate(client: &TestClient) -> (String, String) {
     assert_eq!(res.status(), 200);
 
     let json = res.json::<Value>().await;
-    let token = json
-        .as_object()
-        .unwrap()
-        .get("bearerToken")
-        .unwrap()
-        .as_str()
-        .unwrap();
-    let user_key = json
-        .as_object()
-        .unwrap()
-        .get("userKey")
-        .unwrap()
-        .as_str()
-        .unwrap();
+    let token = json["bearerToken"].as_str().unwrap();
+    let user_key = json["userKey"].as_str().unwrap();
 
     (token.into(), user_key.into())
 }
@@ -92,13 +80,7 @@ pub async fn upload_test_image(path: &str, client: &TestClient, token: &str) -> 
     dbg!(&json);
     assert_eq!(status, 200);
 
-    json.as_object()
-        .unwrap()
-        .get("key")
-        .unwrap()
-        .as_str()
-        .unwrap()
-        .to_owned()
+    json["key"].as_str().unwrap().into()
 }
 
 pub async fn create_test_album(client: &TestClient, token: &str) -> String {
@@ -130,11 +112,5 @@ pub async fn create_test_album(client: &TestClient, token: &str) -> String {
     dbg!(&json);
     assert_eq!(status, 200);
 
-    json.as_object()
-        .unwrap()
-        .get("key")
-        .unwrap()
-        .as_str()
-        .unwrap()
-        .to_owned()
+    json["key"].as_str().unwrap().into()
 }
