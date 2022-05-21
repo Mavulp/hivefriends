@@ -82,40 +82,40 @@ const router = createRouter({
         requiresAuth: true
       }
     },
+    // {
+    //   path: "/user/",
+    //   name: "User",
+    //   component: UserPage,
+    //   children: [
     {
-      path: "/user/",
-      name: "User",
-      component: UserPage,
-      children: [
-        {
-          path: "/user/:user/profile",
-          name: "UserProfile",
-          component: UserProfile,
-          meta: {
-            title: "User Profile",
-            requiresAuth: true
-          }
-        },
-        {
-          path: "/user/settings",
-          name: "UserSettings",
-          component: UserSettings,
-          meta: {
-            title: "User Settings",
-            requiresAuth: true
-          }
-        },
-        {
-          path: "/user/:user/albums",
-          name: "UserAlbums",
-          component: UserAlbums,
-          meta: {
-            title: "User Albums",
-            requiresAuth: true
-          }
-        }
-      ]
+      path: "/:user",
+      name: "UserProfile",
+      component: UserProfile,
+      meta: {
+        title: "User Profile",
+        requiresAuth: true
+      }
+    },
+    {
+      path: "/user/settings",
+      name: "UserSettings",
+      component: UserSettings,
+      meta: {
+        title: "User Settings",
+        requiresAuth: true
+      }
+    },
+    {
+      path: "/:user/albums",
+      name: "UserAlbums",
+      component: UserAlbums,
+      meta: {
+        title: "User Albums",
+        requiresAuth: true
+      }
     }
+    // ]
+    // }
   ]
 })
 

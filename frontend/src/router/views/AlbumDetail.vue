@@ -15,7 +15,7 @@ import { useBread } from "../../store/bread"
 const albums = useAlbums()
 const route = useRoute()
 const user = useUser()
-const bread = useBread()
+// const bread = useBread()
 
 const { getLoading } = useLoading()
 
@@ -28,7 +28,9 @@ onBeforeMount(async () => {
     const data = await albums.fetchAlbum(id)
     Object.assign(album, data)
 
-    bread.set(`${data.title} by ${user.getUsername(data.uploaderKey)}`, `${data.title} // hi!friends`)
+    console.log(data)
+
+    // bread.set(`${data.title} by ${user.getUsername(data.uploaderKey)}`, `${data.title} // hi!friends`)
   }
 })
 
@@ -77,8 +79,8 @@ const chunks = computed(() => {
           <p class="mr-32">{{ album.images.length }} {{ album.images.length === 1 ? "Photo" : "Photos" }}</p>
 
           <span class="material-icons">&#xe851;</span>
-          <router-link :to="{ name: 'UserProfile', params: { user: album.uploaderKey } }" class="mr-32">
-            by: {{ user.getUsername(album.uploaderKey) }}
+          <router-link :to="{ name: 'UserProfile', params: { user: album.author } }" class="mr-32">
+            by: {{ user.getUsername(album.author) }}
           </router-link>
 
           <span class="material-icons">&#xe8df;</span>

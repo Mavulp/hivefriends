@@ -28,7 +28,6 @@ onBeforeMount(() => {
 
   Promise.all([albums.fetchUserAlbums(_id.value), users.fetchUser(_id.value, true)])
     .then(([albums]) => {
-      // console.log(albums.userAlbums)
       userAlbums.value = albums
       color.value = user.value.accentColor
     })
@@ -58,8 +57,6 @@ watchEffect(() => {
             alt=""
             @error="(e: any) => e.target.classList.add('image-error')"
           />
-
-          <button class="hover-bubble"><span class="material-icons">&#xe8b8;</span>Settings</button>
 
           <div class="avatar-wrap">
             <img

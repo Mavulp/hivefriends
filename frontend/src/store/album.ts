@@ -8,7 +8,7 @@ import { FetchError } from "../js/global-types"
 export interface Image {
   key: string
   createdAT: number
-  uploaderKey: string
+  author: string
 }
 
 export interface ImageMetadata {}
@@ -25,7 +25,7 @@ export interface Album {
     from: number
     to: number
   }
-  uploaderKey: string
+  author: string
   coverKey: string
 }
 

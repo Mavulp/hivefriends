@@ -29,13 +29,6 @@
       height: 392px;
       position: relative;
 
-      button {
-        @include flex($gap: 4px);
-        position: absolute;
-        left: 64px;
-        top: 64px;
-      }
-
       .banner {
         display: block;
         width: 100%;
