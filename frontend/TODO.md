@@ -67,14 +67,6 @@
 
   - [ ] Add setting a feature key (select with all album names and save album key)
 
-- [ ] User profile
-
-  - [x] Show bio, username, profile picture, banner in a nice way
-  - [x] Number of albums
-  - [ ] List albums
-  - [x] Users they met with (just a number)
-    - [ ] maybe in a tooltip
-
 - [ ] Create a wrapper for every <img> element which will display a loading, instead of the white cube unfolding
 
 # Pages To do Write up
