@@ -6,12 +6,14 @@ use axum::{
     Extension, Json,
 };
 use chrono::NaiveDateTime;
+use image::DynamicImage;
 use serde::Serialize;
 use serde_rusqlite::to_params_named;
 use tokio::fs;
 use tracing::warn;
 
 use std::io::Cursor;
+use std::os::unix::fs::symlink;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::SystemTime;
@@ -210,11 +212,44 @@ fn value_to_deg(value: &exif::Value) -> Option<f64> {
     }
 }
 
+enum ImageKind {
+    Generated(Arc<DynamicImage>),
+    Symlink(Arc<DynamicImage>),
+}
+
+impl ImageKind {
+    fn image(&self) -> Arc<DynamicImage> {
+        match self {
+            ImageKind::Generated(i) => i.clone(),
+            ImageKind::Symlink(i) => i.clone(),
+        }
+    }
+}
+
+fn generate_or_symlink_image(
+    image: &ImageKind,
+    source_width: u32,
+    source_height: u32,
+    target_width: u32,
+    target_height: u32,
+) -> ImageKind {
+    if source_width < target_width && source_height < target_height {
+        ImageKind::Symlink(image.image().clone())
+    } else {
+        ImageKind::Generated(Arc::new(
+            image.image().thumbnail(target_width, target_height),
+        ))
+    }
+}
+
 async fn store_image(directory: PathBuf, key: &str, data: &[u8]) -> anyhow::Result<()> {
     let image = image::load_from_memory(data)?;
-    let large = image.thumbnail(1280, 1280);
-    let medium = large.thumbnail(800, 800);
-    let tiny = medium.thumbnail(360, 360);
+    let (width, height) = (image.width(), image.height());
+    let image = ImageKind::Generated(Arc::new(image));
+
+    let large = generate_or_symlink_image(&image, width, height, 1280, 1280);
+    let medium = generate_or_symlink_image(&large, width, height, 800, 800);
+    let tiny = generate_or_symlink_image(&medium, width, height, 360, 360);
 
     let mut image_dir = directory;
     image_dir.push(key);
@@ -232,10 +267,17 @@ async fn store_image(directory: PathBuf, key: &str, data: &[u8]) -> anyhow::Resu
         let mut path = image_dir.clone();
         path.push(name);
 
-        buffer.clear();
-        let mut cursor = Cursor::new(&mut buffer);
-        image.write_to(&mut cursor, image::ImageOutputFormat::Png)?;
-        fs::write(path, &buffer).await?;
+        match image {
+            ImageKind::Generated(image) => {
+                buffer.clear();
+                let mut cursor = Cursor::new(&mut buffer);
+                image.write_to(&mut cursor, image::ImageOutputFormat::Png)?;
+                fs::write(path, &buffer).await?;
+            }
+            ImageKind::Symlink(_) => {
+                symlink("original.png", path)?;
+            }
+        }
     }
 
     Ok(())
