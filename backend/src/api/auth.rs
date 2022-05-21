@@ -26,7 +26,7 @@ pub struct Authorize(pub String);
 
 #[derive(Debug, Deserialize)]
 struct DbSession {
-    user_key: String,
+    username: String,
     created_at: u64,
 }
 
@@ -48,7 +48,7 @@ where
         let db_session = conn
             .interact(move |conn| {
                 conn.query_row(
-                    r"SELECT user_key, created_at FROM auth_sessions WHERE token=?1",
+                    r"SELECT username, created_at FROM auth_sessions WHERE token=?1",
                     params![bearer.token()],
                     |row| Ok(from_row::<DbSession>(row).unwrap()),
                 )
@@ -63,7 +63,7 @@ where
             let now = SystemTime::UNIX_EPOCH.elapsed().unwrap();
 
             if now < created_at + Duration::from_secs(crate::AUTH_TIME_SECONDS) {
-                Ok(Authorize(session.user_key))
+                Ok(Authorize(session.username))
             } else {
                 conn.interact(move |conn| {
                     if let Err(e) = conn.execute(
@@ -122,8 +122,8 @@ pub fn api_route() -> Router {
     Router::new().route("/", get(get_auth_state))
 }
 
-pub async fn get_auth_state(Authorize(user_key): Authorize) -> Json<Value> {
+pub async fn get_auth_state(Authorize(username): Authorize) -> Json<Value> {
     Json(json!({
-        "userKey": user_key,
+        "username": username,
     }))
 }

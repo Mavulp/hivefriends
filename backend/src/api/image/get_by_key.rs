@@ -20,7 +20,7 @@ pub(super) async fn get(
             conn.query_row(
                 "SELECT \
                     key, \
-                    uploader_key, \
+                    uploader, \
                     uploaded_at, \
                     file_name, \
                     size_bytes, \

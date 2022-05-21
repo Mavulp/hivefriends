@@ -13,9 +13,9 @@ async fn create() {
 }
 
 #[tokio::test]
-async fn get_by_id() {
+async fn get_by_key() {
     let (client, _temp) = setup_test_client().await;
-    let (token, uploader_key) = authenticate(&client).await;
+    let (token, username) = authenticate(&client).await;
 
     let album_key = create_test_album(&client, &token).await;
 
@@ -33,8 +33,8 @@ async fn get_by_id() {
 
     assert_eq!(json["key"].as_str().unwrap().to_owned(), album_key);
     assert_eq!(
-        json["uploaderKey"].as_str().unwrap().to_owned(),
-        uploader_key
+        json["author"].as_str().unwrap().to_owned(),
+        username
     );
 
     assert_eq!(json["title"].as_str().unwrap().to_owned(), "Test Title");
@@ -53,7 +53,7 @@ async fn get_by_id() {
 #[tokio::test]
 async fn get_all_with_drafts() {
     let (client, _temp) = setup_test_client().await;
-    let (token, uploader_key) = authenticate(&client).await;
+    let (token, username) = authenticate(&client).await;
 
     let album_key = create_test_album(&client, &token).await;
 
@@ -75,8 +75,8 @@ async fn get_all_with_drafts() {
 
     assert_eq!(json["key"].as_str().unwrap().to_owned(), album_key);
     assert_eq!(
-        json["uploaderKey"].as_str().unwrap().to_owned(),
-        uploader_key
+        json["author"].as_str().unwrap().to_owned(),
+        username
     );
 }
 

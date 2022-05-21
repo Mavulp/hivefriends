@@ -56,7 +56,7 @@ pub struct DbSettings {
 }
 
 async fn get_settings(
-    Authorize(user_key): Authorize,
+    Authorize(username): Authorize,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<Settings>, Error> {
     let conn = state.pool.get().await.context("Failed to get connection")?;
@@ -73,8 +73,8 @@ async fn get_settings(
                     featured_album_key, \
                     private, \
                     color_theme \
-                FROM users WHERE key = ?1",
-                params![user_key],
+                FROM users WHERE username = ?1",
+                params![username],
                 |row| Ok(from_row::<DbSettings>(row).unwrap()),
             )
             .optional()
@@ -114,7 +114,7 @@ pub struct PutSettingsRequest {
 
 async fn put_settings(
     request: Result<Json<PutSettingsRequest>, JsonRejection>,
-    Authorize(user_key): Authorize,
+    Authorize(username): Authorize,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<&'static str>, Error> {
     let Json(request) = request?;
@@ -125,9 +125,9 @@ async fn put_settings(
         if let Err(rusqlite::Error::SqliteFailure(e, _)) = conn
             .interact(move |conn| {
                 let mut params = request.update_params();
-                params.push(Box::new(user_key));
+                params.push(Box::new(username));
                 conn.query_row(
-                    &format!("UPDATE users SET {update_str} WHERE key = ?"),
+                    &format!("UPDATE users SET {update_str} WHERE username = ?"),
                     rusqlite::params_from_iter(params.iter()),
                     |row| Ok(from_row::<Settings>(row).unwrap()),
                 )
@@ -155,26 +155,26 @@ pub struct PutPasswordRequest {
 
 async fn put_password(
     request: Result<Json<PutPasswordRequest>, JsonRejection>,
-    Authorize(user_key): Authorize,
+    Authorize(username): Authorize,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<&'static str>, Error> {
     let Json(request) = request?;
     let conn = state.pool.get().await.context("Failed to get connection")?;
 
-    let cuser_key = user_key.clone();
+    let cusername = username.clone();
     let result = conn
         .interact(move |conn| {
             conn.query_row(
                 "SELECT password_hash \
-                FROM users WHERE key=?1",
-                params![cuser_key],
+                FROM users WHERE username=?1",
+                params![cusername],
                 |row| row.get::<_, String>(0),
             )
             .optional()
         })
         .await
         .unwrap()
-        .context("Failed to query user key")?;
+        .context("Failed to query username")?;
 
     if let Some(password_hash) = result {
         let argon2 = Argon2::default();
@@ -184,7 +184,7 @@ async fn put_password(
             .verify_password(request.old.as_bytes(), &parsed_hash)
             .is_ok()
         {
-            conn.interact(move |conn| set_password(&user_key, &request.new, conn))
+            conn.interact(move |conn| set_password(&username, &request.new, conn))
                 .await
                 .unwrap()
                 .context("Failed to set password")?;
@@ -198,7 +198,7 @@ async fn put_password(
     }
 }
 
-fn set_password(user_key: &str, password: &str, conn: &Connection) -> Result<(), Error> {
+fn set_password(username: &str, password: &str, conn: &Connection) -> Result<(), Error> {
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
     let phc_string = argon2
@@ -207,8 +207,8 @@ fn set_password(user_key: &str, password: &str, conn: &Connection) -> Result<(),
         .to_string();
 
     conn.execute(
-        "UPDATE users SET password_hash = ? WHERE key = ?",
-        params![phc_string, user_key],
+        "UPDATE users SET password_hash = ? WHERE username = ?",
+        params![phc_string, username],
     )
     .context("Failed to update password hash")?;
 

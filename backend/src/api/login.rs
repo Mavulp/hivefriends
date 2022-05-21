@@ -31,7 +31,7 @@ struct LoginRequest {
 #[serde(rename_all = "camelCase")]
 struct LoginResponse {
     bearer_token: String,
-    user_key: String,
+    username: String,
 }
 
 async fn post_login(
@@ -45,18 +45,18 @@ async fn post_login(
     let result = conn
         .interact(move |conn| {
             conn.query_row(
-                "SELECT key, password_hash \
+                "SELECT password_hash \
                 FROM users WHERE username=?1",
                 params![username],
-                |row| Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?)),
+                |row| Ok(row.get::<_, String>(0)?),
             )
             .optional()
         })
         .await
         .unwrap()
-        .context("Failed to query user key")?;
+        .context("Failed to query username")?;
 
-    if let Some((key, password_hash)) = result {
+    if let Some(password_hash) = result {
         let argon2 = Argon2::default();
         let parsed_hash = PasswordHash::new(&password_hash).context("Failed creating hash")?;
 
@@ -68,7 +68,7 @@ async fn post_login(
             let bearer_token = generate_token();
             let token = bearer_token.clone();
 
-            let ckey = key.clone();
+            let cusername = req.username.clone();
             let conn = state
                 .pool
                 .get()
@@ -76,9 +76,9 @@ async fn post_login(
                 .context("Failed getting DB connection")?;
             conn.interact(move |conn| {
                 conn.execute(
-                    "INSERT INTO auth_sessions (user_key, token, created_at) \
+                    "INSERT INTO auth_sessions (username, token, created_at) \
                     VALUES (?1, ?2, ?3)",
-                    params![ckey, token, now],
+                    params![cusername, token, now],
                 )
             })
             .await
@@ -87,7 +87,7 @@ async fn post_login(
 
             Ok(Json(LoginResponse {
                 bearer_token,
-                user_key: key,
+                username: req.username,
             }))
         } else {
             Err(Error::InvalidLogin)

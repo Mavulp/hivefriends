@@ -35,7 +35,7 @@ pub(super) struct CreateAlbumResponse {
 
 pub(super) async fn post(
     request: Result<Json<CreateAlbumRequest>, JsonRejection>,
-    Authorize(uploader_key): Authorize,
+    Authorize(username): Authorize,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<CreateAlbumResponse>, Error> {
     let Json(request) = request?;
@@ -62,7 +62,7 @@ pub(super) async fn post(
                 description, \
                 cover_key, \
                 locations, \
-                uploader_key, \
+                author, \
                 draft, \
                 timeframe_from, \
                 timeframe_to, \
@@ -74,7 +74,7 @@ pub(super) async fn post(
                 request.description,
                 request.cover_key,
                 request.locations,
-                uploader_key,
+                username,
                 request.draft as i64,
                 request.timeframe.from,
                 request.timeframe.to,

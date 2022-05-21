@@ -5,14 +5,14 @@ mod util;
 use util::*;
 
 #[tokio::test]
-async fn get_by_key() {
+async fn get_by_username() {
     let (client, _temp) = setup_test_client().await;
-    let (token, uploader_key) = authenticate(&client).await;
+    let (token, username) = authenticate(&client).await;
 
     let album_key = create_test_album(&client, &token).await;
 
     let res = client
-        .get(&format!("/api/users/{uploader_key}"))
+        .get(&format!("/api/users/{username}"))
         .header(AUTHORIZATION, format!("Bearer {token}"))
         .send()
         .await;

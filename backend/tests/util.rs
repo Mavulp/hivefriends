@@ -54,9 +54,9 @@ pub async fn authenticate(client: &TestClient) -> (String, String) {
 
     let json = res.json::<Value>().await;
     let token = json["bearerToken"].as_str().unwrap();
-    let user_key = json["userKey"].as_str().unwrap();
+    let username = json["username"].as_str().unwrap();
 
-    (token.into(), user_key.into())
+    (token.into(), username.into())
 }
 
 pub async fn upload_test_image(path: &str, client: &TestClient, token: &str) -> String {

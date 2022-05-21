@@ -22,7 +22,7 @@ pub(super) struct AlbumResponse {
     description: Option<String>,
     cover_key: String,
     locations: Option<String>,
-    uploader_key: String,
+    author: String,
     draft: bool,
     timeframe: Timeframe,
     created_at: u64,
@@ -45,7 +45,7 @@ pub(super) async fn get(
                     description, \
                     cover_key, \
                     locations, \
-                    uploader_key, \
+                    author, \
                     draft, \
                     timeframe_from, \
                     timeframe_to, \
@@ -63,7 +63,7 @@ pub(super) async fn get(
                 .prepare(
                     "SELECT \
                         i.key, \
-                        i.uploader_key, \
+                        i.uploader, \
                         i.uploaded_at, \
                         i.file_name, \
                         i.size_bytes, \
@@ -98,7 +98,7 @@ pub(super) async fn get(
                 description: db_album.description,
                 cover_key: db_album.cover_key,
                 locations: db_album.locations,
-                uploader_key: db_album.uploader_key,
+                author: db_album.author,
                 draft: db_album.draft,
                 timeframe: Timeframe {
                     from: db_album.timeframe_from,

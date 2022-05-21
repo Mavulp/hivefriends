@@ -15,13 +15,12 @@ use crate::AppState;
 pub fn api_route() -> Router {
     Router::new()
         .route("/", get(get_users))
-        .route("/:key", get(get_user_by_key))
+        .route("/:username", get(get_user_by_username))
 }
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct User {
-    pub key: String,
     pub username: String,
     pub display_name: Option<String>,
     pub bio: Option<String>,
@@ -36,7 +35,6 @@ pub struct User {
 
 #[derive(Deserialize, Debug, PartialEq)]
 struct DbUser {
-    key: String,
     username: String,
     display_name: Option<String>,
     bio: Option<String>,
@@ -55,7 +53,6 @@ async fn get_users(
 
     conn.interact(move |conn| {
         let query = "SELECT \
-                key, \
                 username, \
                 display_name, \
                 bio, \
@@ -84,11 +81,11 @@ async fn get_users(
         for db_user in db_users {
             let mut stmt = conn.prepare(
                 "SELECT a.\"key\" FROM albums a \
-                WHERE a.uploader_key = ?1",
+                WHERE a.author = ?1",
             )
             .context("Failed to prepare user albums query")?;
             let album_key_iter = stmt
-                .query_map(params![db_user.key], |row| Ok(from_row::<String>(row).unwrap()))
+                .query_map(params![db_user.username], |row| Ok(from_row::<String>(row).unwrap()))
                 .context("Failed to query user albums")?;
 
             let albums_uploaded = album_key_iter
@@ -97,25 +94,24 @@ async fn get_users(
 
             let mut stmt = conn
                 .prepare(
-                    "SELECT u2.key FROM users u1 \
-                    INNER JOIN user_album_associations uaa ON uaa.user_key = u1.key \
+                    "SELECT u2.username FROM users u1 \
+                    INNER JOIN user_album_associations uaa ON uaa.username = u1.username \
                     INNER JOIN albums a ON a.key = uaa.album_key \
                     INNER JOIN user_album_associations uaa2 ON uaa2.album_key = a.key \
-                    INNER JOIN users u2 ON uaa2.user_key = u2.key \
-                    WHERE u1.key = ?1 \
-                    AND u2.key != ?1",
+                    INNER JOIN users u2 ON uaa2.username = u2.username \
+                    WHERE u1.username = ?1 \
+                    AND u2.username != ?1",
                 )
                 .context("Failed to prepare met users query")?;
-            let met_key_iter = stmt
-                .query_map(params![db_user.key], |row| Ok(from_row::<String>(row).unwrap()))
+            let met_iter = stmt
+                .query_map(params![db_user.username], |row| Ok(from_row::<String>(row).unwrap()))
                 .context("Failed to query met users")?;
 
-            let met = met_key_iter
+            let met = met_iter
                 .collect::<Result<Vec<_>, _>>()
                 .context("Failed to collect met users")?;
 
             users.push(User {
-                key: db_user.key,
                 username: db_user.username,
                 display_name: db_user.display_name,
                 avatar_key: db_user.avatar_key,
@@ -134,8 +130,8 @@ async fn get_users(
     .unwrap()
 }
 
-async fn get_user_by_key(
-    Path(user_key): Path<String>,
+async fn get_user_by_username(
+    Path(username): Path<String>,
     Authorize(_): Authorize,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<User>, Error> {
@@ -145,7 +141,6 @@ async fn get_user_by_key(
         .interact(move |conn| {
             conn.query_row(
                 "SELECT
-                    key, \
                     username, \
                     display_name, \
                     bio, \
@@ -154,8 +149,8 @@ async fn get_user_by_key(
                     accent_color, \
                     featured_album_key, \
                     created_at \
-                FROM users WHERE key = ?1",
-                params![user_key],
+                FROM users WHERE username = ?1",
+                params![username],
                 |row| Ok(from_row::<DbUser>(row).unwrap()),
             )
             .optional()
@@ -165,45 +160,44 @@ async fn get_user_by_key(
         .context("Failed to query users")?;
 
     if let Some(db_user) = result {
-        let ckey = db_user.key.clone();
+        let cusername = db_user.username.clone();
         let albums_uploaded = conn
             .interact(move |conn| {
                 let mut stmt = conn.prepare(
                     "SELECT a.\"key\" FROM albums a \
-                    WHERE a.uploader_key = ?1",
+                    WHERE a.author = ?1",
                 )?;
-                let album_key_iter =
-                    stmt.query_map(params![ckey], |row| Ok(from_row::<String>(row).unwrap()))?;
+                let album_iter =
+                    stmt.query_map(params![cusername], |row| Ok(from_row::<String>(row).unwrap()))?;
 
-                album_key_iter.collect::<Result<Vec<_>, _>>()
+                album_iter.collect::<Result<Vec<_>, _>>()
             })
             .await
             .unwrap()
             .context("Failed to query albums uploaded")?;
 
-        let ckey = db_user.key.clone();
+        let cusername = db_user.username.clone();
         let met = conn
             .interact(move |conn| {
                 let mut stmt = conn.prepare(
-                    "SELECT u2.key FROM users u1 \
-                    INNER JOIN user_album_associations uaa ON uaa.user_key = u1.key \
+                    "SELECT u2.username FROM users u1 \
+                    INNER JOIN user_album_associations uaa ON uaa.username = u1.username \
                     INNER JOIN albums a ON a.key = uaa.album_key \
                     INNER JOIN user_album_associations uaa2 ON uaa2.album_key = a.key \
-                    INNER JOIN users u2 ON uaa2.user_key = u2.key \
-                    WHERE u1.key = ?1 \
-                    AND u2.key != ?1",
+                    INNER JOIN users u2 ON uaa2.username = u2.username \
+                    WHERE u1.username = ?1 \
+                    AND u2.username != ?1",
                 )?;
-                let album_key_iter =
-                    stmt.query_map(params![ckey], |row| Ok(from_row::<String>(row).unwrap()))?;
+                let album_iter =
+                    stmt.query_map(params![cusername], |row| Ok(from_row::<String>(row).unwrap()))?;
 
-                album_key_iter.collect::<Result<Vec<_>, _>>()
+                album_iter.collect::<Result<Vec<_>, _>>()
             })
             .await
             .unwrap()
             .context("Failed to query met users")?;
 
         Ok(Json(User {
-            key: db_user.key,
             username: db_user.username,
             display_name: db_user.display_name,
             avatar_key: db_user.avatar_key,
@@ -221,7 +215,6 @@ async fn get_user_by_key(
 }
 
 pub fn create_account(username: &str, password: &str, conn: &mut Connection) -> anyhow::Result<()> {
-    let key = blob_uuid::random_blob();
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
     let phc_string = argon2
@@ -230,8 +223,8 @@ pub fn create_account(username: &str, password: &str, conn: &mut Connection) -> 
     let now = SystemTime::UNIX_EPOCH.elapsed()?.as_secs();
 
     conn.execute(
-        "INSERT INTO users (key, username, password_hash, created_at) VALUES (?1, ?2, ?3, ?4)",
-        params![key, username, phc_string, now],
+        "INSERT INTO users (username, password_hash, created_at) VALUES (?1, ?2, ?3)",
+        params![username, phc_string, now],
     )?;
 
     Ok(())

@@ -51,7 +51,7 @@ impl IntoResponse for Error {
                     .chain()
                     .skip(1)
                     .fold(e.to_string(), |acc, cause| format!("{}: {}\n", acc, cause));
-                error!("API encountered error: {}", err);
+                eprintln!("API encountered error: {}", err);
 
                 StatusCode::INTERNAL_SERVER_ERROR
             }

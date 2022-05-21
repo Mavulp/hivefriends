@@ -13,12 +13,12 @@ CREATE TABLE images (
     f_number TEXT NULL,
     focal_length TEXT NULL,
 
-    uploader_key TEXT NOT NULL,
+    uploader TEXT NOT NULL,
     uploaded_at INTEGER NOT NULL, -- time since unix epoch (unix ts)
 
-    CONSTRAINT fk_uploader_key_assoc
-        FOREIGN KEY (uploader_key)
-        REFERENCES users (key)
+    CONSTRAINT fk_uploader_assoc
+        FOREIGN KEY (uploader)
+        REFERENCES users (username)
         ON DELETE CASCADE
 ) STRICT;
 
@@ -28,7 +28,7 @@ CREATE TABLE albums (
     description TEXT NULL,
     cover_key TEXT NOT NULL,
     locations TEXT NULL,
-    uploader_key TEXT NOT NULL,
+    author TEXT NOT NULL,
     draft INTEGER NOT NULL DEFAULT 0, -- boolean
 
     -- timeframe of the event covered by this album
@@ -37,9 +37,9 @@ CREATE TABLE albums (
 
     created_at INTEGER NOT NULL, -- unix ts
 
-    CONSTRAINT fk_uploader_key_assoc
-        FOREIGN KEY (uploader_key)
-        REFERENCES users (key)
+    CONSTRAINT fk_uploader_assoc
+        FOREIGN KEY (author)
+        REFERENCES users (username)
         ON DELETE CASCADE
 
     CONSTRAINT fk_cover_key_assoc
@@ -63,8 +63,7 @@ CREATE TABLE album_image_associations (
 ) STRICT;
 
 CREATE TABLE users (
-    key TEXT PRIMARY KEY NOT NULL,
-    username TEXT NOT NULL UNIQUE,
+    username TEXT PRIMARY KEY NOT NULL,
     display_name TEXT NULL UNIQUE,
     bio TEXT NULL,
     avatar_key TEXT NULL,
@@ -75,7 +74,6 @@ CREATE TABLE users (
 
     -- private
     password_hash TEXT NOT NULL,
-    private INTEGER NOT NULL DEFAULT 0,
     color_theme TEXT NOT NULL DEFAULT 'light-theme',
 
     CONSTRAINT fk_avatar_key_assoc
@@ -93,24 +91,24 @@ CREATE TABLE users (
 
 CREATE TABLE auth_sessions (
     id INTEGER PRIMARY KEY NOT NULL,
-    user_key TEXT NOT NULL,
+    username TEXT NOT NULL,
     token TEXT NOT NULL,
     created_at INTEGER NOT NULL, -- unix ts
 
-    CONSTRAINT fk_user_key_assoc
-        FOREIGN KEY (user_key)
-        REFERENCES users (key)
+    CONSTRAINT fk_username_assoc
+        FOREIGN KEY (username)
+        REFERENCES users (username)
         ON DELETE CASCADE
 ) STRICT;
 
 -- tags users that are in the album
 CREATE TABLE user_album_associations (
-    user_key TEXT NOT NULL, -- user is tagged in:
+    username TEXT NOT NULL, -- user is tagged in:
     album_key TEXT NOT NULL, -- this album
 
-    CONSTRAINT fk_user_key_assoc
-        FOREIGN KEY (user_key)
-        REFERENCES users (key)
+    CONSTRAINT fk_username_assoc
+        FOREIGN KEY (username)
+        REFERENCES users (username)
         ON DELETE CASCADE,
 
     CONSTRAINT fk_album_key_assoc

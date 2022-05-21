@@ -50,14 +50,14 @@ pub(super) struct AlbumResponse {
     description: Option<String>,
     cover_key: String,
     locations: Option<String>,
-    uploader_key: String,
+    author: String,
     draft: bool,
     timeframe: Timeframe,
     created_at: u64,
 }
 
 pub(super) async fn get(
-    Authorize(user_key): Authorize,
+    Authorize(username): Authorize,
     Query(filter): Query<AlbumFilters>,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<Vec<AlbumResponse>>, Error> {
@@ -70,7 +70,7 @@ pub(super) async fn get(
                     description, \
                     cover_key, \
                     locations, \
-                    uploader_key, \
+                    author, \
                     draft, \
                     timeframe_from, \
                     timeframe_to, \
@@ -80,7 +80,7 @@ pub(super) async fn get(
 
         let mut params: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
 
-        apply_filters(&mut query, &mut params, filter, user_key);
+        apply_filters(&mut query, &mut params, filter, username);
 
         let mut stmt = conn
             .prepare(&format!(
@@ -106,7 +106,7 @@ pub(super) async fn get(
                 description: db_album.description,
                 cover_key: db_album.cover_key,
                 locations: db_album.locations,
-                uploader_key: db_album.uploader_key,
+                author: db_album.author,
                 draft: db_album.draft,
                 timeframe: Timeframe {
                     from: db_album.timeframe_from,
@@ -125,7 +125,7 @@ fn apply_filters(
     query: &mut String,
     parameters: &mut Vec<Box<dyn ToSql>>,
     filters: AlbumFilters,
-    user_key: String,
+    username: String,
 ) {
     let mut filter_queries = Vec::new();
 
@@ -141,7 +141,7 @@ fn apply_filters(
         filter_queries.push(to_filter_query(parameters, to));
     }
 
-    filter_queries.push(draft_filter_query(parameters, filters.draft, user_key));
+    filter_queries.push(draft_filter_query(parameters, filters.draft, username));
 
     if !filter_queries.is_empty() {
         query.push_str(&format!(" WHERE {}", filter_queries.join(" AND ")));
@@ -156,7 +156,7 @@ fn user_filter_query(parameters: &mut Vec<Box<dyn ToSql>>, users: Vec<String>) -
     }
 
     format!(
-        "uploader_key IN ({}) ",
+        "author IN ({}) ",
         std::iter::repeat("?")
             .take(len)
             .collect::<Vec<_>>()
@@ -181,13 +181,13 @@ fn to_filter_query(parameters: &mut Vec<Box<dyn ToSql>>, to: u64) -> String {
 fn draft_filter_query(
     parameters: &mut Vec<Box<dyn ToSql>>,
     draft: bool,
-    user_key: String,
+    username: String,
 ) -> String {
     if draft {
-        parameters.push(Box::new(user_key));
+        parameters.push(Box::new(username));
         let p = parameters.len();
 
-        format!("(uploader_key = ?{p} OR draft = false)")
+        format!("(author = ?{p} OR draft = false)")
     } else {
         String::from("draft = false")
     }

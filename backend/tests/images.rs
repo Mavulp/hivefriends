@@ -55,7 +55,7 @@ async fn upload_with_exif() {
 #[tokio::test]
 async fn get_by_key() {
     let (client, _temp) = setup_test_client().await;
-    let (token, uploader_key) = authenticate(&client).await;
+    let (token, username) = authenticate(&client).await;
 
     let image_key = upload_test_image("./tests/testimage.png", &client, &token).await;
 
@@ -72,8 +72,8 @@ async fn get_by_key() {
     assert_eq!(status, 200);
 
     assert_eq!(
-        json["uploaderKey"].as_str().unwrap().to_owned(),
-        uploader_key
+        json["uploader"].as_str().unwrap().to_owned(),
+        username
     );
 }
 

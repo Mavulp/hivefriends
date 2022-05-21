@@ -7,7 +7,7 @@ use util::*;
 #[tokio::test]
 async fn put_password() {
     let (client, _temp) = setup_test_client().await;
-    let (token, user_key) = authenticate(&client).await;
+    let (token, username) = authenticate(&client).await;
 
     let new_password = "not password";
 
@@ -42,5 +42,5 @@ async fn put_password() {
     dbg!(&json);
     assert_eq!(status, 200);
 
-    assert_eq!(json["userKey"].as_str().unwrap().to_owned(), user_key);
+    assert_eq!(json["username"].as_str().unwrap().to_owned(), username);
 }

@@ -28,7 +28,7 @@ pub(super) struct ImageMetadata {
     f_number: Option<String>,
     focal_length: Option<String>,
 
-    uploader_key: String,
+    uploader: String,
     uploaded_at: u64,
 }
 
@@ -65,7 +65,7 @@ impl ImageMetadata {
             f_number: db_metadata.f_number,
             focal_length: db_metadata.focal_length,
 
-            uploader_key: db_metadata.uploader_key,
+            uploader: db_metadata.uploader,
             uploaded_at: db_metadata.uploaded_at,
         }
     }
@@ -86,6 +86,6 @@ pub(super) struct DbImageMetadata {
     f_number: Option<String>,
     focal_length: Option<String>,
 
-    uploader_key: String,
+    uploader: String,
     uploaded_at: u64,
 }

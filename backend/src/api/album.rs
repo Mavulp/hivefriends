@@ -30,7 +30,7 @@ struct DbAlbum {
     description: Option<String>,
     cover_key: String,
     locations: Option<String>,
-    uploader_key: String,
+    author: String,
     draft: bool,
     timeframe_from: Option<u64>,
     timeframe_to: Option<u64>,

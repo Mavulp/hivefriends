@@ -34,12 +34,12 @@ pub(super) async fn post(
         ContentLengthLimit<Multipart, { 10 * MB }>,
         ContentLengthLimitRejection<MultipartRejection>,
     >,
-    Authorize(user_key): Authorize,
+    Authorize(username): Authorize,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<ImageCreationResponse>, Error> {
     let multipart = multipart?.0;
 
-    match upload_image(multipart, user_key, &state).await {
+    match upload_image(multipart, username, &state).await {
         Ok(response) => Ok(Json(response)),
         Err(e) if e.is::<ImageCreationError>() => {
             match e.downcast_ref::<ImageCreationError>().unwrap() {
@@ -62,7 +62,7 @@ enum ImageCreationError {
 
 async fn upload_image(
     mut multipart: Multipart,
-    uploader_key: String,
+    uploader: String,
     state: &Arc<AppState>,
 ) -> anyhow::Result<ImageCreationResponse> {
     let uploaded_at = SystemTime::UNIX_EPOCH.elapsed()?.as_secs();
@@ -83,7 +83,7 @@ async fn upload_image(
 
     let mut metadata = DbImageMetadata {
         key: image_key,
-        uploader_key,
+        uploader,
         file_name,
         size_bytes,
         taken_at: None,
@@ -109,7 +109,7 @@ async fn upload_image(
         conn.execute(
             "INSERT INTO images ( \
                 key, \
-                uploader_key, \
+                uploader, \
                 file_name, \
                 size_bytes, \
                 taken_at, \
@@ -123,7 +123,7 @@ async fn upload_image(
                 uploaded_at \
             ) VALUES ( \
                 :key, \
-                :uploader_key, \
+                :uploader, \
                 :file_name, \
                 :size_bytes, \
                 :taken_at, \
