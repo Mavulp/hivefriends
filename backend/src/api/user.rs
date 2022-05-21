@@ -174,10 +174,8 @@ async fn get_user_by_key(
         let albums_uploaded = conn
             .interact(move |conn| {
                 let mut stmt = conn.prepare(
-                    "SELECT a.\"key\" FROM users u \
-                    INNER JOIN user_album_associations uaa ON uaa.user_key = u.key \
-                    INNER JOIN albums a ON a.key = uaa.album_key \
-                    WHERE u.key = ?1",
+                    "SELECT a.\"key\" FROM albums a \
+                    WHERE a.uploader_key = ?1",
                 )?;
                 let album_key_iter =
                     stmt.query_map(params![ckey], |row| Ok(from_row::<String>(row).unwrap()))?;
