@@ -22,11 +22,17 @@ pub enum Error {
     #[error("Comment does not belong to specified image")]
     WrongImage,
 
+    #[error("Invalid username")]
+    InvalidUsername,
+
     #[error("Invalid username or password")]
     InvalidLogin,
 
     #[error("Invalid password")]
     InvalidPassword,
+
+    #[error("timeframe contains an invalid range")]
+    InvalidTimeframe,
 
     #[error("coverKey is not an image in this album")]
     InvalidCoverKey,
@@ -65,6 +71,8 @@ impl IntoResponse for Error {
             }
             Error::InvalidCoverKey
             | Error::InvalidKey
+            | Error::InvalidTimeframe
+            | Error::InvalidUsername
             | Error::WrongImage
             | Error::JsonRejection(_)
             | Error::MultipartSizeRejection(_)

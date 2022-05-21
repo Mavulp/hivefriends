@@ -242,3 +242,19 @@ pub fn insert(username: &str, phc_string: &str, now: u64, conn: &Connection) -> 
 
     Ok(())
 }
+
+pub fn user_exists(username: &str, conn: &Connection) -> anyhow::Result<bool> {
+    let result = conn.query_row(
+        "SELECT 1 FROM users WHERE username = ?1",
+        params![username],
+        |_| Ok(()),
+    );
+
+    if matches!(result, Err(rusqlite::Error::QueryReturnedNoRows)) {
+        Ok(false)
+    } else {
+        result?;
+
+        Ok(true)
+    }
+}

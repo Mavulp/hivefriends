@@ -5,18 +5,20 @@ use axum::{
 
 use serde::{Deserialize, Serialize};
 
+use crate::FileDb;
+
 mod create;
 mod get_all;
 mod get_by_key;
 
 pub fn api_route() -> Router {
     Router::new()
-        .route("/", post(create::post))
+        .route("/", post(create::post::<FileDb>))
         .route("/", get(get_all::get))
         .route("/:key", get(get_by_key::get))
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct Timeframe {
     from: Option<u64>,
