@@ -77,7 +77,7 @@ const chunks = computed(() => {
           <p class="mr-32">{{ album.images.length }} {{ album.images.length === 1 ? "Photo" : "Photos" }}</p>
 
           <span class="material-icons">&#xe851;</span>
-          <router-link :to="{ name: 'UserProfile', params: { id: album.uploaderKey } }" class="mr-32">
+          <router-link :to="{ name: 'UserProfile', params: { user: album.uploaderKey } }" class="mr-32">
             by: {{ user.getUsername(album.uploaderKey) }}
           </router-link>
 

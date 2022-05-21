@@ -88,7 +88,7 @@ const router = createRouter({
       component: UserPage,
       children: [
         {
-          path: "/user/:id/profile",
+          path: "/user/:user/profile",
           name: "UserProfile",
           component: UserProfile,
           meta: {
@@ -106,7 +106,7 @@ const router = createRouter({
           }
         },
         {
-          path: "/user/:id/albums",
+          path: "/user/:user/albums",
           name: "UserAlbums",
           component: UserAlbums,
           meta: {

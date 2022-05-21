@@ -31,6 +31,10 @@
     background-color: rgb(var(--color-background-dark));
   }
 
+  &.btn-highlight {
+    background-color: rgb(var(--color-highlight));
+  }
+
   &.btn-login {
     &:after {
       @include t(0.4s, cubic-bezier(0.83, 0, 0.17, 1));
