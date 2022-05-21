@@ -9,9 +9,54 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
-pub struct AppState {
-    pool: Pool,
+pub type DbPool<M> = deadpool::managed::Pool<M, deadpool::managed::Object<M>>;
+pub type FileDb = deadpool_sqlite::Manager;
+
+pub trait SqliteDatabase:
+    deadpool::managed::Manager<Type = Self::T, Error = rusqlite::Error>
+{
+    type T: DbInteractable;
+}
+
+#[async_trait::async_trait]
+pub trait DbInteractable {
+    async fn interact<F, R>(&self, f: F) -> R
+    where
+        F: FnOnce(&mut rusqlite::Connection) -> R + Send + 'static,
+        R: Send + 'static;
+}
+
+#[async_trait::async_trait]
+impl DbInteractable for deadpool_sync::SyncWrapper<rusqlite::Connection> {
+    async fn interact<F, R>(&self, f: F) -> R
+    where
+        F: FnOnce(&mut rusqlite::Connection) -> R + Send + 'static,
+        R: Send + 'static,
+    {
+        self.interact(|conn| f(conn)).await.unwrap()
+    }
+}
+
+impl SqliteDatabase for deadpool_sqlite::Manager {
+    type T = deadpool_sync::SyncWrapper<rusqlite::Connection>;
+}
+
+pub struct AppState<M: SqliteDatabase = FileDb> {
+    pool: DbPool<M>,
     data_path: PathBuf,
+}
+
+#[cfg(test)]
+impl AppState {
+    pub(crate) async fn in_memory_db() -> Arc<AppState<util::test::InMemorySqliteManager>> {
+        let data_path = tempdir::TempDir::new("hivefriends-test-data")
+            .unwrap()
+            .path()
+            .to_path_buf();
+        let pool = util::test::setup_database().await.unwrap();
+
+        Arc::new(AppState { pool, data_path })
+    }
 }
 
 pub mod cli;
@@ -46,11 +91,13 @@ pub fn api_route(pool: Pool, data_path: PathBuf) -> Router {
         .layer(Extension(Arc::new(AppState { pool, data_path })))
 }
 
+pub(crate) const MIGRATIONS: [M; 1] = [M::up(include_str!("../migrations/001_initial.sql"))];
+
 pub async fn setup_database(path: &Path) -> anyhow::Result<Pool> {
     let cfg = Config::new(path);
     let pool = cfg.create_pool(Runtime::Tokio1)?;
 
-    let migrations = Migrations::new(vec![M::up(include_str!("../migrations/001_initial.sql"))]);
+    let migrations = Migrations::new(MIGRATIONS.to_vec());
 
     let conn = pool.get().await?;
     conn.interact(move |conn| migrations.to_latest(conn))

@@ -79,13 +79,16 @@ async fn get_users(
 
         let mut users = Vec::new();
         for db_user in db_users {
-            let mut stmt = conn.prepare(
-                "SELECT a.\"key\" FROM albums a \
+            let mut stmt = conn
+                .prepare(
+                    "SELECT a.\"key\" FROM albums a \
                 WHERE a.author = ?1",
-            )
-            .context("Failed to prepare user albums query")?;
+                )
+                .context("Failed to prepare user albums query")?;
             let album_key_iter = stmt
-                .query_map(params![db_user.username], |row| Ok(from_row::<String>(row).unwrap()))
+                .query_map(params![db_user.username], |row| {
+                    Ok(from_row::<String>(row).unwrap())
+                })
                 .context("Failed to query user albums")?;
 
             let albums_uploaded = album_key_iter
@@ -104,7 +107,9 @@ async fn get_users(
                 )
                 .context("Failed to prepare met users query")?;
             let met_iter = stmt
-                .query_map(params![db_user.username], |row| Ok(from_row::<String>(row).unwrap()))
+                .query_map(params![db_user.username], |row| {
+                    Ok(from_row::<String>(row).unwrap())
+                })
                 .context("Failed to query met users")?;
 
             let met = met_iter
@@ -167,8 +172,9 @@ async fn get_user_by_username(
                     "SELECT a.\"key\" FROM albums a \
                     WHERE a.author = ?1",
                 )?;
-                let album_iter =
-                    stmt.query_map(params![cusername], |row| Ok(from_row::<String>(row).unwrap()))?;
+                let album_iter = stmt.query_map(params![cusername], |row| {
+                    Ok(from_row::<String>(row).unwrap())
+                })?;
 
                 album_iter.collect::<Result<Vec<_>, _>>()
             })
@@ -188,8 +194,9 @@ async fn get_user_by_username(
                     WHERE u1.username = ?1 \
                     AND u2.username != ?1",
                 )?;
-                let album_iter =
-                    stmt.query_map(params![cusername], |row| Ok(from_row::<String>(row).unwrap()))?;
+                let album_iter = stmt.query_map(params![cusername], |row| {
+                    Ok(from_row::<String>(row).unwrap())
+                })?;
 
                 album_iter.collect::<Result<Vec<_>, _>>()
             })
@@ -222,6 +229,12 @@ pub fn create_account(username: &str, password: &str, conn: &mut Connection) -> 
         .to_string();
     let now = SystemTime::UNIX_EPOCH.elapsed()?.as_secs();
 
+    insert(username, &phc_string, now, conn)?;
+
+    Ok(())
+}
+
+pub fn insert(username: &str, phc_string: &str, now: u64, conn: &Connection) -> anyhow::Result<()> {
     conn.execute(
         "INSERT INTO users (username, password_hash, created_at) VALUES (?1, ?2, ?3)",
         params![username, phc_string, now],

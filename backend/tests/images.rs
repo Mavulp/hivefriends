@@ -71,10 +71,7 @@ async fn get_by_key() {
     dbg!(&json);
     assert_eq!(status, 200);
 
-    assert_eq!(
-        json["uploader"].as_str().unwrap().to_owned(),
-        username
-    );
+    assert_eq!(json["uploader"].as_str().unwrap().to_owned(), username);
 }
 
 /* TODO Functionality to list images is still missing

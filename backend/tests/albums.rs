@@ -32,10 +32,7 @@ async fn get_by_key() {
     assert_eq!(status, 200);
 
     assert_eq!(json["key"].as_str().unwrap().to_owned(), album_key);
-    assert_eq!(
-        json["author"].as_str().unwrap().to_owned(),
-        username
-    );
+    assert_eq!(json["author"].as_str().unwrap().to_owned(), username);
 
     assert_eq!(json["title"].as_str().unwrap().to_owned(), "Test Title");
 
@@ -74,10 +71,7 @@ async fn get_all_with_drafts() {
     let json = array.pop().unwrap();
 
     assert_eq!(json["key"].as_str().unwrap().to_owned(), album_key);
-    assert_eq!(
-        json["author"].as_str().unwrap().to_owned(),
-        username
-    );
+    assert_eq!(json["author"].as_str().unwrap().to_owned(), username);
 }
 
 #[tokio::test]

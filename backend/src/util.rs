@@ -5,3 +5,99 @@ pub(super) fn non_empty_str<'de, D: Deserializer<'de>>(d: D) -> Result<Option<St
     let o: Option<String> = Option::deserialize(d)?;
     Ok(o.filter(|s| !s.is_empty()))
 }
+
+#[cfg(test)]
+pub mod test {
+    use crate::api::{image, user};
+    use crate::DbInteractable;
+    use deadpool::{
+        async_trait,
+        managed::{self, Object, Pool, PoolBuilder},
+    };
+    use rusqlite_migration::Migrations;
+    use std::sync::Arc;
+    use tokio::sync::Mutex;
+
+    pub struct InMemorySqliteManager(Arc<Mutex<rusqlite::Connection>>);
+
+    pub struct InMemoryWrapper(Arc<Mutex<rusqlite::Connection>>);
+
+    #[async_trait::async_trait]
+    impl DbInteractable for InMemoryWrapper {
+        async fn interact<F, R>(&self, f: F) -> R
+        where
+            F: FnOnce(&mut rusqlite::Connection) -> R + Send + 'static,
+            R: Send + 'static,
+        {
+            let mut conn = self.0.lock().await;
+
+            f(&mut *conn)
+        }
+    }
+
+    #[async_trait]
+    impl managed::Manager for InMemorySqliteManager {
+        type Type = InMemoryWrapper;
+        type Error = rusqlite::Error;
+
+        async fn create(&self) -> Result<Self::Type, Self::Error> {
+            Ok(InMemoryWrapper(self.0.clone()))
+        }
+
+        async fn recycle(&self, _conn: &mut Self::Type) -> managed::RecycleResult<Self::Error> {
+            Ok(())
+        }
+    }
+
+    pub type TestPool = crate::DbPool<InMemorySqliteManager>;
+    pub type TestPoolBuilder = PoolBuilder<InMemorySqliteManager, Object<InMemorySqliteManager>>;
+
+    impl crate::SqliteDatabase for InMemorySqliteManager {
+        type T = InMemoryWrapper;
+    }
+
+    pub async fn setup_database() -> anyhow::Result<TestPool> {
+        let conn = Arc::new(Mutex::new(rusqlite::Connection::open_in_memory()?));
+        let pool: TestPool = Pool::builder(InMemorySqliteManager(conn)).build()?;
+
+        let migrations = Migrations::new(crate::MIGRATIONS.to_vec());
+
+        let conn = pool.get().await?;
+        conn.interact(move |conn| migrations.to_latest(conn))
+            .await?;
+
+        Ok(pool)
+    }
+
+    pub fn insert_user(name: &str, conn: &rusqlite::Connection) -> anyhow::Result<String> {
+        user::insert(name, "", 0, conn)?;
+
+        Ok(name.to_string())
+    }
+
+    pub fn insert_image(uploader: &str, conn: &rusqlite::Connection) -> anyhow::Result<String> {
+        let key = blob_uuid::random_blob();
+
+        let i = image::DbImageMetadata {
+            key: key.clone(),
+            uploader: uploader.to_string(),
+            size_bytes: 0,
+            uploaded_at: 0,
+
+            ..Default::default()
+        };
+
+        image::insert(&i, conn)?;
+
+        Ok(key)
+    }
+
+    pub fn insert_comment(
+        author: &str,
+        image_key: &str,
+        text: &str,
+        conn: &rusqlite::Connection,
+    ) -> anyhow::Result<image::Comment> {
+        image::insert_comment(author.into(), text.into(), image_key.into(), 0, conn)
+    }
+}

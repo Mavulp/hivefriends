@@ -8,7 +8,6 @@ use axum::{
 use chrono::NaiveDateTime;
 use image::DynamicImage;
 use serde::Serialize;
-use serde_rusqlite::to_params_named;
 use tokio::fs;
 use tracing::warn;
 
@@ -105,42 +104,9 @@ async fn upload_image(
     }
 
     let conn = state.pool.get().await?;
-    conn.interact(move |conn| {
-        conn.execute(
-            "INSERT INTO images ( \
-                key, \
-                uploader, \
-                file_name, \
-                size_bytes, \
-                taken_at, \
-                location_latitude, \
-                location_longitude, \
-                camera_brand, \
-                camera_model, \
-                exposure_time, \
-                f_number, \
-                focal_length, \
-                uploaded_at \
-            ) VALUES ( \
-                :key, \
-                :uploader, \
-                :file_name, \
-                :size_bytes, \
-                :taken_at, \
-                :location_latitude, \
-                :location_longitude, \
-                :camera_brand, \
-                :camera_model, \
-                :exposure_time, \
-                :f_number, \
-                :focal_length, \
-                :uploaded_at \
-            )",
-            to_params_named(&metadata).unwrap().to_slice().as_slice(),
-        )
-    })
-    .await
-    .unwrap()?;
+    conn.interact(move |conn| super::insert(&metadata, conn))
+        .await
+        .unwrap()?;
 
     Ok(ImageCreationResponse { key })
 }

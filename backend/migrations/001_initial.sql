@@ -22,6 +22,20 @@ CREATE TABLE images (
         ON DELETE CASCADE
 ) STRICT;
 
+CREATE TABLE comments (
+    id INTEGER PRIMARY KEY NOT NULL,
+    author TEXT NOT NULL,
+    image_key TEXT NOT NULL,
+    created_at INTEGER NOT NULL, -- unix ts
+
+    text TEXT NOT NULL,
+
+    CONSTRAINT fk_image_key_assoc
+        FOREIGN KEY (image_key)
+        REFERENCES images (key)
+        ON DELETE CASCADE
+) STRICT;
+
 CREATE TABLE albums (
     key TEXT PRIMARY KEY NOT NULL, -- used in API responses
     title TEXT NOT NULL,

@@ -16,7 +16,7 @@ serde = { version = "1.0.137", features = ["derive"] }
 serde_json = "1.0.81"
 serde_rusqlite = "0.30.1"
 rusqlite = { version = "0.27", features = ["bundled"] }
-rusqlite_migration = "1.0"
+rusqlite_migration = { git = "https://github.com/fkaa/rusqlite_migration", branch = "fkaa/const-fns" }
 deadpool-sqlite = "0.4"
 lazy_static = "1.4"
 tracing-appender = "0.2"
@@ -31,10 +31,15 @@ argon2 = { version = "0.4.0", features = ["std"] }
 rpassword = "6.0.1"
 kamadak-exif = "0.5.4"
 chrono = "0.4.19"
+deadpool = "0.9.5"
+deadpool-sync = "0.1.0"
+async-trait = "0.1.53"
 
 [dev-dependencies]
 reqwest = "0.11.10"
 tempdir = "0.3.7"
+test-case = "2.1.0"
+assert_matches = "1.5.0"
 
 [dev-dependencies.axum-test-helper]
 git = "https://github.com/jokler/axum-test-helper"

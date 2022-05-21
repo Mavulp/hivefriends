@@ -16,6 +16,12 @@ pub enum Error {
     #[error("Not Found")]
     NotFound,
 
+    #[error("Unathorized")]
+    Unathorized,
+
+    #[error("Comment does not belong to specified image")]
+    WrongImage,
+
     #[error("Invalid username or password")]
     InvalidLogin,
 
@@ -44,7 +50,9 @@ pub enum Error {
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
         let status = match &self {
-            Error::InvalidLogin | Error::InvalidPassword => StatusCode::UNAUTHORIZED,
+            Error::InvalidLogin | Error::InvalidPassword | Error::Unathorized => {
+                StatusCode::UNAUTHORIZED
+            }
             Error::NotFound => StatusCode::NOT_FOUND,
             Error::InternalError(e) => {
                 let err = e
@@ -57,6 +65,7 @@ impl IntoResponse for Error {
             }
             Error::InvalidCoverKey
             | Error::InvalidKey
+            | Error::WrongImage
             | Error::JsonRejection(_)
             | Error::MultipartSizeRejection(_)
             | Error::InvalidArguments(_) => StatusCode::BAD_REQUEST,
