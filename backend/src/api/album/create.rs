@@ -23,6 +23,7 @@ pub(super) struct CreateAlbumRequest {
     locations: Option<String>,
     timeframe: Timeframe,
     image_keys: Vec<String>,
+    #[serde(default)]
     tagged_users: Vec<String>,
     #[serde(default)]
     draft: bool,

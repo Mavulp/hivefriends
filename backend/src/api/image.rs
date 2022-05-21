@@ -58,7 +58,7 @@ pub(super) struct ImageMetadata {
     uploaded_at: u64,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub(super) struct Location {
     latitude: String,
@@ -98,7 +98,7 @@ impl ImageMetadata {
     }
 }
 
-#[derive(Default, Clone, Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct DbImageMetadata {
     pub key: String,
 
@@ -249,7 +249,8 @@ pub fn select_image(key: &str, conn: &Connection) -> anyhow::Result<Option<DbIma
             camera_model, \
             exposure_time, \
             f_number, \
-            focal_length \
+            focal_length, \
+            description \
         FROM images \
         WHERE key = ?1",
             params![key],
