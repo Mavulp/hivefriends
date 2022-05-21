@@ -38,7 +38,6 @@ pub struct Settings {
     pub accent_color: Option<String>,
     #[serde(default, deserialize_with = "non_empty_str")]
     pub featured_album_key: Option<String>,
-    pub private: Option<bool>,
     #[serde(default, deserialize_with = "non_empty_str")]
     pub color_theme: Option<String>,
 }
@@ -51,7 +50,6 @@ pub struct DbSettings {
     pub banner_key: Option<String>,
     pub accent_color: Option<String>,
     pub featured_album_key: Option<String>,
-    pub private: bool,
     pub color_theme: String,
 }
 
@@ -71,7 +69,6 @@ async fn get_settings(
                     banner_key, \
                     accent_color, \
                     featured_album_key, \
-                    private, \
                     color_theme \
                 FROM users WHERE username = ?1",
                 params![username],
@@ -91,7 +88,6 @@ async fn get_settings(
             banner_key: db_settings.banner_key,
             accent_color: db_settings.accent_color,
             featured_album_key: db_settings.featured_album_key,
-            private: Some(db_settings.private),
             color_theme: Some(db_settings.color_theme),
         }))
     } else {
@@ -108,7 +104,6 @@ pub struct PutSettingsRequest {
     pub banner_key: Option<String>,
     pub accent_color: Option<String>,
     pub featured_album_key: Option<String>,
-    pub private: Option<bool>,
     pub color_theme: Option<String>,
 }
 
@@ -243,10 +238,6 @@ impl PutSettingsRequest {
             result.push("featured_album_key = ?")
         }
 
-        if self.private.is_some() {
-            result.push("private = ?")
-        }
-
         if self.color_theme.is_some() {
             result.push("color_theme = ?")
         }
@@ -279,10 +270,6 @@ impl PutSettingsRequest {
 
         if let Some(featured_album_key) = self.featured_album_key.take() {
             params.push(Box::new(featured_album_key));
-        }
-
-        if let Some(private) = self.private.take() {
-            params.push(Box::new(private));
         }
 
         if let Some(color_theme) = self.color_theme.take() {
