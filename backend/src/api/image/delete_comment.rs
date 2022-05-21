@@ -47,7 +47,7 @@ pub(super) async fn delete<D: SqliteDatabase>(
                 Ok(Json(comment))
             }
             None => {
-                return Err(Error::NotFound);
+                Err(Error::NotFound)
             }
         }
     })

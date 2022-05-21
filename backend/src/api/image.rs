@@ -1,23 +1,25 @@
 use crate::FileDb;
 use anyhow::Context;
 use axum::{
-    routing::{delete, get, post},
+    routing::{delete, get, post, put},
     Router,
 };
-use rusqlite::{params, Connection};
+use rusqlite::{params, Connection, OptionalExtension};
 use serde::{Deserialize, Serialize};
-use serde_rusqlite::to_params_named;
+use serde_rusqlite::{from_row, to_params_named};
 
 mod create_comment;
 mod delete_comment;
 mod get_all_comments;
 mod get_by_key;
+mod update_metadata;
 mod upload;
 
 pub fn api_route() -> Router {
     Router::new()
         .route("/", post(upload::post))
         .route("/:key", get(get_by_key::get))
+        .route("/:key", put(update_metadata::put::<FileDb>))
         .route("/:key/comments", get(get_all_comments::get::<FileDb>))
         .route("/:key/comments", post(create_comment::post::<FileDb>))
         .route(
@@ -51,6 +53,7 @@ pub(super) struct ImageMetadata {
     f_number: Option<String>,
     focal_length: Option<String>,
 
+    description: Option<String>,
     uploader: String,
     uploaded_at: u64,
 }
@@ -88,13 +91,14 @@ impl ImageMetadata {
             f_number: db_metadata.f_number,
             focal_length: db_metadata.focal_length,
 
+            description: db_metadata.description,
             uploader: db_metadata.uploader,
             uploaded_at: db_metadata.uploaded_at,
         }
     }
 }
 
-#[derive(Default, Serialize, Deserialize)]
+#[derive(Default, Clone, Serialize, Deserialize)]
 pub struct DbImageMetadata {
     pub key: String,
 
@@ -109,6 +113,7 @@ pub struct DbImageMetadata {
     pub f_number: Option<String>,
     pub focal_length: Option<String>,
 
+    pub description: Option<String>,
     pub uploader: String,
     pub uploaded_at: u64,
 }
@@ -204,6 +209,7 @@ pub fn insert(metadata: &DbImageMetadata, conn: &Connection) -> anyhow::Result<(
             exposure_time, \
             f_number, \
             focal_length, \
+            description, \
             uploaded_at \
         ) VALUES ( \
             :key, \
@@ -218,12 +224,38 @@ pub fn insert(metadata: &DbImageMetadata, conn: &Connection) -> anyhow::Result<(
             :exposure_time, \
             :f_number, \
             :focal_length, \
+            :description, \
             :uploaded_at \
         )",
         to_params_named(&metadata).unwrap().to_slice().as_slice(),
     )?;
 
     Ok(())
+}
+
+pub fn select_image(key: &str, conn: &Connection) -> anyhow::Result<Option<DbImageMetadata>> {
+    Ok(conn
+        .query_row(
+            "SELECT \
+            key, \
+            uploader, \
+            uploaded_at, \
+            file_name, \
+            size_bytes, \
+            taken_at, \
+            location_latitude, \
+            location_longitude, \
+            camera_brand, \
+            camera_model, \
+            exposure_time, \
+            f_number, \
+            focal_length \
+        FROM images \
+        WHERE key = ?1",
+            params![key],
+            |row| Ok(from_row::<DbImageMetadata>(row).unwrap()),
+        )
+        .optional()?)
 }
 
 #[cfg(test)]

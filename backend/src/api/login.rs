@@ -48,7 +48,7 @@ async fn post_login(
                 "SELECT password_hash \
                 FROM users WHERE username=?1",
                 params![username],
-                |row| Ok(row.get::<_, String>(0)?),
+                |row| row.get::<_, String>(0),
             )
             .optional()
         })
