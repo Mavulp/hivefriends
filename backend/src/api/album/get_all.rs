@@ -1,13 +1,13 @@
 use anyhow::Context;
 use axum::{extract::Query, Extension, Json};
-use rusqlite::ToSql;
+use rusqlite::{params, ToSql};
 use serde::{Deserialize, Serialize};
 use serde_rusqlite::from_row;
 
 use std::sync::Arc;
 
 use crate::api::{auth::Authorize, error::Error};
-use crate::AppState;
+use crate::{AppState, DbInteractable, SqliteDatabase};
 
 use super::{DbAlbum, Timeframe};
 
@@ -29,7 +29,7 @@ mod comma_string {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Default, Deserialize)]
 pub(super) struct AlbumFilters {
     #[serde(default)]
     #[serde(with = "comma_string")]
@@ -42,7 +42,7 @@ pub(super) struct AlbumFilters {
     draft: bool,
 }
 
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub(super) struct AlbumResponse {
     key: String,
@@ -54,12 +54,13 @@ pub(super) struct AlbumResponse {
     draft: bool,
     timeframe: Timeframe,
     created_at: u64,
+    tagged_users: Vec<String>,
 }
 
-pub(super) async fn get(
+pub(super) async fn get<D: SqliteDatabase>(
     Authorize(username): Authorize,
     Query(filter): Query<AlbumFilters>,
-    Extension(state): Extension<Arc<AppState>>,
+    Extension(state): Extension<Arc<AppState<D>>>,
 ) -> Result<Json<Vec<AlbumResponse>>, Error> {
     let conn = state.pool.get().await.context("Failed to get connection")?;
 
@@ -100,6 +101,18 @@ pub(super) async fn get(
 
         let mut albums = Vec::new();
         for db_album in db_albums {
+            let mut stmt = conn
+                .prepare(
+                    "SELECT username FROM user_album_associations \
+                    WHERE album_key = ?1",
+                )
+                .context("Failed to prepare statement for album query")?;
+            let tagged_users = stmt
+                .query_map(params![&db_album.key], |row| Ok(row.get(0)?))
+                .context("Failed to query images")?
+                .collect::<Result<Vec<String>, _>>()
+                .context("Failed to collect tagged users")?;
+
             albums.push(AlbumResponse {
                 key: db_album.key,
                 title: db_album.title,
@@ -113,12 +126,12 @@ pub(super) async fn get(
                     to: db_album.timeframe_to,
                 },
                 created_at: db_album.created_at,
+                tagged_users,
             })
         }
         Ok(Json(albums))
     })
     .await
-    .unwrap()
 }
 
 fn apply_filters(
@@ -190,5 +203,55 @@ fn draft_filter_query(
         format!("(author = ?{p} OR draft = false)")
     } else {
         String::from("draft = false")
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::api::album::InsertAlbum;
+    use crate::util::test::{insert_album, insert_image, insert_user};
+    use assert_matches::assert_matches;
+
+    #[tokio::test]
+    async fn get_albums_tagged_users() {
+        let state = AppState::in_memory_db().await;
+
+        let conn = state.pool.get().await.unwrap();
+
+        let result: anyhow::Result<Vec<String>> = conn
+            .interact(move |conn| {
+                let users = vec![insert_user("test", conn)?, insert_user("test2", conn)?];
+                let user = users[0].clone();
+                let image = insert_image(&user, conn).context("")?;
+                let _ = insert_album(
+                    InsertAlbum {
+                        cover_key: &image,
+                        image_keys: &[image.clone()],
+                        tagged_users: &users,
+                        author: &user,
+                        ..Default::default()
+                    },
+                    conn,
+                )?;
+
+                Ok(users)
+            })
+            .await;
+
+        let users = result.unwrap();
+
+        let result = get(
+            Authorize("".into()),
+            Query(AlbumFilters::default()),
+            Extension(state),
+        )
+        .await;
+
+        assert_matches!(result, Ok(Json(albums)) => {
+            assert_matches!(&albums[..], [album] => {
+                assert_eq!(album.tagged_users, users);
+            })
+        });
     }
 }

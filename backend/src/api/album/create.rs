@@ -1,12 +1,11 @@
 use anyhow::Context;
 use axum::{extract::rejection::JsonRejection, Extension, Json};
-use rusqlite::params;
 use serde::{Deserialize, Serialize};
 
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use crate::api::{auth::Authorize, error::Error, image, user};
+use crate::api::{auth::Authorize, error::Error};
 use crate::util::non_empty_str;
 use crate::{AppState, DbInteractable, SqliteDatabase};
 
@@ -60,62 +59,26 @@ pub(super) async fn post<D: SqliteDatabase>(
     let key = blob_uuid::random_blob();
 
     let album_key = key.clone();
-    conn.interact(move |conn| {
+    conn.interact::<_, Result<_, Error>>(move |conn| {
         let tx = conn.transaction().context("Failed to create transaction")?;
 
-        tx.execute(
-            "INSERT INTO albums ( \
-                key, \
-                title, \
-                description, \
-                cover_key, \
-                locations, \
-                author, \
-                draft, \
-                timeframe_from, \
-                timeframe_to, \
-                created_at \
-            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
-            params![
-                album_key,
-                request.title,
-                request.description,
-                request.cover_key,
-                request.locations,
-                username,
-                request.draft as i64,
-                request.timeframe.from,
-                request.timeframe.to,
-                now
-            ],
-        )
-        .context("Failed to insert album")?;
-
-        for image_key in request.image_keys {
-            if !image::image_exists(&image_key, &tx)? {
-                return Err(Error::InvalidKey);
-            }
-
-            tx.execute(
-                "INSERT INTO album_image_associations (album_key, image_key) \
-                SELECT ?1, key FROM images WHERE key = ?2",
-                params![album_key, image_key],
-            )
-            .context("Failed to insert album image associations")?;
-        }
-
-        for user in request.tagged_users {
-            if !user::user_exists(&user, &tx)? {
-                return Err(Error::InvalidUsername);
-            }
-
-            tx.execute(
-                "INSERT INTO user_album_associations (username, album_key) \
-                VALUES (?1, ?2)",
-                params![user, album_key],
-            )
-            .context("Failed to insert user album associations")?;
-        }
+        super::insert_album(
+            super::InsertAlbum {
+                key: &album_key,
+                title: &request.title,
+                description: request.description.as_deref(),
+                cover_key: &request.cover_key,
+                locations: request.locations.as_deref(),
+                author: &username,
+                draft: request.draft,
+                timeframe_from: request.timeframe.from,
+                timeframe_to: request.timeframe.to,
+                created_at: now,
+                image_keys: &request.image_keys,
+                tagged_users: &request.tagged_users,
+            },
+            &tx,
+        )?;
 
         tx.commit().context("Failed to commit transaction")?;
 

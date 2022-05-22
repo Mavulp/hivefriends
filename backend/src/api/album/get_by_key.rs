@@ -10,11 +10,11 @@ use std::sync::Arc;
 use crate::api::auth::Authorize;
 use crate::api::error::Error;
 use crate::api::image::{DbImageMetadata, ImageMetadata};
-use crate::AppState;
+use crate::{AppState, DbInteractable, SqliteDatabase};
 
 use super::{DbAlbum, Timeframe};
 
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub(super) struct AlbumResponse {
     key: String,
@@ -27,12 +27,13 @@ pub(super) struct AlbumResponse {
     timeframe: Timeframe,
     created_at: u64,
     images: Vec<ImageMetadata>,
+    tagged_users: Vec<String>,
 }
 
-pub(super) async fn get(
+pub(super) async fn get<D: SqliteDatabase>(
     Path(album_key): Path<String>,
     Authorize(_): Authorize,
-    Extension(state): Extension<Arc<AppState>>,
+    Extension(state): Extension<Arc<AppState<D>>>,
 ) -> Result<Json<AlbumResponse>, Error> {
     let conn = state.pool.get().await.context("Failed to get connection")?;
 
@@ -92,6 +93,18 @@ pub(super) async fn get(
                 .collect::<Result<Vec<_>, _>>()
                 .context("Failed to collect album images")?;
 
+            let mut stmt = conn
+                .prepare(
+                    "SELECT username FROM user_album_associations \
+                    WHERE album_key = ?1",
+                )
+                .context("Failed to prepare statement for album query")?;
+            let tagged_users = stmt
+                .query_map(params![&db_album.key], |row| Ok(row.get(0)?))
+                .context("Failed to query images")?
+                .collect::<Result<Vec<String>, _>>()
+                .context("Failed to collect tagged users")?;
+
             Ok(Json(AlbumResponse {
                 key: album_key,
                 title: db_album.title,
@@ -106,11 +119,54 @@ pub(super) async fn get(
                 },
                 created_at: db_album.created_at,
                 images,
+                tagged_users,
             }))
         } else {
             Err(Error::NotFound)
         }
     })
     .await
-    .unwrap()
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::api::album::InsertAlbum;
+    use crate::util::test::{insert_album, insert_image, insert_user};
+    use assert_matches::assert_matches;
+
+    #[tokio::test]
+    async fn get_album_tagged_users() {
+        let state = AppState::in_memory_db().await;
+
+        let conn = state.pool.get().await.unwrap();
+
+        let result: anyhow::Result<(String, Vec<String>)> = conn
+            .interact(move |conn| {
+                let users = vec![insert_user("test", conn)?, insert_user("test2", conn)?];
+                let user = users[0].clone();
+                let image = insert_image(&user, conn).context("")?;
+                let album = insert_album(
+                    InsertAlbum {
+                        cover_key: &image,
+                        image_keys: &[image.clone()],
+                        tagged_users: &users,
+                        author: &user,
+                        ..Default::default()
+                    },
+                    conn,
+                )?;
+
+                Ok((album, users))
+            })
+            .await;
+
+        let (album, users) = result.unwrap();
+
+        let result = get(Path(album), Authorize("".into()), Extension(state)).await;
+
+        assert_matches!(result, Ok(Json(album)) => {
+            assert_eq!(album.tagged_users, users);
+        });
+    }
 }

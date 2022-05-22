@@ -38,7 +38,7 @@ pub struct Comment {
     text: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub(super) struct ImageMetadata {
     key: String,

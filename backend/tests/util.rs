@@ -101,7 +101,8 @@ pub async fn create_test_album(client: &TestClient, token: &str) -> String {
             },
             "imageKeys": [
                 image_key
-            ]
+            ],
+            "taggedUsers": [],
         }))
         .send()
         .await;
