@@ -49,7 +49,6 @@ pub(super) struct AlbumResponse {
     title: String,
     description: Option<String>,
     cover_key: String,
-    locations: Option<String>,
     author: String,
     draft: bool,
     timeframe: Timeframe,
@@ -70,7 +69,6 @@ pub(super) async fn get<D: SqliteDatabase>(
                     title, \
                     description, \
                     cover_key, \
-                    locations, \
                     author, \
                     draft, \
                     timeframe_from, \
@@ -118,7 +116,6 @@ pub(super) async fn get<D: SqliteDatabase>(
                 title: db_album.title,
                 description: db_album.description,
                 cover_key: db_album.cover_key,
-                locations: db_album.locations,
                 author: db_album.author,
                 draft: db_album.draft,
                 timeframe: Timeframe {

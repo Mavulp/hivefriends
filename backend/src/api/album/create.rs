@@ -18,8 +18,6 @@ pub(super) struct CreateAlbumRequest {
     #[serde(default, deserialize_with = "non_empty_str")]
     description: Option<String>,
     cover_key: String,
-    #[serde(default, deserialize_with = "non_empty_str")]
-    locations: Option<String>,
     timeframe: Timeframe,
     image_keys: Vec<String>,
     #[serde(default)]
@@ -68,7 +66,6 @@ pub(super) async fn post<D: SqliteDatabase>(
                 title: &request.title,
                 description: request.description.as_deref(),
                 cover_key: &request.cover_key,
-                locations: request.locations.as_deref(),
                 author: &username,
                 draft: request.draft,
                 timeframe_from: request.timeframe.from,
@@ -121,7 +118,6 @@ mod test {
             title: "album".into(),
             description: Some("Description".into()),
             cover_key: images[0].clone(),
-            locations: Some("location".into()),
             timeframe: Timeframe {
                 from: Some(0),
                 to: Some(10),

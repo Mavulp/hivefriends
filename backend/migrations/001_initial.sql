@@ -42,7 +42,6 @@ CREATE TABLE albums (
     title TEXT NOT NULL,
     description TEXT NULL,
     cover_key TEXT NOT NULL,
-    locations TEXT NULL,
     author TEXT NOT NULL,
     draft INTEGER NOT NULL DEFAULT 0, -- boolean
 
