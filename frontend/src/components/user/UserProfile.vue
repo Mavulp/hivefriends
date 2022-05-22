@@ -48,6 +48,11 @@ watchEffect(() => {
   <div class="hi-user-profile" ref="wrap">
     <LoadingSpin class="center-page dark" v-if="getLoading('user-profile')" />
 
+    <div v-else-if="!user" class="hi-user-profile" style="padding: 128px">
+      <h1>Bruh</h1>
+      <p>Unfortunately user does not exist</p>
+    </div>
+
     <template v-else>
       <div class="user-profile-upper" :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]">
         <div class="hi-user-banner">
@@ -99,9 +104,5 @@ watchEffect(() => {
         </div>
       </div>
     </template>
-    <div v-else class="hi-user-profile" style="padding: 128px">
-      <h1>Bruh</h1>
-      <p>Unfortunately user does not exist</p>
-    </div>
   </div>
 </template>
