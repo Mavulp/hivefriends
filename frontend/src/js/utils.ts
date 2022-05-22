@@ -7,7 +7,7 @@ export function isFunc(func: any) {
 }
 
 export function formatDate(date: Date | number) {
-  if (typeof date === "number" && date.toString().length === 10) date *= 1000
+  if (typeof date === "number" && date.toString().length < 13) date *= 1000
 
   const d = new Date(date)
 

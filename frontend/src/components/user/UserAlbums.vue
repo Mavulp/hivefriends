@@ -53,7 +53,7 @@ const sortedAlbums = computed(() => {
       <div class="title-wrap">
         <div class="inline-wrap">
           <h3>
-            {{ route.params.id === getKey ? "Your albums" : `${getUsername(route.params.id)}'s albums` }}
+            {{ route.params.id === getKey ? "Your albums" : `${getUsername(route.params.user)}'s albums` }}
           </h3>
           <!-- <Button @click="open = !open">{{ open ? "Close" : "Filter" }}</Button> -->
         </div>

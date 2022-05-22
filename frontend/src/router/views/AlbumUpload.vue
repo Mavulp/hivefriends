@@ -193,10 +193,12 @@ function getUserImageKey(name: string): string {
 const userOptions = computed(() => {
   if (!user.users || user.users.length === 0) return null
 
-  return user.users.map((item: User) => ({
-    label: item.displayName ?? item.username,
-    value: item.username
-  }))
+  return user.users
+    .filter((item: User) => item.username !== user.user.username)
+    .map((item: User) => ({
+      label: item.displayName ?? item.username,
+      value: item.username
+    }))
 })
 </script>
 

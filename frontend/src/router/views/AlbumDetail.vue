@@ -115,7 +115,7 @@ const chunks = computed(() => {
             <h6>Tagged people</h6>
 
             <router-link
-              v-for="item in [album.author, ...album.taggedUsers]"
+              v-for="item in album.taggedUsers"
               :key="item"
               class="album-tagged-user"
               :to="{ name: 'UserProfile', params: { user: item } }"
