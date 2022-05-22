@@ -290,13 +290,13 @@ function scrollDown() {
 
               <template v-if="image.location">
                 <li>
-                  <span class="material-icons"> &#xe0c8; </span>
+                  <span class="material-icons"> &#xe87a; </span>
                   <span>Latitude</span>
                   <p>{{ image.location.latitude }}</p>
                 </li>
 
                 <li>
-                  <span class="material-icons"> &#xe0c8; </span>
+                  <span class="material-icons"> &#xe87a; </span>
                   <span>Longitude</span>
                   <p>{{ image.location.longitude }}</p>
                 </li>
