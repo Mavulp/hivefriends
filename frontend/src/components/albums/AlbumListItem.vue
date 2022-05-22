@@ -13,7 +13,7 @@ const { data } = defineProps<Props>()
   <router-link :to="{ name: 'AlbumDetail', params: { id: data.key } }" class="album-list-item">
     <div class="album-image">
       <span class="album-draft" v-if="data.draft">Draft</span>
-      <img :src="imageUrl(data.coverKey, 'medium')" alt="" />
+      <img :src="imageUrl(data.coverKey, 'medium')" alt=" " />
     </div>
 
     <div class="album-meta">

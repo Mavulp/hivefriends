@@ -198,7 +198,7 @@ function scrollDown() {
               :class="{ disabled: isNil(prevIndex) }"
               @click="setIndex('prev')"
             >
-              <img src="/icons/arrow-left-long.svg" alt="" />
+              <img src="/icons/arrow-left-long.svg" alt=" " />
             </button>
 
             <button
@@ -207,7 +207,7 @@ function scrollDown() {
               :class="{ disabled: isNil(nextIndex) }"
               @click="setIndex('next')"
             >
-              <img src="/icons/arrow-right-long.svg" alt="" />
+              <img src="/icons/arrow-right-long.svg" alt=" " />
             </button>
           </div>
         </div>
@@ -263,8 +263,10 @@ function scrollDown() {
                 <p>{{ image.description }}</p>
               </template>
 
-              <span>Taken</span>
-              <p>{{ formatDate(image.takenAt) }}</p>
+              <template v-if="image.takenAt">
+                <span>Taken</span>
+                <p>{{ formatDate(image.takenAt) }}</p>
+              </template>
             </div>
 
             <ul class="hi-image-metadata-list">

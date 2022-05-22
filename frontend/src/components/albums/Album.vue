@@ -18,7 +18,7 @@ const { large = false, data } = defineProps<Props>()
 <template>
   <div class="album" :class="{ 'album-large': large }">
     <div class="album-image">
-      <img src="https://jokler.xyz/f/yAPqRspK/png" alt="" />
+      <img src="https://jokler.xyz/f/yAPqRspK/png" alt=" " />
     </div>
 
     <div class="album-title">

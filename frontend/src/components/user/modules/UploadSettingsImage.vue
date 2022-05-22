@@ -122,7 +122,7 @@ async function uploadImage() {
           <span class="material-icons">&#xe5cd;</span>
         </button>
 
-        <img ref="preview" src="" alt="" />
+        <img ref="preview" src="" alt=" " />
 
         <Button
           :class="{ 'btn-disabled': data.loading }"

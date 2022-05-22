@@ -24,8 +24,7 @@
 
 - [ ] Album Detail
 
-  - [ ] map
-    - [ ] a completely new full-screen view of map markers (images could appear within these markers as popups)
+  - [ ] a completely new full-screen view of map markers (images could appear within these markers as popups)
 
 - [ ] Album Comments
 
@@ -51,8 +50,8 @@
   - [ ] Add setting a feature key (select with all album names and save album key)
 
 - [ ] IMG improvement
-  - [ ] Create a wrapper for every <img> element which will display a loading, instead of the white cube unfolding
-  - [ ] @error handler to handle failed loads
+  - [ ] In relationg to the context, if image fails to load, add either an icon or a backgground color to itself
+    - [ ] could add a custom icon in the :before related to the error class on the <img> element
 
 # Pages To do Write up
 

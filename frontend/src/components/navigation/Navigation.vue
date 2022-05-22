@@ -17,7 +17,7 @@ function signOut() {
 <template>
   <div class="hi-header">
     <router-link :to="{ name: 'Home' }" class="logo-wrap" title="嘿，伙计，我在哪里可以买到火腿和鸡蛋">
-      <img src="/Sharp.png" alt="" />
+      <img src="/Sharp.png" alt=" " />
     </router-link>
 
     <span class="bread" v-if="bread.title">{{ bread.title }}</span>
@@ -31,7 +31,7 @@ function signOut() {
         data-title-bottom="Your profile"
         :to="{ name: 'UserProfile', params: { user: auth.user.username } }"
       >
-        <img class="user-image" :src="imageUrl(auth.user.avatarKey, 'tiny')" alt="" />
+        <img class="user-image" :src="imageUrl(auth.user.avatarKey, 'tiny')" alt=" " />
         <span class="user"> {{ auth.getUsername() }} </span>
       </router-link>
 

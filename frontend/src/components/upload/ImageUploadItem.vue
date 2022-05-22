@@ -128,7 +128,7 @@ async function submit() {
 
         <div>
           <h6>Preview</h6>
-          <img :src="imageUrl(data.key, 'medium')" alt="" />
+          <img :src="imageUrl(data.key, 'medium')" alt=" " />
           <!-- add preview? -->
         </div>
       </div>

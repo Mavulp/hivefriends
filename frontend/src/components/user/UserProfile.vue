@@ -59,7 +59,7 @@ watchEffect(() => {
           <img
             class="banner"
             :src="imageUrl(user.bannerKey, 'large')"
-            alt=""
+            alt=" "
             @error="(e: any) => e.target.classList.add('image-error')"
           />
 
@@ -67,7 +67,7 @@ watchEffect(() => {
             <img
               class="avatar"
               :src="imageUrl(user.avatarKey, 'large')"
-              alt=""
+              alt=" "
               @error="(e: any) => e.target.classList.add('image-error')"
             />
           </div>
