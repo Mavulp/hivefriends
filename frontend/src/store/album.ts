@@ -33,7 +33,6 @@ export interface Album {
   createdAt: number
   draft?: boolean
   images: Array<Image>
-  locations?: Array<string>
   timeframe: {
     from: number
     to: number
@@ -56,7 +55,6 @@ interface State {
 export interface NewAlbum {
   title: string
   description?: string
-  locations?: Array<string>
   timeframe: {
     from: number
     to: number

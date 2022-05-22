@@ -38,7 +38,6 @@ const files = reactive<File>({ values: [] })
 const album = reactive<NewAlbum>({
   title: "",
   description: "",
-  locations: [],
   timeframe: {
     from: 0,
     to: 0
@@ -55,7 +54,6 @@ const albumKey = ref()
 
 // TODO: Compute global loading progress by
 // checking loading states of all files and add a loading bar / percentagle somewhere in the upload
-// TODO: add multiple locations
 
 const draggingOver = ref(false)
 const singleDate = ref(false)
@@ -160,13 +158,10 @@ async function submit() {
     const model = { ...album }
 
     Object.assign(model, {
-      locations: album.locations?.join(","),
       timeframe: {
         from: new Date(album.timeframe.from).getTime() / 1000,
         to: new Date(singleDate.value ? album.timeframe.from : album.timeframe.to).getTime() / 1000
       },
-      // TODO: implement
-      // coverKey: album.coverKey ?? files.values[0].key
       coverKey: album.coverKey ?? files.values[0].key,
       taggedUsers: taggedUsers.value
     })
@@ -277,6 +272,7 @@ const userOptions = computed(() => {
             <img
               :src="imageUrl(getUserImageKey(item), 'tiny')"
               :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"
+              alt=" "
             />
           </div>
           <!-- List users with their profile pictures, name in a tooltip -->

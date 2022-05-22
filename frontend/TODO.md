@@ -4,13 +4,14 @@
 
 # Todo
 
+- [ ] Scan all markers when displaying a map, and check for large differences. Change map zoom according to that
+
 - [ ] Figure out breadcrumbs again
 
   - [ ] On detail pages, overwrite breadcrumbs when data loads with dynamic stuff
 
 - [ ] Album creation
 
-  - [ ] Tag locations
   - [x] Tag users
   - [x] Set timeframe as a day (checkbox, but sets still from and to with the same date)
   - [ ] Save album as draft (exclude from all lists except user albums)
@@ -21,10 +22,13 @@
 - [ ] Album editing
 
   - [ ] Add "edit album" and "delete album" for albums that the user created
+  - [ ] List all images, can delete and update imagekeys array in album then
+  - [ ] Delete album
 
 - [ ] Album Detail
 
   - [ ] a completely new full-screen view of map markers (images could appear within these markers as popups)
+  - [ ] Delete album if author
 
 - [ ] Album Comments
 
@@ -39,7 +43,7 @@
 
 - [ ] Image detail
 
-  - [ ] Optiona to rotate image
+  - [ ] Option to rotate image
   - [ ] Slideshow mode (set delay in details)
   - [ ] Comments
     - [ ] Design template first

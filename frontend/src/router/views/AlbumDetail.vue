@@ -142,6 +142,7 @@ function openFirstImage() {
                 class="user-image"
                 :src="imageUrl(user.getUser(item, 'avatarKey'), 'tiny')"
                 :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"
+                alt=" "
               />
               <span>{{ user.getUsername(item) }}</span>
 
