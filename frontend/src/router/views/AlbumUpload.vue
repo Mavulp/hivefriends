@@ -152,11 +152,11 @@ const { validate, errors } = useFormValidation(album, rules)
 
 async function submit() {
   validate().then(async () => {
-    // Iterate over all active images, add them to imageKeys array
     album.imageKeys = imageKeys.value
 
     const model = { ...album }
 
+    // Assign properties which have to be formatted in some way or are not part of the origina form object
     Object.assign(model, {
       timeframe: {
         from: new Date(album.timeframe.from).getTime() / 1000,
@@ -179,7 +179,6 @@ async function submit() {
  */
 
 const taggedUsers = ref([])
-// const users
 
 function getUserImageKey(name: string): string {
   return user.users.find((item) => item.username === name)?.avatarKey ?? ""
@@ -188,6 +187,7 @@ function getUserImageKey(name: string): string {
 const userOptions = computed(() => {
   if (!user.users || user.users.length === 0) return null
 
+  // Make sure you can't select yourself
   return user.users
     .filter((item: User) => item.username !== user.user.username)
     .map((item: User) => ({
