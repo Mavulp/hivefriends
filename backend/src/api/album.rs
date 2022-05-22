@@ -89,7 +89,7 @@ pub fn insert_album(album: InsertAlbum, conn: &Connection) -> Result<(), Error> 
     .context("Failed to insert album")?;
 
     for image_key in album.image_keys {
-        if !image::image_exists(&image_key, &conn)? {
+        if !image::image_exists(image_key, conn)? {
             return Err(Error::InvalidKey);
         }
 
@@ -102,7 +102,7 @@ pub fn insert_album(album: InsertAlbum, conn: &Connection) -> Result<(), Error> 
     }
 
     for user in album.tagged_users {
-        if !user::user_exists(&user, &conn)? {
+        if !user::user_exists(user, conn)? {
             return Err(Error::InvalidUsername);
         }
 

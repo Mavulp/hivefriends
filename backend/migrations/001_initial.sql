@@ -66,6 +66,7 @@ CREATE TABLE album_image_associations (
     image_key TEXT NOT NULL, -- image is a part of:
     album_key TEXT NOT NULL, -- this album
 
+    UNIQUE(image_key, album_key),
     CONSTRAINT fk_image_key_assoc
         FOREIGN KEY (image_key)
         REFERENCES images (key)
@@ -79,7 +80,7 @@ CREATE TABLE album_image_associations (
 
 CREATE TABLE users (
     username TEXT PRIMARY KEY NOT NULL,
-    display_name TEXT NULL UNIQUE,
+    display_name TEXT NULL,
     bio TEXT NULL,
     avatar_key TEXT NULL,
     banner_key TEXT NULL,
@@ -107,7 +108,7 @@ CREATE TABLE users (
 CREATE TABLE auth_sessions (
     id INTEGER PRIMARY KEY NOT NULL,
     username TEXT NOT NULL,
-    token TEXT NOT NULL,
+    token TEXT NOT NULL UNIQUE,
     created_at INTEGER NOT NULL, -- unix ts
 
     CONSTRAINT fk_username_assoc
@@ -120,6 +121,8 @@ CREATE TABLE auth_sessions (
 CREATE TABLE user_album_associations (
     username TEXT NOT NULL, -- user is tagged in:
     album_key TEXT NOT NULL, -- this album
+
+    UNIQUE(username, album_key),
 
     CONSTRAINT fk_username_assoc
         FOREIGN KEY (username)

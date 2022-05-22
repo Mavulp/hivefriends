@@ -100,7 +100,7 @@ pub(super) async fn get<D: SqliteDatabase>(
                 )
                 .context("Failed to prepare statement for album query")?;
             let tagged_users = stmt
-                .query_map(params![&db_album.key], |row| Ok(row.get(0)?))
+                .query_map(params![&db_album.key], |row| row.get(0))
                 .context("Failed to query images")?
                 .collect::<Result<Vec<String>, _>>()
                 .context("Failed to collect tagged users")?;
