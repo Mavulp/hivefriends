@@ -47,16 +47,16 @@ pub(super) async fn put<D: SqliteDatabase>(
     let update_str = request.update_str();
     if !update_str.is_empty() {
         // FIXME there are a bunch of errors that need to be sent to the front end here
-        conn
-            .interact(move |conn| {
-                let mut params = request.update_params();
-                params.push(Box::new(image_key));
-                conn.execute(
-                    &format!("UPDATE images SET {update_str} WHERE key = ?"),
-                    rusqlite::params_from_iter(params.iter()),
-                )
-            })
-            .await.context("Failed to update image metadata")?;
+        conn.interact(move |conn| {
+            let mut params = request.update_params();
+            params.push(Box::new(image_key));
+            conn.execute(
+                &format!("UPDATE images SET {update_str} WHERE key = ?"),
+                rusqlite::params_from_iter(params.iter()),
+            )
+        })
+        .await
+        .context("Failed to update image metadata")?;
     } else {
         return Ok(Json("Nothing to do"));
     }

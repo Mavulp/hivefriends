@@ -146,14 +146,22 @@ fn populate_metadata_from_exif(metadata: &mut DbImageMetadata, exif: exif::Exif)
         .and_then(|s| NaiveDateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S").ok())
         .map(|t| t.timestamp() as u64);
 
-    metadata.camera_brand = exif
-        .get_field(Tag::Make, In::PRIMARY)
-        .map(|f| f.display_value().with_unit(&exif).to_string())
-        .map(|s| s.trim_matches('"').to_owned());
-    metadata.camera_model = exif
-        .get_field(Tag::Model, In::PRIMARY)
-        .map(|f| f.display_value().with_unit(&exif).to_string())
-        .map(|s| s.trim_matches('"').to_owned());
+    metadata.camera_brand = exif.get_field(Tag::Make, In::PRIMARY).and_then(|f| {
+        if let exif::Value::Ascii(v) = &f.value {
+            Some(String::from_utf8_lossy(&v[0]).to_string())
+        } else {
+            warn!("Unexpected format of camera brand exif field");
+            None
+        }
+    });
+    metadata.camera_model = exif.get_field(Tag::Model, In::PRIMARY).and_then(|f| {
+        if let exif::Value::Ascii(v) = &f.value {
+            Some(String::from_utf8_lossy(&v[0]).to_string())
+        } else {
+            warn!("Unexpected format of camera model exif field");
+            None
+        }
+    });
     metadata.exposure_time = exif
         .get_field(Tag::ExposureTime, In::PRIMARY)
         .map(|f| f.display_value().with_unit(&exif).to_string());

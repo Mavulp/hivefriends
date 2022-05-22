@@ -32,6 +32,7 @@ async fn upload_with_exif() {
     assert_eq!(status, 200);
 
     assert_eq!(json["takenAt"].as_u64().unwrap().to_owned(), 1224692919,);
+    assert_eq!(json["cameraBrand"].as_str().unwrap().to_owned(), "NIKON",);
 
     let location = json
         .as_object()
