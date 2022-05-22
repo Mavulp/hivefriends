@@ -45,7 +45,7 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="hi-user-profile" v-if="user" ref="wrap">
+  <div class="hi-user-profile" ref="wrap">
     <LoadingSpin class="center-page dark" v-if="getLoading('user-profile')" />
 
     <template v-else>
@@ -99,9 +99,9 @@ watchEffect(() => {
         </div>
       </div>
     </template>
-  </div>
-  <div v-else class="hi-user-profile" style="padding: 128px">
-    <h1>Bruh</h1>
-    <p>Unfortunately user does not exist</p>
+    <div v-else class="hi-user-profile" style="padding: 128px">
+      <h1>Bruh</h1>
+      <p>Unfortunately user does not exist</p>
+    </div>
   </div>
 </template>

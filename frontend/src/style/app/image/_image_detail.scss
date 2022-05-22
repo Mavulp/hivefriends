@@ -200,7 +200,7 @@
 
         span:not(.material-icons) {
           @include font(200);
-          color: rgb(var(--color-text-light));
+          color: rgba(var(--color-text), 0.85);
         }
 
         .material-icons {
@@ -214,7 +214,7 @@
 
         span,
         p {
-          font-size: 1.6rem;
+          font-size: 1.4rem;
           margin: 0;
         }
       }
