@@ -40,11 +40,6 @@ async fn get_by_key() {
         json["description"].as_str().unwrap().to_owned(),
         "Test Description"
     );
-
-    assert_eq!(
-        json["locations"].as_str().unwrap().to_owned(),
-        "home,outside"
-    );
 }
 
 #[tokio::test]

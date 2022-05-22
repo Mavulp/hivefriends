@@ -35,7 +35,6 @@ struct DbAlbum {
     title: String,
     description: Option<String>,
     cover_key: String,
-    locations: Option<String>,
     author: String,
     draft: bool,
     timeframe_from: Option<u64>,
@@ -49,7 +48,6 @@ pub struct InsertAlbum<'a> {
     pub title: &'a str,
     pub description: Option<&'a str>,
     pub cover_key: &'a str,
-    pub locations: Option<&'a str>,
     pub author: &'a str,
     pub draft: bool,
     pub timeframe_from: Option<u64>,
@@ -66,19 +64,17 @@ pub fn insert_album(album: InsertAlbum, conn: &Connection) -> Result<(), Error> 
                 title, \
                 description, \
                 cover_key, \
-                locations, \
                 author, \
                 draft, \
                 timeframe_from, \
                 timeframe_to, \
                 created_at \
-            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
+            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)",
         params![
             album.key,
             album.title,
             album.description,
             album.cover_key,
-            album.locations,
             album.author,
             album.draft as i64,
             album.timeframe_from,
@@ -89,7 +85,7 @@ pub fn insert_album(album: InsertAlbum, conn: &Connection) -> Result<(), Error> 
     .context("Failed to insert album")?;
 
     for image_key in album.image_keys {
-        if !image::image_exists(&image_key, &conn)? {
+        if !image::image_exists(image_key, conn)? {
             return Err(Error::InvalidKey);
         }
 
@@ -102,7 +98,7 @@ pub fn insert_album(album: InsertAlbum, conn: &Connection) -> Result<(), Error> 
     }
 
     for user in album.tagged_users {
-        if !user::user_exists(&user, &conn)? {
+        if !user::user_exists(user, conn)? {
             return Err(Error::InvalidUsername);
         }
 
