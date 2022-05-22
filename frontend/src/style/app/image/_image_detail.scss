@@ -1,13 +1,26 @@
 .hi-image-detail {
   display: block;
   width: 100%;
-  max-width: 1920px;
-  margin: auto;
+  // max-width: 1920px;
   // min-height: calc(100vh - 56px);
   height: 100vh;
-  position: relative;
 
-  @include flex($gap: 0, $wrap: nowrap, $align: flex-start);
+  // @include flex($gap: 0, $wrap: nowrap, $align: flex-start);
+
+  .hi-image-container {
+    display: block;
+    max-width: 1920px;
+    margin: auto;
+    position: relative;
+  }
+
+  .divider {
+    display: block;
+    height: 1px;
+    width: 100%;
+    margin-bottom: 64px;
+    border-bottom: 1px solid rgb(var(--color-border-light));
+  }
 
   .centered,
   .loading-spinner {
@@ -15,26 +28,6 @@
     top: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
-  }
-
-  .hi-image-meta-wrap {
-    @include t(0.15s);
-    width: 0;
-    max-width: 0;
-    overflow: hidden;
-    display: block;
-    height: 100vh;
-
-    border-left: 1px solid rgb(var(--color-border-light));
-
-    &.active {
-      width: 356px;
-      max-width: 356px;
-    }
-
-    .hi-image-meta {
-      padding: 128px 40px;
-    }
   }
 
   .hi-album-detail-erorr {
@@ -52,11 +45,10 @@
   }
 
   .hi-image-wrapper {
-    // display: block;
     @include flex($align: center);
-    padding: 128px 64px;
+    padding: 32px 64px 0px;
     width: 100%;
-    height: 100vh;
+    height: calc(100vh - 128px);
     position: relative;
 
     .image-loading {
@@ -77,69 +69,182 @@
       object-position: center;
       object-fit: contain;
     }
+  }
 
-    .hi-image-context {
-      @include flex($align: center, $gap: 32px);
-      position: absolute;
-      bottom: 56px;
-      right: 64px;
-      left: 64px;
+  .hi-image-context {
+    @include grid(0, 3);
+    width: 100%;
+    padding: 52px 64px;
+    // margin-bottom: 64px;
 
-      &.context-top {
-        bottom: unset;
-        top: 56px;
+    .context-col {
+      @include flex($gap: 32px);
+
+      &:nth-of-type(2) {
+        justify-content: center;
       }
 
-      button,
-      a,
-      p {
-        @include font(200);
+      &:last-of-type {
+        justify-content: flex-end;
+      }
+    }
+
+    button,
+    a,
+    p {
+      @include font(200);
+      font-size: 1.4rem;
+      margin: 0;
+      margin-right: 40px;
+      line-height: 24px;
+      height: 24px;
+      white-space: nowrap;
+    }
+
+    a {
+      @include flex($gap: 8px);
+      color: rgb(var(--color-text));
+      // color: rgb(var(--color-highlight));
+      margin: 0;
+
+      .material-icons {
         font-size: 1.4rem;
-        margin: 0;
-        margin-right: 40px;
+      }
+    }
+
+    button {
+      @include flex($gap: 8px);
+      @include font(200);
+      font-size: 1.4rem;
+      margin: 0;
+      color: rgb(var(--color-text));
+
+      &:hover {
+        img {
+          opacity: 1;
+        }
       }
 
-      a {
-        @include flex($gap: 8px);
-        color: rgb(var(--color-text));
-        // color: rgb(var(--color-highlight));
-        margin: 0;
-        line-height: 22px;
-        height: 22px;
+      &.disabled {
+        pointer-events: none;
 
-        .material-icons {
+        img {
+          opacity: 0.3;
+        }
+      }
+
+      img {
+        display: block;
+        object-position: center;
+        object-fit: contain;
+        opacity: 0.7;
+      }
+    }
+  }
+
+  .hi-image-meta {
+    display: block;
+    margin: 0 auto;
+    width: 1200px;
+    padding-bottom: 256px;
+
+    h4 {
+      @include flex($gap: 8px);
+      margin-bottom: 40px;
+
+      span {
+        color: rgb(var(--color-text));
+        font-size: 1.8rem;
+      }
+    }
+
+    .hi-map-wrap {
+      height: 516px;
+      margin-bottom: 64px;
+    }
+
+    .hi-image-metadata {
+      @include grid(64px, 2);
+
+      .hi-image-properties {
+        span {
+          @include font(400);
+          display: block;
+          font-size: 1.2rem;
+          text-transform: uppercase;
+          color: rgb(var(--color-text-light));
+          margin-bottom: 8px;
+        }
+
+        p,
+        strong {
+          margin-bottom: 40px;
           font-size: 1.4rem;
         }
       }
+    }
 
-      button {
-        @include flex($gap: 8px);
-        @include font(200);
-        font-size: 1.4rem;
-        margin: 0;
-        color: rgb(var(--color-text));
+    .hi-image-metadata-list {
+      list-style: none;
+      padding: 0;
 
-        &:hover {
-          img {
-            opacity: 1;
-          }
+      li {
+        @include grid(24px, 32px 1fr 1fr);
+        align-items: center;
+        padding-left: 0;
+        margin-bottom: 32px;
+
+        &:before {
+          display: none;
         }
 
-        &.disabled {
-          pointer-events: none;
-
-          img {
-            opacity: 0.3;
-          }
+        span:not(.material-icons) {
+          @include font(200);
+          color: rgb(var(--color-text-light));
         }
 
-        img {
-          display: block;
-          object-position: center;
-          object-fit: contain;
-          opacity: 0.7;
+        .material-icons {
+          font-size: 2rem;
+          color: rgb(var(--color-text-light));
+        }
+
+        p {
+          @include font(400);
+        }
+
+        span,
+        p {
+          font-size: 1.6rem;
+          margin: 0;
         }
       }
     }
   }
+
+  // .hi-image-meta-wrap {
+  //   @include t(0.15s);
+  //   width: 0;
+  //   max-width: 0;
+  //   overflow: hidden;
+  //   display: block;
+  //   height: 100vh;
+
+  //   border-left: 1px solid rgb(var(--color-border-light));
+
+  //   &.active {
+  //     width: 420px;
+  //     max-width: 420px;
+  //     min-width: 420px;
+  //   }
+
+  //   .hi-image-meta {
+  //     padding: 128px 40px;
+
+  //     .map-wrap {
+  //       display: block;
+  //       height: 168px;
+  //       width: 100%;
+  //     }
+  //   }
+  // }
 }

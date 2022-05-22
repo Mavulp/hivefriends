@@ -1,0 +1,25 @@
+.mapboxgl-ctrl {
+  .mapboxgl-ctrl-logo,
+  &.mapboxgl-ctrl-attrib {
+    display: none;
+  }
+}
+
+// .mapboxgl-marker {
+//   &.marker-current {
+//     svg {
+//       g {
+//         &:nth-of-type(2) {
+//           color: rgb(var(--color-highlight));
+//         }
+//       }
+//     }
+//   }
+
+//   &.marker-other {
+//     svg {
+//       filter: grayscale(1);
+//       opacity: 0.5;
+//     }
+//   }
+// }

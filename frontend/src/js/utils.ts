@@ -7,7 +7,7 @@ export function isFunc(func: any) {
 }
 
 export function formatDate(date: Date | number) {
-  if (typeof date === "number" && date.toString().length < 13) date *= 1000
+  if (typeof date === "number") date *= 1000
 
   const d = new Date(date)
 
@@ -26,4 +26,39 @@ export function HEX_to_RGB(hex: string): [number, number, number] {
 export function TEXT_CONTRAST(r: number, g: number, b: number): string {
   var yiq = (r * 299 + g * 587 + b * 114) / 1000
   return yiq >= 128 ? "black" : "white"
+}
+
+export function RGB_TO_HEX(r: number | string, g?: number | string, b?: number | string) {
+  if (!g && !b && typeof r === "string") {
+    const [_r, _g, _b] = r.split(",")
+
+    r = _r
+    g = _g
+    b = _b
+  }
+
+  r = Number(r)
+  g = Number(g)
+  b = Number(b)
+
+  return (
+    "#" +
+    [r, g, b]
+      .map((x) => {
+        const hex = x.toString(16)
+        return hex.length === 1 ? "0" + hex : hex
+      })
+      .join("")
+  )
+}
+
+export function formatFileSize(bytes: string | number, round?: boolean) {
+  if (typeof bytes === "string") {
+    bytes = Number(bytes)
+  }
+
+  if (isNaN(bytes)) return 0
+
+  if (bytes / 1000000 > 1) return round ? Math.round(bytes / 1000000) + "MB" : bytes / 1000000 + "MB"
+  return round ? Math.round(bytes / 1000) + "KB" : bytes / 1000 + "KB"
 }

@@ -1,29 +1,54 @@
 <script setup lang="ts">
-import { computed, onBeforeMount, ref, watch } from "vue"
+import { computed, onBeforeMount, onBeforeUnmount, onMounted, watch, ref, watchEffect } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { imageUrl, useAlbums, Album } from "../../store/album"
+import { imageUrl, useAlbums, Album, Image as ImageStruct } from "../../store/album"
 import { isEmpty, isNil } from "lodash"
 import { useLoading } from "../../store/loading"
-import { onKeyStroke } from "@vueuse/core"
+import { onKeyStroke, useCssVar } from "@vueuse/core"
+import { map_access, map_dark, map_light } from "../../js/map"
+import { useUser } from "../../store/user"
+import { RGB_TO_HEX, formatDate, formatFileSize } from "../../js/utils"
 
+import { MapboxMap, MapboxMarker } from "vue-mapbox-ts"
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 
-onBeforeMount(() => {
+/**
+ *  Setup
+ */
+const wrap = ref(null)
+const color = useCssVar("--color-highlight", wrap)
+
+/**
+ * Lifecycle
+ */
+
+onBeforeMount(async () => {
   if (!albums.getAlbum(albumKey.value)) {
     albums.fetchAlbum(albumKey.value)
   }
 })
+
+onBeforeUnmount(() => {
+  window.removeEventListener("scroll", () => {})
+})
+
+onMounted(() => {
+  window.addEventListener("scroll", () => {})
+})
+
+/**
+ * Image navigation
+ */
 
 const url = ref<string | null>(null)
 
 const route = useRoute()
 const router = useRouter()
 const albums = useAlbums()
+const { settings, getUser } = useUser()
 const { getLoading } = useLoading()
 
-const showMeta = ref(false)
 const transDir = ref("imagenext")
-// const data = album.getImageMetadata()
 
 // Shut the fuck up typescript
 const albumKey = computed(() => `${route.params.album}`)
@@ -86,10 +111,49 @@ onKeyStroke("ArrowRight", () => setIndex("next"))
 onKeyStroke("Escape", () => {
   router.push({ name: "AlbumDetail", params: { id: albumKey.value } })
 })
+
+watchEffect(() => {
+  if (album.value) {
+    const accent = getUser(album.value.author, "accentColor")
+    color.value = accent
+  }
+})
+
+/**
+ * Map & metadata
+ */
+
+const map = ref(null)
+const mapLoaded = ref(false)
+
+const mapStyle = computed(() => (settings.colorTheme.startsWith("dark") ? map_dark : map_light))
+const sortedMarkers = computed(() => {
+  // Make sure the current marker is always the last one to render
+
+  return album.value.images
+    .filter((item) => item.location)
+    .sort((a: ImageStruct, b: ImageStruct) => (a.key === image.value?.key ? 1 : -1))
+})
+
+function openImageId(key: string) {
+  router.push({
+    name: "ImageDetail",
+    params: {
+      album: albumKey.value,
+      image: key
+    }
+  })
+
+  window.scrollTo({ top: 0, behavior: "smooth" })
+}
+
+function scrollDown() {
+  window.scrollTo({ top: window.innerHeight / 1.25, behavior: "smooth" })
+}
 </script>
 
 <template>
-  <div class="hi-image-detail">
+  <div class="hi-image-detail" ref="wrap">
     <LoadingSpin dark v-if="getLoading('get-album')" />
 
     <div class="hi-album-detail-error" v-else-if="isEmpty(album)">
@@ -99,59 +163,146 @@ onKeyStroke("Escape", () => {
       </div>
     </div>
 
-    <template v-else-if="album">
-      <div class="hi-image-wrapper">
-        <transition :name="transDir" mode="out-in" appear>
-          <img v-if="url" :src="url" alt="" />
-          <div v-else class="image-loading">
-            <LoadingSpin dark />
-          </div>
-        </transition>
-
-        <div class="hi-image-context context-top">
-          <div class="flex-1"></div>
-          <button class="hover-bubble" @click="showMeta = !showMeta">
-            <span class="material-icons" v-if="showMeta">&#xe5cd;</span>
-            <span class="material-icons" v-else>&#xe88e;</span>
-            {{ showMeta ? "Close" : "Details" }}
-          </button>
+    <template v-else-if="album && image">
+      <div class="hi-image-container">
+        <div class="hi-image-wrapper">
+          <transition :name="transDir" mode="out-in">
+            <img v-if="url" :src="url" ref="imageel" />
+            <div v-else class="image-loading">
+              <LoadingSpin dark />
+            </div>
+          </transition>
         </div>
 
         <div class="hi-image-context">
-          <router-link class="hover-bubble" :to="{ name: 'AlbumDetail', params: { id: albumKey } }">
-            <span class="material-icons"> &#xe2ea; </span>
-            Go to album
-          </router-link>
+          <div class="context-col">
+            <router-link class="hover-bubble" :to="{ name: 'AlbumDetail', params: { id: albumKey } }">
+              <span class="material-icons"> &#xe2ea; </span>
+              Go back
+            </router-link>
+          </div>
 
-          <div class="flex-1"></div>
+          <div class="context-col">
+            <button class="hover-bubble" @click="scrollDown()">
+              <span class="material-icons">&#xe5cf;</span>
+              Details
+            </button>
+          </div>
 
-          <p>Photo {{ index + 1 }} / {{ album.images.length }}</p>
+          <div class="context-col">
+            <p>Photo {{ index + 1 }} / {{ album.images.length }}</p>
 
-          <button
-            class="nav-prev hover-bubble"
-            data-title-top="Previous photo"
-            :class="{ disabled: isNil(prevIndex) }"
-            @click="setIndex('prev')"
-          >
-            <img src="/icons/arrow-left-long.svg" alt="" />
-          </button>
+            <button
+              class="nav-prev hover-bubble"
+              data-title-top="Previous photo"
+              :class="{ disabled: isNil(prevIndex) }"
+              @click="setIndex('prev')"
+            >
+              <img src="/icons/arrow-left-long.svg" alt="" />
+            </button>
 
-          <button
-            class="nav-left hover-bubble"
-            data-title-top="Next photo"
-            :class="{ disabled: isNil(nextIndex) }"
-            @click="setIndex('next')"
-          >
-            <img src="/icons/arrow-right-long.svg" alt="" />
-          </button>
+            <button
+              class="nav-left hover-bubble"
+              data-title-top="Next photo"
+              :class="{ disabled: isNil(nextIndex) }"
+              @click="setIndex('next')"
+            >
+              <img src="/icons/arrow-right-long.svg" alt="" />
+            </button>
+          </div>
         </div>
       </div>
-
-      <div class="hi-image-meta-wrap" :class="{ active: showMeta }">
+      <div class="divider"></div>
+      <div class="hi-image-container">
         <div class="hi-image-meta">
-          <pre>
-            {{ image }}
-          </pre>
+          <h4>
+            Location and metadata
+
+            <span
+              v-if="image.location"
+              class="material-icons tooltip-width-200"
+              data-title-top="You can zoom / move within the map. Click other markers to switch to that picture."
+            >
+              &#xe8fd;
+            </span>
+          </h4>
+          <div class="hi-map-wrap" v-if="image.location">
+            <mapbox-map
+              :accessToken="map_access"
+              :mapStyle="mapStyle"
+              :zoom="11"
+              :center="[image.location.longitude, image.location.latitude]"
+            >
+              <template v-for="item in sortedMarkers">
+                <mapbox-marker
+                  v-if="item.location"
+                  :color="
+                    item.location.longitude === image?.location?.longitude &&
+                    item.location.latitude === image.location.latitude
+                      ? RGB_TO_HEX(color)
+                      : '#a0a0a055'
+                  "
+                  @click="openImageId(item.key)"
+                  :lngLat="[item.location.longitude, item.location.latitude]"
+                />
+              </template>
+            </mapbox-map>
+          </div>
+
+          <div class="hi-image-metadata">
+            <!-- <pre>
+              {{ image }}
+            </pre> -->
+
+            <div class="hi-image-properties">
+              <span>Name</span>
+              <strong>{{ image.fileName }}</strong>
+
+              <template v-if="image.description">
+                <span>description</span>
+                <p>{{ image.description }}</p>
+              </template>
+
+              <span>Taken</span>
+              <p>{{ formatDate(image.takenAt) }}</p>
+            </div>
+
+            <ul class="hi-image-metadata-list">
+              <li class="meta-item" v-if="image.cameraBrand || image.cameraModel">
+                <span class="material-icons"> &#xe412; </span>
+                <span>Device</span>
+                <p>{{ image.cameraBrand }}, {{ image.cameraModel }}</p>
+              </li>
+
+              <li class="meta-item" v-if="image.fNumber || image.focalLength || image.exposureTime">
+                <span class="material-icons"> &#xe3af; </span>
+                <span>Camera settings</span>
+                <p>
+                  {{ [image.fNumber, image.focalLength, image.exposureTime].join(", ") }}
+                </p>
+              </li>
+
+              <li v-if="image.sizeBytes">
+                <span class="material-icons"> &#xe161; </span>
+                <span>Size</span>
+                <p>{{ formatFileSize(image.sizeBytes, true) }}</p>
+              </li>
+
+              <template v-if="image.location">
+                <li>
+                  <span class="material-icons"> &#xe0c8; </span>
+                  <span>Latitude</span>
+                  <p>{{ image.location.latitude }}</p>
+                </li>
+
+                <li>
+                  <span class="material-icons"> &#xe0c8; </span>
+                  <span>Longitude</span>
+                  <p>{{ image.location.longitude }}</p>
+                </li>
+              </template>
+            </ul>
+          </div>
         </div>
       </div>
     </template>

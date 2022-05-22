@@ -114,4 +114,12 @@
   .hi-user-settings .settings-upload-image .preview-section .remove-image {
     background-color: rgb(var(--color-background-dark));
   }
+
+  .hi-album-detail .hi-album-title .hi-album-title-thumbnail .thumbnail-image-wrap .album-tagged-users {
+    background-color: rgb(var(--color-background-dark));
+  }
+
+  .hi-image-detail .hi-image-context button img {
+    filter: invert(1);
+  }
 }

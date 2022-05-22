@@ -7,8 +7,21 @@ import { FetchError } from "../js/global-types"
 
 export interface Image {
   key: string
-  createdAT: number
-  author: string
+  fileName: string
+  sizeBytes: number
+  takenAt: number
+  location?: {
+    latitude: string | number
+    longitude: string | number
+  }
+  cameraBrand: string
+  cameraModel: string
+  exposureTime: string
+  fNumber: string
+  focalLength: string
+  description?: string
+  uploader: string
+  uploadedAt: number
 }
 
 export interface ImageMetadata {}

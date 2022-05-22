@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onBeforeMount, computed, reactive, ref } from "vue"
-import { useRoute } from "vue-router"
+import { onBeforeMount, computed, reactive, ref, watchEffect } from "vue"
+import { useRoute, useRouter } from "vue-router"
 import { useAlbums, Album, imageUrl, Image } from "../../store/album"
 import { useLoading } from "../../store/loading"
 import { isEmpty } from "lodash"
@@ -10,18 +10,19 @@ import { formatDate } from "../../js/utils"
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 import AlbumTimestamp from "../../components/albums/AlbumTimestamp.vue"
 import ImageListitem from "../../components/albums/ImageListitem.vue"
-import { useBread } from "../../store/bread"
+import { useCssVar } from "@vueuse/core"
 
 const albums = useAlbums()
 const route = useRoute()
+const router = useRouter()
 const user = useUser()
-// const bread = useBread()
-
-const showUsers = ref(false)
-
 const { getLoading } = useLoading()
 
+const showUsers = ref(false)
 const album = reactive<Album>({} as Album)
+
+const wrap = ref(null)
+const color = useCssVar("--color-highlight", wrap)
 
 onBeforeMount(async () => {
   const id = route.params.id
@@ -29,10 +30,17 @@ onBeforeMount(async () => {
   if (id) {
     const data = await albums.fetchAlbum(id)
     Object.assign(album, data)
-
-    // bread.set(`${data.title} by ${user.getUsername(data.uploaderKey)}`, `${data.title} // hi!friends`)
   }
 })
+
+watchEffect(() => {
+  if (album.author) {
+    const accent = user.getUser(album.author, "accentColor")
+    color.value = accent
+  }
+})
+
+const tagged = computed(() => [album.author, ...album.taggedUsers])
 
 const chunks = computed(() => {
   if (!album.images) return []
@@ -54,6 +62,16 @@ const chunks = computed(() => {
 
   return chunks
 })
+
+function openFirstImage() {
+  router.push({
+    name: "ImageDetail",
+    params: {
+      album: album.key,
+      image: album.images[0].key
+    }
+  })
+}
 </script>
 
 <template>
@@ -103,7 +121,7 @@ const chunks = computed(() => {
 
           <button class="hover-bubble" @click="showUsers = !showUsers" :class="{ active: showUsers }">
             <span class="material-icons">&#xe7fb;</span>
-            People {{ album.taggedUsers?.length ?? 0 }}
+            People {{ tagged.length ?? 0 }}
           </button>
         </div>
         <div class="thumbnail-image-wrap">
@@ -115,7 +133,7 @@ const chunks = computed(() => {
             <h6>Tagged people</h6>
 
             <router-link
-              v-for="item in album.taggedUsers"
+              v-for="item in tagged"
               :key="item"
               class="album-tagged-user"
               :to="{ name: 'UserProfile', params: { user: item } }"
@@ -135,7 +153,7 @@ const chunks = computed(() => {
             </router-link>
           </div>
 
-          <img class="cover-image" :src="imageUrl(album.images[0].key)" alt="" />
+          <img @click="openFirstImage" class="cover-image" :src="imageUrl(album.images[0].key)" alt="" />
         </div>
       </div>
     </div>

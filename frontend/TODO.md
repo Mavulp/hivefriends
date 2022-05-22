@@ -1,11 +1,6 @@
 # Fix
 
-- [x] Ask for album sorting (now is reversed)
-- [ ] Instead 100vh, use like 95 to show users can scroll
 - [ ] Dont check for token on each page change
-- [x] Fix using MY accent color on other user's profiles (user profile)
-- [x] Add toast error on image album uplad
-  - [x] Auto-clear of toasts
 
 # Todo
 
@@ -29,10 +24,8 @@
 
 - [ ] Album Detail
 
-  - [x] Tagged users
-    - [x] when clicked button, a white / dark block will slide from left or right
-    - over the cover image and shows a simple list of tagged users within
   - [ ] map
+    - [ ] a completely new full-screen view of map markers (images could appear within these markers as popups)
 
 - [ ] Album Comments
 
@@ -45,21 +38,13 @@
   - [ ] Medium Dark
   - [x] Normal dak -> rename to dark contast
 
-- [ ] Location on steroids
-
-  - [ ] Each location is stored with its name, lat & long
-    - [ ] Each image has location extracted from metadat??
-  - [ ] Each album would have a world view with each location is pinned on the map
-
 - [ ] Image detail
 
-  - [x] Option to switch off header (for presentation mode)
   - [ ] Optiona to rotate image
-  - [ ] top right button "metadata" which switches to 75 x 25 view with stuff about the image and controls on the right
-  - [x] Arrow keys in albun detail navigation
-  - [x] esc fucks off
   - [ ] Slideshow mode (set delay in details)
-  - [x] Add programatical transition based on if the next image is prev or next (opacity slide left, opacity slide right)
+  - [ ] Comments
+    - [ ] Design template first
+    - [ ] Implement
 
 - [ ] User Settings
 
