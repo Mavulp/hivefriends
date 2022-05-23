@@ -25,13 +25,17 @@ function signOut() {
     <div class="flex-1"></div>
 
     <template v-if="auth.isLoggedIn && auth.user.username">
-      <!-- <div class="user-nav-image"></div> -->
       <router-link
         class="hover-bubble"
         data-title-bottom="Your profile"
         :to="{ name: 'UserProfile', params: { user: auth.user.username } }"
       >
-        <img class="user-image" :src="imageUrl(auth.user.avatarKey, 'tiny')" alt=" " />
+        <img
+          class="user-image"
+          :src="imageUrl(auth.user.avatarKey, 'tiny')"
+          alt=" "
+          @error="(e: any) => e.target.classList.add('image-error')"
+        />
         <span class="user"> {{ auth.getUsername() }} </span>
       </router-link>
 

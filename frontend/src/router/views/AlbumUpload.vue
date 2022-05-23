@@ -270,9 +270,11 @@ const userOptions = computed(() => {
         <div class="tagged-users" v-if="taggedUsers">
           <div class="tagged-user" v-for="item in taggedUsers" :data-title-top="user.getUsername(item)" :key="item">
             <img
+              class="user-image"
               :src="imageUrl(getUserImageKey(item), 'tiny')"
               :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"
               alt=" "
+              @error="(e: any) => e.target.classList.add('image-error')"
             />
           </div>
           <!-- List users with their profile pictures, name in a tooltip -->

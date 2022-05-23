@@ -1,0 +1,19 @@
+img {
+  &.user-image {
+    &.image-error {
+      &:before {
+        display: block;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 20px;
+        height: 20px;
+        background-position: center;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-image: url("/user.svg");
+      }
+    }
+  }
+}

@@ -41,10 +41,6 @@
   .button {
     color: rgb(var(--color-text));
 
-    &:hover {
-      background-color: rgba(var(--color-background-dark), 0.75);
-    }
-
     &.btn-black {
       background-color: rgb(var(--color-border-light));
 
@@ -121,5 +117,11 @@
 
   .hi-image-detail .hi-image-context button img {
     filter: invert(1);
+  }
+
+  img {
+    &.user-image.image-error {
+      filter: invert(1);
+    }
   }
 }

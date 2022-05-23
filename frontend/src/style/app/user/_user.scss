@@ -26,15 +26,31 @@
     .hi-user-banner {
       display: block;
       width: 100%;
-      height: 392px;
+      height: 456px;
       position: relative;
 
       .banner {
         display: block;
         width: 100%;
         height: 100%;
-        object-fit: cover;
-        object-position: center;
+        z-index: 2;
+        position: relative;
+        // object-fit: cover;
+        // object-position: center;
+
+        // &:after {
+        //   content: "";
+        //   display: block;
+        //   position: absolute;
+        //   inset: 0;
+        //   z-index: 5;
+        //   background-color: rgba(var(--color-highlight), 0.1);
+        // }
+
+        background-position: center 50%;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-attachment: fixed;
 
         &.image-error {
           opacity: 0.25;
@@ -48,6 +64,7 @@
         position: absolute;
         right: 128px;
         // right: 10%;
+        z-index: 10;
 
         .avatar {
           display: block;
@@ -112,10 +129,17 @@
 
   .user-albums {
     padding: 64px 128px;
+    width: 75%;
+    margin: 0 auto;
 
-    h2 {
-      color: rgb(var(--color-highlight));
+    .albums-title-wrap {
+      @include flex($justify: space-between);
       margin-bottom: 40px;
+
+      h2 {
+        color: rgb(var(--color-highlight));
+        margin: 0;
+      }
     }
 
     p {
@@ -128,7 +152,7 @@
     }
 
     .user-albums-list {
-      @include grid(128px, 1fr 1fr);
+      @include grid(48px, 1fr 1fr);
 
       .album-list-item {
         margin-bottom: 0;

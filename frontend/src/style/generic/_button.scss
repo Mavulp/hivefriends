@@ -9,6 +9,14 @@
   letter-spacing: 0.2em;
   text-decoration: none !important;
 
+  &.black {
+    color: #191716 !important;
+  }
+
+  &.white {
+    color: #fff !important;
+  }
+
   &:hover {
     &:after {
       width: 50%;
@@ -37,6 +45,10 @@
 
   &.btn-highlight {
     background-color: rgb(var(--color-highlight));
+
+    &:hover {
+      background-color: rgba(var(--color-highlight), 0.8);
+    }
   }
 
   &.btn-login {

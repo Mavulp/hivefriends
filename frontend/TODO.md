@@ -1,7 +1,5 @@
 # Fix
 
-- [x] Dont check for token on each page change
-
 # Todo
 
 - [ ] Scan all markers when displaying a map, and check for large differences. Change map zoom according to that
@@ -53,8 +51,8 @@
 
 - [ ] User profile
 
-  - [ ] Show latest 4 albums, add button "see all albums"
-  - [ ] Update look of album list (idk how atm)
+  - [x] Show latest 4 albums, add button "see all albums"
+  - [x] Update look of album list (idk how atm)
 
 - [ ] IMG improvement
 

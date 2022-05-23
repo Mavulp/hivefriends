@@ -143,6 +143,7 @@ function openFirstImage() {
                 :src="imageUrl(user.getUser(item, 'avatarKey'), 'tiny')"
                 :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"
                 alt=" "
+                @error="(e: any) => e.target.classList.add('image-error')"
               />
               <span>{{ user.getUsername(item) }}</span>
 
