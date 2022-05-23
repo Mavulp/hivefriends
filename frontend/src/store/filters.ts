@@ -37,6 +37,7 @@ export const useFilters = defineStore("filters", {
     createOptions(data: Array<any>) {
       // Iterate over all datasets and create options
       // Add custom filters
+      // REVIEW: decide if front or backend should handle these
     }
   },
   getters: {

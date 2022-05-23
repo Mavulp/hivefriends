@@ -71,17 +71,10 @@ window.addEventListener("scroll", () => {
     <template v-else>
       <div class="user-profile-upper" :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]">
         <div class="hi-user-banner">
-          <!-- <img
-            class="banner"
-            :src="imageUrl(user.bannerKey, 'large')"
-            alt=" "
-            @error="(e: any) => e.target.classList.add('image-error')"
-          /> -->
-
           <div
             class="banner"
             :style="{
-              backgroundImage: `url(${imageUrl(user.bannerKey, 'large')})`,
+              backgroundImage: `url(${imageUrl(user.bannerKey)})`,
               backgroundPositionY: bgscrollpos
             }"
           />

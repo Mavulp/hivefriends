@@ -1,4 +1,4 @@
-export function makeQuery(options: object) {
+export function query(options: object) {
   if (Object.keys(options).length === 0) return ""
 
   let q = ""

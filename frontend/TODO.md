@@ -29,12 +29,6 @@
   - [ ] Delete album if author
   - [ ] Add a button "user albums" or "all albums" to get back to album list
 
-- [ ] Album Comments
-
-  - [ ] Figure out how to display on album detail
-  - [ ] Design wrapper, comment & form to add comments
-  - [ ] Implement
-
 - [ ] Dark mode
 
   - [ ] Medium Dark
@@ -55,7 +49,7 @@
 
 - [ ] IMG improvement
 
-  - [ ] In relationg to the context, if image fails to load, add either an icon or a backgground color to itself
+  - [x] In relationg to the context, if image fails to load, add either an icon or a backgground color to itself
     - [ ] could add a custom icon in the :before related to the error class on the <img> element
 
 - [ ] Album List

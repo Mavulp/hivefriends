@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AlbumListItem from "../../components/albums/AlbumListItem.vue"
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
+import Filters from "../../components/form/Filters.vue"
 // import Button from "../../components/Button.vue"
 
 import { onBeforeMount, computed, ref } from "vue"
@@ -21,9 +22,13 @@ onBeforeMount(async () => {
     <div class="hi-album-list-layout">
       <div class="layout-item album-list-controls">
         <h1>Albums</h1>
-        <p>All the available albums on hi!friends</p>
+        <!-- <p>All the available albums on hi!friends</p> -->
 
-        <hr />
+        <!-- <hr /> -->
+
+        filters n shit here
+
+        <Filters />
       </div>
 
       <div class="layout-item">
