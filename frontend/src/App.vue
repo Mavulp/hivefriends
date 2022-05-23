@@ -4,17 +4,29 @@ import "./style/index.scss"
 import Navigation from "./components/navigation/Navigation.vue"
 import Toasts from "./components/navigation/Toasts.vue"
 
-import { onBeforeMount } from "vue"
+import { onBeforeMount, onErrorCaptured, watchEffect } from "vue"
 import { useUser } from "./store/user"
 
 import { useLoading } from "./store/loading"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 
 const user = useUser()
+const router = useRouter()
 const { addLoading, delLoading, getLoading } = useLoading()
 const route = useRoute()
 
+watchEffect(() => {
+  if (user.logged) {
+    getData()
+  }
+})
+
 onBeforeMount(() => {
+  document.title = "hi!friends"
+  getData()
+})
+
+function getData() {
   addLoading("app")
 
   Promise.all([user.fetchUsers(), user.fetchSettings()]).then(() => {
@@ -27,9 +39,7 @@ onBeforeMount(() => {
       r.classList.add(theme)
     }
   })
-
-  document.title = "hi!friends"
-})
+}
 </script>
 
 <template>

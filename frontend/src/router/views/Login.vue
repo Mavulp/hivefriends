@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import InputText from "../../components/form/InputText.vue"
-import Btn from "../../components/Button.vue"
+import Button from "../../components/Button.vue"
 import { ref, reactive, computed, nextTick, onBeforeMount } from "vue"
 import { getRanMinMax } from "../../js/utils"
 import { useUser } from "../../store/user"
@@ -89,11 +89,9 @@ onBeforeMount(async () => {
           placeholder="***************"
         />
 
-        <Btn class="btn-login btn-black" type="submit" size="56px">
-          <template #default>
-            <span>Sign In</span>
-          </template>
-        </Btn>
+        <Button class="btn-login btn-black" type="submit" size="56px">
+          <span>Sign In</span>
+        </Button>
       </form>
 
       <p class="copy-text">Copyright {{ new Date().getFullYear() }} Mavulp (hivecom devs)</p>

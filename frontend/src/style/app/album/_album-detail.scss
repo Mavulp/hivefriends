@@ -142,6 +142,10 @@
             right: 24px;
             color: rgb(var(--color-text-light));
 
+            &:hover {
+              color: rgb(var(--color-text));
+            }
+
             .material-icons {
               font-size: 1.8rem;
             }
@@ -150,10 +154,8 @@
           .album-tagged-user {
             @include t(0.16s);
             @include flex($gap: 16px);
-            // display: block;
             width: 100%;
             padding: 16px;
-            margin-bottom: 8px;
             position: relative;
             color: rgb(var(--color-text));
             border-bottom: 1px solid rgb(var(--color-border-light));
@@ -179,10 +181,11 @@
             }
 
             .background {
+              @include radius(6px);
               @include t(0.16s);
               display: block;
               position: absolute;
-              inset: 0;
+              inset: 8px 0;
               opacity: 0;
               z-index: -1;
               background-color: rgb(var(--color-background));

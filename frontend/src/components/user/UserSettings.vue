@@ -12,8 +12,10 @@ import { useLoading } from "../../store/loading"
 import { useUser } from "../../store/user"
 import { useFormValidation, minLength, required, sameAs } from "../../js/validation"
 import { HEX_to_RGB, TEXT_CONTRAST } from "../../js/utils"
+import { useToast } from "../../store/toast"
 
 const { getLoading, addLoading, delLoading } = useLoading()
+const { add } = useToast()
 const user = useUser()
 
 onBeforeMount(() => {
@@ -73,8 +75,9 @@ async function submitUserInfo() {
   infoValidation
     .validate()
     .then(() => {
-      user.setSetting("displayName", userForm.displayName)
-      user.setSetting("bio", userForm.bio)
+      Promise.all([user.setSetting("displayName", userForm.displayName), user.setSetting("bio", userForm.bio)])
+        .then(() => add("Successfully updated user information", "success"))
+        .catch(() => add("Error updating user information", "error"))
     })
     .finally(() => {
       delLoading("user-form")

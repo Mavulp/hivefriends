@@ -1,6 +1,6 @@
 # Fix
 
-- [ ] Dont check for token on each page change
+- [x] Dont check for token on each page change
 
 # Todo
 
@@ -29,6 +29,7 @@
 
   - [ ] a completely new full-screen view of map markers (images could appear within these markers as popups)
   - [ ] Delete album if author
+  - [ ] Add a button "user albums" or "all albums" to get back to album list
 
 - [ ] Album Comments
 
@@ -44,22 +45,28 @@
 - [ ] Image detail
 
   - [ ] Option to rotate image
+  - [ ] Add an uploader field which you can click to go to their profile (could have the pfp & author tag as well for extra color)
   - [ ] Slideshow mode (set delay in details)
   - [ ] Comments
     - [ ] Design template first
     - [ ] Implement
 
-- [ ] User Settings
+- [ ] User profile
 
-  - [ ] Add setting a feature key (select with all album names and save album key)
+  - [ ] Show latest 4 albums, add button "see all albums"
+  - [ ] Update look of album list (idk how atm)
 
 - [ ] IMG improvement
+
   - [ ] In relationg to the context, if image fails to load, add either an icon or a backgground color to itself
     - [ ] could add a custom icon in the :before related to the error class on the <img> element
+
+- [ ] Album List
+  - [ ] Add filtering to album list
 
 # Pages To do Write up
 
 - [ ] Image Detail
 - [ ] Editing Album
 - [ ] Homepage
-- [ ] All albums ever
+- [ ] All albums list (could just be homepage?)

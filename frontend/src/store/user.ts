@@ -76,8 +76,9 @@ export const useUser = defineStore("user", {
             localStorage.setItem("user", response.username)
           }
         })
-        .catch((error) => {
-          if (error.message === "Unauthorized" || error.message === "Bearer token is invalid") return "unauth"
+        .catch((error: FetchError) => {
+          const toast = useToast()
+          toast.add(error.message, "error")
         })
     },
 
@@ -90,8 +91,10 @@ export const useUser = defineStore("user", {
           return response
         })
         .catch((error: FetchError) => {
-          const toast = useToast()
-          toast.add(error.message, "error")
+          if (this.logged) {
+            const toast = useToast()
+            toast.add(error.message, "error")
+          }
         })
     },
     signOut() {
@@ -117,8 +120,10 @@ export const useUser = defineStore("user", {
           return response
         })
         .catch((error: FetchError) => {
-          const toast = useToast()
-          toast.add(error.message, "error")
+          if (this.logged) {
+            const toast = useToast()
+            toast.add(error.message, "error")
+          }
         })
         .finally(() => {
           delLoading("settings")

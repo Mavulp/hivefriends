@@ -33,7 +33,8 @@ const router = createRouter({
       component: Login,
       meta: {
         title: "Sign In",
-        redirectOnAuth: "/home"
+        redirectOnAuth: "/home",
+        disableNav: true
       }
     },
     {
@@ -82,11 +83,6 @@ const router = createRouter({
         requiresAuth: true
       }
     },
-    // {
-    //   path: "/user/",
-    //   name: "User",
-    //   component: UserPage,
-    //   children: [
     {
       path: "/:user",
       name: "UserProfile",
@@ -114,8 +110,6 @@ const router = createRouter({
         requiresAuth: true
       }
     }
-    // ]
-    // }
   ]
 })
 
@@ -126,9 +120,6 @@ const router = createRouter({
 function _clearUser(next: NavigationGuardNext) {
   localStorage.removeItem("user")
   localStorage.removeItem("bearer_token")
-
-  // TODO: save url from which we redirect and upon logging in
-  // redirect to it
 
   return next({ name: "Login" })
 }
@@ -145,11 +136,8 @@ router.beforeResolve(async (to, from, next) => {
 
     if (!token || !key) {
       return _clearUser(next)
-    } else {
-      // Verify if token is expired
-      const verify = await auth.fetchUser(key)
-
-      if (verify === "unauth") return _clearUser(next)
+    } else if (!auth.logged) {
+      auth.fetchUser(key)
     }
   }
 

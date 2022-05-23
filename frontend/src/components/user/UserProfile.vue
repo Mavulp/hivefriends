@@ -86,7 +86,7 @@ watchEffect(() => {
               met <b>{{ user.met.length }}</b> people
             </span>
           </div>
-          <p>{{ user.bio }}</p>
+          <p v-html="user.bio"></p>
         </div>
       </div>
       <div class="user-albums">
