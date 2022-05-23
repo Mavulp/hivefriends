@@ -51,8 +51,7 @@
 
 - [ ] User profile
 
-  - [x] Show latest 4 albums, add button "see all albums"
-  - [x] Update look of album list (idk how atm)
+  - [ ]
 
 - [ ] IMG improvement
 

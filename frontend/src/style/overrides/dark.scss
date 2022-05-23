@@ -120,7 +120,7 @@
   }
 
   img {
-    &.user-image.image-error {
+    &.user-image.image-error:before {
       filter: invert(1);
     }
   }

@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { imageUrl, Album } from "../../store/album"
 import AlbumTimestamp from "../../components/albums/AlbumTimestamp.vue"
+import { useUser } from "../../store/user"
+
+const { getUser } = useUser()
 
 interface Props {
   data: Album
+  author?: string
 }
 
-const { data } = defineProps<Props>()
+const { data, author } = defineProps<Props>()
 </script>
 
 <template>
@@ -19,7 +23,21 @@ const { data } = defineProps<Props>()
     <div class="album-meta">
       <AlbumTimestamp class="dark-light" :timeframe="data.timeframe" />
       <h2>{{ data.title }}</h2>
-      <p>{{ data.description }}</p>
+
+      <template v-if="author">
+        <div class="album-author">
+          <img
+            class="user-image"
+            :src="imageUrl(getUser(author, 'avatarKey'), 'tiny')"
+            :style="[`backgroundColor: rgb(${getUser(author, 'accentColor')})`]"
+            alt=" "
+            @error="(e: any) => e.target.classList.add('image-error')"
+          />
+
+          <span>{{ author }}</span>
+        </div>
+      </template>
+      <p v-else>{{ data.description }}</p>
     </div>
   </router-link>
 </template>
