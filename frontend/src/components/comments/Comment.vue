@@ -21,7 +21,10 @@ const props = defineProps<Props>()
   <div class="hi-comment">
     <div class="comment-header">
       <button
-        v-if="props.uploader === props.data.author && props.uploader === user.user.username"
+        v-if="
+          (props.uploader === props.data.author && props.uploader === user.user.username) ||
+          props.uploader === user.user.username
+        "
         class="control-button hover-bubble"
         data-title-top="Remove"
         @click="comments.delComment(props.imageKey, data.id)"
