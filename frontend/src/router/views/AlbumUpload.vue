@@ -60,7 +60,7 @@ const singleDate = ref(false)
 
 const isLoading = computed(() => files.values.some((file) => file.loading))
 // const loadingProgress = computed(() => [...files.values].filter((item) => !item.key).length)
-const imageKeys = computed<Array<any>>(() => files.values.map((file) => file.key))
+const imageKeys = computed<Array<any>>(() => files.values.map((file) => file.key).filter((item) => item))
 
 /**
  * Lifecycle
@@ -162,7 +162,7 @@ async function submit() {
         from: new Date(album.timeframe.from).getTime() / 1000,
         to: new Date(singleDate.value ? album.timeframe.from : album.timeframe.to).getTime() / 1000
       },
-      coverKey: album.coverKey ?? files.values[0].key,
+      coverKey: album.coverKey ?? model.imageKeys[0],
       taggedUsers: taggedUsers.value
     })
 
@@ -218,7 +218,7 @@ const userOptions = computed(() => {
         <div class="album-upload-items-list">
           <template v-if="files.values.length > 0">
             <ImageUploadItem
-              v-for="(item, index) in [...files.values].reverse()"
+              v-for="(item, index) in files.values"
               :class="{ 'is-cover': item.key === album.coverKey }"
               :data="item"
               :key="item.name"

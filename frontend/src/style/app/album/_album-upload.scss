@@ -70,7 +70,8 @@
       }
 
       .album-upload-items-list {
-        display: block;
+        @include flex($gap: 20px, $direction: column-reverse);
+        // display: block;
         width: 100%;
       }
 
@@ -79,7 +80,6 @@
         display: block;
         width: 100%;
         background-color: rgb(var(--color-white));
-        margin-bottom: 16px;
         border: 1px solid transparent;
 
         &.open,
@@ -90,6 +90,14 @@
         &.is-cover {
           .tag {
             display: block;
+          }
+        }
+
+        &.has-error {
+          .album-upload-item-header {
+            p {
+              color: rgb(var(--color-error));
+            }
           }
         }
 
@@ -104,6 +112,7 @@
           width: 100%;
           cursor: pointer;
 
+          p,
           strong {
             margin-bottom: 0;
             font-size: 1.2rem;

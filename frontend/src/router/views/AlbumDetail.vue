@@ -155,7 +155,7 @@ function openFirstImage() {
             </router-link>
           </div>
 
-          <img @click="openFirstImage" class="cover-image" :src="imageUrl(album.images[0].key)" alt=" " />
+          <img @click="openFirstImage" class="cover-image" :src="imageUrl(album.coverKey)" alt=" " />
         </div>
       </div>
     </div>

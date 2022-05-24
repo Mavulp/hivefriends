@@ -74,7 +74,7 @@ async function submit() {
 </script>
 
 <template>
-  <div class="album-upload-item" :class="{ open: open }">
+  <div class="album-upload-item" :class="{ open: open, 'has-error': data.error }">
     <div class="album-upload-item-header" @click.self="open = !open">
       <strong>{{ form.fileName.length > 0 ? form.fileName : data.name }}</strong>
 
@@ -83,6 +83,8 @@ async function submit() {
       <span class="tag tag-blue">Album Cover</span>
 
       <div class="flex-1"></div>
+      <p v-if="data.error">{{ data.error.message }}</p>
+
       <LoadingBar :class="[{ 'loading-done': !data.loading }, data.error ? 'loading-error' : 'loading-success']" />
 
       <button data-title-top="Remove Image" @click="emit('remove', index)">
@@ -90,7 +92,7 @@ async function submit() {
       </button>
     </div>
 
-    <div class="album-upload-content" v-if="open">
+    <div class="album-upload-content" v-if="open && !data.error">
       <LoadingSpin v-if="data.loading" />
 
       <div class="grid-view" v-else>
