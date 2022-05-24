@@ -13,10 +13,6 @@ import Search from "../form/Search.vue"
 import { useUser } from "../../store/user"
 import { useBread } from "../../store/bread"
 
-// TODO:
-// - split into components (header)
-// - reuse for all album lists
-
 const store = useAlbums()
 const route = useRoute()
 

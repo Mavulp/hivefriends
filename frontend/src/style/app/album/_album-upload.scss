@@ -27,7 +27,7 @@
         }
 
         &.empty {
-          height: calc(100vh - 132px);
+          height: calc(100vh - 136px);
         }
 
         &:hover,
@@ -147,10 +147,15 @@
 
           .grid-view {
             @include grid(40px, 2);
+
+            & > div {
+              min-width: 45%;
+            }
           }
 
           img {
             max-height: 480px;
+            max-width: 100%;
             object-fit: contain;
             object-position: center;
           }
@@ -182,6 +187,12 @@
 
       h3 {
         margin-bottom: 40px;
+      }
+
+      .loading {
+        color: rgb(var(--color-text-light));
+        font-style: italic;
+        padding: 16px 0;
       }
 
       .tagged-users {

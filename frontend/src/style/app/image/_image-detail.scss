@@ -81,6 +81,7 @@
       @include flex($gap: 32px);
 
       &:nth-of-type(2) {
+        @include flex($gap: 64px);
         justify-content: center;
       }
 

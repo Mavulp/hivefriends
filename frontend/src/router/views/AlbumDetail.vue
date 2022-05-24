@@ -40,8 +40,6 @@ watchEffect(() => {
   }
 })
 
-const tagged = computed(() => [album.author, ...album.taggedUsers])
-
 const chunks = computed(() => {
   if (!album.images) return []
 
@@ -114,14 +112,19 @@ function openFirstImage() {
             Comments
           </button> -->
 
-          <button class="hover-bubble">
+          <button class="hover-bubble" data-title-top="WIP">
             <span class="material-icons">&#xe55b;</span>
             Map
           </button>
 
           <button class="hover-bubble" @click="showUsers = !showUsers" :class="{ active: showUsers }">
             <span class="material-icons">&#xe7fb;</span>
-            People {{ tagged.length ?? 0 }}
+            People {{ album.taggedUsers.length ?? 0 }}
+          </button>
+
+          <button class="hover-bubble" data-title-top="WIP">
+            <span class="material-icons">&#xe157;</span>
+            Share
           </button>
         </div>
         <div class="thumbnail-image-wrap">
@@ -132,27 +135,30 @@ function openFirstImage() {
 
             <h6>Tagged people</h6>
 
-            <router-link
-              v-for="item in tagged"
-              :key="item"
-              class="album-tagged-user"
-              :to="{ name: 'UserProfile', params: { user: item } }"
-            >
-              <img
-                class="user-image"
-                :src="imageUrl(user.getUser(item, 'avatarKey'), 'tiny')"
-                :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"
-                alt=" "
-                @error="(e: any) => e.target.classList.add('image-error')"
-              />
-              <span>{{ user.getUsername(item) }}</span>
+            <template v-if="album.taggedUsers.length > 0">
+              <router-link
+                v-for="item in album.taggedUsers"
+                :key="item"
+                class="album-tagged-user"
+                :to="{ name: 'UserProfile', params: { user: item } }"
+              >
+                <img
+                  class="user-image"
+                  :src="imageUrl(user.getUser(item, 'avatarKey'), 'tiny')"
+                  :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"
+                  alt=" "
+                  @error="(e: any) => e.target.classList.add('image-error')"
+                />
+                <span>{{ user.getUsername(item) }}</span>
 
-              <div class="tag tag-blue" v-if="item === album.author">Author</div>
+                <div class="tag tag-blue" v-if="item === album.author">Author</div>
 
-              <div class="background"></div>
+                <div class="background"></div>
 
-              <div class="background" :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"></div>
-            </router-link>
+                <div class="background" :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"></div>
+              </router-link>
+            </template>
+            <p v-else>Nobody is here.</p>
           </div>
 
           <img @click="openFirstImage" class="cover-image" :src="imageUrl(album.coverKey)" alt=" " />

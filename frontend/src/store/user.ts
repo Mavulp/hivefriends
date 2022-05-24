@@ -169,13 +169,17 @@ export const useUser = defineStore("user", {
 
       return Reflect.get(u, field)
     },
-    getUsername: (state) => (username?: string | string[] | undefined) => {
-      if (!username) return state.user.displayName ?? state.user.username
+    getUsername:
+      (state) =>
+      (username?: string | string[] | undefined): string => {
+        if (Array.isArray(username)) username = username[0]
 
-      const userFromList = state.users.find((item) => item.username === username)
-      if (userFromList) return userFromList.displayName ?? userFromList.username
+        if (!username) return state.user.displayName ?? state.user.username
 
-      return state.user.username === username ? state.user.displayName ?? state.user.username : username
-    }
+        const userFromList = state.users.find((item) => item.username === username)
+        if (userFromList) return userFromList.displayName ?? userFromList.username
+
+        return state.user.username === username ? state.user.displayName ?? state.user.username : username
+      }
   }
 })

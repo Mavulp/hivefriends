@@ -6,9 +6,10 @@ interface Props {
   value: string | undefined
   type?: string
   error?: Error
+  required?: boolean
 }
 
-const { label, value, type = "text", error } = defineProps<Props>()
+const { label, value, type = "text", error, required = false } = defineProps<Props>()
 const emit = defineEmits<{
   (e: "update:value", value: string): void
 }>()
@@ -19,7 +20,7 @@ function updateValue(e: any) {
 </script>
 
 <template>
-  <div class="form-input" :class="{ 'input-error': error && error.invalid }">
+  <div class="form-input" :class="{ 'input-error': error && error.invalid, required: required }">
     <label v-if="label">{{ label }}</label>
     <textarea
       v-bind="$attrs"

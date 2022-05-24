@@ -218,7 +218,7 @@
       .album-list-wrap {
         display: grid;
         width: 100%;
-        gap: 64px;
+        gap: 40px;
         grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
 
         .album-list-item {

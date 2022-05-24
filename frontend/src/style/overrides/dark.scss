@@ -77,6 +77,12 @@
     background-color: rgb(var(--color-background-dark));
   }
 
+  .hi-album-upload .album-upload-layout .album-upload-items .album-upload-item .album-upload-content .grid-view {
+    .form-input label {
+      background-color: rgb(var(--color-background-dark));
+    }
+  }
+
   .form-checkbox {
     input[type="checkbox"] {
       & + label {

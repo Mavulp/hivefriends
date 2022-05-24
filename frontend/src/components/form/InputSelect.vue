@@ -14,9 +14,10 @@ interface Props {
   options?: Array<Option | string> | null
   selected: Array<string> | string
   cantclear?: boolean
+  required?: boolean
 }
 
-const { label, placeholder, multiple, options, selected, cantclear = false } = defineProps<Props>()
+const { label, placeholder, multiple, options, selected, cantclear = false, required = false } = defineProps<Props>()
 const open = ref(false)
 const self = ref(null)
 
@@ -93,7 +94,7 @@ function setValue(item: Option) {
 </script>
 
 <template>
-  <div class="form-select" ref="self" :class="{ 'is-open': open }">
+  <div class="form-select" ref="self" :class="{ 'is-open': open, required: required }">
     <label v-if="label">{{ label }}</label>
 
     <button class="select-button" @click="open = !open">

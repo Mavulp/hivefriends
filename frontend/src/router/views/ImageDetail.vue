@@ -184,8 +184,18 @@ function scrollDown() {
 
           <div class="context-col">
             <button class="hover-bubble" @click="scrollDown()">
-              <span class="material-icons">&#xe5cf;</span>
+              <span class="material-icons">&#xe5db;</span>
               Details
+            </button>
+
+            <button class="hover-bubble" data-title-top="WIP">
+              <span class="material-icons">&#xe0b9;</span>
+              Comments
+            </button>
+
+            <button class="hover-bubble" data-title-top="WIP">
+              <span class="material-icons">&#xe157;</span>
+              Share
             </button>
           </div>
 

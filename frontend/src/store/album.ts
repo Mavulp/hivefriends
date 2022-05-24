@@ -118,7 +118,13 @@ export const useAlbums = defineStore("album", {
           const toast = useToast()
           toast.add(error.message, "error")
         })
-        .finally(() => delLoading(`${user}-album`))
+        .finally(() => {
+          // Needs an offset because apparently it takes a long time to render the albums???
+          // FIXME: remove probably
+          setTimeout(() => {
+            delLoading(`${user}-album`)
+          }, 500)
+        })
     },
 
     async fetchImageMetadata(key: string) {

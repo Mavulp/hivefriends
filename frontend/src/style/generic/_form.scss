@@ -9,6 +9,13 @@
     }
   }
 
+  &.required {
+    label:after {
+      content: "*";
+      color: rgb(var(--color-error));
+    }
+  }
+
   textarea,
   input {
     @include font(400);
@@ -91,6 +98,13 @@ input:-webkit-autofill:active {
 
     .form-input {
       margin-bottom: 0;
+
+      &.required {
+        label:after {
+          content: "*";
+          color: rgb(var(--color-error));
+        }
+      }
     }
 
     input[type="date"] {
@@ -225,6 +239,13 @@ input:-webkit-autofill:active {
   display: block;
   position: relative;
   z-index: 5;
+
+  &.required {
+    label:after {
+      content: "*";
+      color: rgb(var(--color-error));
+    }
+  }
 
   label {
     display: block;

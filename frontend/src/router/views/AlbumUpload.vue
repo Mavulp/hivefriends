@@ -47,19 +47,17 @@ const album = reactive<NewAlbum>({
   coverKey: ""
 })
 
-// const album = reactive<NewAlbum>({} as NewAlbum)
-
 // If album was successfuly generated, this will get populated
 const albumKey = ref()
-
-// TODO: Compute global loading progress by
-// checking loading states of all files and add a loading bar / percentagle somewhere in the upload
 
 const draggingOver = ref(false)
 const singleDate = ref(false)
 
 const isLoading = computed(() => files.values.some((file) => file.loading))
-// const loadingProgress = computed(() => [...files.values].filter((item) => !item.key).length)
+// const loadingPercent = computed(() =>
+//   Math.ceil(([...files.values].filter((item) => !item.key).length / files.values.length) * 100)
+// )
+const uploadProgress = computed(() => `${[...files.values].filter((item) => item.key).length} / ${files.values.length}`)
 const imageKeys = computed<Array<any>>(() => files.values.map((file) => file.key).filter((item) => item))
 
 /**
@@ -76,6 +74,8 @@ onMounted(() => {
     el.addEventListener("drop", onSubmitHandler, false)
     el.addEventListener("input", (e) => onSubmitHandler(e, true), false)
   }
+
+  taggedUsers.value.push(user.getUsername())
 })
 
 onBeforeMount(async () => {
@@ -178,7 +178,7 @@ async function submit() {
  * Tagging users
  */
 
-const taggedUsers = ref([])
+const taggedUsers = ref<Array<string>>([])
 
 function getUserImageKey(name: string): string {
   return user.users.find((item) => item.username === name)?.avatarKey ?? ""
@@ -188,12 +188,10 @@ const userOptions = computed(() => {
   if (!user.users || user.users.length === 0) return null
 
   // Make sure you can't select yourself
-  return user.users
-    .filter((item: User) => item.username !== user.user.username)
-    .map((item: User) => ({
-      label: item.displayName ?? item.username,
-      value: item.username
-    }))
+  return user.users.map((item: User) => ({
+    label: item.displayName ?? item.username,
+    value: item.username
+  }))
 })
 </script>
 
@@ -215,25 +213,23 @@ const userOptions = computed(() => {
           </label>
         </div>
 
-        <div class="album-upload-items-list">
-          <template v-if="files.values.length > 0">
-            <ImageUploadItem
-              v-for="(item, index) in files.values"
-              :class="{ 'is-cover': item.key === album.coverKey }"
-              :data="item"
-              :key="item.name"
-              :index="index"
-              @remove="delImage"
-              @setAsCover="(key: string) => album.coverKey = key"
-            />
-          </template>
+        <div class="album-upload-items-list" v-if="files.values.length > 0">
+          <ImageUploadItem
+            v-for="(item, index) in files.values"
+            :class="{ 'is-cover': item.key === album.coverKey }"
+            :data="item"
+            :key="item.name"
+            :index="index"
+            @remove="delImage"
+            @setAsCover="(key: string) => album.coverKey = key"
+          />
         </div>
       </div>
 
       <div class="album-upload-metadata">
         <h3>Create an album</h3>
 
-        <InputText v-model:value="album.title" placeholder="Album name" label="Title*" :error="errors.title" />
+        <InputText v-model:value="album.title" placeholder="Album name" label="Title" required :error="errors.title" />
         <InputTextarea v-model:value="album.description" placeholder="Album description" label="Description" />
 
         <h6>Event Dates</h6>
@@ -254,46 +250,48 @@ const userOptions = computed(() => {
 
         <h6>Tagged people</h6>
 
-        <p style="margin-bottom: 24px">Select people who you wish to tag in this album</p>
+        <span class="loading" v-if="getLoading('users')"> Loading... </span>
 
-        <span v-if="getLoading('users')"> loading </span>
+        <template v-else>
+          <InputSelect
+            label="People"
+            :options="userOptions"
+            v-model:selected="taggedUsers"
+            placeholder="Click to select people"
+            multiple
+          />
 
-        <InputSelect
-          v-else
-          label="People"
-          :options="userOptions"
-          v-model:selected="taggedUsers"
-          placeholder="Click to select people"
-          multiple
-        />
-
-        <div class="tagged-users" v-if="taggedUsers">
-          <div class="tagged-user" v-for="item in taggedUsers" :data-title-top="user.getUsername(item)" :key="item">
-            <img
-              class="user-image"
-              :src="imageUrl(getUserImageKey(item), 'tiny')"
-              :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"
-              alt=" "
-              @error="(e: any) => e.target.classList.add('image-error')"
-            />
+          <div class="tagged-users" v-if="taggedUsers">
+            <div class="tagged-user" v-for="item in taggedUsers" :data-title-top="user.getUsername(item)" :key="item">
+              <img
+                class="user-image"
+                :src="imageUrl(getUserImageKey(item), 'tiny')"
+                :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"
+                alt=" "
+                @error="(e: any) => e.target.classList.add('image-error')"
+              />
+            </div>
           </div>
-          <!-- List users with their profile pictures, name in a tooltip -->
-        </div>
-
-        <Button
-          :class="{ 'btn-disabled': files.values.length === 0 || isLoading }"
-          class="btn-icon btn-black"
-          style="width: 100%"
-          @click="submit"
-        >
-          Upload
-          <LoadingSpin class="dark" v-if="isLoading" />
-        </Button>
+        </template>
 
         <Button class="btn-blue mt-20 btn-icon" v-if="albumKey" :to="{ name: 'AlbumDetail', params: { id: albumKey } }">
           View Album
           <span class="material-icons"> &#xe941; </span>
         </Button>
+
+        <template v-else>
+          <Button
+            :class="{ 'btn-disabled': files.values.length === 0 || isLoading || !album.title }"
+            class="btn-icon btn-black"
+            style="width: 100%; margin-bottom: 20px"
+            @click="submit"
+          >
+            Save Album
+            <LoadingSpin class="dark" v-if="isLoading" />
+          </Button>
+
+          <p v-if="isLoading">{{ uploadProgress }} photos uploaded</p>
+        </template>
       </div>
     </div>
   </div>

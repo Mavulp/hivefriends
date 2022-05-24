@@ -109,6 +109,7 @@ window.addEventListener("scroll", () => {
         <div class="albums-title-wrap">
           <h2>Latest albums</h2>
           <Button
+            v-if="userAlbums.length > 2"
             :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]"
             class="btn-highlight"
             :to="{ name: 'UserAlbums', params: { user: _id } }"

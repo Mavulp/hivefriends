@@ -10,12 +10,7 @@
 
 - [ ] Album creation
 
-  - [x] Tag users
-  - [x] Set timeframe as a day (checkbox, but sets still from and to with the same date)
   - [ ] Save album as draft (exclude from all lists except user albums)
-
-  - [x] Add option to update metadata per image
-  - [x] Select a cover image
 
 - [ ] Album editing
 
@@ -28,6 +23,7 @@
   - [ ] a completely new full-screen view of map markers (images could appear within these markers as popups)
   - [ ] Delete album if author
   - [ ] Add a button "user albums" or "all albums" to get back to album list
+  - [ ] Share link
 
 - [ ] Dark mode
 
@@ -36,24 +32,21 @@
 
 - [ ] Image detail
 
-  - [ ] Option to rotate image
   - [ ] Add an uploader field which you can click to go to their profile (could have the pfp & author tag as well for extra color)
+  - [ ] Share link
   - [ ] Slideshow mode (set delay in details)
+    - [ ] padding is removed from image detail
+    - [ ] controls fade, appear only if mouse has moved (disappear after like 5 seconds)
   - [ ] Comments
     - [ ] Design template first
     - [ ] Implement
 
 - [ ] User profile
 
-  - [ ]
-
-- [ ] IMG improvement
-
-  - [x] In relationg to the context, if image fails to load, add either an icon or a backgground color to itself
-    - [ ] could add a custom icon in the :before related to the error class on the <img> element
+  - [ ] Hide "more albums" if user only has 2 or less albums
 
 - [ ] Album List
-  - [ ] Add filtering to album list
+  - [ ] Add filtering to album lists
 
 # Pages To do Write up
 
