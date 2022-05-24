@@ -79,6 +79,7 @@
         }
 
         a {
+          @include font(400);
           @include flex($gap: 12px);
           height: 24px;
           line-height: 24px;
@@ -100,7 +101,15 @@
 
       .comment-body {
         p {
-          margin: 0;
+          // margin: 0;
+          margin-bottom: 8px;
+        }
+
+        span {
+          font-size: 1rem;
+          color: rgba(var(--color-text), 0.4);
+          @include font(400);
+          // font-style: italic;
         }
       }
     }

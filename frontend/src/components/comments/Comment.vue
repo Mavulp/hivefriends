@@ -15,16 +15,24 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+
+function formatTimestamp(date: number) {
+  date *= 1000
+  const d = new Date(date)
+
+  return `${d.getUTCHours()}:${d.getUTCMinutes()}, ${d.toLocaleDateString("en-GB", {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  })}`
+}
 </script>
 
 <template>
   <div class="hi-comment">
     <div class="comment-header">
       <button
-        v-if="
-          (props.uploader === props.data.author && props.uploader === user.user.username) ||
-          props.uploader === user.user.username
-        "
+        v-if="props.data.author === user.user.username || props.uploader === user.user.username"
         class="control-button hover-bubble"
         data-title-top="Remove"
         @click="comments.delComment(props.imageKey, data.id)"
@@ -49,8 +57,9 @@ const props = defineProps<Props>()
       <div class="tag tag-blue" v-if="props.uploader === props.data.author">Author</div>
     </div>
 
-    <div class="comment-body" :data-title-top="formatDate(props.data.createdAt)">
+    <div class="comment-body">
       <p>{{ props.data.text }}</p>
+      <span class="timestamp">{{ formatTimestamp(props.data.createdAt) }}</span>
     </div>
   </div>
 </template>
