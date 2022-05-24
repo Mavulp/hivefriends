@@ -196,7 +196,7 @@
   width: 100%;
 
   .hi-album-list-layout {
-    @include grid(0, 516px 1fr);
+    @include grid(0, 512px 1fr);
     position: relative;
 
     .layout-item {

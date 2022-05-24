@@ -6,7 +6,7 @@
   // padding: 64px 128px;
 
   .album-upload-layout {
-    @include grid(0, 1fr 516px);
+    @include grid(0, 1fr 512px);
 
     .album-upload-items {
       @include flex($gap: 64px, $direction: column);
@@ -168,7 +168,7 @@
 
           form {
             display: block;
-            // max-width: 516px;
+            // max-width: 512px;
 
             .double-input {
               @include grid(32px, 2);

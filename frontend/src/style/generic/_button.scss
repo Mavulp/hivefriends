@@ -99,6 +99,14 @@
   z-index: 2;
   position: relative;
 
+  &.black {
+    color: #191716 !important;
+  }
+
+  &.white {
+    color: #fff !important;
+  }
+
   &.active,
   &.router-link-active,
   &:hover {
