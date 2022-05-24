@@ -1,5 +1,6 @@
 .hi-comments {
   @include flex($gap: 0, $direction: column, $align: flex-start, $justify: flex-start);
+  background-color: rgb(var(--color-background));
   // display: block;
   // padding: 32px 40px;
 
