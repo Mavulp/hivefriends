@@ -28,6 +28,8 @@ onBeforeMount(async () => {
   if (!albums.getAlbum(albumKey.value)) {
     albums.fetchAlbum(albumKey.value)
   }
+
+  window.scrollTo({ top: 0 })
 })
 
 onBeforeUnmount(() => {

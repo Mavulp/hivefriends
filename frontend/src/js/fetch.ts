@@ -54,12 +54,16 @@ export function upload(url: string, body: object | string, options?: object) {
   })
 }
 
-export function del(url: string) {
-  const options = {
-    method: "DELETE"
-  }
-
-  return _handleFetch(url, options)
+export function del(url: string, options?: object) {
+  return _handleFetch(
+    url,
+    merge(
+      {
+        method: "DELETE"
+      },
+      options
+    )
+  )
 }
 
 // Private handler functions

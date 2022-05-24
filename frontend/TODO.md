@@ -37,9 +37,11 @@
   - [ ] Slideshow mode (set delay in details)
     - [ ] padding is removed from image detail
     - [ ] controls fade, appear only if mouse has moved (disappear after like 5 seconds)
-  - [ ] Comments
-    - [ ] Design template first
-    - [ ] Implement
+  - [x] Comments
+    - [x] Design template first
+    - [x] Implement
+    - [ ] If user adds an image, automatically turn it into <img> element.
+    - [ ] if user adds a link, automatically turnt it it to <a>
 
 - [ ] User profile
 

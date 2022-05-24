@@ -68,7 +68,14 @@ export const useComments = defineStore("comments", {
       const { add } = useToast()
 
       return del(`/api/images/${key}/comments/${id}`)
-        .then(() => add("Successfully deleted comment", "success"))
+        .then(() => {
+          this.comments = {
+            ...this.comments,
+            [key]: this.comments[key].filter((item: Comment) => item.id !== id)
+          }
+
+          add("Successfully deleted comment", "success")
+        })
         .catch(() => add("Error deleting comment", "error"))
     }
   },

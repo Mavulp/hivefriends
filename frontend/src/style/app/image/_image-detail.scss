@@ -15,7 +15,7 @@
     display: block;
     min-width: 0;
     height: calc(100vh);
-    overflow: hidden;
+    z-index: 25;
 
     $comments-width: 408px;
 

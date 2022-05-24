@@ -3,6 +3,7 @@ import { ref } from "vue"
 import { Comment, useComments } from "../../store/comments"
 import { imageUrl } from "../../store/album"
 import { useUser } from "../../store/user"
+import { formatDate } from "../../js/utils"
 
 const user = useUser()
 const comments = useComments()
@@ -45,7 +46,7 @@ const props = defineProps<Props>()
       <div class="tag tag-blue" v-if="true">Author</div>
     </div>
 
-    <div class="comment-body">
+    <div class="comment-body" :data-title-top="formatDate(props.data.createdAt)">
       <p>{{ props.data.text }}</p>
     </div>
   </div>

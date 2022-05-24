@@ -95,7 +95,7 @@ async function submit() {
         <InputTextarea v-model:value="form.comment" placeholder="Write comment..." :error="errors.comment" />
 
         <div class="buttons">
-          <button type="submit" class="hover-bubble">Save</button>
+          <button type="submit" class="hover-bubble">Send</button>
           <LoadingSpin class="dark small" v-if="getLoading('add-comments')" />
         </div>
       </form>
