@@ -1,11 +1,43 @@
 .hi-image-detail {
   display: block;
   width: 100%;
-  // max-width: 1920px;
-  // min-height: calc(100vh - 56px);
   height: 100vh;
 
-  // @include flex($gap: 0, $wrap: nowrap, $align: flex-start);
+  @include flex($gap: 0, $wrap: nowrap, $align: flex-start);
+
+  .content-wrap {
+    display: block;
+    width: 100%;
+  }
+
+  .comment-wrap {
+    @include t(0.5s, cubic-bezier(0.65, 0, 0.35, 1));
+    display: block;
+    min-width: 0;
+    height: calc(100vh);
+    overflow: hidden;
+
+    $comments-width: 408px;
+
+    &.active {
+      min-width: $comments-width;
+
+      .hi-comments {
+        right: 0;
+      }
+    }
+
+    .hi-comments {
+      @include t(0.5s, cubic-bezier(0.65, 0, 0.35, 1));
+      position: fixed;
+      top: 0;
+      right: -$comments-width;
+      bottom: 0;
+      width: $comments-width;
+      overflow-y: auto;
+      border-left: 1px solid rgb(var(--color-border-light));
+    }
+  }
 
   .hi-image-container {
     display: block;
@@ -72,10 +104,9 @@
   }
 
   .hi-image-context {
-    @include grid(0, 3);
+    @include grid(40px, 1fr 2fr 1fr);
     width: 100%;
     padding: 52px 64px;
-    // margin-bottom: 64px;
 
     .context-col {
       @include flex($gap: 32px);
@@ -146,7 +177,9 @@
   .hi-image-meta {
     display: block;
     margin: 0 auto;
-    width: 1200px;
+    max-width: 1280px;
+    width: 100%;
+    padding: 0 40px;
     padding-bottom: 256px;
 
     h4 {
@@ -160,7 +193,7 @@
     }
 
     .hi-map-wrap {
-      height: 516px;
+      height: 512px;
       margin-bottom: 64px;
     }
 

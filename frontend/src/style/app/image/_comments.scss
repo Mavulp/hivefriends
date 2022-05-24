@@ -1,0 +1,143 @@
+.hi-comments {
+  @include flex($gap: 0, $direction: column, $align: flex-start, $justify: flex-start);
+  // display: block;
+  // padding: 32px 40px;
+
+  .hi-comments-header {
+    @include flex($justify: space-between);
+    width: 100%;
+    padding: 32px 40px;
+
+    h5 {
+      margin-bottom: 0;
+    }
+  }
+  .control-button {
+    &:hover {
+      .material-icons {
+        color: rgb(var(--color-text));
+      }
+    }
+
+    .material-icons {
+      color: rgb(var(--color-text-light));
+
+      font-size: 1.8rem;
+    }
+  }
+
+  .hi-comments-list {
+    display: block;
+    width: 100%;
+    flex: 1;
+    position: relative;
+    padding: 0 40px 16px;
+
+    .hi-no-comments {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      span {
+        font-size: 1.6rem;
+        white-space: nowrap;
+      }
+
+      strong {
+        font-size: 1.8rem;
+      }
+    }
+
+    .hi-comment {
+      display: block;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgb(var(--color-border-light));
+
+      &:last-of-type {
+        border-bottom: 0;
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+
+      .comment-header {
+        @include flex($gap: 16px, $justify: flex-start, $align: flex-start);
+        margin-bottom: 16px;
+        padding-right: 20px;
+        position: relative;
+
+        .control-button {
+          position: absolute;
+          top: 0;
+          right: 0;
+        }
+
+        .tag {
+          font-size: 1.2rem;
+        }
+
+        a {
+          @include flex($gap: 12px);
+          height: 24px;
+          line-height: 24px;
+          text-decoration: none !important;
+          color: rgb(var(--color-text));
+
+          .user-image {
+            @include radius(50%);
+            display: block;
+            object-fit: cover;
+            object-position: center;
+            position: relative;
+            width: 28px;
+            height: 28px;
+            background-color: rgb(var(--color-highlight));
+          }
+        }
+      }
+
+      .comment-body {
+        p {
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  .hi-add-comment {
+    display: grid;
+    width: 100%;
+    // padding-top: 20px;
+    border-top: 1px solid rgb(var(--color-border-light));
+
+    .buttons {
+      padding: 0 24px 24px;
+      // padding: 16px;
+      // padding-bottom: 24px;
+      // justify-content: flex-end;
+
+      button {
+        @include radius(4px);
+        height: 24px;
+        line-height: 24px;
+        padding: 0 8px;
+        color: rgb(var(--color-text));
+      }
+    }
+
+    .form-input {
+      margin: 0;
+
+      textarea {
+        border: 0;
+        resize: none;
+        min-height: 80px;
+      }
+
+      .input-error-list {
+        padding: 0 16px;
+      }
+    }
+  }
+}

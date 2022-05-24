@@ -162,7 +162,7 @@ async function submit() {
         from: new Date(album.timeframe.from).getTime() / 1000,
         to: new Date(singleDate.value ? album.timeframe.from : album.timeframe.to).getTime() / 1000
       },
-      coverKey: album.coverKey ?? model.imageKeys[0],
+      coverKey: album.coverKey ? album.coverKey : imageKeys.value[0],
       taggedUsers: taggedUsers.value
     })
 

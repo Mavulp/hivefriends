@@ -51,10 +51,10 @@
         background-repeat: no-repeat;
         background-size: cover;
         background-attachment: fixed;
+        background-color: rgba(var(--color-background), 0.1);
 
         &.image-error {
           opacity: 0.25;
-          background-color: rgba(var(--color-background), 0.95);
         }
       }
 
@@ -71,13 +71,28 @@
           width: 556px;
           height: 556px;
           object-fit: cover;
+          position: relative;
           object-position: center;
           margin-bottom: 32px;
           border: 20px solid rgb(var(--color-highlight));
 
           &.image-error {
             border-color: rgb(var(--color-background));
-            background-color: rgba(var(--color-background), 1);
+            background-color: rgba(var(--color-background), 0.25) !important;
+
+            &:before {
+              display: block;
+              position: absolute;
+              left: 50%;
+              top: 50%;
+              transform: translate(-50%, -50%);
+              width: 40px;
+              height: 40px;
+              background-position: center;
+              background-size: contain;
+              background-repeat: no-repeat;
+              background-image: url("/user.svg");
+            }
           }
         }
       }

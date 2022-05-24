@@ -11,6 +11,8 @@ import { RGB_TO_HEX, formatDate, formatFileSize } from "../../js/utils"
 
 import { MapboxMap, MapboxMarker } from "vue-mapbox-ts"
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
+import CommentsWrap from "../../components/comments/CommentsWrap.vue"
+import { useComments } from "../../store/comments"
 
 /**
  *  Setup
@@ -49,6 +51,7 @@ const { settings, getUser } = useUser()
 const { getLoading } = useLoading()
 
 const transDir = ref("imagenext")
+const showComments = ref(false)
 
 // Shut the fuck up typescript
 const albumKey = computed(() => `${route.params.album}`)
@@ -150,6 +153,8 @@ function openImageId(key: string) {
 function scrollDown() {
   window.scrollTo({ top: window.innerHeight / 1.25, behavior: "smooth" })
 }
+
+const { getImageComments } = useComments()
 </script>
 
 <template>
@@ -163,7 +168,7 @@ function scrollDown() {
       </div>
     </div>
 
-    <template v-else-if="album && image">
+    <div class="content-wrap" v-else-if="album && image">
       <div class="hi-image-container">
         <div class="hi-image-wrapper">
           <transition :name="transDir" mode="out-in">
@@ -188,9 +193,12 @@ function scrollDown() {
               Details
             </button>
 
-            <button class="hover-bubble" data-title-top="WIP">
+            <button class="hover-bubble" @click="showComments = !showComments">
               <span class="material-icons">&#xe0b9;</span>
               Comments
+
+              <span class="material-icons rotate" v-if="getLoading('comments')">&#xe863;</span>
+              <template v-else> ({{ getImageComments(imageKey).length }}) </template>
             </button>
 
             <button class="hover-bubble" data-title-top="WIP">
@@ -231,7 +239,7 @@ function scrollDown() {
             <span
               v-if="image.location"
               class="material-icons tooltip-width-200"
-              data-title-top="You can zoom / move within the map. Click other markers to switch to that picture."
+              data-title-top="You can zoom / move within the map. Click other markers to switch pictures."
             >
               &#xe8fd;
             </span>
@@ -260,10 +268,6 @@ function scrollDown() {
           </div>
 
           <div class="hi-image-metadata">
-            <!-- <pre>
-              {{ image }}
-            </pre> -->
-
             <div class="hi-image-properties">
               <span>Name</span>
               <strong>{{ image.fileName }}</strong>
@@ -317,6 +321,10 @@ function scrollDown() {
           </div>
         </div>
       </div>
-    </template>
+    </div>
+
+    <div class="comment-wrap" v-if="album && image" :class="{ active: showComments }">
+      <CommentsWrap @close="showComments = false" :imageKey="imageKey" :uploader="image.uploader" />
+    </div>
   </div>
 </template>

@@ -22,7 +22,7 @@ const { getKey, getUsername } = useUser()
 // const headerShrink = ref(false)
 const data = ref<Array<Album>>([])
 const search = ref("")
-const open = ref(false)
+// const open = ref(false)
 
 onBeforeMount(async () => {
   const username = String(route.params.user)
@@ -51,7 +51,7 @@ const sortedAlbums = computed(() => {
           <h3>
             {{ route.params.id === getKey ? "Your albums" : `${getUsername(route.params.user)}'s albums` }}
           </h3>
-          <!-- <Button @click="open = !open">{{ open ? "Close" : "Filter" }}</Button> -->
+          <!-- <Button class="btn-black" @click="open = !open">{{ open ? "Close" : "Filter" }}</Button> -->
         </div>
 
         <div class="album-subtitle">
@@ -63,7 +63,7 @@ const sortedAlbums = computed(() => {
         <Search placeholder="Search for albums..." v-model:value="search" />
       </div>
 
-      <Filters :class="{ active: open }" />
+      <!-- <Filters :class="{ active: open }" /> -->
     </div>
 
     <div class="album-list-content">

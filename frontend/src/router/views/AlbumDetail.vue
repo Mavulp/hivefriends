@@ -107,11 +107,6 @@ function openFirstImage() {
 
       <div class="hi-album-title-thumbnail">
         <div class="detail-buttons">
-          <!-- <button class="hover-bubble">
-            <span class="material-icons">&#xe0b9;</span>
-            Comments
-          </button> -->
-
           <button class="hover-bubble" data-title-top="WIP">
             <span class="material-icons">&#xe55b;</span>
             Map
@@ -150,11 +145,8 @@ function openFirstImage() {
                   @error="(e: any) => e.target.classList.add('image-error')"
                 />
                 <span>{{ user.getUsername(item) }}</span>
-
                 <div class="tag tag-blue" v-if="item === album.author">Author</div>
-
                 <div class="background"></div>
-
                 <div class="background" :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"></div>
               </router-link>
             </template>
