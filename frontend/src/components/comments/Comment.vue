@@ -21,7 +21,7 @@ const props = defineProps<Props>()
   <div class="hi-comment">
     <div class="comment-header">
       <button
-        v-if="props.data.author === user.user.username || props.data.author === props.uploader"
+        v-if="props.uploader === props.data.author || props.uploader === user.user.username"
         class="control-button hover-bubble"
         data-title-top="Remove"
         @click="comments.delComment(props.imageKey, data.id)"
@@ -43,7 +43,7 @@ const props = defineProps<Props>()
         <span>{{ user.getUsername(props.data.author) }}</span>
       </router-link>
 
-      <div class="tag tag-blue" v-if="true">Author</div>
+      <div class="tag tag-blue" v-if="props.uploader === props.data.author">Author</div>
     </div>
 
     <div class="comment-body" :data-title-top="formatDate(props.data.createdAt)">

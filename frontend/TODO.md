@@ -1,9 +1,12 @@
 # Fix
 
+- [ ] Expired token issues
+- [ ] Fix image list showing error instead of loading in album lists
+
 # Todo
 
 - [ ] Scan all markers when displaying a map, and check for large differences. Change map zoom according to that
-
+  - [ ] https://docs.mapbox.com/mapbox-gl-js/example/fitbounds/
 - [ ] Figure out breadcrumbs again
 
   - [ ] On detail pages, overwrite breadcrumbs when data loads with dynamic stuff
@@ -40,6 +43,7 @@
   - [x] Comments
     - [x] Design template first
     - [x] Implement
+    - [ ] Show timestamp (short date, but include time)
     - [ ] If user adds an image, automatically turn it into <img> element.
     - [ ] if user adds a link, automatically turnt it it to <a>
 
@@ -48,11 +52,11 @@
   - [ ] Hide "more albums" if user only has 2 or less albums
 
 - [ ] Album List
+
   - [ ] Add filtering to album lists
 
-# Pages To do Write up
-
-- [ ] Image Detail
-- [ ] Editing Album
 - [ ] Homepage
-- [ ] All albums list (could just be homepage?)
+
+  - [ ] Design and implement
+
+- [ ] Add link sharing image & title (like github does)
