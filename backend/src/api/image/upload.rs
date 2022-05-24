@@ -16,6 +16,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::SystemTime;
 
+use super::orientation::ExifOrientation;
 use super::DbImageMetadata;
 use crate::api::{auth::Authorize, error::Error, image::ImageMetadata};
 use crate::AppState;
@@ -70,12 +71,10 @@ async fn upload_image(
     let size_bytes = data.len() as u64;
 
     let key = blob_uuid::random_blob();
-    store_image(state.data_path.clone(), &key, &data).await?;
-
     let image_key = key.clone();
 
     let mut metadata = DbImageMetadata {
-        key: image_key,
+        key,
         uploader,
         file_name,
         size_bytes,
@@ -92,11 +91,31 @@ async fn upload_image(
         uploaded_at,
     };
 
+    let mut orientation = None;
+
     let mut bufreader = std::io::BufReader::new(Cursor::new(&*data));
     let exifreader = exif::Reader::new();
     if let Ok(exif) = exifreader.read_from_container(&mut bufreader) {
-        populate_metadata_from_exif(&mut metadata, exif);
+        populate_metadata_from_exif(&mut metadata, &exif);
+        orientation = exif
+            .get_field(exif::Tag::Orientation, exif::In::PRIMARY)
+            .and_then(|f| {
+                if let exif::Value::Short(v) = &f.value {
+                    ExifOrientation::try_from(v[0]).ok()
+                } else {
+                    warn!("Unexpected format of camera model exif field");
+                    None
+                }
+            });
     }
+
+    store_image(
+        state.data_path.clone(),
+        &image_key,
+        &data,
+        &orientation.unwrap_or(ExifOrientation::Normal),
+    )
+    .await?;
 
     let cmetadata = metadata.clone();
     let conn = state.pool.get().await?;
@@ -107,7 +126,7 @@ async fn upload_image(
     Ok(ImageMetadata::from_db(metadata))
 }
 
-fn populate_metadata_from_exif(metadata: &mut DbImageMetadata, exif: exif::Exif) {
+fn populate_metadata_from_exif(metadata: &mut DbImageMetadata, exif: &exif::Exif) {
     use exif::{In, Tag};
 
     let latitude_field = exif.get_field(Tag::GPSLatitude, In::PRIMARY);
@@ -142,7 +161,7 @@ fn populate_metadata_from_exif(metadata: &mut DbImageMetadata, exif: exif::Exif)
 
     metadata.taken_at = exif
         .get_field(Tag::DateTimeOriginal, In::PRIMARY)
-        .map(|f| f.display_value().with_unit(&exif).to_string())
+        .map(|f| f.display_value().with_unit(exif).to_string())
         .and_then(|s| NaiveDateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S").ok())
         .map(|t| t.timestamp() as u64);
 
@@ -164,13 +183,13 @@ fn populate_metadata_from_exif(metadata: &mut DbImageMetadata, exif: exif::Exif)
     });
     metadata.exposure_time = exif
         .get_field(Tag::ExposureTime, In::PRIMARY)
-        .map(|f| f.display_value().with_unit(&exif).to_string());
+        .map(|f| f.display_value().with_unit(exif).to_string());
     metadata.f_number = exif
         .get_field(Tag::FNumber, In::PRIMARY)
-        .map(|f| f.display_value().with_unit(&exif).to_string());
+        .map(|f| f.display_value().with_unit(exif).to_string());
     metadata.focal_length = exif
         .get_field(Tag::FocalLength, In::PRIMARY)
-        .map(|f| f.display_value().with_unit(&exif).to_string());
+        .map(|f| f.display_value().with_unit(exif).to_string());
 }
 
 fn value_to_deg(value: &exif::Value) -> Option<f64> {
@@ -212,8 +231,14 @@ fn generate_or_symlink_image(
     }
 }
 
-async fn store_image(directory: PathBuf, key: &str, data: &[u8]) -> anyhow::Result<()> {
+async fn store_image(
+    directory: PathBuf,
+    key: &str,
+    data: &[u8],
+    orientation: &ExifOrientation,
+) -> anyhow::Result<()> {
     let image = image::load_from_memory(data)?;
+    let image = orientation.apply_to_image(image);
     let (width, height) = (image.width(), image.height());
     let image = ImageKind::Generated(Arc::new(image));
 

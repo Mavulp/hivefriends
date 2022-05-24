@@ -12,6 +12,7 @@ mod create_comment;
 mod delete_comment;
 mod get_all_comments;
 mod get_by_key;
+mod orientation;
 mod update_metadata;
 mod upload;
 
