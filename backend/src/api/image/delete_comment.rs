@@ -18,8 +18,7 @@ pub struct DeleteCommentRequest {
 }
 
 pub(super) async fn delete<D: SqliteDatabase>(
-    Path(image_key): Path<String>,
-    Path(comment_id): Path<i64>,
+    Path((image_key, comment_id)): Path<(String, i64)>,
     Authorize(user): Authorize,
     Extension(state): Extension<Arc<AppState<D>>>,
 ) -> Result<Json<Comment>, Error> {
@@ -77,8 +76,7 @@ mod test {
         let (user, id) = result.unwrap();
 
         let result = delete(
-            Path("no_image".into()),
-            Path(id),
+            Path(("no_image".into(), id)),
             Authorize(user),
             Extension(state),
         )
@@ -105,7 +103,7 @@ mod test {
 
         let (user, image) = result.unwrap();
 
-        let result = delete(Path(image), Path(-1), Authorize(user), Extension(state)).await;
+        let result = delete(Path((image, -1)), Authorize(user), Extension(state)).await;
 
         assert_matches!(result, Err(Error::NotFound));
     }
@@ -129,13 +127,7 @@ mod test {
 
         let (user, image, comment) = result.unwrap();
 
-        let result = delete(
-            Path(image),
-            Path(comment),
-            Authorize(user),
-            Extension(state),
-        )
-        .await;
+        let result = delete(Path((image, comment)), Authorize(user), Extension(state)).await;
 
         assert_matches!(result, Err(Error::Unathorized));
     }
@@ -159,13 +151,7 @@ mod test {
 
         let (user, image, comment) = result.unwrap();
 
-        let result = delete(
-            Path(image),
-            Path(comment),
-            Authorize(user),
-            Extension(state),
-        )
-        .await;
+        let result = delete(Path((image, comment)), Authorize(user), Extension(state)).await;
 
         assert_matches!(result, Err(Error::WrongImage));
     }
@@ -188,13 +174,7 @@ mod test {
 
         let (user, image, comment) = result.unwrap();
 
-        let result = delete(
-            Path(image),
-            Path(comment.id),
-            Authorize(user),
-            Extension(state),
-        )
-        .await;
+        let result = delete(Path((image, comment.id)), Authorize(user), Extension(state)).await;
 
         assert_matches!(result, Ok(Json(deleted_comment)) => {
             assert_eq!(comment, deleted_comment);
