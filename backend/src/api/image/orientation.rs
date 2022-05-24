@@ -34,7 +34,7 @@ impl TryFrom<u16> for ExifOrientation {
 impl ExifOrientation {
     pub fn apply_to_image(&self, image: DynamicImage) -> DynamicImage {
         use ExifOrientation::*;
-        match dbg!(self) {
+        match self {
             Normal => image,
             FlippedNormal => image.fliph(),
             UpsideDown => image.rotate180(),
