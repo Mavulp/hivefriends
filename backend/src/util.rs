@@ -10,7 +10,7 @@ pub(super) fn non_empty_str<'de, D: Deserializer<'de>>(d: D) -> Result<Option<St
 pub mod test {
     use crate::api::{
         album::{self, InsertAlbum},
-        image, user,
+        comment, image, user,
     };
     use crate::DbInteractable;
     use deadpool::{
@@ -98,10 +98,18 @@ pub mod test {
     pub fn insert_comment(
         author: &str,
         image_key: &str,
+        album_key: &str,
         text: &str,
         conn: &rusqlite::Connection,
-    ) -> anyhow::Result<image::Comment> {
-        image::insert_comment(author.into(), text.into(), image_key.into(), 0, conn)
+    ) -> anyhow::Result<comment::Comment> {
+        comment::insert_comment(
+            author.into(),
+            text.into(),
+            image_key.into(),
+            album_key.into(),
+            0,
+            conn,
+        )
     }
 
     pub fn insert_album(album: InsertAlbum, conn: &rusqlite::Connection) -> anyhow::Result<String> {

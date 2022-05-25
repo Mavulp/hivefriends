@@ -26,10 +26,15 @@ CREATE TABLE images (
 CREATE TABLE comments (
     id INTEGER PRIMARY KEY NOT NULL,
     author TEXT NOT NULL,
+    album_key TEXT NOT NULL,
     image_key TEXT NOT NULL,
     created_at INTEGER NOT NULL, -- unix ts
 
     text TEXT NOT NULL,
+
+    CONSTRAINT fk_album_key_assoc
+        FOREIGN KEY (album_key)
+        REFERENCES albums (key),
 
     CONSTRAINT fk_image_key_assoc
         FOREIGN KEY (image_key)

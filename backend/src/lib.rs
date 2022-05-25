@@ -70,6 +70,7 @@ pub mod util;
 pub mod api {
     pub mod album;
     pub mod auth;
+    pub mod comment;
     pub mod error;
     pub mod image;
     pub mod login;
@@ -83,6 +84,7 @@ pub fn api_route(pool: Pool, data_path: PathBuf) -> Router {
     Router::new()
         .nest("/api/auth", api::auth::api_route())
         .nest("/api/login", api::login::api_route())
+        .nest("/api/comments/", api::comment::api_route())
         .nest("/api/images/", api::image::api_route())
         .nest("/api/albums/", api::album::api_route())
         .nest("/api/users/", api::user::api_route())

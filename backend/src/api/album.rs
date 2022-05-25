@@ -57,6 +57,23 @@ pub struct InsertAlbum<'a> {
     pub tagged_users: &'a [String],
 }
 
+pub fn is_owner(album_key: &str, user: &str, conn: &Connection) -> anyhow::Result<bool> {
+    let result = conn.query_row(
+        "SELECT author FROM albums WHERE key = ?1",
+        params![album_key],
+        |row| Ok(row.get::<_, String>(0)?),
+    );
+
+    if matches!(result, Err(rusqlite::Error::QueryReturnedNoRows)) {
+        Ok(false)
+    } else {
+        let author = result?;
+
+        dbg!(&author, &user);
+        Ok(author == user)
+    }
+}
+
 pub fn insert_album(album: InsertAlbum, conn: &Connection) -> Result<(), Error> {
     conn.execute(
         "INSERT INTO albums ( \

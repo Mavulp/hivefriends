@@ -1,16 +1,13 @@
 use crate::FileDb;
-use anyhow::Context;
+
 use axum::{
-    routing::{delete, get, post, put},
+    routing::{get, post, put},
     Router,
 };
 use rusqlite::{params, Connection, OptionalExtension};
 use serde::{Deserialize, Serialize};
 use serde_rusqlite::{from_row, to_params_named};
 
-mod create_comment;
-mod delete_comment;
-mod get_all_comments;
 mod get_by_key;
 mod orientation;
 mod update_metadata;
@@ -21,22 +18,6 @@ pub fn api_route() -> Router {
         .route("/", post(upload::post))
         .route("/:key", get(get_by_key::get))
         .route("/:key", put(update_metadata::put::<FileDb>))
-        .route("/:key/comments", get(get_all_comments::get::<FileDb>))
-        .route("/:key/comments", post(create_comment::post::<FileDb>))
-        .route(
-            "/:key/comments/:key",
-            delete(delete_comment::delete::<FileDb>),
-        )
-}
-
-#[derive(Eq, PartialEq, Debug, serde::Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Comment {
-    id: i64,
-    author: String,
-    image_key: String,
-    created_at: u64,
-    text: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -145,54 +126,6 @@ pub fn comment_exists(id: i64, conn: &Connection) -> anyhow::Result<bool> {
 
         Ok(true)
     }
-}
-
-pub fn get_comment(id: i64, conn: &Connection) -> anyhow::Result<Option<Comment>> {
-    let result = conn.query_row(
-        "SELECT author, image_key, created_at, text FROM comments WHERE id = ?1",
-        params![id],
-        |row| {
-            Ok(Comment {
-                id,
-                author: row.get(0)?,
-                image_key: row.get(1)?,
-                created_at: row.get(2)?,
-                text: row.get(3)?,
-            })
-        },
-    );
-
-    if matches!(result, Err(rusqlite::Error::QueryReturnedNoRows)) {
-        return Ok(None);
-    }
-
-    let comment = result.context("Failed to get comment")?;
-
-    Ok(Some(comment))
-}
-
-pub fn insert_comment(
-    author: String,
-    text: String,
-    image_key: String,
-    created_at: u64,
-    conn: &Connection,
-) -> anyhow::Result<Comment> {
-    conn.execute(
-        "INSERT INTO comments (author, image_key, created_at, text) VALUES (?1, ?2, ?3, ?4)",
-        params![&author, &image_key, created_at, text],
-    )
-    .context("Failed to insert comment")?;
-
-    let last_id = conn.last_insert_rowid();
-
-    Ok(Comment {
-        id: last_id,
-        text,
-        author,
-        image_key,
-        created_at,
-    })
 }
 
 pub fn insert(metadata: &DbImageMetadata, conn: &Connection) -> anyhow::Result<()> {
