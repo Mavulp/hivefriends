@@ -1,7 +1,9 @@
 # Fix
 
-- [ ] Expired token issues
+- [x] Expired token issues
 - [ ] Fix image list showing error instead of loading in album lists
+- [ ] Changing accent does not instantly update it for user
+- [ ] Accent colors being quirky
 
 # Todo
 
@@ -41,9 +43,9 @@
 
   - [ ] Add filtering to album lists
 
-- [ ] Homepage
+- [x] Homepage
 
-  - [ ] Design and implement
+  - [x] Design and implement
 
 - [ ] Add link sharing image & title (like github does)
 

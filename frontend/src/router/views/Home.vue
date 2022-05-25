@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Button from "../../components/Button.vue"
-// import { ref } from "vue"
+import HomeUser from "../../components/user/HomeUser.vue"
 
 import { ref, onBeforeMount, computed } from "vue"
 import { Album, useAlbums, imageUrl } from "../../store/album"
@@ -33,40 +33,31 @@ const accent = computed(() =>
         bringing the IRL <br />
         to the URL.
       </h3>
-      <p>Shut up idk what to write here.</p>
+      <p>Say one word about my writing and you get hands.</p>
 
       <div class="album-thumbnail">
         <template v-if="latest">
-          <div class="thumbnail-controls">
-            <Button class="btn-highlight" :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]">
-              Latest Album
-            </Button>
-
-            by
-
-            <div class="user">
-              <router-link :to="{ name: 'UserProfile', params: { user: latest.author } }" class="user hover-bubble">
-                <img
-                  class="user-image"
-                  :src="imageUrl(user.getUser(latest.author, 'avatarKey'), 'tiny')"
-                  alt=" "
-                  @error="(e: any) => e.target.classList.add('image-error')"
-                />
-
-                {{ user.getUsername(latest.author) }}
-              </router-link>
-            </div>
-          </div>
+          <Button
+            :to="{ name: 'AlbumDetail', params: { id: latest.key } }"
+            class="btn-highlight"
+            :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]"
+          >
+            Latest Album
+          </Button>
 
           <img :src="imageUrl(latest.coverKey)" alt="" />
         </template>
       </div>
     </div>
+
+    <div class="container">
+      <h4>Friends</h4>
+
+      <div class="home-users" v-if="user.users">
+        <HomeUser v-for="item in user.users" :key="item.username" :data="item" />
+      </div>
+    </div>
+
+    <p class="copyright">Copyright {{ new Date().getFullYear() }} Mavulp</p>
   </div>
-  <!-- <h1>hi!friends</h1>
-    <p>
-      Hello, welcome to hi!friends. Unfortunately homepage is the second last item on the backlog. Wanna see all the
-      albums tho?
-    </p>
-    <Button :to="{ name: 'Albums' }" class="btn-red">View Albums</Button> -->
 </template>

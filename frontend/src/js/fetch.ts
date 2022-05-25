@@ -90,6 +90,8 @@ async function _handleResponse(response: Response) {
     if (window.location.href === "/login") {
       window.location.href = "/login"
     }
+
+    return
   }
 
   return response.text().then((text: string) => {

@@ -40,22 +40,23 @@
 .fade-leave-to {
   opacity: 0;
 }
-// .pagetransition-enter-active,
-// .pagetransition-leave-active {
-//   transition: 0.15s all ease-in-out;
-// }
 
-// .pagetransition-enter-to,
-// .pagetransition-leave-from {
-//   opacity: 1;
-// }
+.pagetransition-enter-active,
+.pagetransition-leave-active {
+  transition: 0.2s all linear;
+}
 
-// .pagetransition-enter-from {
-//   opacity: 0;
-//   transform: translateY(8px);
-// }
+.pagetransition-enter-to,
+.pagetransition-leave-from {
+  opacity: 1;
+}
 
-// .pagetransition-leave-to {
-//   opacity: 0;
-//   transform: translateY(-8px);
-// }
+.pagetransition-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.pagetransition-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}

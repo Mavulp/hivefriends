@@ -65,7 +65,6 @@ onBeforeMount(async () => {
   const key = localStorage.getItem("user")
 
   if (token && key) {
-    // auth.signInUserFromStorage(JSON.parse(user))
     await auth.fetchUser(key)
     router.push({ name: "Home" })
   }

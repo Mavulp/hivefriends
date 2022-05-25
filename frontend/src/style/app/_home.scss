@@ -1,12 +1,14 @@
 .hi-home {
   // @include flex($direction: column);
   width: 100%;
+  padding-bottom: 128px;
 
   .home-landing {
     display: block;
     height: calc(100vh - 56px);
     padding: 64px 128px;
     position: relative;
+    margin-bottom: 192px;
 
     h1 {
       z-index: 10;
@@ -18,19 +20,6 @@
       -webkit-text-fill-color: transparent;
       -webkit-text-stroke-width: 1.5px;
       -webkit-text-stroke-color: rgb(var(--color-border));
-      // mix-blend-mode: difference;
-
-      // &:after {
-      //   content: "";
-      //   display: block;
-      //   position: absolute;
-      //   left: calc(100% + 64px);
-      //   // top: 0;
-      //   bottom: 0;
-      //   height: 32px;
-      //   width: 32px;
-      //   background: -webkit-linear-gradient(0, #6438e7, #25e66caa);
-      // }
 
       b {
         display: inline;
@@ -57,43 +46,18 @@
       bottom: 0;
       right: 0;
       width: 50%;
-      // top: 128px;
       top: 22%;
       z-index: 1;
       color: rgb(var(--color-text-white));
 
-      .thumbnail-controls {
-        @include flex($gap: 32px);
+      .button {
+        display: block;
         position: absolute;
-        inset: 0;
-        top: unset;
-        font-size: 1.4rem;
-        padding: 32px;
-        background-color: rgba(var(--color-background-dark), 0.6);
-
-        .user {
-          @include flex($gap: 12px);
-          position: relative;
-          color: rgb(var(--color-text-white));
-
-          .user-image {
-            @include radius(50%);
-            display: block;
-            object-fit: cover;
-            object-position: center;
-            width: 32px;
-            height: 32px;
-          }
-        }
+        bottom: 64px;
+        left: 0;
+        transform: translate(-50%);
+        font-size: 1.6rem;
       }
-
-      // button {
-      //   display: block;
-      //   position: absolute;
-      //   bottom: 32px;
-      //   left: 32px;
-      //   font-size: 1.6rem;
-      // }
 
       img {
         display: block;
@@ -103,5 +67,72 @@
         object-position: center;
       }
     }
+  }
+
+  .container {
+    width: 1280px;
+    margin: 0 auto;
+    padding: 0 40px;
+
+    h4 {
+      color: rgb(var(--color-highlight));
+      margin-bottom: 40px;
+    }
+  }
+
+  .home-users {
+    display: block;
+    margin-bottom: 128px;
+    // @include grid(20px, 3);
+
+    .home-user {
+      @include t();
+      @include flex($gap: 8px);
+      padding: 16px 32px;
+      margin-bottom: 32px;
+      color: rgb(var(--color-text));
+      border: 1px solid transparent;
+      background-color: rgb(var(--color-white));
+
+      &:hover {
+        border: 1px solid rgb(var(--color-border-light));
+      }
+
+      button {
+        color: rgb(var(--color-text));
+      }
+
+      .user-image {
+        @include radius(50%);
+        display: block;
+        width: 56px;
+        height: 56px;
+        object-fit: cover;
+        object-position: center;
+        position: relative;
+        margin-right: 12px;
+      }
+
+      h5 {
+        margin-bottom: 0;
+        font-size: 2.2rem;
+      }
+
+      .flag {
+        @include radius(3px);
+        display: block;
+        object-fit: contain;
+        object-position: left;
+        max-width: 32px;
+        max-height: 24px;
+      }
+    }
+  }
+
+  .copyright {
+    display: block;
+    text-align: center;
+    margin: 0;
+    color: rgb(var(--color-text-light));
   }
 }
