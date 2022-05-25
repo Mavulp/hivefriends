@@ -12,7 +12,7 @@ interface Props {
   placeholder?: string
   multiple?: boolean
   options?: Array<Option | string> | null
-  selected: Array<string> | string
+  selected: Array<string> | string | null | undefined
   cantclear?: boolean
   required?: boolean
 }
@@ -77,7 +77,7 @@ function setValue(item: Option) {
   } else {
     // Single
 
-    if (selected === item.value) {
+    if (selected && selected === item.value) {
       //Clearing
       if (cantclear) return
 
@@ -109,13 +109,13 @@ function setValue(item: Option) {
         <button
           v-for="item in formattedOptions"
           :key="item.label"
-          :class="{ 'is-selected': selected.includes(item.value) }"
+          :class="{ 'is-selected': selected && selected.includes(item.value) }"
           @click="setValue(item)"
         >
           <div v-html="item.label" />
 
           <template v-if="!cantclear">
-            <span class="remove-item material-icons" v-if="selected.includes(item.value)"> &#xe5cd; </span>
+            <span class="remove-item material-icons" v-if="selected && selected.includes(item.value)"> &#xe5cd; </span>
             <span class="add-item material-icons" v-else>&#xe145;</span>
           </template>
         </button>

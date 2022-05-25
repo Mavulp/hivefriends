@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import LoadingSpin from "../loading/LoadingSpin.vue"
 import AlbumListItem from "../albums/AlbumListItem.vue"
+import Button from "../Button.vue"
 
-import { computed, onBeforeMount, onBeforeUnmount, ref, watchEffect } from "vue"
+import { computed, onBeforeMount, onBeforeUnmount, onMounted, ref, watchEffect } from "vue"
 import { useUser, User } from "../../store/user"
 import { Album, imageUrl, useAlbums } from "../../store/album"
 import { useRoute } from "vue-router"
-import { TEXT_CONTRAST, formatDate } from "../../js/utils"
+import { TEXT_CONTRAST, formatDate, flag } from "../../js/utils"
 import { useLoading } from "../../store/loading"
 import { useCssVar } from "@vueuse/core"
-import Button from "../Button.vue"
+import countries from "../../js/countries"
 
 const { addLoading, delLoading, getLoading } = useLoading()
 const users = useUser()
@@ -44,17 +45,19 @@ onBeforeUnmount(() => {
   window.removeEventListener("scroll", () => {})
 })
 
+onMounted(() => {
+  window.addEventListener("scroll", () => {
+    const top = window.scrollY
+
+    if (top < imgheight) {
+      bgscrollpos.value = `calc(50% - ${top / 2}px)`
+    }
+  })
+})
+
 watchEffect(() => {
   if (user.value) {
     color.value = user.value.accentColor ?? "128,128,128"
-  }
-})
-
-window.addEventListener("scroll", () => {
-  const top = window.scrollY
-
-  if (top < imgheight) {
-    bgscrollpos.value = `calc(50% - ${top / 2}px)`
   }
 })
 </script>
@@ -92,6 +95,9 @@ window.addEventListener("scroll", () => {
         <div class="user-information">
           <h1>{{ user.displayName ?? user.username }}</h1>
           <div class="user-info-meta">
+            <span v-if="user.country" :data-title-top="countries[user.country]">
+              <img class="flag" :src="flag(user.country)" alt="" />
+            </span>
             <span>
               Joined <b>{{ formatDate(user.createdAt) }}</b>
             </span>

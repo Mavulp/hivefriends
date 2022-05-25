@@ -4,7 +4,7 @@ import { useRoute, useRouter } from "vue-router"
 import { imageUrl, useAlbums, Album, Image as ImageStruct } from "../../store/album"
 import { isEmpty, isNil } from "lodash"
 import { useLoading } from "../../store/loading"
-import { onKeyStroke, useClipboard, useCssVar } from "@vueuse/core"
+import { onKeyStroke, useClipboard, useCssVar, whenever } from "@vueuse/core"
 import { map_access, map_dark, map_light } from "../../js/map"
 import { useUser } from "../../store/user"
 import { RGB_TO_HEX, formatDate, formatFileSize } from "../../js/utils"
@@ -129,9 +129,6 @@ watchEffect(() => {
  * Map & metadata
  */
 
-// const map = ref(null)
-// const mapLoaded = ref(false)
-
 const mapStyle = computed(() => (settings.colorTheme.startsWith("dark") ? map_dark : map_light))
 const sortedMarkers = computed(() => {
   // Make sure the current marker is always the last one to render
@@ -157,7 +154,7 @@ function scrollDown() {
   window.scrollTo({ top: window.innerHeight / 1.25, behavior: "smooth" })
 }
 
-const { comments } = useComments()
+const comment = useComments()
 
 /**
  * Copy
@@ -214,7 +211,7 @@ function copyClipboard() {
               Comments
 
               <span class="material-icons rotate" v-if="getLoading('comments')">&#xe863;</span>
-              <template v-else> ({{ comments.length }}) </template>
+              <template v-else> ({{ comment.comments.length }}) </template>
             </button>
 
             <button class="hover-bubble" @click="copyClipboard">

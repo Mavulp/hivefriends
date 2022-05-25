@@ -24,7 +24,7 @@ const { data } = defineProps<Props>()
 
     <h5>{{ getUsername(data.username) }}</h5>
 
-    <img class="flag" :src="flag('eu')" alt="" data-title-top="Eu" />
+    <img v-if="data.country" class="flag" :src="flag(data.country)" alt="" data-title-top="Eu" />
     <div class="flex-1"></div>
 
     <button class="hover-bubble">View Profile</button>

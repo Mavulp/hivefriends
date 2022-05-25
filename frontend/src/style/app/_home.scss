@@ -89,7 +89,7 @@
       @include t();
       @include flex($gap: 8px);
       padding: 16px 32px;
-      margin-bottom: 32px;
+      margin-bottom: 24px;
       color: rgb(var(--color-text));
       border: 1px solid transparent;
       background-color: rgb(var(--color-white));
@@ -117,15 +117,6 @@
         margin-bottom: 0;
         font-size: 2.2rem;
       }
-
-      .flag {
-        @include radius(3px);
-        display: block;
-        object-fit: contain;
-        object-position: left;
-        max-width: 32px;
-        max-height: 24px;
-      }
     }
   }
 
@@ -135,4 +126,13 @@
     margin: 0;
     color: rgb(var(--color-text-light));
   }
+}
+
+.flag {
+  @include radius(3px);
+  display: block;
+  object-fit: contain;
+  object-position: left;
+  max-width: 32px;
+  max-height: 24px;
 }

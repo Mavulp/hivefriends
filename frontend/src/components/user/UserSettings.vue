@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Button from "../Button.vue"
 import LoadingSpin from "../loading/LoadingSpin.vue"
-// import InputCheckbox from "../form/InputCheckbox.vue"
 import InputSelect from "../form/InputSelect.vue"
 import InputText from "../form/InputText.vue"
 import InputTextarea from "../form/InputTextarea.vue"
@@ -13,13 +12,18 @@ import { useUser } from "../../store/user"
 import { useFormValidation, minLength, required, sameAs } from "../../js/validation"
 import { HEX_to_RGB, TEXT_CONTRAST } from "../../js/utils"
 import { useToast } from "../../store/toast"
+import countries from "../../js/countries"
+import { kStringMaxLength } from "buffer"
 
 const { getLoading, addLoading, delLoading } = useLoading()
 const { add } = useToast()
 const user = useUser()
 
-onBeforeMount(() => {
-  user.fetchSettings()
+onBeforeMount(async () => {
+  await user.fetchSettings()
+
+  userForm.displayName = user.getUsername(user.user.username)
+  userForm.bio = user.user.bio
 })
 
 const themeOptions = [
@@ -58,8 +62,9 @@ const buttonColor = computed(() => {
  * User information validation
  */
 const userForm = reactive({
-  displayName: user.user.displayName,
-  bio: user.user.bio
+  displayName: "",
+  bio: "",
+  country: user.user.country
 })
 
 const infoRules = computed(() => ({
@@ -75,7 +80,11 @@ async function submitUserInfo() {
   infoValidation
     .validate()
     .then(() => {
-      Promise.all([user.setSetting("displayName", userForm.displayName), user.setSetting("bio", userForm.bio)])
+      Promise.all([
+        user.setSetting("displayName", userForm.displayName),
+        user.setSetting("bio", userForm.bio),
+        user.setSetting("country", userForm.country)
+      ])
         .then(() => add("Successfully updated user information", "success"))
         .catch(() => add("Error updating user information", "error"))
     })
@@ -83,6 +92,15 @@ async function submitUserInfo() {
       delLoading("user-form")
     })
 }
+
+const countryOptions = computed(() => {
+  return Object.entries(countries).map(([code, country]) => {
+    return {
+      value: code,
+      label: country.name
+    }
+  })
+})
 
 /**
  * User password validation
@@ -141,29 +159,39 @@ async function savePassword() {
       <ul class="user-settings-list">
         <li>
           <h5>Your info</h5>
-          <form @submit.prevent="submitUserInfo">
-            <input id="username" style="display: none" type="text" name="fakeusernameremembered" />
-            <input id="password" style="display: none" type="password" name="fakepasswordremembered" />
+          <!-- <form @submit.prevent="submitUserInfo"> -->
+          <input id="username" style="display: none" type="text" name="fakeusernameremembered" />
+          <input id="password" style="display: none" type="password" name="fakepasswordremembered" />
 
-            <InputText
-              v-model:value="userForm.displayName"
-              placeholder="Your display name"
-              label="Display name"
-              :error="infoValidation.errors.displayName"
-            />
-            <InputTextarea
-              label="Bio"
-              v-model:value="userForm.bio"
-              placeholder="Something about you. It can be anything"
-              :value="user.user.bio"
-            />
-            <Button
-              class="btn-black"
-              type="submit"
-              :class="{ 'btn-disabled': getLoading('user-form') || infoValidation.status.anyError }"
-              >Save</Button
-            >
-          </form>
+          <InputText
+            v-model:value="userForm.displayName"
+            placeholder="Your display name"
+            label="Display name"
+            :error="infoValidation.errors.displayName"
+          />
+
+          <InputTextarea
+            label="Bio"
+            v-model:value="userForm.bio"
+            placeholder="Something about you. It can be anything"
+            :value="user.user.bio"
+          />
+
+          <InputSelect
+            label="Country"
+            placeholder="Select where you're from"
+            :options="countryOptions"
+            v-model:selected="userForm.country"
+          />
+
+          <Button
+            class="btn-black"
+            @click="submitUserInfo"
+            :class="{ 'btn-disabled': getLoading('user-form') || infoValidation.status.anyError }"
+          >
+            Save
+          </Button>
+          <!-- </form> -->
         </li>
         <li>
           <h5>Avatar image</h5>
@@ -178,7 +206,6 @@ async function savePassword() {
         <li>
           <h5>Color theme</h5>
           <InputSelect
-            style="width: 356px; margin-bottom: 40px"
             v-model:selected="_theme"
             :options="themeOptions"
             label="Theme"

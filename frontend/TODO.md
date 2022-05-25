@@ -3,13 +3,14 @@
 - [x] Expired token issues
 - [ ] Fix image list showing error instead of loading in album lists
 - [ ] Changing accent does not instantly update it for user
+  - [ ] might have to inser into
+  - [ ] destructured pinia instances lose reactivity, change from destructured to named import
 - [ ] Accent colors being quirky
+  - [ ] Could be related to previous issue
 
 # Todo
 
-- [ ] Scan all markers when displaying a map, and check for large differences. Change map zoom according to that
-
-  - [ ] https://docs.mapbox.com/mapbox-gl-js/example/fitbounds/
+- [ ] Add search to select
 
 - [ ] Figure out breadcrumbs again
 
@@ -42,10 +43,6 @@
 - [ ] Album List
 
   - [ ] Add filtering to album lists
-
-- [x] Homepage
-
-  - [x] Design and implement
 
 - [ ] Add link sharing image & title (like github does)
 

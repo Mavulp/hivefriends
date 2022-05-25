@@ -991,4 +991,9 @@ export default {
     name: "Zimbabwe",
     code: "ZW"
   }
+} as { [key: string]: Country }
+
+export type Country = {
+  name: string
+  code: string
 }

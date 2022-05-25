@@ -49,7 +49,6 @@ function getData() {
     <Toasts />
 
     <div class="hi-router-layout">
-      <!-- <router-view ></router-view> -->
       <router-view v-slot="{ Component }" v-if="!getLoading('app')">
         <transition name="pagetransition" mode="out-in">
           <component :is="Component" :key="route.path.includes('image') ? '' : route.fullPath" />

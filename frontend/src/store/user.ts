@@ -17,6 +17,7 @@ export interface User {
   met: Array<string> | []
   albumsUploaded: Array<string> | []
   createdAt: number
+  country: string | null
 }
 
 export interface UserSettings {
