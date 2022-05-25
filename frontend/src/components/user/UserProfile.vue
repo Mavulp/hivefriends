@@ -95,7 +95,7 @@ watchEffect(() => {
         <div class="user-information">
           <h1>{{ user.displayName ?? user.username }}</h1>
           <div class="user-info-meta">
-            <span v-if="user.country" :data-title-top="countries[user.country]">
+            <span v-if="user.country" :data-title-top="countries[user.country].name">
               <img class="flag" :src="flag(user.country)" alt="" />
             </span>
             <span>

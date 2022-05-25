@@ -254,6 +254,7 @@ input:-webkit-autofill:active {
     left: 16px;
     top: -10px;
     font-size: 1.2rem;
+    z-index: 5;
     color: rgb(var(--color-text-light));
     padding: 2px 8px;
     background-color: rgb(var(--color-background));
@@ -272,12 +273,24 @@ input:-webkit-autofill:active {
   .select-button {
     display: block;
     width: 100%;
+    position: relative;
     text-align: left;
-    height: 56px;
-    line-height: 56px;
+
+    z-index: 1;
     border: 1px solid rgb(var(--color-border-light));
-    padding: 0 20px;
-    color: rgb(var(--color-text));
+
+    input {
+      color: rgb(var(--color-text));
+      display: block;
+      padding: 0 20px;
+      width: 100%;
+      height: 56px;
+      line-height: 56px;
+      // position: absolute;
+      // inset: 0;
+      background-color: transparent;
+      border: none;
+    }
 
     .select-placeholder {
       color: rgb(var(--color-text-light));

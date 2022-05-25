@@ -2,6 +2,7 @@
 import { User, useUser } from "../../store/user"
 import { flag } from "../../js/utils"
 import { imageUrl } from "../../store/album"
+import countries from "../../js/countries"
 
 const { getUsername } = useUser()
 
@@ -9,22 +10,24 @@ interface Props {
   data: User
 }
 
-const { data } = defineProps<Props>()
+const props = defineProps<Props>()
 </script>
 
 <template>
-  <router-link class="home-user" :to="{ name: 'UserProfile', params: { user: data.username } }">
+  <router-link class="home-user" :to="{ name: 'UserProfile', params: { user: props.data.username } }">
     <img
       class="user-image"
-      :src="imageUrl(data.avatarKey, 'tiny')"
+      :src="imageUrl(props.data.avatarKey, 'tiny')"
       alt=" "
-      :style="{ backgroundColor: `rgb(${data.accentColor})` }"
+      :style="{ backgroundColor: `rgb(${props.data.accentColor})` }"
       @error="(e: any) => e.target.classList.add('image-error')"
     />
 
-    <h5>{{ getUsername(data.username) }}</h5>
+    <h5>{{ getUsername(props.data.username) }}</h5>
 
-    <img v-if="data.country" class="flag" :src="flag(data.country)" alt="" data-title-top="Eu" />
+    <div v-if="props.data.country" :data-title-top="countries[props.data.country].name">
+      <img class="flag" :src="flag(props.data.country)" alt="" />
+    </div>
     <div class="flex-1"></div>
 
     <button class="hover-bubble">View Profile</button>

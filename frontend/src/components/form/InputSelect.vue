@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onClickOutside } from "@vueuse/core"
-import { computed, ref } from "vue"
+import { computed, ref, watch } from "vue"
 
 type Option = {
   label: string
@@ -20,9 +20,16 @@ interface Props {
 const { label, placeholder, multiple, options, selected, cantclear = false, required = false } = defineProps<Props>()
 const open = ref(false)
 const self = ref(null)
+const search = ref("")
 
 onClickOutside(self, () => {
   open.value = false
+})
+
+watch(open, (val) => {
+  if (!val) {
+    search.value = ""
+  }
 })
 
 const emit = defineEmits<{
@@ -32,16 +39,18 @@ const emit = defineEmits<{
 const formattedOptions = computed(() => {
   if (!options || options.length === 0) return null
 
-  return options.map((item) => {
-    if (typeof item === "string") {
-      return {
-        label: item,
-        value: item
+  return options
+    .map((item) => {
+      if (typeof item === "string") {
+        return {
+          label: item,
+          value: item
+        }
+      } else {
+        return item
       }
-    } else {
-      return item
-    }
-  })
+    })
+    .filter((option) => option.label.toLowerCase().includes(search.value.toLowerCase()))
 })
 
 const selectedLabels = computed(() => {
@@ -98,14 +107,15 @@ function setValue(item: Option) {
     <label v-if="label">{{ label }}</label>
 
     <button class="select-button" @click="open = !open">
-      <template v-if="selected && selected.length > 0">
-        {{ selectedLabels }}
-      </template>
-      <span class="select-placeholder" v-else-if="placeholder">{{ placeholder }}</span>
+      <input
+        type="text"
+        :placeholder="selected && selected.length > 0 ? `${selectedLabels}` : `${placeholder}`"
+        v-model="search"
+      />
     </button>
 
     <div class="select-dropdown">
-      <template v-if="formattedOptions">
+      <template v-if="formattedOptions && formattedOptions.length > 0">
         <button
           v-for="item in formattedOptions"
           :key="item.label"

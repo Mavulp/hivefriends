@@ -3,14 +3,13 @@
 - [x] Expired token issues
 - [ ] Fix image list showing error instead of loading in album lists
 - [ ] Changing accent does not instantly update it for user
-  - [ ] might have to inser into
-  - [ ] destructured pinia instances lose reactivity, change from destructured to named import
+  - might have to inser into
+  - destructured pinia instances lose reactivity, change from destructured to named import
+    - just check for useUser() and redo them all just to be sure
 - [ ] Accent colors being quirky
   - [ ] Could be related to previous issue
 
 # Todo
-
-- [ ] Add search to select
 
 - [ ] Figure out breadcrumbs again
 
