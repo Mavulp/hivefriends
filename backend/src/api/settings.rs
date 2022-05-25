@@ -23,23 +23,17 @@ pub fn api_route() -> Router {
         .route("/password", put(put_password))
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Settings {
-    #[serde(default, deserialize_with = "non_empty_str")]
     pub display_name: Option<String>,
-    #[serde(default, deserialize_with = "non_empty_str")]
     pub bio: Option<String>,
-    #[serde(default, deserialize_with = "non_empty_str")]
     pub avatar_key: Option<String>,
-    #[serde(default, deserialize_with = "non_empty_str")]
     pub banner_key: Option<String>,
-    #[serde(default, deserialize_with = "non_empty_str")]
-    pub accent_color: Option<String>,
-    #[serde(default, deserialize_with = "non_empty_str")]
+    pub accent_color: String,
     pub featured_album_key: Option<String>,
-    #[serde(default, deserialize_with = "non_empty_str")]
-    pub color_theme: Option<String>,
+    pub country: Option<String>,
+    pub color_theme: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -48,8 +42,9 @@ pub struct DbSettings {
     pub bio: Option<String>,
     pub avatar_key: Option<String>,
     pub banner_key: Option<String>,
-    pub accent_color: Option<String>,
+    pub accent_color: String,
     pub featured_album_key: Option<String>,
+    pub country: Option<String>,
     pub color_theme: String,
 }
 
@@ -88,7 +83,8 @@ async fn get_settings(
             banner_key: db_settings.banner_key,
             accent_color: db_settings.accent_color,
             featured_album_key: db_settings.featured_album_key,
-            color_theme: Some(db_settings.color_theme),
+            country: db_settings.country,
+            color_theme: db_settings.color_theme,
         }))
     } else {
         Err(Error::NotFound)
@@ -98,12 +94,21 @@ async fn get_settings(
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PutSettingsRequest {
+    #[serde(default, deserialize_with = "non_empty_str")]
     pub display_name: Option<String>,
+    #[serde(default, deserialize_with = "non_empty_str")]
     pub bio: Option<String>,
+    #[serde(default, deserialize_with = "non_empty_str")]
     pub avatar_key: Option<String>,
+    #[serde(default, deserialize_with = "non_empty_str")]
     pub banner_key: Option<String>,
+    #[serde(default, deserialize_with = "non_empty_str")]
     pub accent_color: Option<String>,
+    #[serde(default, deserialize_with = "non_empty_str")]
     pub featured_album_key: Option<String>,
+    #[serde(default, deserialize_with = "non_empty_str")]
+    pub country: Option<String>,
+    #[serde(default, deserialize_with = "non_empty_str")]
     pub color_theme: Option<String>,
 }
 
@@ -124,7 +129,7 @@ async fn put_settings(
                 conn.query_row(
                     &format!("UPDATE users SET {update_str} WHERE username = ?"),
                     rusqlite::params_from_iter(params.iter()),
-                    |row| Ok(from_row::<Settings>(row).unwrap()),
+                    |_| Ok(()),
                 )
                 .optional()
             })
@@ -238,6 +243,10 @@ impl PutSettingsRequest {
             result.push("featured_album_key = ?")
         }
 
+        if self.country.is_some() {
+            result.push("country = ?")
+        }
+
         if self.color_theme.is_some() {
             result.push("color_theme = ?")
         }
@@ -270,6 +279,10 @@ impl PutSettingsRequest {
 
         if let Some(featured_album_key) = self.featured_album_key.take() {
             params.push(Box::new(featured_album_key));
+        }
+
+        if let Some(country) = self.country.take() {
+            params.push(Box::new(country));
         }
 
         if let Some(color_theme) = self.color_theme.take() {

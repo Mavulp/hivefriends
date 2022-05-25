@@ -90,6 +90,7 @@ CREATE TABLE users (
     banner_key TEXT NULL,
     accent_color TEXT NOT NULL DEFAULT '229, 125, 35',
     featured_album_key TEXT NULL,
+    country TEXT NULL,
     created_at INTEGER NOT NULL, -- unix ts
 
     -- private

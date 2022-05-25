@@ -28,6 +28,7 @@ pub struct User {
     pub banner_key: Option<String>,
     pub accent_color: Option<String>,
     pub featured_album_key: Option<String>,
+    pub country: Option<String>,
     pub met: Vec<String>,
     pub albums_uploaded: Vec<String>,
     pub created_at: i64,
@@ -42,6 +43,7 @@ struct DbUser {
     banner_key: Option<String>,
     accent_color: Option<String>,
     featured_album_key: Option<String>,
+    country: Option<String>,
     created_at: i64,
 }
 
@@ -60,6 +62,7 @@ async fn get_users(
                 banner_key, \
                 accent_color, \
                 featured_album_key, \
+                country, \
                 created_at \
                 FROM users"
             .to_string();
@@ -123,6 +126,7 @@ async fn get_users(
                 banner_key: db_user.banner_key,
                 accent_color: db_user.accent_color,
                 featured_album_key: db_user.featured_album_key,
+                country: db_user. country,
                 bio: db_user.bio,
                 met,
                 albums_uploaded,
@@ -153,6 +157,7 @@ async fn get_user_by_username(
                     banner_key, \
                     accent_color, \
                     featured_album_key, \
+                    country, \
                     created_at \
                 FROM users WHERE username = ?1",
                 params![username],
@@ -207,11 +212,12 @@ async fn get_user_by_username(
         Ok(Json(User {
             username: db_user.username,
             display_name: db_user.display_name,
+            bio: db_user.bio,
             avatar_key: db_user.avatar_key,
             banner_key: db_user.banner_key,
             accent_color: db_user.accent_color,
             featured_album_key: db_user.featured_album_key,
-            bio: db_user.bio,
+            country: db_user.country,
             met,
             albums_uploaded,
             created_at: db_user.created_at,
