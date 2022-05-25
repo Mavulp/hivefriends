@@ -14,7 +14,7 @@ pub fn api_route() -> Router {
     Router::new()
         .route("/:album/:image", get(get_all_comments::get::<FileDb>))
         .route("/:album/:image", post(create_comment::post::<FileDb>))
-        .route("/:key", delete(delete_comment::delete::<FileDb>))
+        .route("/:album", delete(delete_comment::delete::<FileDb>))
 }
 
 #[derive(Eq, PartialEq, Debug, serde::Serialize)]

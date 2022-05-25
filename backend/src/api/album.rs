@@ -69,7 +69,6 @@ pub fn is_owner(album_key: &str, user: &str, conn: &Connection) -> anyhow::Resul
     } else {
         let author = result?;
 
-        dbg!(&author, &user);
         Ok(author == user)
     }
 }
