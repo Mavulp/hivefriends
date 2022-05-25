@@ -1,3 +1,5 @@
+import countries from "./countries"
+
 export function getRanMinMax(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
@@ -61,4 +63,8 @@ export function formatFileSize(bytes: string | number, round?: boolean) {
 
   if (bytes / 1000000 > 1) return round ? Math.round(bytes / 1000000) + "MB" : bytes / 1000000 + "MB"
   return round ? Math.round(bytes / 1000) + "KB" : bytes / 1000 + "KB"
+}
+
+export function flag(code: string, type: string = "svg") {
+  return `https://countryflagsapi.com/${type}/${code}`
 }

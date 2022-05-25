@@ -1,5 +1,107 @@
 .hi-home {
   // @include flex($direction: column);
   width: 100%;
-  padding: 64px 128px;
+
+  .home-landing {
+    display: block;
+    height: calc(100vh - 56px);
+    padding: 64px 128px;
+    position: relative;
+
+    h1 {
+      z-index: 10;
+      display: block;
+      position: relative;
+      font-style: italic;
+      margin-bottom: 64px;
+      font-size: 24rem;
+      -webkit-text-fill-color: transparent;
+      -webkit-text-stroke-width: 1.5px;
+      -webkit-text-stroke-color: rgb(var(--color-border));
+      // mix-blend-mode: difference;
+
+      // &:after {
+      //   content: "";
+      //   display: block;
+      //   position: absolute;
+      //   left: calc(100% + 64px);
+      //   // top: 0;
+      //   bottom: 0;
+      //   height: 32px;
+      //   width: 32px;
+      //   background: -webkit-linear-gradient(0, #6438e7, #25e66caa);
+      // }
+
+      b {
+        display: inline;
+        font-size: inherit;
+
+        -webkit-text-fill-color: rgb(var(--color-highlight));
+        -webkit-text-stroke-width: 2px;
+        -webkit-text-stroke-color: rgb(var(--color-highlight));
+      }
+    }
+
+    h3 {
+      @include font(900);
+      font-size: 8rem;
+      position: relative;
+
+      line-height: 1.4em;
+      font-style: italic;
+      z-index: 10;
+    }
+
+    .album-thumbnail {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 50%;
+      // top: 128px;
+      top: 22%;
+      z-index: 1;
+      color: rgb(var(--color-text-white));
+
+      .thumbnail-controls {
+        @include flex($gap: 32px);
+        position: absolute;
+        inset: 0;
+        top: unset;
+        font-size: 1.4rem;
+        padding: 32px;
+        background-color: rgba(var(--color-background-dark), 0.6);
+
+        .user {
+          @include flex($gap: 12px);
+          position: relative;
+          color: rgb(var(--color-text-white));
+
+          .user-image {
+            @include radius(50%);
+            display: block;
+            object-fit: cover;
+            object-position: center;
+            width: 32px;
+            height: 32px;
+          }
+        }
+      }
+
+      // button {
+      //   display: block;
+      //   position: absolute;
+      //   bottom: 32px;
+      //   left: 32px;
+      //   font-size: 1.6rem;
+      // }
+
+      img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
+    }
+  }
 }

@@ -11,6 +11,7 @@ import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 import AlbumTimestamp from "../../components/albums/AlbumTimestamp.vue"
 import ImageListitem from "../../components/albums/ImageListitem.vue"
 import { useCssVar } from "@vueuse/core"
+import { useHead } from "@vueuse/head"
 
 const albums = useAlbums()
 const route = useRoute()
@@ -30,6 +31,24 @@ onBeforeMount(async () => {
   if (id) {
     const data = await albums.fetchAlbum(id)
     Object.assign(album, data)
+
+    // Set metadata
+    // useHead({
+    //   meta: [
+    //     {
+    //       name: "og:title",
+    //       content: album.title
+    //     },
+    //     {
+    //       name: "og:descrption",
+    //       content: album.description
+    //     },
+    //     {
+    //       name: "og:image",
+    //       content: imageUrl(album.coverKey, "medium")
+    //     }
+    //   ]
+    // })
   }
 })
 

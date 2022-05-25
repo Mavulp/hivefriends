@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { ref } from "vue"
+import { computed, ref } from "vue"
 import { Comment, useComments } from "../../store/comments"
 import { imageUrl } from "../../store/album"
 import { useUser } from "../../store/user"
-import { formatDate } from "../../js/utils"
 
 const user = useUser()
 const comments = useComments()
@@ -26,6 +25,39 @@ function formatTimestamp(date: number) {
     day: "numeric"
   })}`
 }
+
+// const _regex = /(https?:\/\/[^ ]*)/
+const _regex = /\bhttps?:\/\/\S+/gi
+const formats = [".jpeg", ".gif", ".png", ".apng", ".svg", ".bmp", ".bmp", ".ico"]
+
+const text = computed(() => {
+  if (!props.data.text) return ""
+
+  const urls = [...new Set(props.data.text.match(_regex))]
+  let text = props.data.text
+
+  const _img = (_url: string) => `<img src="${_url}" />`
+  const _a = (_url: string) => `<a href="${_url}" target="_blank">${_url}</a>`
+
+  if (urls.length > 0) {
+    // Loop over each url
+    for (const url of urls) {
+      let chunk
+
+      if (formats.some((format) => url.endsWith(format))) {
+        // Is an image
+        chunk = _img(url)
+      } else {
+        // is a link
+        chunk = _a(url)
+      }
+
+      text = text.replace(url, chunk)
+    }
+  }
+
+  return text
+})
 </script>
 
 <template>
@@ -35,7 +67,7 @@ function formatTimestamp(date: number) {
         v-if="props.data.author === user.user.username || props.uploader === user.user.username"
         class="control-button hover-bubble"
         data-title-top="Remove"
-        @click="comments.delComment(props.imageKey, data.id)"
+        @click="comments.delComment(data.id)"
       >
         <span class="material-icons"> &#xe872; </span>
       </button>
@@ -58,7 +90,7 @@ function formatTimestamp(date: number) {
     </div>
 
     <div class="comment-body">
-      <p>{{ props.data.text }}</p>
+      <p v-html="text"></p>
       <span class="timestamp">{{ formatTimestamp(props.data.createdAt) }}</span>
     </div>
   </div>

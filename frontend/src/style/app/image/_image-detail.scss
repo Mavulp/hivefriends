@@ -210,6 +210,24 @@
           margin-bottom: 8px;
         }
 
+        .user-image {
+          @include radius(50%);
+          display: block;
+          object-fit: cover;
+          object-position: center;
+          width: 32px;
+          height: 32px;
+        }
+
+        a {
+          margin-left: 8px;
+          margin-top: 8px;
+          display: inline-flex !important;
+          @include flex($gap: 12px);
+          color: rgb(var(--color-text));
+        }
+
+        a,
         p,
         strong {
           margin-bottom: 40px;

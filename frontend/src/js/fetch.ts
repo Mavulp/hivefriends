@@ -82,6 +82,16 @@ async function _handleFetch(url: string, options: object) {
 }
 
 async function _handleResponse(response: Response) {
+  // Reset on 403
+  if ([403, 401].includes(response.status)) {
+    localStorage.removeItem("user")
+    localStorage.removeItem("bearer_token")
+
+    if (window.location.href === "/login") {
+      window.location.href = "/login"
+    }
+  }
+
   return response.text().then((text: string) => {
     const data = text && JSON.parse(text)
 

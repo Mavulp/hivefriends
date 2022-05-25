@@ -111,6 +111,12 @@
           @include font(400);
           // font-style: italic;
         }
+
+        img {
+          display: inline-block;
+          max-height: 512px;
+          max-width: 100%;
+        }
       }
     }
   }

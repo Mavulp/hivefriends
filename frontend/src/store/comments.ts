@@ -13,25 +13,23 @@ export type Comment = {
 }
 
 interface State {
-  comments: {
-    [key: string]: Array<Comment>
-  }
+  comments: Array<Comment>
 }
 
 export const useComments = defineStore("comments", {
   state: () =>
     ({
-      comments: {}
+      comments: []
     } as State),
   actions: {
-    async fetchComments(key: string) {
+    async fetchComments({ albumKey, imageKey }: { albumKey: string; imageKey: string }) {
       const { addLoading, delLoading } = useLoading()
 
       addLoading("comments")
 
-      return get(`/api/images/${key}/comments/`)
+      return get(`/api/comments/${albumKey}/${imageKey}/`)
         .then((response) => {
-          this.comments[key] = response
+          this.comments = response
           return response
         })
         .catch((error: FetchError) => {
@@ -45,14 +43,14 @@ export const useComments = defineStore("comments", {
         })
     },
 
-    async addComment(key: string, text: string) {
+    async addComment({ albumKey, imageKey, text }: { albumKey: string; imageKey: string; text: string }) {
       const { addLoading, delLoading } = useLoading()
 
       addLoading("add-comment")
 
-      return post(`/api/images/${key}/comments/`, text)
+      return post(`/api/comments/${albumKey}/${imageKey}/`, text)
         .then((response) => {
-          this.comments[key].push(response)
+          this.comments.push(response)
           return response
         })
         .catch((error: FetchError) => {
@@ -64,25 +62,15 @@ export const useComments = defineStore("comments", {
         })
     },
 
-    async delComment(key: string, id: number) {
+    async delComment(id: number) {
       const { add } = useToast()
 
-      return del(`/api/images/${key}/comments/${id}`)
+      return del(`/api/comments/${id}`)
         .then(() => {
-          this.comments = {
-            ...this.comments,
-            [key]: this.comments[key].filter((item: Comment) => item.id !== id)
-          }
-
+          this.comments = this.comments.filter((item: Comment) => item.id !== id)
           add("Successfully deleted comment", "success")
         })
         .catch(() => add("Error deleting comment", "error"))
-    }
-  },
-  getters: {
-    getImageComments: (state) => (key: string) => {
-      if (!state.comments[key] || state.comments[key].length === 0) return []
-      return state.comments[key]
     }
   }
 })

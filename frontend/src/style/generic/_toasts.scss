@@ -2,15 +2,14 @@
   position: fixed;
   bottom: 32px;
   right: 32px;
-  // width: 512px;
-  width: 50vw;
-  max-width: 656px;
+  max-width: 616px;
   z-index: 1000;
 
   .hi-toast-item {
     @include t();
     @include flex($gap: 16px, $align: center);
-    width: 100%;
+    // display: inline-flex !important;
+    max-width: 100%;
     text-align: left;
     height: 44px;
     position: relative;
@@ -53,7 +52,7 @@
 
     p {
       display: block;
-      flex: 1;
+      // flex: 1;
       font-size: 1.4rem;
       white-space: nowrap;
       text-overflow: ellipsis;

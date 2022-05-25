@@ -14,6 +14,7 @@ const user = useUser()
 const { getLoading } = useLoading()
 
 interface Props {
+  albumKey: string
   imageKey: string
   uploader: string
 }
@@ -24,12 +25,15 @@ const emit = defineEmits<{
   (e: "close"): void
 }>()
 
-const data = computed<Array<Comment>>(() => comments.getImageComments(props.imageKey))
+const data = computed<Array<Comment>>(() => comments.comments)
 
 watch(
   () => props.imageKey,
-  async (value) => {
-    await comments.fetchComments(value)
+  async () => {
+    await comments.fetchComments({
+      albumKey: props.albumKey,
+      imageKey: props.imageKey
+    })
   },
   { immediate: true }
 )
@@ -53,7 +57,11 @@ const { validate, errors, reset } = useFormValidation(form, rules, { autoclear: 
 
 async function submit() {
   validate().then(() => {
-    comments.addComment(props.imageKey, form.comment)
+    comments.addComment({
+      albumKey: props.albumKey,
+      imageKey: props.imageKey,
+      text: form.comment
+    })
 
     nextTick(() => {
       form.comment = ""

@@ -4,7 +4,7 @@ import { useRoute, useRouter } from "vue-router"
 import { imageUrl, useAlbums, Album, Image as ImageStruct } from "../../store/album"
 import { isEmpty, isNil } from "lodash"
 import { useLoading } from "../../store/loading"
-import { onKeyStroke, useCssVar } from "@vueuse/core"
+import { onKeyStroke, useClipboard, useCssVar } from "@vueuse/core"
 import { map_access, map_dark, map_light } from "../../js/map"
 import { useUser } from "../../store/user"
 import { RGB_TO_HEX, formatDate, formatFileSize } from "../../js/utils"
@@ -13,6 +13,7 @@ import { MapboxMap, MapboxMarker } from "vue-mapbox-ts"
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 import CommentsWrap from "../../components/comments/CommentsWrap.vue"
 import { useComments } from "../../store/comments"
+import { useToast } from "../../store/toast"
 
 /**
  *  Setup
@@ -128,8 +129,8 @@ watchEffect(() => {
  * Map & metadata
  */
 
-const map = ref(null)
-const mapLoaded = ref(false)
+// const map = ref(null)
+// const mapLoaded = ref(false)
 
 const mapStyle = computed(() => (settings.colorTheme.startsWith("dark") ? map_dark : map_light))
 const sortedMarkers = computed(() => {
@@ -156,7 +157,20 @@ function scrollDown() {
   window.scrollTo({ top: window.innerHeight / 1.25, behavior: "smooth" })
 }
 
-const { getImageComments } = useComments()
+const { comments } = useComments()
+
+/**
+ * Copy
+ */
+const { copy } = useClipboard()
+const toast = useToast()
+
+function copyClipboard() {
+  if (url.value) {
+    copy(url.value)
+    toast.add("Image link copied to clipboard")
+  }
+}
 </script>
 
 <template>
@@ -200,10 +214,10 @@ const { getImageComments } = useComments()
               Comments
 
               <span class="material-icons rotate" v-if="getLoading('comments')">&#xe863;</span>
-              <template v-else> ({{ getImageComments(imageKey).length }}) </template>
+              <template v-else> ({{ comments.length }}) </template>
             </button>
 
-            <button class="hover-bubble" data-title-top="WIP">
+            <button class="hover-bubble" @click="copyClipboard">
               <span class="material-icons">&#xe157;</span>
               Share
             </button>
@@ -271,6 +285,20 @@ const { getImageComments } = useComments()
 
           <div class="hi-image-metadata">
             <div class="hi-image-properties">
+              <span>Uploader</span>
+
+              <router-link class="hover-bubble" :to="{ name: 'UserProfile', params: { user: image.uploader } }">
+                <img
+                  class="user-image"
+                  :src="imageUrl(getUser(image.uploader, 'avatarKey'), 'tiny')"
+                  :style="[`backgroundColor: rgb(${getUser(image.uploader, 'accentColor')})`]"
+                  alt=" "
+                  @error="(e: any) => e.target.classList.add('image-error')"
+                />
+
+                {{ image.uploader }}
+              </router-link>
+
               <span>Name</span>
               <strong>{{ image.fileName }}</strong>
 
@@ -326,7 +354,12 @@ const { getImageComments } = useComments()
     </div>
 
     <div class="comment-wrap" v-if="album && image" :class="{ active: showComments }">
-      <CommentsWrap @close="showComments = false" :imageKey="imageKey" :uploader="image.uploader" />
+      <CommentsWrap
+        @close="showComments = false"
+        :albumKey="albumKey"
+        :imageKey="imageKey"
+        :uploader="image.uploader"
+      />
     </div>
   </div>
 </template>

@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@vueuse/core": "^8.5.0",
+    "@vueuse/head": "^0.7.6",
     "lodash": "^4.17.21",
     "pinia": "^2.0.14",
     "sass": "^1.51.0",
