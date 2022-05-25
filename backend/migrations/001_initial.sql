@@ -83,7 +83,7 @@ CREATE TABLE album_image_associations (
 ) STRICT;
 
 CREATE TABLE users (
-    username TEXT PRIMARY KEY NOT NULL,
+    username TEXT PRIMARY KEY NOT NULL COLLATE NOCASE,
     display_name TEXT NULL,
     bio TEXT NULL,
     avatar_key TEXT NULL,

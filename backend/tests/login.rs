@@ -24,16 +24,10 @@ async fn invalid_password() {
 async fn authenticate() {
     let (client, _temp) = setup_test_client().await;
 
+    // This also tests case insensitive usernames
     let res = client
         .post("/api/login")
-        .json(&json!({"username":"username","password":"invalid"}))
-        .send()
-        .await;
-    assert_eq!(res.status(), 401);
-
-    let res = client
-        .post("/api/login")
-        .json(&json!({"username":"username","password":"password"}))
+        .json(&json!({"username":"USERNAME","password":"password"}))
         .send()
         .await;
     let status = res.status();
