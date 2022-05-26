@@ -15,14 +15,11 @@ import { useBread } from "../../store/bread"
 
 const store = useAlbums()
 const route = useRoute()
-
 const { getLoading } = useLoading()
-const { getKey, getUsername } = useUser()
+const user = useUser()
 
-// const headerShrink = ref(false)
 const data = ref<Array<Album>>([])
 const search = ref("")
-// const open = ref(false)
 
 onBeforeMount(async () => {
   const username = String(route.params.user)
@@ -49,7 +46,7 @@ const sortedAlbums = computed(() => {
       <div class="title-wrap">
         <div class="inline-wrap">
           <h3>
-            {{ route.params.id === getKey ? "Your albums" : `${getUsername(route.params.user)}'s albums` }}
+            {{ route.params.id === user.getKey ? "Your albums" : `${user.getUsername(route.params.user)}'s albums` }}
           </h3>
           <!-- <Button class="btn-black" @click="open = !open">{{ open ? "Close" : "Filter" }}</Button> -->
         </div>

@@ -63,6 +63,10 @@ export const useUser = defineStore("user", {
         })
     },
     async fetchUser(username: string | number, notme?: boolean) {
+      const { addLoading, delLoading } = useLoading()
+
+      addLoading("user")
+
       return get(`/api/users/${username}`)
         .then((response) => {
           if (notme) {
@@ -80,6 +84,9 @@ export const useUser = defineStore("user", {
         .catch((error: FetchError) => {
           const toast = useToast()
           toast.add(error.message, "error")
+        })
+        .finally(() => {
+          delLoading("user")
         })
     },
 

@@ -137,7 +137,7 @@ router.beforeResolve(async (to, from, next) => {
     if (!token || !key) {
       return _clearUser(next)
     } else if (!auth.logged) {
-      auth.fetchUser(key)
+      await auth.fetchUser(key)
     }
   }
 

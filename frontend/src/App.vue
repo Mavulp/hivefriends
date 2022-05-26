@@ -3,6 +3,7 @@ import "./style/index.scss"
 
 import Navigation from "./components/navigation/Navigation.vue"
 import Toasts from "./components/navigation/Toasts.vue"
+import LoadingSpin from "./components/loading/LoadingSpin.vue"
 
 import { onBeforeMount, onErrorCaptured, watchEffect } from "vue"
 import { useUser } from "./store/user"
@@ -15,11 +16,13 @@ const router = useRouter()
 const { addLoading, delLoading, getLoading } = useLoading()
 const route = useRoute()
 
-watchEffect(() => {
-  if (user.logged) {
-    getData()
-  }
-})
+// watchEffect(() => {
+//   if (user.logged) {
+//     console.log('test');
+
+//     getData()
+//   }
+// })
 
 onBeforeMount(() => {
   document.title = "hi!friends"
@@ -30,14 +33,14 @@ function getData() {
   addLoading("app")
 
   Promise.all([user.fetchUsers(), user.fetchSettings()]).then(() => {
-    delLoading("app")
-
     const theme = user.settings.colorTheme ?? "light-theme"
     const r = document.querySelector(":root")
     if (r) {
       r.removeAttribute("class")
       r.classList.add(theme)
     }
+
+    delLoading("app")
   })
 }
 </script>
@@ -49,7 +52,9 @@ function getData() {
     <Toasts />
 
     <div class="hi-router-layout">
-      <router-view v-slot="{ Component }" v-if="!getLoading('app')">
+      <LoadingSpin v-if="getLoading('app', 'user')" class="dark centerp-page" />
+
+      <router-view v-slot="{ Component }">
         <transition name="pagetransition" mode="out-in">
           <component :is="Component" :key="route.path.includes('image') ? '' : route.fullPath" />
         </transition>

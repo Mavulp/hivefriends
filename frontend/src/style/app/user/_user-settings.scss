@@ -1,7 +1,8 @@
 .hi-user-settings-items {
   display: block;
   width: 60%;
-  max-width: 808px;
+  max-width: 880px;
+  margin: 0 auto;
 
   h1 {
     margin-bottom: 64px;
@@ -17,6 +18,10 @@
     margin-bottom: 40px;
   }
 
+  .form-input textarea {
+    min-height: 208px;
+  }
+
   .form-select {
     margin-bottom: 40px;
     width: 364px;
@@ -25,12 +30,13 @@
   .user-settings-list {
     display: block;
     margin-bottom: 40px;
+    padding-left: 0;
 
     li {
       margin-bottom: 40px;
       padding-bottom: 40px;
       padding-right: 32px;
-      padding-left: 32px;
+      padding-left: 0;
       border-bottom: 1px solid rgb(var(--color-border-light));
 
       &:last-child {

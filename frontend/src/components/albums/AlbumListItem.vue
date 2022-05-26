@@ -3,7 +3,7 @@ import { imageUrl, Album } from "../../store/album"
 import AlbumTimestamp from "../../components/albums/AlbumTimestamp.vue"
 import { useUser } from "../../store/user"
 
-const { getUser } = useUser()
+const user = useUser()
 
 interface Props {
   data: Album
@@ -28,8 +28,8 @@ const { data, author } = defineProps<Props>()
         <div class="album-author">
           <img
             class="user-image"
-            :src="imageUrl(getUser(author, 'avatarKey'), 'tiny')"
-            :style="[`backgroundColor: rgb(${getUser(author, 'accentColor')})`]"
+            :src="imageUrl(user.getUser(author, 'avatarKey'), 'tiny')"
+            :style="[`backgroundColor: rgb(${user.getUser(author, 'accentColor')})`]"
             alt=" "
             @error="(e: any) => e.target.classList.add('image-error')"
           />

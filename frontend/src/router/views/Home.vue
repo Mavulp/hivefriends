@@ -16,12 +16,7 @@ onBeforeMount(async () => {
   albums.value = await album.fetchAlbums()
 })
 
-const accent = computed(() =>
-  user
-    .getUser(latest.value.author, "accentColor")
-    .split(",")
-    .map((item: string) => Number(item))
-)
+const accent = computed(() => user.user.accentColor.split(",").map((item: string) => Number(item)))
 </script>
 
 <template>
@@ -33,21 +28,18 @@ const accent = computed(() =>
         bringing the IRL <br />
         to the URL.
       </h3>
-      <p>Say one word about my writing and you get hands.</p>
+      <!-- <p>Say one word about my writing and you get hands.</p> -->
 
-      <div class="album-thumbnail">
-        <template v-if="latest">
-          <Button
-            :to="{ name: 'AlbumDetail', params: { id: latest.key } }"
-            class="btn-highlight"
-            :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]"
-          >
-            Latest Album
-          </Button>
+      <Button class="btn-highlight" :to="{ name: 'Albums' }" :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]">
+        Albums
+      </Button>
 
+      <template v-if="latest">
+        <router-link :to="{ name: 'AlbumDetail', params: { id: latest.key } }" class="album-thumbnail">
+          <span>Latest album</span>
           <img :src="imageUrl(latest.coverKey)" alt="" />
-        </template>
-      </div>
+        </router-link>
+      </template>
     </div>
 
     <div class="container">
@@ -58,6 +50,9 @@ const accent = computed(() =>
       </div>
     </div>
 
-    <p class="copyright">Copyright {{ new Date().getFullYear() }} Mavulp</p>
+    <p class="copyright">
+      <span class="material-icons"> &#xe86f; </span>
+      Made by <a target="_blank" href="https://github.com/mavulp">Mavulp</a> in {{ new Date().getFullYear() }}
+    </p>
   </div>
 </template>

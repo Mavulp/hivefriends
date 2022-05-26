@@ -4,7 +4,7 @@ import { flag } from "../../js/utils"
 import { imageUrl } from "../../store/album"
 import countries from "../../js/countries"
 
-const { getUsername } = useUser()
+const user = useUser()
 
 interface Props {
   data: User
@@ -23,7 +23,7 @@ const props = defineProps<Props>()
       @error="(e: any) => e.target.classList.add('image-error')"
     />
 
-    <h5>{{ getUsername(props.data.username) }}</h5>
+    <h5>{{ user.getUsername(props.data.username) }}</h5>
 
     <div v-if="props.data.country" :data-title-top="countries[props.data.country].name">
       <img class="flag" :src="flag(props.data.country)" alt="" />

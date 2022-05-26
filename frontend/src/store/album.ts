@@ -106,7 +106,7 @@ export const useAlbums = defineStore("album", {
 
     async fetchUserAlbums(user: string) {
       const { addLoading, delLoading } = useLoading()
-      addLoading(`${user}-album`)
+      addLoading(`albums`)
 
       return get(`/api/albums/?user=${user}`)
         .then((albums) => {
@@ -119,11 +119,7 @@ export const useAlbums = defineStore("album", {
           toast.add(error.message, "error")
         })
         .finally(() => {
-          // Needs an offset because apparently it takes a long time to render the albums???
-          // FIXME: remove probably
-          setTimeout(() => {
-            delLoading(`${user}-album`)
-          }, 500)
+          delLoading(`albums`)
         })
     },
 
@@ -176,6 +172,7 @@ export const useAlbums = defineStore("album", {
     }
   },
   getters: {
+    getUserAlbums: (state) => (username: string) => state.userAlbums[username],
     getAlbums: (state) => state.albums,
     getAlbum: (state) => (key: string) => state.albums.find((album) => album.key === key),
     getImageMetadata: (state) => (key: string) => state.imageMetadata[key] ?? null

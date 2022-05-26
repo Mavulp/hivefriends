@@ -50,7 +50,7 @@ const url = ref<string | null>(null)
 const route = useRoute()
 const router = useRouter()
 const albums = useAlbums()
-const { settings, getUser } = useUser()
+const user = useUser()
 const { getLoading } = useLoading()
 
 const transDir = ref("imagenext")
@@ -120,7 +120,7 @@ onKeyStroke("Escape", () => {
 
 watchEffect(() => {
   if (album.value) {
-    const accent = getUser(album.value.author, "accentColor")
+    const accent = user.getUser(album.value.author, "accentColor")
     color.value = accent
   }
 })
@@ -129,7 +129,7 @@ watchEffect(() => {
  * Map & metadata
  */
 
-const mapStyle = computed(() => (settings.colorTheme.startsWith("dark") ? map_dark : map_light))
+const mapStyle = computed(() => (user.settings.colorTheme.startsWith("dark") ? map_dark : map_light))
 const sortedMarkers = computed(() => {
   // Make sure the current marker is always the last one to render
 
@@ -287,8 +287,8 @@ function copyClipboard() {
               <router-link class="hover-bubble" :to="{ name: 'UserProfile', params: { user: image.uploader } }">
                 <img
                   class="user-image"
-                  :src="imageUrl(getUser(image.uploader, 'avatarKey'), 'tiny')"
-                  :style="[`backgroundColor: rgb(${getUser(image.uploader, 'accentColor')})`]"
+                  :src="imageUrl(user.getUser(image.uploader, 'avatarKey'), 'tiny')"
+                  :style="[`backgroundColor: rgb(${user.getUser(image.uploader, 'accentColor')})`]"
                   alt=" "
                   @error="(e: any) => e.target.classList.add('image-error')"
                 />

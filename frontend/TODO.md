@@ -2,12 +2,6 @@
 
 - [x] Expired token issues
 - [ ] Fix image list showing error instead of loading in album lists
-- [ ] Changing accent does not instantly update it for user
-  - might have to inser into
-  - destructured pinia instances lose reactivity, change from destructured to named import
-    - just check for useUser() and redo them all just to be sure
-- [ ] Accent colors being quirky
-  - [ ] Could be related to previous issue
 
 # Todo
 
@@ -34,11 +28,6 @@
   - [ ] Add a button "user albums" or "all albums" to get back to album list
   - [ ] Share link
 
-- [ ] Dark mode
-
-  - [ ] Medium Dark
-  - [x] Normal dak -> rename to dark contast
-
 - [ ] Album List
 
   - [ ] Add filtering to album lists
@@ -48,6 +37,9 @@
 ## Post Launch TODO
 
 - [ ] Image detail
+
   - [ ] Slideshow mode (set delay in details)
     - [ ] padding is removed from image detail
     - [ ] controls fade, appear only if mouse has moved (disappear after like 5 seconds)
+
+- [ ] Dark mode feedback (ask)

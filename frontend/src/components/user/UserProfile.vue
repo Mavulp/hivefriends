@@ -112,27 +112,27 @@ watchEffect(() => {
         </div>
       </div>
       <div class="user-albums">
-        <div class="albums-title-wrap">
-          <h2>Latest albums</h2>
-          <Button
-            v-if="userAlbums.length > 2"
-            :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]"
-            class="btn-highlight"
-            :to="{ name: 'UserAlbums', params: { user: _id } }"
-            >All Albums</Button
-          >
-        </div>
-        <div class="user-albums-list">
-          <template v-if="userAlbums.length > 0">
-            <AlbumListItem v-for="item in [...userAlbums].slice(0, 2)" :data="item" />
-          </template>
-          <div v-else>
-            <p>
-              Looks like <b>{{ user.displayName ?? user.username }}</b> did not upload any albums yet. Are they touching
-              grass rn?
-            </p>
+        <template v-if="userAlbums.length === 0">
+          <p>
+            Looks like <b>{{ user.displayName ?? user.username }}</b> did not upload any albums yet. Are they touching
+            grass rn?
+          </p>
+        </template>
+        <template v-else>
+          <div class="albums-title-wrap">
+            <h2>Latest albums</h2>
+            <Button
+              v-if="userAlbums.length > 2"
+              :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]"
+              class="btn-highlight"
+              :to="{ name: 'UserAlbums', params: { user: _id } }"
+              >All Albums</Button
+            >
           </div>
-        </div>
+          <div class="user-albums-list">
+            <AlbumListItem v-for="item in [...userAlbums].slice(0, 2)" :data="item" />
+          </div>
+        </template>
       </div>
     </template>
   </div>
