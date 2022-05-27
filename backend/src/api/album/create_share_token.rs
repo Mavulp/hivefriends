@@ -1,18 +1,12 @@
 use anyhow::Context;
-use axum::{extract::rejection::JsonRejection, Extension, Json};
-use serde::{Deserialize, Serialize};
+use axum::{extract::Path, Extension, Json};
+use serde::Serialize;
 
 use std::sync::Arc;
 use std::time::SystemTime;
 
 use crate::api::{auth::Authorize, error::Error};
 use crate::{AppState, DbInteractable, SqliteDatabase};
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub(super) struct CreateShareTokenRequest {
-    album_key: String,
-}
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -21,11 +15,10 @@ pub(super) struct CreateShareTokenResponse {
 }
 
 pub(super) async fn post<D: SqliteDatabase>(
-    request: Result<Json<CreateShareTokenRequest>, JsonRejection>,
+    Path(album_key): Path<String>,
     Authorize(username): Authorize,
     Extension(state): Extension<Arc<AppState<D>>>,
 ) -> Result<Json<CreateShareTokenResponse>, Error> {
-    let Json(request) = request?;
     let conn = state.pool.get().await.context("Failed to get connection")?;
 
     let now = SystemTime::UNIX_EPOCH
@@ -41,7 +34,7 @@ pub(super) async fn post<D: SqliteDatabase>(
         super::insert_share_token(
             super::InsertShareToken {
                 share_token: &share_token,
-                album_key: &request.album_key,
+                album_key: &album_key,
                 created_by: &username,
                 created_at: now,
             },
@@ -89,9 +82,7 @@ mod test {
 
         let (user, album_key) = result.unwrap();
 
-        let request = CreateShareTokenRequest { album_key };
-
-        let result = post(Ok(Json(request)), Authorize(user), Extension(state)).await;
+        let result = post(Path(album_key), Authorize(user), Extension(state)).await;
 
         assert_matches!(result, Ok(_));
     }

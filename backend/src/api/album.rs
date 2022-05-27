@@ -27,8 +27,8 @@ pub fn api_route() -> Router {
 
 pub fn public_api_route() -> Router {
     Router::new()
-        .route("/", post(create_share_token::post::<FileDb>))
-        .route("/:token", get(get_by_share_token::get::<FileDb>))
+        .route("/:album", post(create_share_token::post::<FileDb>))
+        .route("/:album/:token", get(get_by_share_token::get::<FileDb>))
 }
 
 #[derive(Default, Debug, Serialize, Deserialize)]

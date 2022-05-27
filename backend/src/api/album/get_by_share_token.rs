@@ -1,5 +1,5 @@
 use anyhow::Context;
-use axum::{extract::Path, Extension, Json};
+use axum::{Extension, Json};
 use rusqlite::{params, OptionalExtension};
 use serde::Serialize;
 
@@ -7,6 +7,7 @@ use serde_rusqlite::from_row;
 
 use std::sync::Arc;
 
+use crate::api::public_auth::PublicAuthorize;
 use crate::api::error::Error;
 use crate::api::image::{DbImageMetadata, ImageMetadata};
 use crate::{AppState, DbInteractable, SqliteDatabase};
@@ -29,7 +30,7 @@ pub(super) struct AlbumResponse {
 }
 
 pub(super) async fn get<D: SqliteDatabase>(
-    Path(share_token): Path<String>,
+    PublicAuthorize(album_key): PublicAuthorize,
     Extension(state): Extension<Arc<AppState<D>>>,
 ) -> Result<Json<AlbumResponse>, Error> {
     let conn = state.pool.get().await.context("Failed to get connection")?;
@@ -48,10 +49,8 @@ pub(super) async fn get<D: SqliteDatabase>(
                     a.timeframe_to, \
                     a.created_at \
                 FROM albums a \
-                JOIN album_share_tokens t
-                    ON t.album_key = a.key
-                WHERE t.share_token=?1",
-                params![share_token],
+                WHERE a.key=?1",
+                params![album_key],
                 |row| Ok(from_row::<DbAlbum>(row).unwrap()),
             )
             .optional()
@@ -138,7 +137,7 @@ mod test {
 
         let conn = state.pool.get().await.unwrap();
 
-        let result: anyhow::Result<(String, String)> = conn
+        let result: anyhow::Result<String> = conn
             .interact(move |conn| {
                 let user = insert_user("test", conn)?;
                 let image = insert_image(&user, conn).context("")?;
@@ -151,7 +150,7 @@ mod test {
                     conn,
                 )?;
 
-                let token = insert_share_token(
+                insert_share_token(
                     InsertShareToken {
                         album_key: &album_key,
                         created_by: &user,
@@ -160,13 +159,17 @@ mod test {
                     conn,
                 )?;
 
-                Ok((album_key, token))
+                Ok(album_key)
             })
             .await;
 
-        let (expected_album_key, token) = result.unwrap();
+        let expected_album_key = result.unwrap();
 
-        let result = get(Path(token), Extension(state)).await;
+        let result = get(
+            PublicAuthorize(expected_album_key.clone()),
+            Extension(state),
+        )
+        .await;
 
         assert_matches!(result, Ok(Json(album)) => {
             assert_eq!(album.key, expected_album_key);

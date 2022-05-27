@@ -9,12 +9,20 @@ use rusqlite::{params, Connection};
 mod create_comment;
 mod delete_comment;
 mod get_all_comments;
+mod get_shared_comments;
 
 pub fn api_route() -> Router {
     Router::new()
         .route("/:album/:image", get(get_all_comments::get::<FileDb>))
         .route("/:album/:image", post(create_comment::post::<FileDb>))
         .route("/:album", delete(delete_comment::delete::<FileDb>))
+}
+
+pub fn public_api_route() -> Router {
+    Router::new().route(
+        "/:album/:image/:token",
+        get(get_shared_comments::get::<FileDb>),
+    )
 }
 
 #[derive(Eq, PartialEq, Debug, serde::Serialize)]
