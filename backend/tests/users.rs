@@ -44,7 +44,7 @@ async fn set_country() {
     let res = client
         .put(&format!("/api/settings/"))
         .header(AUTHORIZATION, format!("Bearer {token}"))
-        .json(&json!({"country":expected_country}))
+        .json(&json!({ "country": expected_country }))
         .send()
         .await;
 
@@ -66,8 +66,6 @@ async fn set_country() {
     dbg!(&json);
     assert_eq!(status, 200);
 
-    let actual_country = json["country"]
-        .as_str()
-        .unwrap();
+    let actual_country = json["country"].as_str().unwrap();
     assert_eq!(expected_country, actual_country);
 }

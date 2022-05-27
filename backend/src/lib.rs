@@ -87,6 +87,7 @@ pub fn api_route(pool: Pool, data_path: PathBuf) -> Router {
         .nest("/api/comments/", api::comment::api_route())
         .nest("/api/images/", api::image::api_route())
         .nest("/api/albums/", api::album::api_route())
+        .nest("/api/public/albums/", api::album::public_api_route())
         .nest("/api/users/", api::user::api_route())
         .nest("/api/settings/", api::settings::api_route())
         .nest(

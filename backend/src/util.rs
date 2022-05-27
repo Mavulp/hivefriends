@@ -9,7 +9,7 @@ pub(super) fn non_empty_str<'de, D: Deserializer<'de>>(d: D) -> Result<Option<St
 #[cfg(test)]
 pub mod test {
     use crate::api::{
-        album::{self, InsertAlbum},
+        album::{self, InsertAlbum, InsertShareToken},
         comment, image, user,
     };
     use crate::DbInteractable;
@@ -128,5 +128,26 @@ pub mod test {
         insert_album(&key, album, conn)?;
 
         Ok(key)
+    }
+
+    pub fn insert_share_token(
+        rows: InsertShareToken,
+        conn: &rusqlite::Connection,
+    ) -> anyhow::Result<String> {
+        fn insert_token<'a>(
+            token: &'a str,
+            mut rows: InsertShareToken<'a>,
+            conn: &rusqlite::Connection,
+        ) -> anyhow::Result<()> {
+            rows.share_token = &token;
+            album::insert_share_token(rows, conn)?;
+
+            Ok(())
+        }
+
+        let token = blob_uuid::random_blob();
+        insert_token(&token, rows, conn)?;
+
+        Ok(token)
     }
 }

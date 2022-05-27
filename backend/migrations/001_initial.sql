@@ -139,3 +139,20 @@ CREATE TABLE user_album_associations (
         REFERENCES albums (key)
         ON DELETE CASCADE
 ) STRICT;
+
+CREATE TABLE album_share_tokens (
+    share_token TEXT PRIMARY KEY NOT NULL,
+    album_key TEXT NOT NULL, -- this album
+    created_by TEXT NOT NULL,
+    created_at INTEGER NOT NULL, -- unix ts
+
+    CONSTRAINT fk_album_key_assoc
+        FOREIGN KEY (album_key)
+        REFERENCES albums (key)
+        ON DELETE CASCADE
+
+    CONSTRAINT fk_created_by_assoc
+        FOREIGN KEY (created_by)
+        REFERENCES users (username)
+        ON DELETE CASCADE
+) STRICT;

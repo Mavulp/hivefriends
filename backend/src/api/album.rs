@@ -5,6 +5,7 @@ use axum::{
 };
 use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
+use serde_rusqlite::to_params_named;
 
 use crate::api::error::Error;
 use crate::FileDb;
@@ -12,14 +13,22 @@ use crate::FileDb;
 use super::{image, user};
 
 mod create;
+mod create_share_token;
 mod get_all;
 mod get_by_key;
+mod get_by_share_token;
 
 pub fn api_route() -> Router {
     Router::new()
         .route("/", post(create::post::<FileDb>))
         .route("/", get(get_all::get::<FileDb>))
         .route("/:key", get(get_by_key::get::<FileDb>))
+}
+
+pub fn public_api_route() -> Router {
+    Router::new()
+        .route("/", post(create_share_token::post::<FileDb>))
+        .route("/:token", get(get_by_share_token::get::<FileDb>))
 }
 
 #[derive(Default, Debug, Serialize, Deserialize)]
@@ -55,6 +64,14 @@ pub struct InsertAlbum<'a> {
     pub created_at: u64,
     pub image_keys: &'a [String],
     pub tagged_users: &'a [String],
+}
+
+#[derive(Default, Serialize)]
+pub struct InsertShareToken<'a> {
+    pub share_token: &'a str,
+    pub album_key: &'a str,
+    pub created_by: &'a str,
+    pub created_at: u64,
 }
 
 pub fn is_owner(album_key: &str, user: &str, conn: &Connection) -> anyhow::Result<bool> {
@@ -125,6 +142,26 @@ pub fn insert_album(album: InsertAlbum, conn: &Connection) -> Result<(), Error> 
         )
         .context("Failed to insert user album associations")?;
     }
+
+    Ok(())
+}
+
+pub fn insert_share_token(rows: InsertShareToken, conn: &Connection) -> Result<(), Error> {
+    conn.execute(
+        "INSERT INTO album_share_tokens ( \
+                share_token, \
+                album_key, \
+                created_by, \
+                created_at \
+            ) VALUES (
+                :share_token,
+                :album_key,
+                :created_by,
+                :created_at
+            )",
+        to_params_named(&rows).unwrap().to_slice().as_slice(),
+    )
+    .context("Failed to insert share token")?;
 
     Ok(())
 }

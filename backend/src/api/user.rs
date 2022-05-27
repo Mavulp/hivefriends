@@ -126,7 +126,7 @@ async fn get_users(
                 banner_key: db_user.banner_key,
                 accent_color: db_user.accent_color,
                 featured_album_key: db_user.featured_album_key,
-                country: db_user. country,
+                country: db_user.country,
                 bio: db_user.bio,
                 met,
                 albums_uploaded,
