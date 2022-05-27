@@ -217,6 +217,8 @@
           object-position: center;
           width: 32px;
           height: 32px;
+          position: relative;
+          background-color: rgb(var(--color-highlight));
         }
 
         a {

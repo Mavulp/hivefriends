@@ -5,44 +5,48 @@ import Navigation from "./components/navigation/Navigation.vue"
 import Toasts from "./components/navigation/Toasts.vue"
 import LoadingSpin from "./components/loading/LoadingSpin.vue"
 
-import { onBeforeMount, onErrorCaptured, watchEffect } from "vue"
+import { watch, computed, ref } from "vue"
 import { useUser } from "./store/user"
 
 import { useLoading } from "./store/loading"
-import { useRoute, useRouter } from "vue-router"
+import { useRoute } from "vue-router"
+import { useToast } from "./store/toast"
 
 const user = useUser()
-const router = useRouter()
 const { addLoading, delLoading, getLoading } = useLoading()
 const route = useRoute()
+const toast = useToast()
 
-// watchEffect(() => {
-//   if (user.logged) {
-//     console.log('test');
+const islogged = computed(() => user.logged)
+const isInit = ref(false)
 
-//     getData()
-//   }
-// })
+watch(
+  islogged,
+  (val) => {
+    if (val && !isInit.value) {
+      addLoading("app")
 
-onBeforeMount(() => {
-  document.title = "hi!friends"
-  getData()
-})
+      Promise.all([user.fetchUsers(), user.fetchSettings()])
+        .then(() => {
+          const theme = user.settings.colorTheme ?? "light-theme"
+          const r = document.querySelector(":root")
+          if (r) {
+            r.removeAttribute("class")
+            r.classList.add(theme)
+          }
 
-function getData() {
-  addLoading("app")
-
-  Promise.all([user.fetchUsers(), user.fetchSettings()]).then(() => {
-    const theme = user.settings.colorTheme ?? "light-theme"
-    const r = document.querySelector(":root")
-    if (r) {
-      r.removeAttribute("class")
-      r.classList.add(theme)
+          delLoading("app")
+        })
+        .catch((e) => {
+          toast.add(e.message, "error")
+        })
+        .finally(() => {
+          isInit.value = true
+        })
     }
-
-    delLoading("app")
-  })
-}
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
@@ -51,9 +55,9 @@ function getData() {
 
     <Toasts />
 
-    <div class="hi-router-layout">
-      <LoadingSpin v-if="getLoading('app', 'user')" class="dark centerp-page" />
+    <LoadingSpin v-if="getLoading('app')" class="dark center-page" />
 
+    <div class="hi-router-layout" v-else>
       <router-view v-slot="{ Component }">
         <transition name="pagetransition" mode="out-in">
           <component :is="Component" :key="route.path.includes('image') ? '' : route.fullPath" />

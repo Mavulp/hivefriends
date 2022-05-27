@@ -22,12 +22,16 @@ export const useComments = defineStore("comments", {
       comments: []
     } as State),
   actions: {
-    async fetchComments({ albumKey, imageKey }: { albumKey: string; imageKey: string }) {
+    async fetchComments({ albumKey, imageKey }: { albumKey: string; imageKey: string }, token?: string | string[]) {
       const { addLoading, delLoading } = useLoading()
 
       addLoading("comments")
 
-      return get(`/api/comments/${albumKey}/${imageKey}/`)
+      const query = token
+        ? `/api/public/comments/${albumKey}/${imageKey}/${token}/`
+        : `/api/comments/${albumKey}/${imageKey}`
+
+      return get(query)
         .then((response) => {
           this.comments = response
           return response

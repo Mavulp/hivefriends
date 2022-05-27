@@ -6,14 +6,18 @@ import { ref, onBeforeMount, computed } from "vue"
 import { Album, useAlbums, imageUrl } from "../../store/album"
 import { useUser } from "../../store/user"
 import { TEXT_CONTRAST } from "../../js/utils"
+import { useBread } from "../../store/bread"
 
 const user = useUser()
 const album = useAlbums()
+const bread = useBread()
 const albums = ref([])
-const latest = computed<Album>(() => albums.value[0])
+const latest = computed<Album>(() => albums?.value[0] ?? null)
 
 onBeforeMount(async () => {
   albums.value = await album.fetchAlbums()
+
+  bread.set("Welcome to hi!friends")
 })
 
 const accent = computed(() => user.user.accentColor.split(",").map((item: string) => Number(item)))
@@ -28,7 +32,6 @@ const accent = computed(() => user.user.accentColor.split(",").map((item: string
         bringing the IRL <br />
         to the URL.
       </h3>
-      <!-- <p>Say one word about my writing and you get hands.</p> -->
 
       <Button class="btn-highlight" :to="{ name: 'Albums' }" :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]">
         Albums
@@ -42,10 +45,10 @@ const accent = computed(() => user.user.accentColor.split(",").map((item: string
       </template>
     </div>
 
-    <div class="container">
+    <div class="container" v-if="user.users && user.users.length > 0">
       <h4>Friends</h4>
 
-      <div class="home-users" v-if="user.users">
+      <div class="home-users">
         <HomeUser v-for="item in user.users" :key="item.username" :data="item" />
       </div>
     </div>

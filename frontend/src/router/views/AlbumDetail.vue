@@ -6,18 +6,24 @@ import { useLoading } from "../../store/loading"
 import { isEmpty } from "lodash"
 import { useUser } from "../../store/user"
 import { formatDate } from "../../js/utils"
+import { useClipboard, useCssVar } from "@vueuse/core"
+import { useBread } from "../../store/bread"
+import { url } from "../../js/fetch"
+// import { useHead } from "@vueuse/head"
 
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 import AlbumTimestamp from "../../components/albums/AlbumTimestamp.vue"
 import ImageListitem from "../../components/albums/ImageListitem.vue"
-import { useCssVar } from "@vueuse/core"
-import { useHead } from "@vueuse/head"
+import Modal from "../../components/Modal.vue"
+import { useToast } from "../../store/toast"
 
 const albums = useAlbums()
 const route = useRoute()
 const router = useRouter()
 const user = useUser()
-const { getLoading } = useLoading()
+const bread = useBread()
+const toast = useToast()
+const { addLoading, delLoading, getLoading } = useLoading()
 
 const showUsers = ref(false)
 const album = reactive<Album>({} as Album)
@@ -25,12 +31,17 @@ const album = reactive<Album>({} as Album)
 const wrap = ref(null)
 const color = useCssVar("--color-highlight", wrap)
 
-onBeforeMount(async () => {
-  const id = route.params.id
+const _id = computed(() => `${route.params.id}`)
 
-  if (id) {
-    const data = await albums.fetchAlbum(id)
+onBeforeMount(async () => {
+  // const id = route.params.id
+  const token = route.params.token
+
+  if (_id.value) {
+    const data = await albums.fetchAlbum(_id.value, token)
     Object.assign(album, data)
+
+    bread.set(`${album.title} by ${user.getUsername(data.author)}`)
 
     // Set metadata
     // useHead({
@@ -89,6 +100,34 @@ function openFirstImage() {
     }
   })
 }
+
+/**
+ * Generate public link
+ */
+
+const modal = ref(false)
+const publicLink = ref("")
+const { copy, isSupported } = useClipboard()
+
+async function getPublicLink() {
+  if (!publicLink.value) {
+    addLoading("share-link")
+
+    const token = await albums.genPublicAlbumToken(_id.value)
+    delLoading("share-link")
+
+    if (token) publicLink.value = `${url}/public${route.fullPath}/${token}`
+  }
+
+  if (!publicLink.value) return
+
+  if (isSupported) {
+    copy(publicLink.value)
+    toast.add("Album link copied to clipboard")
+  } else {
+    modal.value = true
+  }
+}
 </script>
 
 <template>
@@ -103,6 +142,21 @@ function openFirstImage() {
     </div>
 
     <div class="hi-album-title" v-else>
+      <Teleport to="body">
+        <Modal @close="modal = false" v-if="modal">
+          <div class="modal-wrap modal-copy">
+            <div class="modal-title">
+              <h4>Public link</h4>
+              <button class="modal-close" @click="modal = false">
+                <span class="material-icons">&#xe5cd;</span>
+              </button>
+            </div>
+            <p>Anyone with this link will be able to view this album</p>
+            <input :value="publicLink" />
+          </div>
+        </Modal>
+      </Teleport>
+
       <div class="hi-album-title-meta">
         <AlbumTimestamp class="dark" :timeframe="album.timeframe" />
 
@@ -136,9 +190,10 @@ function openFirstImage() {
             People {{ album.taggedUsers.length ?? 0 }}
           </button>
 
-          <button class="hover-bubble" data-title-top="WIP">
+          <button class="hover-bubble data-title-width-156" @click="getPublicLink" v-if="!user.public_token">
             <span class="material-icons">&#xe157;</span>
             Share
+            <span class="material-icons rotate" v-if="getLoading('share-link')">&#xe863;</span>
           </button>
         </div>
         <div class="thumbnail-image-wrap">
@@ -146,7 +201,6 @@ function openFirstImage() {
             <button @click="showUsers = false">
               <span class="material-icons">&#xe5cd;</span>
             </button>
-
             <h6>Tagged people</h6>
 
             <template v-if="album.taggedUsers.length > 0">

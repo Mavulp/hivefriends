@@ -6,9 +6,10 @@ import { getRanMinMax } from "../../js/utils"
 import { useUser } from "../../store/user"
 import { useFormValidation, required, minLength, asyncValidation } from "../../js/validation"
 import { useRouter } from "vue-router"
+import { useBread } from "../../store/bread"
 
 const router = useRouter()
-
+const bread = useBread()
 const auth = useUser()
 
 type SignInForm = {
@@ -61,12 +62,19 @@ const rules = computed(() => ({
 const { errors, validate, reset } = useFormValidation(form, rules, { autoclear: true })
 
 onBeforeMount(async () => {
+  const r = document.querySelector(":root")
+  if (r) {
+    r.classList.remove("dark-normal")
+  }
+
   const token = localStorage.getItem("bearer_token")
   const key = localStorage.getItem("user")
 
   if (token && key) {
     await auth.fetchUser(key)
     router.push({ name: "Home" })
+  } else {
+    bread.set("Please sign-in to hi!friends")
   }
 })
 </script>

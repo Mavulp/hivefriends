@@ -1,13 +1,8 @@
 # Fix
 
-- [x] Expired token issues
-- [ ] Fix image list showing error instead of loading in album lists
+- [ ] highlight color is messed up when displaying current user's or relevant user's colors
 
 # Todo
-
-- [ ] Figure out breadcrumbs again
-
-  - [ ] On detail pages, overwrite breadcrumbs when data loads with dynamic stuff
 
 - [ ] Album creation
 
@@ -26,13 +21,13 @@
   - [ ] a completely new full-screen view of map markers (images could appear within these markers as popups)
   - [ ] Delete album if author
   - [ ] Add a button "user albums" or "all albums" to get back to album list
-  - [ ] Share link
+  - [x] Share link
 
 - [ ] Album List
 
   - [ ] Add filtering to album lists
 
-- [ ] Add link sharing image & title (like github does)
+- [ ] Responsive layout for everything
 
 ## Post Launch TODO
 

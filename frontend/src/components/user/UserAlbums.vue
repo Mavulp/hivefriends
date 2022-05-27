@@ -13,16 +13,19 @@ import Search from "../form/Search.vue"
 import { useUser } from "../../store/user"
 import { useBread } from "../../store/bread"
 
+const { getLoading } = useLoading()
 const store = useAlbums()
 const route = useRoute()
-const { getLoading } = useLoading()
 const user = useUser()
+const bread = useBread()
 
 const data = ref<Array<Album>>([])
 const search = ref("")
 
 onBeforeMount(async () => {
   const username = String(route.params.user)
+
+  bread.set(`${user.getUsername(username)}'s albums`)
 
   if (username) {
     data.value = await store.fetchUserAlbums(username)

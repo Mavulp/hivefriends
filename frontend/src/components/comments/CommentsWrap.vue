@@ -30,10 +30,13 @@ const data = computed<Array<Comment>>(() => comments.comments)
 watch(
   () => props.imageKey,
   async () => {
-    await comments.fetchComments({
-      albumKey: props.albumKey,
-      imageKey: props.imageKey
-    })
+    await comments.fetchComments(
+      {
+        albumKey: props.albumKey,
+        imageKey: props.imageKey
+      },
+      user.public_token
+    )
   },
   { immediate: true }
 )

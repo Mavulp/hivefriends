@@ -14,9 +14,11 @@ import { HEX_to_RGB, TEXT_CONTRAST } from "../../js/utils"
 import { useToast } from "../../store/toast"
 import countries from "../../js/countries"
 import { kStringMaxLength } from "buffer"
+import { useBread } from "../../store/bread"
 
 const { getLoading, addLoading, delLoading } = useLoading()
-const { add } = useToast()
+const bread = useBread()
+const toast = useToast()
 const user = useUser()
 
 onBeforeMount(async () => {
@@ -24,6 +26,8 @@ onBeforeMount(async () => {
 
   userForm.displayName = user.getUsername(user.user.username)
   userForm.bio = user.user.bio
+
+  bread.set(`Your settings`)
 })
 
 const themeOptions = [
@@ -85,8 +89,8 @@ async function submitUserInfo() {
         user.setSetting("bio", userForm.bio),
         user.setSetting("country", userForm.country)
       ])
-        .then(() => add("Successfully updated user information", "success"))
-        .catch(() => add("Error updating user information", "error"))
+        .then(() => toast.add("Successfully updated user information", "success"))
+        .catch(() => toast.add("Error updating user information", "error"))
     })
     .finally(() => {
       delLoading("user-form")

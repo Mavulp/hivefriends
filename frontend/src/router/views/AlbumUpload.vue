@@ -14,9 +14,11 @@ import { useAlbums, NewAlbum, imageUrl } from "../../store/album"
 import { clone } from "lodash"
 import { useUser, User } from "../../store/user"
 import { useLoading } from "../../store/loading"
+import { useBread } from "../../store/bread"
 
 const store = useAlbums()
 const user = useUser()
+const bread = useBread()
 const { addLoading, delLoading, getLoading } = useLoading()
 
 /**
@@ -44,7 +46,8 @@ const album = reactive<NewAlbum>({
   },
   imageKeys: [],
   taggedUsers: [],
-  coverKey: ""
+  coverKey: "",
+  draft: false
 })
 
 // If album was successfuly generated, this will get populated
@@ -79,6 +82,8 @@ onMounted(() => {
 })
 
 onBeforeMount(async () => {
+  bread.set("Upload a new album")
+
   addLoading("users")
   await user.fetchUsers()
   delLoading("users")
@@ -274,7 +279,14 @@ const userOptions = computed(() => {
           </div>
         </template>
 
-        <Button class="btn-blue mt-20 btn-icon" v-if="albumKey" :to="{ name: 'AlbumDetail', params: { id: albumKey } }">
+        <InputCheckbox v-model:check="album.draft" label="Save as a draft. It won't be published" />
+
+        <Button
+          style="margin-top: 32px"
+          class="btn-blue btn-icon"
+          v-if="albumKey"
+          :to="{ name: 'AlbumDetail', params: { id: albumKey } }"
+        >
           View Album
           <span class="material-icons"> &#xe941; </span>
         </Button>
@@ -286,7 +298,7 @@ const userOptions = computed(() => {
             style="width: 100%; margin-bottom: 20px"
             @click="submit"
           >
-            Save Album
+            Publish Album
             <LoadingSpin class="dark" v-if="isLoading" />
           </Button>
 

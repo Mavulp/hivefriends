@@ -28,7 +28,7 @@ function formatTimestamp(date: number) {
 
 // const _regex = /(https?:\/\/[^ ]*)/
 const _regex = /\bhttps?:\/\/\S+/gi
-const formats = [".jpeg", ".gif", ".png", ".apng", ".svg", ".bmp", ".bmp", ".ico"]
+const formats = [".jpeg", ".gif", ".png", ".apng", ".svg", ".bmp", ".bmp", ".ico", ".jpg"]
 
 const text = computed(() => {
   if (!props.data.text) return ""

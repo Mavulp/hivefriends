@@ -7,12 +7,15 @@ import Filters from "../../components/form/Filters.vue"
 import { onBeforeMount, computed, ref } from "vue"
 import { useAlbums, Album } from "../../store/album"
 import { useLoading } from "../../store/loading"
+import { useBread } from "../../store/bread"
 
 const { getLoading } = useLoading()
 const album = useAlbums()
 const data = ref<Array<Album>>()
+const bread = useBread()
 
 onBeforeMount(async () => {
+  bread.set("All availalbe albums")
   data.value = await album.fetchAlbums()
 })
 </script>

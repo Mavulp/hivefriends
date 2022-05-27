@@ -62,6 +62,7 @@ export interface NewAlbum {
   imageKeys: Array<string>
   taggedUsers?: Array<string>
   coverKey: string
+  draft: boolean
 }
 
 export const useAlbums = defineStore("album", {
@@ -72,12 +73,22 @@ export const useAlbums = defineStore("album", {
       imageMetadata: {}
     } as State),
   actions: {
-    async fetchAlbum(id: string | string[]) {
+    async genPublicAlbumToken(albumKey: string) {
+      return post(`/api/public/albums/${albumKey}/`, {})
+        .then((response) => response.token)
+        .catch((error: FetchError) => {
+          const toast = useToast()
+          toast.add(error.message, "error")
+        })
+    },
+    async fetchAlbum(id: string | string[], token?: string | string[]) {
       const { addLoading, delLoading } = useLoading()
 
       addLoading("get-album")
 
-      return get(`/api/albums/${id}`)
+      const query = token ? `/api/public/albums/${id}/${token}/` : `/api/albums/${id}/`
+
+      return get(query)
         .then((data) => {
           this.albums.push(data)
           return data

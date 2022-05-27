@@ -34,18 +34,20 @@ export interface UserSettings {
 
 export interface State {
   user: User
-  users: Array<User>
+  users: Array<User> | []
   logged: boolean
   settings: UserSettings
+  public_token: string | undefined
 }
 
 export const useUser = defineStore("user", {
   state: () =>
     ({
       user: {},
-      users: [{} as User],
+      users: [],
       logged: false,
-      settings: {}
+      settings: {},
+      public_token: undefined
     } as State),
   actions: {
     async signIn(credentials: { username: string; password: string }) {
@@ -76,6 +78,7 @@ export const useUser = defineStore("user", {
             }
           } else {
             this.user = response
+            this.logged = true
             // Set app accent
             document.documentElement.style.setProperty("--color-highlight", response.accentColor)
             localStorage.setItem("user", response.username)
@@ -189,5 +192,8 @@ export const useUser = defineStore("user", {
 
         return state.user.username === username ? state.user.displayName ?? state.user.username : username
       }
+    // getUsers: (state) => {
+    //   if (state.users)
+    // },
   }
 })

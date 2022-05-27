@@ -139,11 +139,28 @@
     }
   }
 
-  .hi-home .home-users .home-user {
-    background-color: rgb(var(--color-background-dark));
+  .hi-home {
+    .home-users .home-user {
+      background-color: rgb(var(--color-background-dark));
+    }
+
+    .home-landing {
+      h1 {
+        -webkit-text-stroke-color: rgb(var(--color-text));
+      }
+
+      .album-thumbnail span {
+        color: rgb(var(--color-text));
+      }
+    }
   }
 
-  .hi-home .home-landing .album-thumbnail span {
-    color: rgb(var(--color-text));
+  .modal {
+    background-color: rgba(var(--color-background-dimmed), 0.9);
+
+    .modal-wrap.modal-copy {
+      background-color: rgb(var(--color-background));
+      border: 1px solid rgb(var(--color-border-light));
+    }
   }
 }

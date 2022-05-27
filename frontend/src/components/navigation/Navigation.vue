@@ -20,7 +20,9 @@ function signOut() {
       <img src="/Sharp.png" alt=" " />
     </router-link>
 
-    <span class="bread" v-if="bread.title">{{ bread.title }}</span>
+    <transition name="fade" appear mode="out-in">
+      <span class="bread" v-if="bread.title">{{ bread.title }}</span>
+    </transition>
 
     <div class="flex-1"></div>
 

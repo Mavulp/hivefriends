@@ -11,11 +11,13 @@ import { TEXT_CONTRAST, formatDate, flag } from "../../js/utils"
 import { useLoading } from "../../store/loading"
 import { useCssVar } from "@vueuse/core"
 import countries from "../../js/countries"
+import { useBread } from "../../store/bread"
 
 const { addLoading, delLoading, getLoading } = useLoading()
 const users = useUser()
 const route = useRoute()
 const albums = useAlbums()
+const bread = useBread()
 
 const wrap = ref(null)
 const color = useCssVar("--color-highlight", wrap)
@@ -28,7 +30,11 @@ const user = computed<User>(() => users.users.find((item) => item.username === _
 const accent = computed(() => color.value.split(",").map((item) => Number(item)))
 
 onBeforeMount(() => {
-  addLoading("user-profile")
+  addLoading("profile")
+
+  console.log("h")
+
+  bread.set(`${users.getUsername(_id.value)}'s profile`)
 
   Promise.all([albums.fetchUserAlbums(_id.value), users.fetchUser(_id.value, true)])
     .then(([albums]) => {
@@ -37,7 +43,7 @@ onBeforeMount(() => {
     })
     .catch(() => {})
     .finally(() => {
-      delLoading("user-profile")
+      delLoading("profile")
     })
 })
 
@@ -64,7 +70,7 @@ watchEffect(() => {
 
 <template>
   <div class="hi-user-profile" ref="wrap">
-    <LoadingSpin class="center-page dark" v-if="getLoading('user-profile')" />
+    <LoadingSpin class="center-page dark" v-if="getLoading('profile')" />
 
     <div v-else-if="!user" class="hi-user-profile" style="padding: 128px">
       <h1>Bruh</h1>

@@ -14,6 +14,7 @@ import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 import CommentsWrap from "../../components/comments/CommentsWrap.vue"
 import { useComments } from "../../store/comments"
 import { useToast } from "../../store/toast"
+import { useBread } from "../../store/bread"
 
 /**
  *  Setup
@@ -51,6 +52,7 @@ const route = useRoute()
 const router = useRouter()
 const albums = useAlbums()
 const user = useUser()
+const bread = useBread()
 const { getLoading } = useLoading()
 
 const transDir = ref("imagenext")
@@ -62,7 +64,7 @@ const imageKey = computed(() => `${route.params.image}`)
 
 // Get album data
 const album = computed<Album>(() => albums.getAlbum(albumKey.value) as Album)
-const image = computed(() => album.value.images.find((item) => item.key === imageKey.value))
+const image = computed(() => album.value?.images.find((item) => item.key === imageKey.value))
 
 // Get image's index from the current album's images
 const index = computed<number>(() => album.value?.images.findIndex((item) => item.key === imageKey.value))
@@ -105,6 +107,10 @@ watch(
       // Append src to image element, end loading
       url.value = img.src
     }
+
+    if (image.value) {
+      bread.set(`${image.value.fileName} by ${user.getUsername(image.value.uploader)}`)
+    }
   },
   {
     immediate: true
@@ -129,7 +135,7 @@ watchEffect(() => {
  * Map & metadata
  */
 
-const mapStyle = computed(() => (user.settings.colorTheme.startsWith("dark") ? map_dark : map_light))
+const mapStyle = computed(() => (user.settings?.colorTheme?.startsWith("dark") ? map_dark : map_light))
 const sortedMarkers = computed(() => {
   // Make sure the current marker is always the last one to render
 
@@ -168,6 +174,10 @@ function copyClipboard() {
     toast.add("Image link copied to clipboard")
   }
 }
+
+/**
+ * Public key
+ */
 </script>
 
 <template>
@@ -181,7 +191,7 @@ function copyClipboard() {
       </div>
     </div>
 
-    <div class="content-wrap" v-else-if="album && image">
+    <div class="content-wrap" v-else-if="imageKey && album && image">
       <div class="hi-image-container">
         <div class="hi-image-wrapper">
           <transition :name="transDir" mode="out-in">
@@ -194,7 +204,13 @@ function copyClipboard() {
 
         <div class="hi-image-context">
           <div class="context-col">
-            <router-link class="hover-bubble" :to="{ name: 'AlbumDetail', params: { id: albumKey } }">
+            <router-link
+              class="hover-bubble"
+              :to="{
+                name: user.public_token ? 'PublicAlbumDetail' : 'AlbumDetail',
+                params: { id: albumKey, ...(user.public_token && { token: user.public_token }) }
+              }"
+            >
               <span class="material-icons"> &#xe2ea; </span>
               Go back
             </router-link>
@@ -292,7 +308,6 @@ function copyClipboard() {
                   alt=" "
                   @error="(e: any) => e.target.classList.add('image-error')"
                 />
-
                 {{ image.uploader }}
               </router-link>
 

@@ -52,32 +52,6 @@
   -moz-border-radius: $radius;
 }
 
-@mixin hover-underline($thickness, $color, $width: 16px, $offset: 0) {
-  &::after {
-    content: "";
-
-    border-bottom: solid $thickness $color;
-
-    width: 0;
-    position: absolute;
-    bottom: -4px;
-    display: block;
-
-    transition: width 0.25s ease-in-out, transform 0.25s ease-in-out;
-  }
-
-  &:hover {
-    &::after {
-      width: $width;
-      transform: translateX($offset);
-    }
-  }
-}
-
-// END GOAL
-// Remove most of / if not all framework.scss definitions for flex
-// and grid and just use mixins
-
 @mixin flex($wrap: nowrap, $gap: 16px, $justify: flex-start, $align: center, $direction: row) {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -121,51 +95,5 @@
     grid-template-columns: repeat($columns, 1fr);
   } @else {
     grid-template-columns: $columns;
-  }
-}
-
-@function generateStars($n, $color: #fff) {
-  $value: "#{random(2000)}px #{random(2000)}px"+$color;
-
-  @for $i from 2 through $n {
-    $value: "#{$value} , #{random(2000)}px #{random(2000)}px"+$color;
-  }
-
-  @return unquote($value);
-}
-
-.stars {
-  display: none;
-  width: 2px;
-  height: 2px;
-  background: transparent;
-  box-shadow: generateStars(700);
-  z-index: -1;
-  opacity: 0.05;
-  position: fixed;
-  left: 0;
-  top: 0;
-
-  &.dark {
-    width: 4px;
-    height: 4px;
-    box-shadow: generateStars(700, #000);
-
-    &:after {
-      width: 4px;
-      height: 4px;
-      box-shadow: generateStars(700, #000);
-    }
-  }
-
-  &:after {
-    content: " ";
-    position: fixed;
-    top: 0;
-    width: 2px;
-    height: 2px;
-    opacity: 0.3;
-    background: transparent;
-    box-shadow: generateStars(700);
   }
 }

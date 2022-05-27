@@ -1,6 +1,7 @@
 import { merge } from "lodash"
 
 export const rootUrl = "https://friends.hivecom.net"
+export const url = process.env.NODE_ENV === "development" ? "localhost:3000" : rootUrl
 
 export function get(url: string, options?: object) {
   return _handleFetch(
