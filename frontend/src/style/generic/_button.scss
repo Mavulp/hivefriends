@@ -119,6 +119,12 @@
     .material-icons {
       color: rgb(var(--color-highlight));
     }
+
+    &.bubble-red {
+      .material-icons {
+        color: rgb(var(--color-error));
+      }
+    }
   }
 
   &.active,
@@ -130,6 +136,12 @@
 
   .material-icons {
     @include t(0.1s);
+  }
+
+  &.bubble-red {
+    &:after {
+      background-color: rgba(var(--color-error), 0.25);
+    }
   }
 
   &:after {

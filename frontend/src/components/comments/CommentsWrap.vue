@@ -101,7 +101,7 @@ async function submit() {
       </template>
     </div>
 
-    <div class="hi-add-comment">
+    <div class="hi-add-comment" v-if="!user.public_token">
       <form @submit.prevent="submit">
         <InputTextarea v-model:value="form.comment" placeholder="Write comment..." :error="errors.comment" />
 

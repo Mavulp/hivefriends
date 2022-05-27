@@ -6,7 +6,7 @@ import { useLoading } from "../../store/loading"
 import { isEmpty } from "lodash"
 import { useUser } from "../../store/user"
 import { formatDate } from "../../js/utils"
-import { useClipboard, useCssVar } from "@vueuse/core"
+import { useClipboard, useCssVar, usePreferredDark } from "@vueuse/core"
 import { useBread } from "../../store/bread"
 import { url } from "../../js/fetch"
 // import { useHead } from "@vueuse/head"
@@ -34,7 +34,6 @@ const color = useCssVar("--color-highlight", wrap)
 const _id = computed(() => `${route.params.id}`)
 
 onBeforeMount(async () => {
-  // const id = route.params.id
   const token = route.params.token
 
   if (_id.value) {
@@ -60,6 +59,15 @@ onBeforeMount(async () => {
     //     }
     //   ]
     // })
+  }
+
+  const isDark = usePreferredDark()
+
+  if (isDark.value && user.public_token) {
+    const root = document.querySelector(":root")
+    if (root) {
+      root.classList.add("dark-normal")
+    }
   }
 })
 
@@ -180,6 +188,15 @@ async function getPublicLink() {
 
       <div class="hi-album-title-thumbnail">
         <div class="detail-buttons">
+          <button
+            class="hover-bubble bubble-red"
+            data-title-top="Edit Album / Images"
+            v-if="user.user.username === album.author"
+          >
+            <span class="material-icons">&#xe3c9;</span>
+            Edit
+          </button>
+
           <button class="hover-bubble" data-title-top="WIP">
             <span class="material-icons">&#xe55b;</span>
             Map

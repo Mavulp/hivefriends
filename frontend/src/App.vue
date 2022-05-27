@@ -5,7 +5,7 @@ import Navigation from "./components/navigation/Navigation.vue"
 import Toasts from "./components/navigation/Toasts.vue"
 import LoadingSpin from "./components/loading/LoadingSpin.vue"
 
-import { watch, computed, ref } from "vue"
+import { watch, computed, ref, onMounted } from "vue"
 import { useUser } from "./store/user"
 
 import { useLoading } from "./store/loading"

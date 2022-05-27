@@ -1,6 +1,7 @@
 # Fix
 
 - [ ] highlight color is messed up when displaying current user's or relevant user's colors
+- [ ] FIXME add token to ImageDetail & add PublicImageDetail so that users can share private albums with image
 
 # Todo
 
@@ -19,9 +20,8 @@
 - [ ] Album Detail
 
   - [ ] a completely new full-screen view of map markers (images could appear within these markers as popups)
-  - [ ] Delete album if author
+  - [ ] Edit album button
   - [ ] Add a button "user albums" or "all albums" to get back to album list
-  - [x] Share link
 
 - [ ] Album List
 

@@ -79,9 +79,10 @@
       }
 
       .album-timestamp {
-        margin-bottom: 0px;
+        margin-bottom: 4px;
 
         span {
+          font-size: 1.4rem;
           color: rgb(var(--color-text));
         }
 

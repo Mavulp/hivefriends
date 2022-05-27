@@ -53,19 +53,5 @@ export default async function (to: RouteLocationNormalized, from: RouteLocationN
     }
   }
 
-  // else if (to.name !== "Login") {
-  //   console.log(token, key, auth.public_token)
-
-  //   // Abort public paths and redirect to album instead
-  //   if (token && key && auth.public_token) {
-
-  //   }
-
-  //   // Public route
-  //   if (auth.public_token) {
-  //     return next()
-  //   }
-  // }
-
   next()
 }
