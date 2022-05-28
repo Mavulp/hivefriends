@@ -197,7 +197,7 @@ fn draft_filter_query(
         parameters.push(Box::new(username));
         let p = parameters.len();
 
-        format!("(author = ?{p} OR draft = false)")
+        format!("(author = ?{p} AND draft = true)")
     } else {
         String::from("draft = false")
     }
