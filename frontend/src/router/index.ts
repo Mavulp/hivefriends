@@ -6,6 +6,7 @@ import AlbumDetail from "./views/AlbumDetail.vue"
 import ImageDetail from "./views/ImageDetail.vue"
 import AlbumList from "./views/AlbumList.vue"
 import AlbumUpload from "./views/AlbumUpload.vue"
+import AlbumEdit from "./views/AlbumEdit.vue"
 
 // Subchildren for user pages
 import UserAlbums from "../components/user/UserAlbums.vue"
@@ -93,11 +94,20 @@ const router = createRouter({
       }
     },
     {
-      path: "/upload",
+      path: "/upload/album",
       name: "Upload",
       component: AlbumUpload,
       meta: {
         title: "Upload",
+        requiresAuth: true
+      }
+    },
+    {
+      path: "/edit/album/:id",
+      name: "AlbumEdit",
+      component: AlbumEdit,
+      meta: {
+        title: "Edit",
         requiresAuth: true
       }
     },

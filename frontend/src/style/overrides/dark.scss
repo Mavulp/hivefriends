@@ -163,4 +163,13 @@
       border: 1px solid rgb(var(--color-border-light));
     }
   }
+
+  .hi-album-upload .album-drafts .draft .draft-dropdown {
+    background-color: rgb(var(--color-background-dark));
+    border: 1px solid rgb(var(--color-border-light));
+
+    button {
+      color: rgb(var(--color-text));
+    }
+  }
 }

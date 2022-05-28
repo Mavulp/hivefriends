@@ -126,9 +126,21 @@
       }
     }
 
+    &.bubble-info {
+      .material-icons {
+        color: rgb(var(--color-info));
+      }
+    }
+
     &.bubble-black {
       .material-icons {
         color: rgb(var(--color-text));
+      }
+    }
+
+    &.bubble-orange {
+      .material-icons {
+        color: rgb(var(--color-orange));
       }
     }
   }
@@ -153,6 +165,18 @@
   &.bubble-black {
     &:after {
       background-color: rgba(var(--color-text), 0.1);
+    }
+  }
+
+  &.bubble-info {
+    &:after {
+      background-color: rgba(var(--color-info), 0.25);
+    }
+  }
+
+  &.bubble-orange {
+    &:after {
+      background-color: rgba(var(--color-orange), 0.25);
     }
   }
 

@@ -6,12 +6,13 @@ import ImageUploadItem from "../../components/upload/ImageUploadItem.vue"
 import Button from "../../components/Button.vue"
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 import InputCheckbox from "../../components/form/InputCheckbox.vue"
+import DraftItem from "../../components/upload/DraftItem.vue"
 
 import { onBeforeUnmount, onMounted, reactive, ref, computed, onBeforeMount } from "vue"
 import { upload } from "../../js/fetch"
 import { useFormValidation, required } from "../../js/validation"
-import { useAlbums, NewAlbum, imageUrl } from "../../store/album"
-import { clone } from "lodash"
+import { useAlbums, NewAlbum, imageUrl, Album } from "../../store/album"
+import { clone, isEmpty } from "lodash"
 import { useUser, User } from "../../store/user"
 import { useLoading } from "../../store/loading"
 import { useBread } from "../../store/bread"
@@ -50,6 +51,8 @@ const album = reactive<NewAlbum>({
   draft: false
 })
 
+const drafts = ref<Array<Album>>([])
+
 // If album was successfuly generated, this will get populated
 const albumKey = ref()
 
@@ -57,9 +60,6 @@ const draggingOver = ref(false)
 const singleDate = ref(false)
 
 const isLoading = computed(() => files.values.some((file) => file.loading))
-// const loadingPercent = computed(() =>
-//   Math.ceil(([...files.values].filter((item) => !item.key).length / files.values.length) * 100)
-// )
 const uploadProgress = computed(() => `${[...files.values].filter((item) => item.key).length} / ${files.values.length}`)
 const imageKeys = computed<Array<any>>(() => files.values.map((file) => file.key).filter((item) => item))
 
@@ -87,6 +87,8 @@ onBeforeMount(async () => {
   addLoading("users")
   await user.fetchUsers()
   delLoading("users")
+
+  drafts.value = await store.fetchAlbums(true)
 })
 
 /**
@@ -202,6 +204,15 @@ const userOptions = computed(() => {
 
 <template>
   <div class="hi-album-upload">
+    <div class="album-drafts" v-if="drafts && !isEmpty(drafts)">
+      <div class="title">
+        <h6>Your drafts</h6>
+        <p>Manage your un-published albums</p>
+      </div>
+
+      <DraftItem v-for="item in drafts" :key="item.key" :data="item" />
+    </div>
+
     <div class="album-upload-layout">
       <div class="album-upload-items">
         <div
@@ -298,7 +309,7 @@ const userOptions = computed(() => {
             style="width: 100%; margin-bottom: 20px"
             @click="submit"
           >
-            Publish Album
+            {{ album.draft ? "Save Draft" : "Publish Album" }}
             <LoadingSpin class="dark" v-if="isLoading" />
           </Button>
 

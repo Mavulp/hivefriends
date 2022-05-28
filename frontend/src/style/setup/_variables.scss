@@ -9,13 +9,17 @@
   --color-border-light: 224, 226, 219; /* #e0e2db */
   --color-white: 254, 254, 254; /* #fefefe */
 
+  // This one is variable
   --color-highlight: 229, 125, 35; /* #e57d23 */
+
+  // This one is constant
+  --color-orange: 229, 125, 35; /* #e57d23 */
 
   --color-error: 255, 72, 72;
   --color-success: 60, 218, 126;
   --color-info: 130, 132, 255;
 
-  --shadow: 0 2px 8px rgba(var(--color-background-dark), 0.025);
+  --shadow: 0 2px 8px rgba(var(--color-background-dark), 0.05);
 }
 
 :root.dark-normal {

@@ -1,8 +1,7 @@
 import { defineStore } from "pinia"
-import { get, rootUrl, post, put } from "../js/fetch"
+import { get, rootUrl, post, put, del } from "../js/fetch"
 import { useLoading } from "./loading"
 import { useToast } from "./toast"
-import { isObject } from "lodash"
 import { FetchError } from "../js/global-types"
 
 export interface Image {
@@ -100,11 +99,11 @@ export const useAlbums = defineStore("album", {
         .finally(() => delLoading("get-album"))
     },
 
-    async fetchAlbums() {
+    async fetchAlbums(draft: boolean = false) {
       const { addLoading, delLoading } = useLoading()
       addLoading("albums")
 
-      return get("/api/albums/")
+      return get(`/api/albums/?draft=${draft}`)
         .then((albums) => {
           return albums
         })
@@ -180,6 +179,25 @@ export const useAlbums = defineStore("album", {
           toast.add(error.message, "error")
         })
         .finally(() => delLoading("add-album"))
+    },
+
+    async deleteAlbum(albumKey: string) {
+      const { addLoading, delLoading } = useLoading()
+      const toast = useToast()
+
+      addLoading("delete-album")
+
+      return del(`/api/albums/${albumKey}`)
+        .then(() => {
+          toast.add("Successfully deleted album", "success")
+          return true
+        })
+        .catch((error: FetchError) => {
+          console.log(error)
+
+          toast.add(error.message, "error")
+        })
+        .finally(() => delLoading("delete-album"))
     }
   },
   getters: {

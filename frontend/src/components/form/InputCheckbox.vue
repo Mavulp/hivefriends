@@ -6,23 +6,22 @@ interface Props {
   check: boolean
 }
 
-// Unique id for the checkbox
-const d = `${new Date().getTime()}`
-
 const emit = defineEmits<{
   (e: "update:check", value: boolean): void
 }>()
 
-const { check, label } = defineProps<Props>()
+const props = defineProps<Props>()
 
 const data = computed<boolean>({
   get() {
-    return check
+    return props.check
   },
   set(value) {
     emit("update:check", value)
   }
 })
+
+const d = computed(() => props.label ?? new Date().getTime())
 </script>
 
 <template>
@@ -34,7 +33,7 @@ const data = computed<boolean>({
         <span v-else class="material-icons">&#xe835;</span>
       </div>
 
-      <p>{{ label }}</p>
+      <p>{{ props.label }}</p>
     </label>
   </div>
 </template>

@@ -5,6 +5,93 @@
   margin: 0 auto;
   // padding: 64px 128px;
 
+  .album-drafts {
+    @include grid(16px, 240px repeat(5, 1fr));
+    width: 100%;
+    border-bottom: 1px solid rgb(var(--color-border-light));
+    padding: 16px 40px;
+    z-index: 120;
+    position: relative;
+
+    .title {
+      align-self: center;
+
+      h6 {
+        margin-bottom: 4px;
+      }
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .draft {
+      @include radius(8px);
+      padding: 16px;
+      display: block;
+      position: relative;
+      border: 1px solid rgb(var(--color-border-light));
+      padding-right: 48px;
+
+      strong,
+      p {
+        display: block;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      strong {
+        margin-bottom: 4px;
+      }
+
+      p {
+        @include font(200);
+      }
+
+      .dropdown-button {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        color: rgb(var(--color-text-light));
+        transform: translateY(-50%);
+        font-size: 1.4rem;
+        height: 24px;
+        line-height: 24px;
+
+        &.hover-bubble:after {
+          top: -3px;
+          bottom: -3px;
+        }
+      }
+
+      .draft-dropdown {
+        @include radius(4px);
+        display: block;
+        padding: 20px;
+        box-shadow: var(--shadow);
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        background-color: rgb(var(--color-white));
+        width: 164px;
+        z-index: 50;
+
+        a,
+        button {
+          @include flex($gap: 12px, $justify: flex-start);
+          width: 100%;
+          margin-bottom: 24px;
+          color: rgb(var(--color-text));
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+  }
+
   .album-upload-layout {
     @include grid(0, 1fr 512px);
 

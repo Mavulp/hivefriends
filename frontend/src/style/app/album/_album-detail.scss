@@ -40,6 +40,13 @@
       padding: 128px 64px;
       padding-top: 64px;
 
+      .is-draft {
+        @include flex($gap: 8px);
+        font-size: 1.6rem;
+        padding: 4px 12px;
+        color: rgb(var(--color-orange));
+      }
+
       h1 {
         font-size: 6rem;
         margin-bottom: 32px;
@@ -104,6 +111,7 @@
         bottom: 52px;
         left: 8px;
 
+        a,
         button {
           @include flex($gap: 12px);
           color: rgb(var(--color-text));

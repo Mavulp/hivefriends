@@ -60,3 +60,16 @@
   opacity: 0;
   transform: translateY(-8px);
 }
+
+.fadedown-enter-active,
+.fadedown-leave-active {
+  transition: 0.15s all ease-in-out;
+  opacity: 1;
+  transform: translateY(0px);
+}
+
+.fadedown-enter-from,
+.fadedown-leave-to {
+  opacity: 0;
+  transform: translateY(-16xp);
+}

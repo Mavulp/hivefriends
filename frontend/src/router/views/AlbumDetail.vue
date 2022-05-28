@@ -40,7 +40,7 @@ onBeforeMount(async () => {
     const data = await albums.fetchAlbum(_id.value, token)
     Object.assign(album, data)
 
-    bread.set(`${album.title} by ${user.getUsername(data.author)}`)
+    bread.set(`${album.title} ${album.draft ? "(draft)" : ""} by ${user.getUsername(data.author)}`)
 
     // Set metadata
     // useHead({
@@ -167,6 +167,8 @@ async function getPublicLink() {
       </Teleport>
 
       <div class="hi-album-title-meta">
+        <div class="is-draft hover-bubble bubble-orange active" v-if="album.draft">Draft</div>
+
         <AlbumTimestamp class="dark" :timeframe="album.timeframe" />
 
         <h1>{{ album.title }}</h1>
@@ -189,14 +191,14 @@ async function getPublicLink() {
 
       <div class="hi-album-title-thumbnail">
         <div class="detail-buttons">
-          <button
-            class="hover-bubble bubble-red"
-            data-title-top="Edit Album / Images"
+          <router-link
+            :to="{ name: 'AlbumEdit', params: { id: album.key } }"
+            class="hover-bubble bubble-orange"
             v-if="user.user.username === album.author"
           >
             <span class="material-icons">&#xe3c9;</span>
             Edit
-          </button>
+          </router-link>
 
           <button class="hover-bubble" data-title-top="WIP">
             <span class="material-icons">&#xe55b;</span>
