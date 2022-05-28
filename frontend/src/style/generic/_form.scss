@@ -267,6 +267,7 @@ input:-webkit-autofill:active {
       z-index: 100;
       opacity: 1;
       visibility: visible;
+      transform: scale(1) translateY(0);
     }
   }
 
@@ -313,6 +314,8 @@ input:-webkit-autofill:active {
     background-color: rgb(var(--color-white));
     border: 1px solid rgb(var(--color-border-light));
     box-shadow: var(--shadow);
+    transform: scale(0.9) translateY(-8px);
+    transform-origin: center top;
 
     button,
     .select-no-options {

@@ -67,6 +67,7 @@
 
       .draft-dropdown {
         @include radius(4px);
+        @include t(0.15s);
         display: block;
         padding: 20px;
         box-shadow: var(--shadow);
@@ -75,7 +76,19 @@
         right: 0;
         background-color: rgb(var(--color-white));
         width: 164px;
-        z-index: 50;
+
+        transform: scale(0.9) translateY(-4px);
+        opacity: 0;
+        z-index: -1;
+        visibility: hidden;
+        transform-origin: right top;
+
+        &.active {
+          z-index: 50;
+          opacity: 1;
+          visibility: visible;
+          transform: scale(1) translateY(0);
+        }
 
         a,
         button {

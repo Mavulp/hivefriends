@@ -40,30 +40,28 @@ const timestamp = computed(() => {
         <span class="material-icons"> &#xe5d2; </span>
       </button>
 
-      <transition name="fadedown" mode="out-in">
-        <div class="draft-dropdown" v-if="open">
-          <router-link :to="{ name: 'AlbumDetail', params: { id: props.data.key } }" class="hover-bubble">
-            <span class="material-icons">&#xe3b6;</span>
-            View
-          </router-link>
+      <div class="draft-dropdown" :class="{ active: open }">
+        <router-link :to="{ name: 'AlbumDetail', params: { id: props.data.key } }" class="hover-bubble">
+          <span class="material-icons">&#xe3b6;</span>
+          View
+        </router-link>
 
-          <router-link :to="{ name: 'AlbumEdit', params: { id: props.data.key } }" class="hover-bubble bubble-info">
-            <span class="material-icons">&#xe3c9;</span>
-            Edit
-          </router-link>
+        <router-link :to="{ name: 'AlbumEdit', params: { id: props.data.key } }" class="hover-bubble bubble-info">
+          <span class="material-icons">&#xe3c9;</span>
+          Edit
+        </router-link>
 
-          <button
-            class="hover-bubble bubble-red"
-            :class="{ 'btn-disabled': getLoading('delete-album') }"
-            @click="albums.deleteAlbum(props.data.key)"
-          >
-            <span class="material-icons"> &#xe872; </span>
-            Delete
+        <button
+          class="hover-bubble bubble-red"
+          :class="{ 'btn-disabled': getLoading('delete-album') }"
+          @click="albums.deleteAlbum(props.data.key)"
+        >
+          <span class="material-icons"> &#xe872; </span>
+          Delete
 
-            <span class="material-icons rotate" v-if="getLoading('delete-album')">&#xe863;</span>
-          </button>
-        </div>
-      </transition>
+          <span class="material-icons rotate" v-if="getLoading('delete-album')">&#xe863;</span>
+        </button>
+      </div>
     </div>
   </div>
 </template>
