@@ -9,13 +9,13 @@ import { formatDate } from "../../js/utils"
 import { useClipboard, useCssVar, usePreferredDark } from "@vueuse/core"
 import { useBread } from "../../store/bread"
 import { url } from "../../js/fetch"
+import { useToast } from "../../store/toast"
 // import { useHead } from "@vueuse/head"
 
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 import AlbumTimestamp from "../../components/albums/AlbumTimestamp.vue"
 import ImageListitem from "../../components/albums/ImageListitem.vue"
 import Modal from "../../components/Modal.vue"
-import { useToast } from "../../store/toast"
 
 const albums = useAlbums()
 const route = useRoute()
@@ -101,10 +101,11 @@ const chunks = computed(() => {
 
 function openFirstImage() {
   router.push({
-    name: "ImageDetail",
+    name: user.public_token ? "PublicImageDetail" : "ImageDetail",
     params: {
       album: album.key,
-      image: album.images[0].key
+      image: album.images[0].key,
+      ...(user.public_token && { token: user.public_token })
     }
   })
 }
@@ -131,7 +132,7 @@ async function getPublicLink() {
 
   if (isSupported) {
     copy(publicLink.value)
-    toast.add("Album link copied to clipboard")
+    toast.add("Album share link copied to clipboard")
   } else {
     modal.value = true
   }
@@ -154,13 +155,13 @@ async function getPublicLink() {
         <Modal @close="modal = false" v-if="modal">
           <div class="modal-wrap modal-copy">
             <div class="modal-title">
-              <h4>Public link</h4>
+              <h4>Album sharing link</h4>
               <button class="modal-close" @click="modal = false">
                 <span class="material-icons">&#xe5cd;</span>
               </button>
             </div>
             <p>Anyone with this link will be able to view this album</p>
-            <input :value="publicLink" />
+            <input readonly :value="publicLink" />
           </div>
         </Modal>
       </Teleport>

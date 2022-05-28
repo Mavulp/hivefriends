@@ -12,13 +12,13 @@
     display: block;
     position: absolute;
     left: 50%;
-    top: 35%;
-    transform: translateX(-50%);
+    top: 40%;
+    transform: translate(-50%, -50%);
     background-color: rgb(var(--color-white));
 
     .modal-title {
       @include flex($justify: space-between);
-      margin-bottom: 16px;
+      margin-bottom: 24px;
 
       h1,
       h2,
@@ -44,22 +44,78 @@
 
     &.modal-copy {
       padding: 40px;
-      // width: 420px;
-      width: 40%;
+      width: 50%;
       max-width: 1024px;
-      min-width: 512px;
+      min-width: 680px;
+
+      hr {
+        margin: 32px 0;
+      }
+
+      p {
+        &:first-of-type {
+          font-size: 1.6rem;
+        }
+      }
+
+      .input-with-copy {
+        display: grid;
+        grid-template-columns: 1fr 80px;
+        gap: 30px;
+
+        button {
+          align-self: center;
+          height: 28px;
+          line-height: 28px;
+        }
+
+        &:nth-of-type(2) {
+          input {
+            background-color: rgba(var(--color-info), 0.1);
+            color: rgb(var(--color-info));
+
+            &:focus {
+              border-color: rgb(var(--color-info));
+            }
+          }
+        }
+      }
+
+      button {
+        @include flex($gap: 4px);
+        color: rgb(var(--color-text));
+
+        &:hover {
+          .material-icons {
+            color: rgb(var(--color-text));
+          }
+        }
+
+        .material-icons {
+          font-size: 1.4rem;
+          color: rgb(var(--color-text-light));
+        }
+      }
 
       input {
         @include radius(8px);
         display: block;
         width: 100%;
         border: none;
-        height: 64px;
+        height: 40px;
         background-color: rgba(var(--color-highlight), 0.1);
         color: rgb(var(--color-highlight));
-        line-height: 64px;
+        line-height: 40px;
         padding: 0 20px;
-        font-size: 1.4rem;
+        font-size: 1.6rem;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        border: 2px solid transparent;
+
+        &:focus {
+          border-color: rgb(var(--color-highlight));
+        }
       }
     }
   }

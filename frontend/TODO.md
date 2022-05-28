@@ -1,7 +1,6 @@
 # Fix
 
 - [ ] highlight color is messed up when displaying current user's or relevant user's colors
-- [ ] FIXME add token to ImageDetail & add PublicImageDetail so that users can share private albums with image
 
 # Todo
 

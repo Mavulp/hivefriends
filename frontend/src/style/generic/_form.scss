@@ -239,7 +239,7 @@ input:-webkit-autofill:active {
 .form-select {
   display: block;
   position: relative;
-  z-index: 5;
+  z-index: 6;
 
   &.required {
     label:after {
@@ -264,7 +264,7 @@ input:-webkit-autofill:active {
   &.is-open {
     .select-dropdown {
       top: calc(100% + 8px);
-      z-index: 10;
+      z-index: 100;
       opacity: 1;
       visibility: visible;
     }

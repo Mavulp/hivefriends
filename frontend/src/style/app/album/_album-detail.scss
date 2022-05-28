@@ -102,7 +102,7 @@
         @include flex($gap: 64px, $justify: flex-start);
         position: absolute;
         bottom: 52px;
-        left: 0;
+        left: 8px;
 
         button {
           @include flex($gap: 12px);

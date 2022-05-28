@@ -79,6 +79,16 @@ const router = createRouter({
       meta: {
         title: "Image Detail",
         disableNav: true,
+        requiresAuth: true
+      }
+    },
+    {
+      path: "/public/album/:album/image/:image/:token",
+      name: "PublicImageDetail",
+      component: ImageDetail,
+      meta: {
+        title: "Image Detail",
+        disableNav: true,
         requiresAuth: false
       }
     },

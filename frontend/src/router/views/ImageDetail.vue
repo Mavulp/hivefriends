@@ -4,17 +4,19 @@ import { useRoute, useRouter } from "vue-router"
 import { imageUrl, useAlbums, Album, Image as ImageStruct } from "../../store/album"
 import { isEmpty, isNil } from "lodash"
 import { useLoading } from "../../store/loading"
-import { onKeyStroke, useClipboard, useCssVar, whenever } from "@vueuse/core"
+import { onKeyStroke, useClipboard, useCssVar, usePreferredDark, whenever } from "@vueuse/core"
 import { map_access, map_dark, map_light } from "../../js/map"
 import { useUser } from "../../store/user"
 import { RGB_TO_HEX, formatDate, formatFileSize } from "../../js/utils"
+import { useComments } from "../../store/comments"
+import { useToast } from "../../store/toast"
+import { useBread } from "../../store/bread"
+import { url } from "../../js/fetch"
 
 import { MapboxMap, MapboxMarker } from "vue-mapbox-ts"
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 import CommentsWrap from "../../components/comments/CommentsWrap.vue"
-import { useComments } from "../../store/comments"
-import { useToast } from "../../store/toast"
-import { useBread } from "../../store/bread"
+import Modal from "../../components/Modal.vue"
 
 /**
  *  Setup
@@ -28,7 +30,16 @@ const color = useCssVar("--color-highlight", wrap)
 
 onBeforeMount(async () => {
   if (!albums.getAlbum(albumKey.value)) {
-    albums.fetchAlbum(albumKey.value)
+    albums.fetchAlbum(albumKey.value, user.public_token)
+  }
+
+  const isDark = usePreferredDark()
+
+  if (isDark && user.public_token) {
+    const root = document.querySelector(":root")
+    if (root) {
+      root.classList.add("dark-normal")
+    }
   }
 
   window.scrollTo({ top: 0 })
@@ -46,14 +57,14 @@ onMounted(() => {
  * Image navigation
  */
 
-const url = ref<string | null>(null)
+const imageDetailUrl = ref<string | null>(null)
 
 const route = useRoute()
 const router = useRouter()
 const albums = useAlbums()
 const user = useUser()
 const bread = useBread()
-const { getLoading } = useLoading()
+const { getLoading, addLoading, delLoading } = useLoading()
 
 const transDir = ref("imagenext")
 const showComments = ref(false)
@@ -85,10 +96,11 @@ function setIndex(where: string) {
 
   if (!isNil(newIndex)) {
     router.push({
-      name: "ImageDetail",
+      name: user.public_token ? "PublicImageDetail" : "ImageDetail",
       params: {
         album: albumKey.value,
-        image: album.value.images[newIndex].key
+        image: album.value.images[newIndex].key,
+        ...(user.public_token && { token: user.public_token })
       }
     })
   }
@@ -98,14 +110,14 @@ watch(
   imageKey,
   (key) => {
     // Reset
-    url.value = null
+    imageDetailUrl.value = null
 
     // Create new image and load it
     let img = new Image()
     img.src = imageUrl(key, "large")
     img.onload = () => {
       // Append src to image element, end loading
-      url.value = img.src
+      imageDetailUrl.value = img.src
     }
 
     if (image.value) {
@@ -135,7 +147,13 @@ watchEffect(() => {
  * Map & metadata
  */
 
-const mapStyle = computed(() => (user.settings?.colorTheme?.startsWith("dark") ? map_dark : map_light))
+const mapStyle = computed(() => {
+  if (user.public_token) {
+    return usePreferredDark() ? map_dark : map_light
+  }
+
+  return user.settings?.colorTheme?.startsWith("dark") ? map_dark : map_light
+})
 const sortedMarkers = computed(() => {
   // Make sure the current marker is always the last one to render
 
@@ -146,10 +164,11 @@ const sortedMarkers = computed(() => {
 
 function openImageId(key: string) {
   router.push({
-    name: "ImageDetail",
+    name: user.public_token ? "PublicImageDetail" : "ImageDetail",
     params: {
       album: albumKey.value,
-      image: key
+      image: key,
+      ...(user.public_token && { token: user.public_token })
     }
   })
 
@@ -163,21 +182,39 @@ function scrollDown() {
 const comment = useComments()
 
 /**
- * Copy
+ * Generate public link
  */
-const { copy } = useClipboard()
+const modal = ref(false)
+const publicLink = ref("")
+const { copy, isSupported } = useClipboard()
 const toast = useToast()
 
-function copyClipboard() {
-  if (url.value) {
-    copy(url.value)
-    toast.add("Image link copied to clipboard")
+async function getPublicLink() {
+  if (!publicLink.value) {
+    addLoading("share-link")
+
+    const token = await albums.genPublicAlbumToken(albumKey.value)
+    delLoading("share-link")
+
+    if (token) publicLink.value = `${url}/public${route.fullPath}/${token}`
+  }
+
+  if (!publicLink.value) {
+    toast.add("Error generating sharing link. No idea why tbh.", "error")
+  } else {
+    modal.value = true
   }
 }
 
-/**
- * Public key
- */
+function doCopy(type: string) {
+  if (type === "url") {
+    copy(imageUrl(imageDetailUrl.value ?? ""))
+    toast.add("Image url copied to clipboard")
+  } else if (type === "public") {
+    copy(publicLink.value)
+    toast.add("Image share link copied to clipboard")
+  }
+}
 </script>
 
 <template>
@@ -192,10 +229,42 @@ function copyClipboard() {
     </div>
 
     <div class="content-wrap" v-else-if="imageKey && album && image">
+      <Teleport to="body">
+        <Modal @close="modal = false" v-if="modal">
+          <div class="modal-wrap modal-copy">
+            <div class="modal-title">
+              <h4>Get sharing links</h4>
+              <button class="modal-close" @click="modal = false">
+                <span class="material-icons">&#xe5cd;</span>
+              </button>
+            </div>
+
+            <p>Anyone with this link will be able to view this image and album it's uploaded in.</p>
+
+            <div class="input-with-copy">
+              <input name="public-link-input" readonly :value="publicLink" />
+              <button class="hover-bubble bubble-black" v-if="isSupported" @click="doCopy('public')">
+                <span class="material-icons"> &#xe14d; </span>Copy link
+              </button>
+            </div>
+
+            <hr />
+            <p>Link to the image file. (Better for quick sharing)</p>
+
+            <div class="input-with-copy" v-if="imageDetailUrl">
+              <input name="url-input" readonly :value="imageDetailUrl" />
+              <button class="hover-bubble bubble-black" v-if="isSupported" @click="doCopy('url')">
+                <span class="material-icons"> &#xe14d; </span> Copy link
+              </button>
+            </div>
+          </div>
+        </Modal>
+      </Teleport>
+
       <div class="hi-image-container">
         <div class="hi-image-wrapper">
           <transition :name="transDir" mode="out-in">
-            <img v-if="url" :src="url" ref="imageel" />
+            <img v-if="imageDetailUrl" :src="imageDetailUrl" ref="imageel" />
             <div v-else class="image-loading">
               <LoadingSpin dark />
             </div>
@@ -230,9 +299,10 @@ function copyClipboard() {
               <template v-else> ({{ comment.comments.length }}) </template>
             </button>
 
-            <button class="hover-bubble" @click="copyClipboard">
+            <button class="hover-bubble" @click="getPublicLink()">
               <span class="material-icons">&#xe157;</span>
               Share
+              <span class="material-icons rotate" v-if="getLoading('share-link')">&#xe863;</span>
             </button>
           </div>
 

@@ -125,6 +125,12 @@
         color: rgb(var(--color-error));
       }
     }
+
+    &.bubble-black {
+      .material-icons {
+        color: rgb(var(--color-text));
+      }
+    }
   }
 
   &.active,
@@ -141,6 +147,12 @@
   &.bubble-red {
     &:after {
       background-color: rgba(var(--color-error), 0.25);
+    }
+  }
+
+  &.bubble-black {
+    &:after {
+      background-color: rgba(var(--color-text), 0.1);
     }
   }
 

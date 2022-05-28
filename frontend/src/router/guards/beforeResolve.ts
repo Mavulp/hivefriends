@@ -19,24 +19,33 @@ export default async function (to: RouteLocationNormalized, from: RouteLocationN
   const key = localStorage.getItem("user")
 
   // Save token
-  if (to.name === "PublicAlbumDetail") {
+  if (to.name === "PublicAlbumDetail" || to.name === "PublicImageDetail") {
     const _public_token: string = isArray(to.params.token) ? to.params.token[0] : to.params.token
     auth.public_token = _public_token
   }
 
   // Lock user into album details & image detail routes
   if (auth.public_token) {
-    if (to.name == "ImageDetail" || to.name == "PublicAlbumDetail") {
-      if (token && key && token) {
+    if (to.name == "PublicImageDetail" || to.name == "PublicAlbumDetail") {
+      if (token && key) {
         // This will only happen when a public album detail is loaded
         // but user has been logged in previously with a valid user & bearer token
         // We want to "sign in" the user and show the normal album view
 
         auth.public_token = undefined
-        return next({
-          name: "AlbumDetail",
-          params: { id: to.params.id }
-        })
+
+        return to.name === "PublicAlbumDetail"
+          ? next({
+              name: "AlbumDetail",
+              params: { id: to.params.id }
+            })
+          : next({
+              name: "ImageDetail",
+              params: {
+                album: to.params.album,
+                image: to.params.image
+              }
+            })
       }
 
       return next()
