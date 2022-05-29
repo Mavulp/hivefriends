@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onBeforeMount, computed, reactive, ref, watchEffect } from "vue"
-import { useRoute, useRouter } from "vue-router"
+import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router"
 import { useAlbums, Album, imageUrl, Image } from "../../store/album"
 import { useLoading } from "../../store/loading"
 import { isEmpty } from "lodash"
@@ -16,6 +16,7 @@ import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 import AlbumTimestamp from "../../components/albums/AlbumTimestamp.vue"
 import ImageListitem from "../../components/albums/ImageListitem.vue"
 import Modal from "../../components/Modal.vue"
+import AlbumMap from "../../components/albums/AlbumMap.vue"
 
 const albums = useAlbums()
 const route = useRoute()
@@ -137,6 +138,11 @@ async function getPublicLink() {
     modal.value = true
   }
 }
+
+/**
+ *  Album map
+ */
+const map = ref(false)
 </script>
 
 <template>
@@ -163,6 +169,10 @@ async function getPublicLink() {
             <p>Anyone with this link will be able to view this album</p>
             <input readonly :value="publicLink" />
           </div>
+        </Modal>
+
+        <Modal v-if="map" @close="map = false">
+          <AlbumMap :album="album" @close="map = false" />
         </Modal>
       </Teleport>
 
@@ -200,7 +210,7 @@ async function getPublicLink() {
             Edit
           </router-link>
 
-          <button class="hover-bubble" data-title-top="WIP">
+          <button class="hover-bubble" @click="map = true">
             <span class="material-icons">&#xe55b;</span>
             Map
           </button>
@@ -211,7 +221,7 @@ async function getPublicLink() {
           </button>
 
           <button class="hover-bubble data-title-width-156" @click="getPublicLink" v-if="!user.public_token">
-            <span class="material-icons">&#xe157;</span>
+            <span class="material-icons">&#xe80d;</span>
             Share
             <span class="material-icons rotate" v-if="getLoading('share-link')">&#xe863;</span>
           </button>

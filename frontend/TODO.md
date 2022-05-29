@@ -1,6 +1,7 @@
 # Fix
 
 - [ ] highlight color is messed up when displaying current user's or relevant user's colors
+- [ ] add sanitization to user bio or remove v-html
 
 # Todo
 
@@ -16,7 +17,6 @@
 
 - [ ] Album Detail
 
-  - [ ] a completely new full-screen view of map markers (images could appear within these markers as popups)
   - [ ] Add a button "user albums" or "all albums" to get back to album list
 
 - [ ] Album List

@@ -29,8 +29,9 @@
         margin: 0;
       }
 
-      button {
+      .modal-close {
         color: rgb(var(--color-text-light));
+        font-size: 1.8rem;
 
         &:hover {
           color: rgb(var(--color-text));
@@ -60,16 +61,24 @@
 
       .input-with-copy {
         display: grid;
-        grid-template-columns: 1fr 80px;
-        gap: 30px;
+        grid-template-columns: 20px 1fr 88px;
+        gap: 16px;
+        align-items: center;
+
+        & > .material-icons {
+          color: rgb(var(--color-highlight));
+        }
 
         button {
-          align-self: center;
           height: 28px;
           line-height: 28px;
         }
 
         &:nth-of-type(2) {
+          & > .material-icons {
+            color: rgb(var(--color-info));
+          }
+
           input {
             background-color: rgba(var(--color-info), 0.1);
             color: rgb(var(--color-info));

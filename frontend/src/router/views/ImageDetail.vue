@@ -154,6 +154,7 @@ const mapStyle = computed(() => {
 
   return user.settings?.colorTheme?.startsWith("dark") ? map_dark : map_light
 })
+
 const sortedMarkers = computed(() => {
   // Make sure the current marker is always the last one to render
 
@@ -242,6 +243,7 @@ function doCopy(type: string) {
             <p>Anyone with this link will be able to view this image and album it's uploaded in.</p>
 
             <div class="input-with-copy">
+              <span class="material-icons"> &#xe80d; </span>
               <input name="public-link-input" readonly :value="publicLink" />
               <button class="hover-bubble bubble-black" v-if="isSupported" @click="doCopy('public')">
                 <span class="material-icons"> &#xe14d; </span>Copy link
@@ -252,6 +254,7 @@ function doCopy(type: string) {
             <p>Link to the image file. (Better for quick sharing)</p>
 
             <div class="input-with-copy" v-if="imageDetailUrl">
+              <span class="material-icons"> &#xe157; </span>
               <input name="url-input" readonly :value="imageDetailUrl" />
               <button class="hover-bubble bubble-black" v-if="isSupported" @click="doCopy('url')">
                 <span class="material-icons"> &#xe14d; </span> Copy link
@@ -287,7 +290,7 @@ function doCopy(type: string) {
 
           <div class="context-col">
             <button class="hover-bubble" @click="scrollDown()">
-              <span class="material-icons">&#xe5db;</span>
+              <span class="material-icons">&#xe5cf;</span>
               Details
             </button>
 
@@ -300,7 +303,7 @@ function doCopy(type: string) {
             </button>
 
             <button class="hover-bubble" @click="getPublicLink()">
-              <span class="material-icons">&#xe157;</span>
+              <span class="material-icons">&#xe80d;</span>
               Share
               <span class="material-icons rotate" v-if="getLoading('share-link')">&#xe863;</span>
             </button>

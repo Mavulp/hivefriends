@@ -20,6 +20,11 @@ function signOut() {
       <img src="/Sharp.png" alt=" " />
     </router-link>
 
+    <div class="nav-links-wrap">
+      <router-link class="nav-link" :to="{ name: 'Home' }">Home</router-link>
+      <router-link class="nav-link" :to="{ name: 'Albums' }">Albums</router-link>
+    </div>
+
     <transition name="fade" appear mode="out-in">
       <span class="bread" v-if="bread.title">{{ bread.title }}</span>
     </transition>

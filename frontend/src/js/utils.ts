@@ -68,3 +68,14 @@ export function formatFileSize(bytes: string | number, round?: boolean) {
 export function flag(code: string, type: string = "svg") {
   return `https://countryflagsapi.com/${type}/${code}`
 }
+
+export function median(numbers: Array<number>) {
+  const sorted = Array.from(numbers).sort((a, b) => a - b)
+  const middle = Math.floor(sorted.length / 2)
+
+  if (sorted.length % 2 === 0) {
+    return (sorted[middle - 1] + sorted[middle]) / 2
+  }
+
+  return sorted[middle]
+}

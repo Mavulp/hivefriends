@@ -13,8 +13,10 @@ import { useFormValidation, minLength, required, sameAs } from "../../js/validat
 import { HEX_to_RGB, TEXT_CONTRAST } from "../../js/utils"
 import { useToast } from "../../store/toast"
 import countries from "../../js/countries"
-import { kStringMaxLength } from "buffer"
 import { useBread } from "../../store/bread"
+
+//@ts-ignore
+import sanitize from "sanitize-html"
 
 const { getLoading, addLoading, delLoading } = useLoading()
 const bread = useBread()

@@ -32,8 +32,6 @@ const accent = computed(() => color.value.split(",").map((item) => Number(item))
 onBeforeMount(() => {
   addLoading("profile")
 
-  console.log("h")
-
   bread.set(`${users.getUsername(_id.value)}'s profile`)
 
   Promise.all([albums.fetchUserAlbums(_id.value), users.fetchUser(_id.value, true)])

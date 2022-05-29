@@ -4,6 +4,8 @@ import { useLoading } from "./loading"
 import { useToast } from "./toast"
 import { FetchError } from "../js/global-types"
 
+type Modify<T, R> = Omit<T, keyof R> & R
+
 export interface Image {
   key: string
   fileName: string
@@ -23,7 +25,12 @@ export interface Image {
   uploadedAt: number
 }
 
-export interface ImageMetadata {}
+// export type ImageWithLocation = Omit<Image, "location"> & {
+//   location: {
+//     latitude: string | number
+//     longitude: string | number
+//   }
+// }
 
 export interface Album {
   key: string
