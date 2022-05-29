@@ -85,7 +85,8 @@ async fn get_users(
             let mut stmt = conn
                 .prepare(
                     "SELECT a.\"key\" FROM albums a \
-                WHERE a.author = ?1",
+                    WHERE a.author = ?1 \
+                    AND a.draft == false",
                 )
                 .context("Failed to prepare user albums query")?;
             let album_key_iter = stmt
@@ -106,7 +107,8 @@ async fn get_users(
                     INNER JOIN user_album_associations uaa2 ON uaa2.album_key = a.key \
                     INNER JOIN users u2 ON uaa2.username = u2.username \
                     WHERE u1.username = ?1 \
-                    AND u2.username != ?1",
+                    AND u2.username != ?1 \
+                    AND a.draft == false",
                 )
                 .context("Failed to prepare met users query")?;
             let met_iter = stmt
@@ -175,7 +177,8 @@ async fn get_user_by_username(
             .interact(move |conn| {
                 let mut stmt = conn.prepare(
                     "SELECT a.\"key\" FROM albums a \
-                    WHERE a.author = ?1",
+                    WHERE a.author = ?1 \
+                    AND a.draft == false",
                 )?;
                 let album_iter = stmt.query_map(params![cusername], |row| {
                     Ok(from_row::<String>(row).unwrap())
@@ -197,7 +200,8 @@ async fn get_user_by_username(
                     INNER JOIN user_album_associations uaa2 ON uaa2.album_key = a.key \
                     INNER JOIN users u2 ON uaa2.username = u2.username \
                     WHERE u1.username = ?1 \
-                    AND u2.username != ?1",
+                    AND u2.username != ?1 \
+                    AND a.draft == false",
                 )?;
                 let album_iter = stmt.query_map(params![cusername], |row| {
                     Ok(from_row::<String>(row).unwrap())
