@@ -102,7 +102,7 @@ async function submit() {
     </div>
 
     <div class="album-upload-content" v-if="open && !data.error">
-      <LoadingSpin v-if="data.loading" />
+      <LoadingSpin dark v-if="data.loading" />
 
       <div class="grid-view" v-else>
         <form @submit.prevent="submit">

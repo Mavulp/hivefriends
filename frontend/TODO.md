@@ -2,8 +2,10 @@
 
 - [ ] highlight color is messed up when displaying current user's or relevant user's colors
 - [ ] delete button missing on your comments in album map view
-- [ ] fix issue when clicking share image on a public album image detail (if public, dont call endpoint to get link, use current)
-- [ ] test replace \n with <br/>
+- [x] fix issue when clicking share image on a public album image detail (if public, dont call endpoint to get link, use current)
+- [x] Fix wrong hotlink sharing in image detail
+- [x] sanitize comments before posting
+- [ ] preload images when user opens detail
 
 # Todo
 
@@ -11,22 +13,15 @@
 
 - [ ] Album editing
 
-  - [ ] Add "edit album" and "delete album" for albums that the user created
-  - [ ] List all images, can delete and update imagekeys array in album then
-  - [x] Re-order image during album editing
-
 - [ ] Album List
 
   - [ ] Add filtering to album lists
 
 - [ ] Responsive layout for everything
-
   - [ ] Phone
   - [ ] Tablet
   - [ ] Small Screens
   - [ ] (>1920)
-
-- [ ] add a page where we list all YOUR images
 
 ## Post Launch TODO
 
@@ -39,3 +34,8 @@
 - [ ] Dark mode feedback (ask)
 
 - [ ] Split Album Editing & Uploading into reusable components & composable logic
+
+- [ ] Page which lists every single picture uploaded user
+  - [ ] Click for full screen view in a modal
+  - [ ] button to delete
+  - [ ] button to share (only hotlinks)

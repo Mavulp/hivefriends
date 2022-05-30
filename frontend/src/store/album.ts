@@ -33,15 +33,6 @@ export interface ImageFile {
   }>
 }
 
-// type Modify<T, R> = Omit<T, keyof R> & R
-
-// export type ImageWithLocation = Omit<Image, "location"> & {
-//   location: {
-//     latitude: string | number
-//     longitude: string | number
-//   }
-// }
-
 export interface Album {
   key: string
   title: string
@@ -131,11 +122,11 @@ export const useAlbums = defineStore("album", {
         .finally(() => delLoading("albums"))
     },
 
-    async fetchUserAlbums(user: string) {
+    async fetchUserAlbums(user: string, draft: boolean = false) {
       const { addLoading, delLoading } = useLoading()
       addLoading(`albums`)
 
-      return get(`/api/albums/?user=${user}`)
+      return get(`/api/albums/?user=${user}&draft=${draft}`)
         .then((albums) => {
           this.userAlbums[user] = albums
 
@@ -175,8 +166,6 @@ export const useAlbums = defineStore("album", {
 
       return put(`/api/images/${key}`, form)
         .then((res) => {
-          console.log(res)
-
           toast.add("Updated image metadata", "success")
         })
         .catch((error: FetchError) => {
@@ -202,13 +191,13 @@ export const useAlbums = defineStore("album", {
         .finally(() => delLoading("add-album"))
     },
 
-    async deleteAlbum(albumKey: string) {
+    async deleteAlbum(key: string) {
       const { addLoading, delLoading } = useLoading()
       const toast = useToast()
 
       addLoading("delete-album")
 
-      return del(`/api/albums/${albumKey}`)
+      return del(`/api/albums/${key}`)
         .then(() => {
           toast.add("Successfully deleted album", "success")
           return true

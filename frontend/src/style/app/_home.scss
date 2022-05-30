@@ -112,12 +112,14 @@
 
     .home-user {
       @include t();
+      @include radius(4px);
       @include flex($gap: 8px);
       padding: 16px 32px;
       margin-bottom: 24px;
       color: rgb(var(--color-text));
       border: 1px solid transparent;
       background-color: rgb(var(--color-white));
+      box-shadow: var(--shadow);
 
       &:hover {
         border: 1px solid rgb(var(--color-border-light));

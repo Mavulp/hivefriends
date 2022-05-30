@@ -7,12 +7,14 @@ import Button from "../../components/Button.vue"
 import InputCheckbox from "../../components/form/InputCheckbox.vue"
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 
-import { computed, nextTick, onBeforeMount, reactive, ref } from "vue"
+import { computed, nextTick, onBeforeMount, reactive, ref, onMounted } from "vue"
 import { useRoute } from "vue-router"
 import { Album, NewAlbum, useAlbums, imageUrl, ImageFile, Image } from "../../store/album"
 import { useLoading } from "../../store/loading"
 import { useUser, User } from "../../store/user"
 import { useFormValidation, required } from "../../js/validation"
+import { clone } from "lodash"
+import { upload } from "../../js/fetch"
 
 /**
  * Setup
@@ -40,6 +42,71 @@ const uploadProgress = computed(() => `${[...files.values].filter((item) => item
 const imageKeys = computed<Array<any>>(() => files.values.map((file) => file.key).filter((item) => item))
 
 /**
+ * File Handling
+ */
+
+onMounted(() => {
+  const el = document.getElementById("drop-area")
+
+  if (el) {
+    el.addEventListener("dragenter", onSubmitHandler, false)
+    el.addEventListener("dragleave", onSubmitHandler, false)
+    el.addEventListener("dragover", onSubmitHandler, false)
+    el.addEventListener("drop", onSubmitHandler, false)
+    el.addEventListener("input", (e) => onSubmitHandler(e, true), false)
+  }
+})
+
+function onSubmitHandler(e: any, fromField: boolean = false) {
+  e.preventDefault()
+  e.stopPropagation()
+
+  let files = fromField ? e.target.files : e.dataTransfer.files
+
+  if (files.length > 0) {
+    uploadFiles(files)
+  }
+}
+
+async function uploadFiles(_files: any) {
+  let i = files.values.length
+
+  for (const file of _files) {
+    if (!file) continue
+
+    let formData = new FormData()
+    formData.append("file", file)
+
+    uploadFile(file, formData, clone(i))
+
+    i++
+  }
+}
+
+async function uploadFile(file: any, formData: any, index: number) {
+  files.values[index] = {
+    name: file.name,
+    size: file.size,
+    loading: true,
+    key: null
+  }
+
+  return upload("/api/images/", formData)
+    .then((response: any) => {
+      Object.assign(files.values[index], {
+        loading: false,
+        key: response.key
+      })
+    })
+    .catch((error) => {
+      Object.assign(files.values[index], {
+        loading: false,
+        error
+      })
+    })
+}
+
+/**
  *  Format album properties into a form
  */
 const draggingOver = ref(false)
@@ -65,7 +132,9 @@ function setupForm(_album: any) {
     })
   })
 
+  // Delete unwanted properties from the album
   delete _album.images
+  delete _album.key
 
   Object.assign(album, _album)
 }
@@ -78,7 +147,10 @@ const { validate, errors } = useFormValidation(album, rules)
 
 async function submit() {
   validate().then(async () => {
+    album.imageKeys = imageKeys.value
+
     const model = { ...album }
+
     Object.assign(model, {
       timeframe: {
         from: new Date(album.timeframe.from).getTime() / 1000,
@@ -147,8 +219,8 @@ function dragCompare() {
   <div class="hi-album-upload album-edit">
     <LoadingSpin v-if="getLoading('edit')" class="center-page dark" />
 
-    <template v-else-if="false"> no data </template>
-    <div class="album-upload-layout" v-else>
+    <!-- <template v-else-if="false"> no data </template> -->
+    <div class="album-upload-layout">
       <div class="album-upload-items">
         <div
           class="album-drag-input"
@@ -180,7 +252,7 @@ function dragCompare() {
         </div>
       </div>
 
-      <div class="album-upload-metadata">
+      <div class="album-upload-metadata" v-if="!getLoading('edit')">
         <h3>Edit album</h3>
 
         <InputText v-model:value="album.title" placeholder="Album name" label="Title" required :error="errors.title" />

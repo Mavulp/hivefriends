@@ -110,14 +110,15 @@ function setIndex(where: string) {
 watch(
   imageKey,
   (key) => {
+    // Works too but is weird
+    // imageDetailUrl.value = imageUrl(key, "large")
+
     // Reset
     imageDetailUrl.value = null
 
-    // Create new image and load it
     let img = new Image()
     img.src = imageUrl(key, "large")
     img.onload = () => {
-      // Append src to image element, end loading
       imageDetailUrl.value = img.src
     }
 
@@ -141,6 +142,11 @@ watchEffect(() => {
   if (album.value) {
     const accent = user.getUser(album.value.author, "accentColor")
     color.value = accent
+
+    album.value.images.map((image) => {
+      const img = new Image()
+      img.src = imageUrl(image.key, "large")
+    })
   }
 })
 
@@ -202,6 +208,12 @@ const { copy, isSupported } = useClipboard()
 const toast = useToast()
 
 async function getPublicLink() {
+  if (user.public_token) {
+    publicLink.value = window.location.href
+    modal.value = true
+    return
+  }
+
   if (!publicLink.value) {
     addLoading("share-link")
 
@@ -211,6 +223,7 @@ async function getPublicLink() {
     if (token) publicLink.value = `${url}/public${route.fullPath}/${token}`
   }
 
+  // Dont error if public_token exists
   if (!publicLink.value) {
     toast.add("Error generating sharing link. No idea why tbh.", "error")
   } else {
@@ -220,7 +233,7 @@ async function getPublicLink() {
 
 function doCopy(type: string) {
   if (type === "url") {
-    copy(imageUrl(imageDetailUrl.value ?? ""))
+    copy(imageDetailUrl.value ?? "")
     toast.add("Image url copied to clipboard")
   } else if (type === "public") {
     copy(publicLink.value)
@@ -231,7 +244,7 @@ function doCopy(type: string) {
 
 <template>
   <div class="hi-image-detail" ref="wrap">
-    <LoadingSpin dark v-if="getLoading('get-album')" />
+    <LoadingSpin class="center-page" dark v-if="getLoading('get-album')" />
 
     <div class="hi-album-detail-error" v-else-if="isEmpty(album)">
       <div class="centered">

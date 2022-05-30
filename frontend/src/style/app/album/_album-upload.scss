@@ -172,7 +172,7 @@
       }
 
       .album-upload-items-list {
-        @include flex($gap: 4px, $direction: column-reverse);
+        @include flex($gap: 4px, $direction: column);
         // display: block;
         width: 100%;
       }

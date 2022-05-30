@@ -16,12 +16,15 @@ const { data, author } = defineProps<Props>()
 <template>
   <router-link :to="{ name: 'AlbumDetail', params: { id: data.key } }" class="album-list-item">
     <div class="album-image">
-      <span class="album-draft" v-if="data.draft">Draft</span>
       <img :src="imageUrl(data.coverKey, 'medium')" alt=" " />
     </div>
 
     <div class="album-meta">
       <AlbumTimestamp class="dark-light" :timeframe="data.timeframe" />
+      <div class="draft-wrap">
+        <span class="album-draft" v-if="data.draft">Draft</span>
+      </div>
+
       <h2>{{ data.title }}</h2>
 
       <template v-if="author">

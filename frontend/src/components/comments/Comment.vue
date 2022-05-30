@@ -3,6 +3,7 @@ import { computed, ref } from "vue"
 import { Comment, useComments } from "../../store/comments"
 import { imageUrl } from "../../store/album"
 import { useUser } from "../../store/user"
+import { sanitize } from "../../js/utils"
 
 const user = useUser()
 const comments = useComments()
@@ -90,7 +91,7 @@ const text = computed(() => {
     </div>
 
     <div class="comment-body">
-      <p v-html="text"></p>
+      <p v-html="sanitize(text)"></p>
       <span class="timestamp">{{ formatTimestamp(props.data.createdAt) }}</span>
     </div>
   </div>
