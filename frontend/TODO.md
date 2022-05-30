@@ -6,12 +6,11 @@
 - [x] Fix wrong hotlink sharing in image detail
 - [x] sanitize comments before posting
 - [ ] preload images when user opens detail
+- [ ] wait for an image to upload to upload the next one (try 2-3 at the same time)
 
 # Todo
 
 - [ ] Correct meta tags in head
-
-- [ ] Album editing
 
 - [ ] Album List
 

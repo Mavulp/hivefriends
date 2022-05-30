@@ -37,8 +37,11 @@ onBeforeMount(async () => {
   delLoading("edit")
 })
 
+const rawFileLength = ref(0)
+
 const isLoading = computed(() => files.values.some((file) => file.loading))
-const uploadProgress = computed(() => `${[...files.values].filter((item) => item.key).length} / ${files.values.length}`)
+// const uploadProgress = computed(() => `${[...files.values].filter((item) => item.key).length} / ${rawFileLength.value}`)
+const remainingProgress = computed(() => rawFileLength.value - [...files.values].filter((item) => item.key).length)
 const imageKeys = computed<Array<any>>(() => files.values.map((file) => file.key).filter((item) => item))
 
 /**
@@ -70,6 +73,7 @@ function onSubmitHandler(e: any, fromField: boolean = false) {
 
 async function uploadFiles(_files: any) {
   let i = files.values.length
+  rawFileLength.value = _files.length
 
   for (const file of _files) {
     if (!file) continue
@@ -77,7 +81,7 @@ async function uploadFiles(_files: any) {
     let formData = new FormData()
     formData.append("file", file)
 
-    uploadFile(file, formData, clone(i))
+    await uploadFile(file, formData, clone(i))
 
     i++
   }
@@ -115,8 +119,19 @@ const files = reactive<ImageFile>({ values: [] })
 const singleDate = ref(false)
 const key = ref()
 
+function initializeTimeframe(ms: number) {
+  let date = new Date(ms)
+  let year = date.getFullYear()
+  let month = ("0" + (date.getMonth() + 1)).slice(-2)
+  let day = ("0" + date.getDate()).slice(-2)
+  return `${year}-${month}-${day}`
+}
+
 function setupForm(_album: any) {
   key.value = _album.key
+
+  _album.timeframe.from = initializeTimeframe(_album.timeframe.from * 1000)
+  _album.timeframe.to = initializeTimeframe(_album.timeframe.to * 1000)
 
   if (_album.timeframe.from && _album.timeframe.to) {
     singleDate.value = _album.timeframe.from === _album.timeframe.to
@@ -237,6 +252,10 @@ function dragCompare() {
         </div>
 
         <div class="album-upload-items-list" v-if="files.values.length > 0">
+          <p class="upload-amount-indicator" v-if="remainingProgress > 0">
+            {{ remainingProgress }} file(s) left to upload
+          </p>
+
           <ImageUploadItem
             v-for="(item, index) in files.values"
             :class="{ 'is-cover': item.key === album.coverKey, 'is-dragging-over': index === drag_over }"
@@ -319,7 +338,7 @@ function dragCompare() {
             <LoadingSpin class="dark" v-if="isLoading" />
           </Button>
 
-          <p v-if="isLoading">{{ uploadProgress }} photos uploaded</p>
+          <!-- <p v-if="isLoading">{{ uploadProgress }} photos uploaded</p> -->
         </template>
       </div>
     </div>

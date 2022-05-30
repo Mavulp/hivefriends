@@ -100,12 +100,12 @@ const chunks = computed(() => {
   return chunks
 })
 
-function openFirstImage() {
+function openCoverImage() {
   router.push({
     name: user.public_token ? "PublicImageDetail" : "ImageDetail",
     params: {
       album: album.key,
-      image: album.images[0].key,
+      image: album.coverKey,
       ...(user.public_token && { token: user.public_token })
     }
   })
@@ -257,7 +257,7 @@ const enableMap = computed(() => album.images.some((image) => image.location))
             <p v-else>Nobody is here.</p>
           </div>
 
-          <img @click="openFirstImage" class="cover-image" :src="imageUrl(album.coverKey)" alt=" " />
+          <img @click="openCoverImage" class="cover-image" :src="imageUrl(album.coverKey)" alt=" " />
         </div>
       </div>
     </div>

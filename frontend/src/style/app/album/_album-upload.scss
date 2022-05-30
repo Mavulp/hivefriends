@@ -175,6 +175,16 @@
         @include flex($gap: 4px, $direction: column);
         // display: block;
         width: 100%;
+
+        p {
+          @include font(200);
+          display: block;
+          width: 100%;
+          text-align: right;
+          font-size: 1.4rem;
+          margin-bottom: 24px;
+          color: rgb(var(--color-text));
+        }
       }
 
       .album-upload-item {
