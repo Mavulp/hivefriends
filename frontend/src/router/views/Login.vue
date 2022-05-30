@@ -87,6 +87,7 @@ onBeforeMount(async () => {
 
     <div class="route-login-split has-form">
       <form @submit.prevent="submit" class="form-wrap">
+        <img src="/Sharp.png" alt=" " />
         <InputText :error="errors.username" v-model:value="form.username" label="Username" :placeholder="placeholder" />
         <InputText
           :error="errors.password"
