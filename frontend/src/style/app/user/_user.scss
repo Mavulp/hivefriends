@@ -68,8 +68,8 @@
 
         .avatar {
           display: block;
-          width: 556px;
-          height: 556px;
+          width: 512px;
+          height: 512px;
           object-fit: cover;
           position: relative;
           object-position: center;
@@ -99,18 +99,26 @@
     }
 
     .user-information {
-      padding: 64px 128px;
+      padding: 40px 128px;
       width: 60%;
 
       .user-info-meta {
-        @include flex($gap: 40px, $align: flex-start);
+        @include flex($gap: 0, $align: flex-start);
         width: 100%;
-        margin-bottom: 64px;
+        margin-bottom: 40px;
 
         span {
           display: block;
           margin: 0;
           font-size: 1.6rem;
+
+          &:first-child {
+            margin-right: 16px;
+          }
+
+          &:not(:first-child) {
+            margin-right: 40px;
+          }
 
           b {
             font-size: 1.6rem;

@@ -1,4 +1,6 @@
 img {
+  background-color: rgba(var(--color-background-dark), 0.05);
+
   &.user-image {
     &.image-error {
       &:before {

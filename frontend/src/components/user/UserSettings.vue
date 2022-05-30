@@ -16,7 +16,6 @@ import countries from "../../js/countries"
 import { useBread } from "../../store/bread"
 
 //@ts-ignore
-import sanitize from "sanitize-html"
 
 const { getLoading, addLoading, delLoading } = useLoading()
 const bread = useBread()

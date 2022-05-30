@@ -1,7 +1,6 @@
 # Fix
 
 - [ ] highlight color is messed up when displaying current user's or relevant user's colors
-- [ ] add sanitization to user bio or remove v-html
 
 # Todo
 
@@ -15,15 +14,15 @@
   - [ ] List all images, can delete and update imagekeys array in album then
   - [ ] Re-order image during album editing
 
-- [ ] Album Detail
-
-  - [ ] Add a button "user albums" or "all albums" to get back to album list
-
 - [ ] Album List
 
   - [ ] Add filtering to album lists
 
 - [ ] Responsive layout for everything
+  - [ ] Phone
+  - [ ] Tablet
+  - [ ] Small Screens
+  - [ ] (>1920)
 
 ## Post Launch TODO
 

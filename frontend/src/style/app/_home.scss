@@ -143,20 +143,6 @@
       }
     }
   }
-
-  .copyright {
-    @include flex($gap: 4px, $justify: center);
-    margin: 0;
-    color: rgb(var(--color-text-light));
-
-    .material-icons {
-      color: rgb(var(--color-border));
-    }
-
-    a {
-      color: rgb(var(--color-highlight));
-    }
-  }
 }
 
 .flag {
@@ -166,4 +152,18 @@
   object-position: left;
   max-width: 32px;
   max-height: 24px;
+}
+
+.copyright {
+  @include flex($gap: 4px, $justify: center);
+  margin: 0;
+  color: rgb(var(--color-text-light));
+
+  .material-icons {
+    color: rgb(var(--color-border));
+  }
+
+  a {
+    color: rgb(var(--color-highlight));
+  }
 }

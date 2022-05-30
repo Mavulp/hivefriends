@@ -23,6 +23,7 @@ function signOut() {
     <div class="nav-links-wrap">
       <router-link class="nav-link" :to="{ name: 'Home' }">Home</router-link>
       <router-link class="nav-link" :to="{ name: 'Albums' }">Albums</router-link>
+      <router-link class="nav-link" :to="{ name: 'About' }">About</router-link>
     </div>
 
     <transition name="fade" appear mode="out-in">

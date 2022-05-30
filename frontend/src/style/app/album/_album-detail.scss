@@ -391,10 +391,14 @@
           .hi-comments-list,
           .hi-comments-header {
             padding: 20px;
+
+            .control-button {
+              display: none;
+            }
           }
 
           .hi-add-comment {
-            min-height: 156px;
+            // min-height: 156px;
           }
         }
       }

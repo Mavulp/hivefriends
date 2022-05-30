@@ -7,7 +7,7 @@ import { computed, onBeforeMount, onBeforeUnmount, onMounted, ref, watchEffect }
 import { useUser, User } from "../../store/user"
 import { Album, imageUrl, useAlbums } from "../../store/album"
 import { useRoute } from "vue-router"
-import { TEXT_CONTRAST, formatDate, flag } from "../../js/utils"
+import { TEXT_CONTRAST, formatDate, flag, sanitize } from "../../js/utils"
 import { useLoading } from "../../store/loading"
 import { useCssVar } from "@vueuse/core"
 import countries from "../../js/countries"
@@ -112,7 +112,7 @@ watchEffect(() => {
               met <b>{{ user.met.length }}</b> people
             </span>
           </div>
-          <p v-html="user.bio"></p>
+          <p v-html="sanitize(user.bio)"></p>
         </div>
       </div>
       <div class="user-albums">

@@ -53,17 +53,17 @@
   }
 
   &.btn-login {
-    &:after {
-      @include t(0.4s, cubic-bezier(0.83, 0, 0.17, 1));
-      content: "";
-      display: block;
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 65px;
-      right: 32px;
-      border-bottom: 1px solid rgb(var(--color-text-white));
-    }
+    @include flex($justify: space-between); // &:after {
+    //   @include t(0.4s, cubic-bezier(0.83, 0, 0.17, 1));
+    //   content: "";
+    //   display: block;
+    //   position: absolute;
+    //   top: 50%;
+    //   transform: translateY(-50%);
+    //   width: 65px;
+    //   right: 32px;
+    //   border-bottom: 1px solid rgb(var(--color-text-white));
+    // }
   }
 
   &.btn-red {

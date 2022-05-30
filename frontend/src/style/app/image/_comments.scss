@@ -113,9 +113,10 @@
         }
 
         img {
-          display: inline-block;
+          display: block;
           max-height: 512px;
           max-width: 100%;
+          margin: 6px 0;
         }
       }
     }

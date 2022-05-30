@@ -98,10 +98,17 @@ onBeforeMount(async () => {
 
         <Button class="btn-login btn-black" type="submit" size="56px">
           <span>Sign In</span>
+
+          <span class="material-icons"> &#xea77; </span>
         </Button>
       </form>
 
-      <p class="copy-text">Copyright {{ new Date().getFullYear() }} Mavulp (hivecom devs)</p>
+      <p class="copyright">
+        <span class="material-icons"> &#xe86f; </span>
+        Made by <a target="_blank" href="https://github.com/mavulp">Mavulp</a> in {{ new Date().getFullYear() }}
+      </p>
+
+      <!-- <p class="copy-text">Copyright {{ new Date().getFullYear() }} Mavulp (hivecom devs)</p> -->
     </div>
   </div>
 </template>

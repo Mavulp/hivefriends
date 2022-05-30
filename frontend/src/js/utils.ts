@@ -1,5 +1,3 @@
-import countries from "./countries"
-
 export function getRanMinMax(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
@@ -78,4 +76,11 @@ export function median(numbers: Array<number>) {
   }
 
   return sorted[middle]
+}
+
+export function sanitize(text: string) {
+  if (!text) return null
+
+  const regex = /\bon\w+=\S+(?=.*>)/g
+  return text.replaceAll(regex, "")
 }

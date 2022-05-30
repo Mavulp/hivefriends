@@ -8,11 +8,14 @@ import AlbumList from "./views/AlbumList.vue"
 import AlbumUpload from "./views/AlbumUpload.vue"
 import AlbumEdit from "./views/AlbumEdit.vue"
 
+import About from "./views/About.vue"
+
 // Subchildren for user pages
 import UserAlbums from "../components/user/UserAlbums.vue"
 import UserProfile from "../components/user/UserProfile.vue"
 import UserSettings from "../components/user/UserSettings.vue"
 
+// Navigation guards
 import beforeResolve from "./guards/beforeResolve"
 
 /**
@@ -34,6 +37,15 @@ const router = createRouter({
         redirectOnAuth: "/home",
         disableNav: true,
         requiresAuth: false
+      }
+    },
+    {
+      path: "/about",
+      name: "About",
+      component: About,
+      meta: {
+        title: "About us",
+        requiresAuth: true
       }
     },
     {
