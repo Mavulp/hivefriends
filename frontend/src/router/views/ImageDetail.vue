@@ -5,7 +5,7 @@ import { imageUrl, useAlbums, Album, Image as ImageStruct } from "../../store/al
 import { isEmpty, isNil } from "lodash"
 import { useLoading } from "../../store/loading"
 import { onKeyStroke, useClipboard, useCssVar, usePreferredDark, whenever } from "@vueuse/core"
-import { map_access, map_dark, map_light } from "../../js/map"
+import { map_access, map_dark, map_light, getBounds } from "../../js/map"
 import { useUser } from "../../store/user"
 import { RGB_TO_HEX, formatDate, formatFileSize } from "../../js/utils"
 import { useComments } from "../../store/comments"
@@ -17,6 +17,7 @@ import { MapboxMap, MapboxMarker } from "vue-mapbox-ts"
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 import CommentsWrap from "../../components/comments/CommentsWrap.vue"
 import Modal from "../../components/Modal.vue"
+import { Map } from "mapbox-gl"
 
 /**
  *  Setup
@@ -146,6 +147,16 @@ watchEffect(() => {
 /**
  * Map & metadata
  */
+
+const map = ref<Map>()
+
+function onMapLoaded(mapObject: Map) {
+  map.value = mapObject
+
+  setTimeout(() => {
+    mapObject.fitBounds(getBounds(sortedMarkers.value), { padding: 128 })
+  }, 50)
+}
 
 const mapStyle = computed(() => {
   if (user.public_token) {
@@ -352,6 +363,7 @@ function doCopy(type: string) {
               :mapStyle="mapStyle"
               :zoom="11"
               :center="[image.location.longitude, image.location.latitude]"
+              @loaded="onMapLoaded"
             >
               <template v-for="item in sortedMarkers">
                 <mapbox-marker

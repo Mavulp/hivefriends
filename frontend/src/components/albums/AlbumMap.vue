@@ -88,7 +88,6 @@ function setActiveLocation(index: number) {
     const correctIndex = newIndex < 0 ? sortedMarkers.value.length - 1 : 0
     const image = sortedMarkers.value[correctIndex]
 
-    console.log(newIndex, correctIndex)
     setActiveImage(image, correctIndex)
   }
 }
