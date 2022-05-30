@@ -28,7 +28,9 @@ onBeforeMount(async () => {
   bread.set(`${user.getUsername(username)}'s albums`)
 
   if (username) {
-    data.value = await store.fetchUserAlbums(username)
+    Promise.all([store.fetchUserAlbums(username), store.fetchUserAlbums(username, true)]).then((res) => {
+      data.value = res.flat()
+    })
   }
 })
 

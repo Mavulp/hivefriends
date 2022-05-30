@@ -103,28 +103,28 @@
     }
   }
 
+  .draft-wrap {
+    display: block;
+
+    .album-draft {
+      @include radius(4px);
+      display: inline-block;
+      padding: 0 16px;
+      height: 32px;
+      line-height: 32px;
+      z-index: 10;
+      margin-bottom: 0;
+      background-color: rgba(var(--color-orange), 0.25);
+      color: rgb(var(--color-orange));
+    }
+  }
+
   .album-image {
     width: 100%;
     display: block;
     position: relative;
     overflow: hidden;
     height: 392px;
-
-    .album-draft {
-      @include font(700);
-      display: block;
-      position: absolute;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      right: 0;
-      top: 0;
-      padding: 0 16px;
-      height: 40px;
-      line-height: 40px;
-      z-index: 10;
-      background-color: rgb(var(--color-white));
-      color: rgb(var(--color-text));
-    }
 
     img {
       @include t(0.2s);

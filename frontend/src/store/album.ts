@@ -4,8 +4,6 @@ import { useLoading } from "./loading"
 import { useToast } from "./toast"
 import { FetchError } from "../js/global-types"
 
-type Modify<T, R> = Omit<T, keyof R> & R
-
 export interface Image {
   key: string
   fileName: string
@@ -25,12 +23,15 @@ export interface Image {
   uploadedAt: number
 }
 
-// export type ImageWithLocation = Omit<Image, "location"> & {
-//   location: {
-//     latitude: string | number
-//     longitude: string | number
-//   }
-// }
+export interface ImageFile {
+  values: Array<{
+    name: string
+    size: number
+    loading: boolean
+    error?: string
+    key: string | null
+  }>
+}
 
 export interface Album {
   key: string
@@ -121,11 +122,11 @@ export const useAlbums = defineStore("album", {
         .finally(() => delLoading("albums"))
     },
 
-    async fetchUserAlbums(user: string) {
+    async fetchUserAlbums(user: string, draft: boolean = false) {
       const { addLoading, delLoading } = useLoading()
       addLoading(`albums`)
 
-      return get(`/api/albums/?user=${user}`)
+      return get(`/api/albums/?user=${user}&draft=${draft}`)
         .then((albums) => {
           this.userAlbums[user] = albums
 
@@ -159,13 +160,15 @@ export const useAlbums = defineStore("album", {
 
     async saveImageMetadata(key: string, form: object) {
       const { addLoading, delLoading } = useLoading()
+      const toast = useToast()
 
       addLoading(key)
 
-      return put(`/api/images/${key}`, { form })
-        .then(() => {})
+      return put(`/api/images/${key}`, form)
+        .then((res) => {
+          toast.add("Updated image metadata", "success")
+        })
         .catch((error: FetchError) => {
-          const toast = useToast()
           toast.add(error.message, "error")
         })
         .finally(() => delLoading(key))
@@ -188,23 +191,38 @@ export const useAlbums = defineStore("album", {
         .finally(() => delLoading("add-album"))
     },
 
-    async deleteAlbum(albumKey: string) {
+    async deleteAlbum(key: string) {
       const { addLoading, delLoading } = useLoading()
       const toast = useToast()
 
       addLoading("delete-album")
 
-      return del(`/api/albums/${albumKey}`)
+      return del(`/api/albums/${key}`)
         .then(() => {
           toast.add("Successfully deleted album", "success")
           return true
         })
         .catch((error: FetchError) => {
-          console.log(error)
-
           toast.add(error.message, "error")
         })
         .finally(() => delLoading("delete-album"))
+    },
+
+    async editAlbum(key: string, album: NewAlbum) {
+      const { addLoading, delLoading } = useLoading()
+      const toast = useToast()
+
+      addLoading("edit-album-submit")
+
+      return put(`/api/albums/${key}`, album)
+        .then((res) => {
+          console.log(res)
+          toast.add("Successfully updated album", "success")
+        })
+        .catch((error: FetchError) => {
+          toast.add(error.message, "error")
+        })
+        .finally(() => delLoading("edit-album-submit"))
     }
   },
   getters: {

@@ -33,16 +33,21 @@ const size = () => {
 
 const _key = computed(() => data.key)
 
-watch(_key, async (val) => {
-  if (val) {
-    const image = await albums.fetchImageMetadata(data.key)
+watch(
+  _key,
+  async (val) => {
+    if (val) {
+      const image = await albums.fetchImageMetadata(data.key)
 
-    if (image) {
-      form.fileName = image.fileName
-      form.location = image.location ?? { latitude: "", longitude: "" }
+      if (image) {
+        form.fileName = image.fileName
+        form.description = image.description
+        form.location = image.location ?? { latitude: "", longitude: "" }
+      }
     }
-  }
-})
+  },
+  { immediate: true }
+)
 
 /**
  * Custom image metadata
@@ -76,7 +81,7 @@ async function submit() {
 <template>
   <div class="album-upload-item" :class="{ open: open, 'has-error': data.error }" draggable="true">
     <div class="album-upload-item-header" @click.self="open = !open">
-      <button class="hover-bubble">
+      <button class="hover-bubble bubble-info">
         <span class="material-icons">&#xe945;</span>
       </button>
 
@@ -97,7 +102,7 @@ async function submit() {
     </div>
 
     <div class="album-upload-content" v-if="open && !data.error">
-      <LoadingSpin v-if="data.loading" />
+      <LoadingSpin dark v-if="data.loading" />
 
       <div class="grid-view" v-else>
         <form @submit.prevent="submit">

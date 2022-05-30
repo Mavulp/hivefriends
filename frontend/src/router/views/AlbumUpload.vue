@@ -8,10 +8,10 @@ import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 import InputCheckbox from "../../components/form/InputCheckbox.vue"
 import DraftItem from "../../components/upload/DraftItem.vue"
 
-import { onBeforeUnmount, onMounted, reactive, ref, computed, onBeforeMount } from "vue"
+import { onMounted, reactive, ref, computed, onBeforeMount, nextTick } from "vue"
 import { upload } from "../../js/fetch"
 import { useFormValidation, required } from "../../js/validation"
-import { useAlbums, NewAlbum, imageUrl, Album } from "../../store/album"
+import { useAlbums, NewAlbum, imageUrl, Album, ImageFile } from "../../store/album"
 import { clone, isEmpty } from "lodash"
 import { useUser, User } from "../../store/user"
 import { useLoading } from "../../store/loading"
@@ -23,21 +23,10 @@ const bread = useBread()
 const { addLoading, delLoading, getLoading } = useLoading()
 
 /**
- * Interface & setup
+ * Setup
  */
 
-interface File {
-  values: Array<{
-    name: string
-    type: string
-    size: number
-    loading: boolean
-    error?: string
-    key: string | null
-  }>
-}
-
-const files = reactive<File>({ values: [] })
+const files = reactive<ImageFile>({ values: [] })
 const album = reactive<NewAlbum>({
   title: "",
   description: "",
@@ -58,9 +47,11 @@ const albumKey = ref()
 
 const draggingOver = ref(false)
 const singleDate = ref(false)
+const rawFileLength = ref(0)
 
 const isLoading = computed(() => files.values.some((file) => file.loading))
-const uploadProgress = computed(() => `${[...files.values].filter((item) => item.key).length} / ${files.values.length}`)
+// const uploadProgress = computed(() => `${[...files.values].filter((item) => item.key).length} / ${rawFileLength.value}`)
+const remainingProgress = computed(() => rawFileLength.value - [...files.values].filter((item) => item.key).length)
 const imageKeys = computed<Array<any>>(() => files.values.map((file) => file.key).filter((item) => item))
 
 /**
@@ -110,6 +101,7 @@ function onSubmitHandler(e: any, fromField: boolean = false) {
 
 async function uploadFiles(_files: any) {
   let i = files.values.length
+  rawFileLength.value = _files.length + imageKeys.value.length
 
   for (const file of _files) {
     if (!file) continue
@@ -117,7 +109,7 @@ async function uploadFiles(_files: any) {
     let formData = new FormData()
     formData.append("file", file)
 
-    uploadFile(file, formData, clone(i))
+    await uploadFile(file, formData, clone(i))
 
     i++
   }
@@ -127,7 +119,6 @@ async function uploadFile(file: any, formData: any, index: number) {
   files.values[index] = {
     name: file.name,
     size: file.size,
-    type: file.type,
     loading: true,
     key: null
   }
@@ -221,6 +212,11 @@ function dragCompare() {
   let _temp = files.values[drag_now.value]
   files.values[drag_now.value] = files.values[drag_over.value]
   files.values[drag_over.value] = _temp
+
+  nextTick(() => {
+    drag_now.value = null
+    drag_over.value = null
+  })
 }
 </script>
 
@@ -254,6 +250,10 @@ function dragCompare() {
         </div>
 
         <div class="album-upload-items-list" v-if="files.values.length > 0">
+          <p class="upload-amount-indicator" v-if="remainingProgress > 0">
+            {{ remainingProgress }} file(s) left to upload
+          </p>
+
           <ImageUploadItem
             v-for="(item, index) in files.values"
             :class="{ 'is-cover': item.key === album.coverKey, 'is-dragging-over': index === drag_over }"
@@ -270,7 +270,7 @@ function dragCompare() {
       </div>
 
       <div class="album-upload-metadata">
-        <h3>Create an album</h3>
+        <h3>Create album</h3>
 
         <InputText v-model:value="album.title" placeholder="Album name" label="Title" required :error="errors.title" />
         <InputTextarea v-model:value="album.description" placeholder="Album description" label="Description" />
@@ -336,7 +336,7 @@ function dragCompare() {
             <LoadingSpin class="dark" v-if="isLoading" />
           </Button>
 
-          <p v-if="isLoading">{{ uploadProgress }} photos uploaded</p>
+          <!-- <p v-if="isLoading">{{ uploadProgress }} photos uploaded</p> -->
         </template>
       </div>
     </div>
