@@ -34,7 +34,8 @@ const placeholders = [
   "horse smeller",
   "horselinman",
   "cheessyman",
-  "mopredline"
+  "_your_name_ (intense)",
+  "Slifblinger"
 ]
 const placeholder = ref(placeholders[getRanMinMax(0, 5)])
 
@@ -82,7 +83,7 @@ onBeforeMount(async () => {
     await auth.fetchUser(key)
     router.push({ name: "Home" })
   } else {
-    bread.set("Please sign-in to hi!friends")
+    bread.set("Please log in to hi!friends")
   }
 })
 </script>
@@ -110,7 +111,7 @@ onBeforeMount(async () => {
         />
 
         <Button class="btn-login btn-black" type="submit" size="56px">
-          <span>Sign In</span>
+          <span>Log In</span>
 
           <span class="material-icons"> &#xea77; </span>
         </Button>

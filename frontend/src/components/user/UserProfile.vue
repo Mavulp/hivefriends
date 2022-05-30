@@ -24,7 +24,7 @@ const color = useCssVar("--color-highlight", wrap)
 const _id = computed(() => `${route.params.user}`)
 const userAlbums = ref<Array<Album>>([])
 const bgscrollpos = ref("50%")
-const imgheight = 456
+const imgheight = 512
 
 const user = computed<User>(() => users.users.find((item) => item.username === _id.value) as User)
 const accent = computed(() => color.value.split(",").map((item) => Number(item)))

@@ -85,6 +85,7 @@
         object-fit: cover;
         object-position: center;
         z-index: -1;
+        background-color: rgba(var(--color-background-dark), 0.05);
       }
     }
 

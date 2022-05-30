@@ -31,7 +31,7 @@ const timestamp = computed(() => {
 
 <template>
   <div class="draft">
-    <strong>{{ props.data.title }}</strong>
+    <strong :title="props.data.title">{{ props.data.title }}</strong>
     <p>Created: {{ timestamp }}</p>
 
     <!-- This div does nothing but enforce a boundary for outside clicking detection -->
