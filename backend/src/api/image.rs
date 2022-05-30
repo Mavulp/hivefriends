@@ -27,7 +27,7 @@ pub(super) struct ImageMetadata {
 
     file_name: Option<String>,
     size_bytes: u64,
-    taken_at: Option<u64>,
+    taken_at: Option<i64>,
     location: Option<Location>,
     camera_brand: Option<String>,
     camera_model: Option<String>,
@@ -86,7 +86,7 @@ pub struct DbImageMetadata {
 
     pub file_name: Option<String>,
     pub size_bytes: u64,
-    pub taken_at: Option<u64>,
+    pub taken_at: Option<i64>,
     pub location_latitude: Option<String>,
     pub location_longitude: Option<String>,
     pub camera_brand: Option<String>,

@@ -163,7 +163,7 @@ fn populate_metadata_from_exif(metadata: &mut DbImageMetadata, exif: &exif::Exif
         .get_field(Tag::DateTimeOriginal, In::PRIMARY)
         .map(|f| f.display_value().with_unit(exif).to_string())
         .and_then(|s| NaiveDateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S").ok())
-        .map(|t| t.timestamp() as u64);
+        .map(|t| t.timestamp() as i64);
 
     metadata.camera_brand = exif.get_field(Tag::Make, In::PRIMARY).and_then(|f| {
         if let exif::Value::Ascii(v) = &f.value {
