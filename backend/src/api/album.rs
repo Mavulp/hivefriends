@@ -36,8 +36,8 @@ pub fn public_api_route() -> Router {
 #[derive(Default, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Timeframe {
-    from: Option<u64>,
-    to: Option<u64>,
+    from: Option<i64>,
+    to: Option<i64>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -48,8 +48,8 @@ struct DbAlbum {
     cover_key: String,
     author: String,
     draft: bool,
-    timeframe_from: Option<u64>,
-    timeframe_to: Option<u64>,
+    timeframe_from: Option<i64>,
+    timeframe_to: Option<i64>,
     created_at: u64,
 }
 
@@ -61,8 +61,8 @@ pub struct InsertAlbum<'a> {
     pub cover_key: &'a str,
     pub author: &'a str,
     pub draft: bool,
-    pub timeframe_from: Option<u64>,
-    pub timeframe_to: Option<u64>,
+    pub timeframe_from: Option<i64>,
+    pub timeframe_to: Option<i64>,
     pub created_at: u64,
     pub image_keys: &'a [String],
     pub tagged_users: &'a [String],
