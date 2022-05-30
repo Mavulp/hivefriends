@@ -1,11 +1,18 @@
 <script setup lang="ts">
-import { ref } from "vue"
+import { onBeforeMount, ref } from "vue"
+import { useBread } from "../../store/bread"
+
+const bread = useBread()
+
+onBeforeMount(() => {
+  bread.set("About the project")
+})
 </script>
 
 <template>
   <div class="hi-about">
     <div class="container">
-      <h1>About the project</h1>
+      <h1>The project</h1>
       <p>
         This project was created in collaboration of friends from the hivecom community, which also formed its own
         development team called <a target="_blank" href="https://github.com/mavulp">Mavulp</a>. The goal for us was to
@@ -31,7 +38,7 @@ import { ref } from "vue"
         <img src="https://hivecom.net/public/metaicon2.jpg" alt="" />
       </a>
 
-      <hr />
+      <!-- <hr /> -->
 
       <h3>Suggestions</h3>
       <p>

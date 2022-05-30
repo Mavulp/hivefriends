@@ -348,14 +348,18 @@ input:-webkit-autofill:active {
 
       &.is-selected {
         background-color: rgba(var(--color-background-dimmed), 0.3);
+        color: rgb(var(--color-text));
 
         &:hover {
+          color: rgb(var(--color-text));
           background-color: rgba(var(--color-background-dimmed), 0.35);
         }
       }
 
       &:hover {
-        background-color: rgba(var(--color-background-dimmed), 0.1);
+        // background-color: rgba(var(--color-background-dimmed), 0.1);
+        background-color: rgba(var(--color-info), 0.25);
+        color: rgb(var(--color-info));
 
         .add-item {
           opacity: 1;

@@ -127,7 +127,7 @@
         }
 
         &.empty {
-          height: calc(100vh - 136px);
+          height: calc(100vh - $header - 80px);
         }
 
         &:hover,
@@ -280,7 +280,7 @@
 
     .album-upload-metadata {
       display: block;
-      min-height: calc(100vh - 56px);
+      min-height: calc(100vh - $header);
       padding: 40px;
       // background-color: rgb(var(--color-white));
       border-left: 1px solid rgb(var(--color-border-light));

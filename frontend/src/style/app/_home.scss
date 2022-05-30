@@ -5,7 +5,7 @@
 
   .home-landing {
     display: block;
-    height: calc(100vh - 56px);
+    height: calc(100vh - $header);
     padding: 64px 128px;
     position: relative;
     margin-bottom: 192px;

@@ -18,7 +18,7 @@
     background-color: rgb(var(--color-background));
     width: 40%;
     padding: 64px;
-    height: calc(100vh - 56px);
+    height: calc(100vh - $header);
     border-bottom: 0;
 
     .title-wrap {
@@ -55,13 +55,13 @@
     width: 60%;
     border-left: 1px solid rgb(var(--color-border-light));
     padding: 64px;
-    min-height: calc(100vh - 56px);
+    min-height: calc(100vh - $header);
   }
 }
 
 .album-list-status {
   @include flex($gap: 0, $align: center, $justify: center);
-  height: calc(100vh - 128px - 56px);
+  height: calc(100vh - 128px - $header);
   width: 100%;
   text-align: left;
 
@@ -207,11 +207,11 @@
       &:first-of-type {
         position: sticky;
         top: 0;
-        height: calc(100vh - 56px) !important;
+        height: calc(100vh - $header) !important;
       }
 
       &:last-of-type {
-        min-height: calc(100vh - 56px);
+        min-height: calc(100vh - $header);
         border-left: 1px solid rgb(var(--color-border-light));
       }
 

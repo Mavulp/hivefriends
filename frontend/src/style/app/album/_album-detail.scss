@@ -4,7 +4,7 @@
   max-width: 1920px;
   margin: auto;
   position: relative;
-  min-height: calc(100vh - 56px);
+  min-height: calc(100vh - $header);
 
   .centered,
   .loading-spinner {
@@ -30,11 +30,11 @@
 
   .hi-album-title {
     @include flex($gap: 0, $align: flex-start);
-    height: calc(95vh - 56px);
+    height: calc(95vh - $header);
 
     .hi-album-title-meta {
       @include flex($align: flex-start, $direction: column, $justify: center);
-      height: calc(95vh - 56px);
+      height: calc(95vh - $header);
       width: 45%;
       padding: 128px 64px;
       padding-top: 64px;

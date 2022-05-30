@@ -143,6 +143,7 @@ async function getPublicLink() {
  *  Album map
  */
 const map = ref(false)
+const enableMap = computed(() => album.images.some((image) => image.location))
 </script>
 
 <template>
@@ -210,7 +211,7 @@ const map = ref(false)
             Edit
           </router-link>
 
-          <button class="hover-bubble" @click="map = true">
+          <button class="hover-bubble" @click="map = true" v-if="enableMap">
             <span class="material-icons">&#xe55b;</span>
             Map
           </button>
