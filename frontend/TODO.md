@@ -2,6 +2,8 @@
 
 - [ ] highlight color is messed up when displaying current user's or relevant user's colors
 - [ ] delete button missing on your comments in album map view
+- [ ] fix issue when clicking share image on a public album image detail (if public, dont call endpoint to get link, use current)
+- [ ] test replace \n with <br/>
 
 # Todo
 
@@ -11,7 +13,7 @@
 
   - [ ] Add "edit album" and "delete album" for albums that the user created
   - [ ] List all images, can delete and update imagekeys array in album then
-  - [ ] Re-order image during album editing
+  - [x] Re-order image during album editing
 
 - [ ] Album List
 
@@ -35,3 +37,5 @@
     - [ ] controls fade, appear only if mouse has moved (disappear after like 5 seconds)
 
 - [ ] Dark mode feedback (ask)
+
+- [ ] Split Album Editing & Uploading into reusable components & composable logic

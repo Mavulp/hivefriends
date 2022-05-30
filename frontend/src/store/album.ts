@@ -4,8 +4,6 @@ import { useLoading } from "./loading"
 import { useToast } from "./toast"
 import { FetchError } from "../js/global-types"
 
-type Modify<T, R> = Omit<T, keyof R> & R
-
 export interface Image {
   key: string
   fileName: string
@@ -24,6 +22,18 @@ export interface Image {
   uploader: string
   uploadedAt: number
 }
+
+export interface ImageFile {
+  values: Array<{
+    name: string
+    size: number
+    loading: boolean
+    error?: string
+    key: string | null
+  }>
+}
+
+// type Modify<T, R> = Omit<T, keyof R> & R
 
 // export type ImageWithLocation = Omit<Image, "location"> & {
 //   location: {
@@ -159,13 +169,17 @@ export const useAlbums = defineStore("album", {
 
     async saveImageMetadata(key: string, form: object) {
       const { addLoading, delLoading } = useLoading()
+      const toast = useToast()
 
       addLoading(key)
 
-      return put(`/api/images/${key}`, { form })
-        .then(() => {})
+      return put(`/api/images/${key}`, form)
+        .then((res) => {
+          console.log(res)
+
+          toast.add("Updated image metadata", "success")
+        })
         .catch((error: FetchError) => {
-          const toast = useToast()
           toast.add(error.message, "error")
         })
         .finally(() => delLoading(key))
@@ -200,11 +214,26 @@ export const useAlbums = defineStore("album", {
           return true
         })
         .catch((error: FetchError) => {
-          console.log(error)
-
           toast.add(error.message, "error")
         })
         .finally(() => delLoading("delete-album"))
+    },
+
+    async editAlbum(key: string, album: NewAlbum) {
+      const { addLoading, delLoading } = useLoading()
+      const toast = useToast()
+
+      addLoading("edit-album-submit")
+
+      return put(`/api/albums/${key}`, album)
+        .then((res) => {
+          console.log(res)
+          toast.add("Successfully updated album", "success")
+        })
+        .catch((error: FetchError) => {
+          toast.add(error.message, "error")
+        })
+        .finally(() => delLoading("edit-album-submit"))
     }
   },
   getters: {

@@ -8,10 +8,10 @@ import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 import InputCheckbox from "../../components/form/InputCheckbox.vue"
 import DraftItem from "../../components/upload/DraftItem.vue"
 
-import { onBeforeUnmount, onMounted, reactive, ref, computed, onBeforeMount } from "vue"
+import { onMounted, reactive, ref, computed, onBeforeMount, nextTick } from "vue"
 import { upload } from "../../js/fetch"
 import { useFormValidation, required } from "../../js/validation"
-import { useAlbums, NewAlbum, imageUrl, Album } from "../../store/album"
+import { useAlbums, NewAlbum, imageUrl, Album, ImageFile } from "../../store/album"
 import { clone, isEmpty } from "lodash"
 import { useUser, User } from "../../store/user"
 import { useLoading } from "../../store/loading"
@@ -23,21 +23,10 @@ const bread = useBread()
 const { addLoading, delLoading, getLoading } = useLoading()
 
 /**
- * Interface & setup
+ * Setup
  */
 
-interface File {
-  values: Array<{
-    name: string
-    type: string
-    size: number
-    loading: boolean
-    error?: string
-    key: string | null
-  }>
-}
-
-const files = reactive<File>({ values: [] })
+const files = reactive<ImageFile>({ values: [] })
 const album = reactive<NewAlbum>({
   title: "",
   description: "",
@@ -127,7 +116,6 @@ async function uploadFile(file: any, formData: any, index: number) {
   files.values[index] = {
     name: file.name,
     size: file.size,
-    type: file.type,
     loading: true,
     key: null
   }
@@ -221,6 +209,11 @@ function dragCompare() {
   let _temp = files.values[drag_now.value]
   files.values[drag_now.value] = files.values[drag_over.value]
   files.values[drag_over.value] = _temp
+
+  nextTick(() => {
+    drag_now.value = null
+    drag_over.value = null
+  })
 }
 </script>
 
@@ -270,7 +263,7 @@ function dragCompare() {
       </div>
 
       <div class="album-upload-metadata">
-        <h3>Create an album</h3>
+        <h3>Create album</h3>
 
         <InputText v-model:value="album.title" placeholder="Album name" label="Title" required :error="errors.title" />
         <InputTextarea v-model:value="album.description" placeholder="Album description" label="Description" />
