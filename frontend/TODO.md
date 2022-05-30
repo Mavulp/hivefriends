@@ -1,12 +1,6 @@
 # Fix
 
 - [ ] highlight color is messed up when displaying current user's or relevant user's colors
-- [ ] delete button missing on your comments in album map view
-- [x] fix issue when clicking share image on a public album image detail (if public, dont call endpoint to get link, use current)
-- [x] Fix wrong hotlink sharing in image detail
-- [x] sanitize comments before posting
-- [ ] preload images when user opens detail
-- [ ] wait for an image to upload to upload the next one (try 2-3 at the same time)
 
 # Todo
 
