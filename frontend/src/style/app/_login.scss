@@ -30,6 +30,17 @@
     .form-wrap {
       width: 100%;
       margin: auto;
+      position: relative;
+      z-index: 5;
+
+      .loading-overlay {
+        display: block;
+        position: absolute;
+        inset: 0;
+        top: 64px;
+        z-index: 500;
+        background-color: rgba(var(--color-background), 0.5);
+      }
     }
 
     img {

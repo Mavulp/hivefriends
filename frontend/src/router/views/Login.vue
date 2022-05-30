@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import InputText from "../../components/form/InputText.vue"
 import Button from "../../components/Button.vue"
+import LoadingSpin from "../../components/loading/LoadingSpin.vue"
+
 import { ref, reactive, computed, nextTick, onBeforeMount } from "vue"
 import { getRanMinMax } from "../../js/utils"
 import { useUser } from "../../store/user"
 import { useFormValidation, required, minLength, asyncValidation } from "../../js/validation"
 import { useRouter } from "vue-router"
 import { useBread } from "../../store/bread"
+import { useLoading } from "../../store/loading"
 
 const router = useRouter()
 const bread = useBread()
 const auth = useUser()
+const { getLoading } = useLoading()
 
 type SignInForm = {
   username: string
@@ -26,7 +30,11 @@ const placeholders = [
   "stormtrooper11",
   "clobatenjoyer",
   "quoteshater",
-  "zealseal"
+  "zealseal",
+  "horse smeller",
+  "horselinman",
+  "cheessyman",
+  "mopredline"
 ]
 const placeholder = ref(placeholders[getRanMinMax(0, 5)])
 
@@ -87,6 +95,10 @@ onBeforeMount(async () => {
 
     <div class="route-login-split has-form">
       <form @submit.prevent="submit" class="form-wrap">
+        <div class="loading-overlay" v-if="getLoading('login')">
+          <LoadingSpin class="dark center-parent" />
+        </div>
+
         <img src="/Sharp.png" alt=" " />
         <InputText :error="errors.username" v-model:value="form.username" label="Username" :placeholder="placeholder" />
         <InputText

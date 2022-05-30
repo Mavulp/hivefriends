@@ -51,6 +51,10 @@ export const useUser = defineStore("user", {
     } as State),
   actions: {
     async signIn(credentials: { username: string; password: string }) {
+      const { addLoading, delLoading } = useLoading()
+
+      addLoading("login")
+
       return post("/api/login/", credentials)
         .then(async (res) => {
           localStorage.setItem("bearer_token", res.bearerToken)
@@ -63,6 +67,7 @@ export const useUser = defineStore("user", {
           const toast = useToast()
           toast.add(error.message, "error")
         })
+        .finally(() => delLoading("login"))
     },
     async fetchUser(username: string | number, notme?: boolean) {
       const { addLoading, delLoading } = useLoading()
