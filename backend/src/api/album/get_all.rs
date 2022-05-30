@@ -85,8 +85,7 @@ pub(super) async fn get<D: SqliteDatabase>(
             .prepare(&format!(
                 "{query} \
                 ORDER BY \
-                    timeframe_from DESC, \
-                    timeframe_to DESC"
+                    created_at DESC"
             ))
             .context("Failed to prepare statement for album query")?;
         let db_albums = stmt
