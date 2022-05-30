@@ -54,10 +54,10 @@ pub(super) async fn put<D: SqliteDatabase>(
             tx.execute(
                 "DELETE FROM album_image_associations WHERE album_key = ?",
                 params![album_key],
-            ).context("Failed to remove album image associations")?;
+            )
+            .context("Failed to remove album image associations")?;
 
-            let mut idx: i64 = 0;
-            for image_key in image_keys {
+            for (idx, image_key) in (0_i64..).zip(image_keys.iter()) {
                 if !image_exists(image_key, &tx)? {
                     return Err(Error::InvalidKey);
                 }
@@ -68,16 +68,15 @@ pub(super) async fn put<D: SqliteDatabase>(
                     params![album_key, idx, image_key],
                 )
                 .context("Failed to insert album image associations")?;
-
-                idx += 1;
             }
         }
 
         if let Some(tagged_users) = &request.tagged_users {
             tx.execute(
-                "DELETE FROM album_image_associations WHERE album_key = ?",
+                "DELETE FROM user_album_associations WHERE album_key = ?",
                 params![album_key],
-            ).context("Failed to remove album image associations")?;
+            )
+            .context("Failed to remove album image associations")?;
 
             for tagged_user in tagged_users {
                 if !user_exists(tagged_user, &tx)? {
@@ -85,10 +84,10 @@ pub(super) async fn put<D: SqliteDatabase>(
                 }
 
                 tx.execute(
-                    "INSERT INTO album_user_associations (album_key, user_key) VALUES ?1, ?2",
+                    "INSERT INTO user_album_associations (album_key, username) VALUES (?1, ?2)",
                     params![album_key, tagged_user],
                 )
-                .context("Failed to insert album image associations")?;
+                .context("Failed to insert album user associations")?;
             }
         }
 
@@ -103,7 +102,7 @@ pub(super) async fn put<D: SqliteDatabase>(
                 |_| Ok(()),
             ) {
                 match e.code {
-                    rusqlite::ErrorCode::ConstraintViolation => return Err(Error::InvalidKey),
+                    rusqlite::ErrorCode::ConstraintViolation => Err(Error::InvalidKey),
                     _ => panic!(),
                 }
             } else {

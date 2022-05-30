@@ -146,7 +146,7 @@ async fn share_album() {
 #[tokio::test]
 async fn change_images_with_order() {
     let (client, _temp) = setup_test_client().await;
-    let (token, _) = authenticate(&client).await;
+    let (token, expected_username) = authenticate(&client).await;
     let album_key = create_test_album(&client, &token).await;
     let expected_image_key1 = upload_test_image("./tests/testimage.png", &client, &token).await;
     let expected_image_key2 = upload_test_image("./tests/testimage.png", &client, &token).await;
@@ -159,6 +159,9 @@ async fn change_images_with_order() {
                 expected_image_key1,
                 expected_image_key2
             ],
+            "taggedUsers": [
+                expected_username
+            ]
         }))
         .send()
         .await;
@@ -190,4 +193,8 @@ async fn change_images_with_order() {
 
     assert_eq!(image_key1, expected_image_key1);
     assert_eq!(image_key2, expected_image_key2);
+
+    let username = json["taggedUsers"].as_array().unwrap()[0].as_str().unwrap();
+
+    assert_eq!(username, expected_username);
 }
