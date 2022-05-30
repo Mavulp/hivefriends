@@ -1,12 +1,11 @@
 # Fix
 
 - [ ] highlight color is messed up when displaying current user's or relevant user's colors
+- [ ] delete button missing on your comments in album map view
 
 # Todo
 
-- [ ] Album creation
-
-  - [ ] Re-order image during album creation
+- [ ] Correct meta tags in head
 
 - [ ] Album editing
 
@@ -19,10 +18,13 @@
   - [ ] Add filtering to album lists
 
 - [ ] Responsive layout for everything
+
   - [ ] Phone
   - [ ] Tablet
   - [ ] Small Screens
   - [ ] (>1920)
+
+- [ ] add a page where we list all YOUR images
 
 ## Post Launch TODO
 

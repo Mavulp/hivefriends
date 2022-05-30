@@ -15,7 +15,7 @@ const data = ref<Array<Album>>()
 const bread = useBread()
 
 onBeforeMount(async () => {
-  bread.set("All availalbe albums")
+  bread.set("All public albums")
   data.value = await album.fetchAlbums()
 })
 </script>

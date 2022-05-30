@@ -170,7 +170,7 @@
       }
 
       .album-upload-items-list {
-        @include flex($gap: 20px, $direction: column-reverse);
+        @include flex($gap: 4px, $direction: column-reverse);
         // display: block;
         width: 100%;
       }
@@ -182,6 +182,14 @@
         background-color: rgb(var(--color-white));
         border: 1px solid transparent;
 
+        // &:after {
+        //   content: "";
+        //   display: block;
+        //   height: 20px;
+        //   width: 100%;
+        //   background-color: transparent;
+        // }
+
         &.open,
         &:hover {
           border-color: rgb(var(--color-border-light));
@@ -191,6 +199,10 @@
           .tag {
             display: block;
           }
+        }
+
+        &.is-dragging-over {
+          border-color: rgb(var(--color-info));
         }
 
         &.has-error {
@@ -207,10 +219,12 @@
 
         .album-upload-item-header {
           @include flex($gap: 32px, $align: center);
-          padding: 0 24px;
+          padding: 0 16px;
+          // padding-left: 16px;
           height: 56px;
           width: 100%;
           cursor: pointer;
+          user-select: none;
 
           p,
           strong {
@@ -238,7 +252,7 @@
           }
 
           .loading-bar {
-            max-width: 156px;
+            max-width: 192px;
           }
         }
 

@@ -74,8 +74,12 @@ async function submit() {
 </script>
 
 <template>
-  <div class="album-upload-item" :class="{ open: open, 'has-error': data.error }">
+  <div class="album-upload-item" :class="{ open: open, 'has-error': data.error }" draggable="true">
     <div class="album-upload-item-header" @click.self="open = !open">
+      <button class="hover-bubble">
+        <span class="material-icons">&#xe945;</span>
+      </button>
+
       <strong>{{ form.fileName.length > 0 ? form.fileName : data.name }}</strong>
 
       <span class="file-size">Size: {{ size() }}</span>

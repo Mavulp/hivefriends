@@ -84,11 +84,13 @@ onMounted(() => {
 onBeforeMount(async () => {
   bread.set("Upload a new album")
 
-  addLoading("users")
+  addLoading("album-upload")
   await user.fetchUsers()
-  delLoading("users")
-
   drafts.value = await store.fetchAlbums(true)
+
+  setTimeout(() => {
+    delLoading("album-upload")
+  }, 50)
 })
 
 /**
@@ -200,10 +202,32 @@ const userOptions = computed(() => {
     value: item.username
   }))
 })
+
+/**
+ * Drag and dropping reorder
+ */
+const drag_now = ref()
+const drag_over = ref()
+
+function dragStart(index: number) {
+  drag_now.value = index
+}
+
+function dragOver(e: DragEvent, index: number) {
+  e.preventDefault()
+  drag_over.value = index
+}
+function dragCompare() {
+  let _temp = files.values[drag_now.value]
+  files.values[drag_now.value] = files.values[drag_over.value]
+  files.values[drag_over.value] = _temp
+}
 </script>
 
 <template>
   <div class="hi-album-upload">
+    <LoadingSpin v-if="getLoading('album-upload')" class="dark center-page" />
+
     <div class="album-drafts" v-if="drafts && !isEmpty(drafts)">
       <div class="title">
         <h6>Your drafts</h6>
@@ -232,12 +256,15 @@ const userOptions = computed(() => {
         <div class="album-upload-items-list" v-if="files.values.length > 0">
           <ImageUploadItem
             v-for="(item, index) in files.values"
-            :class="{ 'is-cover': item.key === album.coverKey }"
+            :class="{ 'is-cover': item.key === album.coverKey, 'is-dragging-over': index === drag_over }"
             :data="item"
             :key="item.name"
             :index="index"
             @remove="delImage"
             @setAsCover="(key: string) => album.coverKey = key"
+            @drag="dragStart(index)"
+            @dragover="(e) => dragOver(e, index)"
+            @drop="dragCompare()"
           />
         </div>
       </div>
@@ -266,29 +293,25 @@ const userOptions = computed(() => {
 
         <h6>Tagged people</h6>
 
-        <span class="loading" v-if="getLoading('users')"> Loading... </span>
+        <InputSelect
+          label="People"
+          :options="userOptions"
+          v-model:selected="taggedUsers"
+          placeholder="Click to select people"
+          multiple
+        />
 
-        <template v-else>
-          <InputSelect
-            label="People"
-            :options="userOptions"
-            v-model:selected="taggedUsers"
-            placeholder="Click to select people"
-            multiple
-          />
-
-          <div class="tagged-users" v-if="taggedUsers">
-            <div class="tagged-user" v-for="item in taggedUsers" :data-title-top="user.getUsername(item)" :key="item">
-              <img
-                class="user-image"
-                :src="imageUrl(getUserImageKey(item), 'tiny')"
-                :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"
-                alt=" "
-                @error="(e: any) => e.target.classList.add('image-error')"
-              />
-            </div>
+        <div class="tagged-users" v-if="taggedUsers">
+          <div class="tagged-user" v-for="item in taggedUsers" :data-title-top="user.getUsername(item)" :key="item">
+            <img
+              class="user-image"
+              :src="imageUrl(getUserImageKey(item), 'tiny')"
+              :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"
+              alt=" "
+              @error="(e: any) => e.target.classList.add('image-error')"
+            />
           </div>
-        </template>
+        </div>
 
         <InputCheckbox v-model:check="album.draft" label="Save as a draft. It won't be published" />
 
