@@ -150,11 +150,13 @@ async fn change_images_with_order() {
     let album_key = create_test_album(&client, &token).await;
     let expected_image_key1 = upload_test_image("./tests/testimage.png", &client, &token).await;
     let expected_image_key2 = upload_test_image("./tests/testimage.png", &client, &token).await;
+    let expected_descrption = "test PUT description";
 
     let res = client
         .put(&format!("/api/albums/{album_key}"))
         .header(AUTHORIZATION, format!("Bearer {token}"))
         .json(&json!({
+            "description": expected_descrption,
             "imageKeys": [
                 expected_image_key1,
                 expected_image_key2
@@ -197,4 +199,7 @@ async fn change_images_with_order() {
     let username = json["taggedUsers"].as_array().unwrap()[0].as_str().unwrap();
 
     assert_eq!(username, expected_username);
+
+    let description = json["description"].as_str().unwrap();
+    assert_eq!(description, expected_descrption);
 }

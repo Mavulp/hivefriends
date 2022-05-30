@@ -95,7 +95,6 @@ pub(super) async fn put<D: SqliteDatabase>(
         if !update_str.is_empty() {
             let mut params = request.update_params();
             params.push(Box::new(album_key));
-            params.push(Box::new(username));
             if let Err(rusqlite::Error::SqliteFailure(e, _)) = tx.query_row(
                 &format!("UPDATE albums SET {update_str} WHERE key = ?"),
                 rusqlite::params_from_iter(params.iter()),
