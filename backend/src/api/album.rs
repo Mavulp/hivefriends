@@ -80,7 +80,7 @@ pub fn is_owner(album_key: &str, user: &str, conn: &Connection) -> anyhow::Resul
     let result = conn.query_row(
         "SELECT author FROM albums WHERE key = ?1",
         params![album_key],
-        |row| Ok(row.get::<_, String>(0)?),
+        |row| row.get::<_, String>(0),
     );
 
     if matches!(result, Err(rusqlite::Error::QueryReturnedNoRows)) {
@@ -119,8 +119,7 @@ pub fn insert_album(album: InsertAlbum, conn: &Connection) -> Result<(), Error> 
     )
     .context("Failed to insert album")?;
 
-    let mut idx = 0;
-    for image_key in album.image_keys {
+    for (idx, image_key) in (0..).zip(album.image_keys.iter()) {
         if !image::image_exists(image_key, conn)? {
             return Err(Error::InvalidKey);
         }
@@ -131,8 +130,6 @@ pub fn insert_album(album: InsertAlbum, conn: &Connection) -> Result<(), Error> 
             params![album.key, idx, image_key],
         )
         .context("Failed to insert album image associations")?;
-
-        idx += 1;
     }
 
     for user in album.tagged_users {

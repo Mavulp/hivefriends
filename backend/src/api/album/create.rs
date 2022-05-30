@@ -54,7 +54,7 @@ pub(super) async fn post<D: SqliteDatabase>(
 
     let album_key = key.clone();
     conn.interact::<_, Result<_, Error>>(move |conn| {
-        if !image_exists(&request.cover_key, &conn)? {
+        if !image_exists(&request.cover_key, conn)? {
             return Err(Error::InvalidCoverKey);
         }
 

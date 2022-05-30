@@ -27,7 +27,7 @@ pub(super) async fn delete<D: SqliteDatabase>(
 
     conn.interact(move |conn| match super::get_comment(comment_id, conn)? {
         Some(comment) => {
-            if comment.author != user && !album::is_owner(&comment.album_key, &user, &conn)? {
+            if comment.author != user && !album::is_owner(&comment.album_key, &user, conn)? {
                 return Err(Error::Unathorized);
             }
 
