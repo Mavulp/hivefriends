@@ -142,3 +142,52 @@ async fn share_album() {
     dbg!(&json);
     assert_eq!(status, 200);
 }
+
+#[tokio::test]
+async fn change_images_with_order() {
+    let (client, _temp) = setup_test_client().await;
+    let (token, _) = authenticate(&client).await;
+    let album_key = create_test_album(&client, &token).await;
+    let expected_image_key1 = upload_test_image("./tests/testimage.png", &client, &token).await;
+    let expected_image_key2 = upload_test_image("./tests/testimage.png", &client, &token).await;
+
+    let res = client
+        .put(&format!("/api/albums/{album_key}"))
+        .header(AUTHORIZATION, format!("Bearer {token}"))
+        .json(&json!({
+            "imageKeys": [
+                expected_image_key1,
+                expected_image_key2
+            ],
+        }))
+        .send()
+        .await;
+
+    let status = dbg!(res.status());
+
+    let json = res.json::<Value>().await;
+    dbg!(&json);
+    assert_eq!(status, 200);
+
+    let res = client
+        .get(&format!("/api/albums/{album_key}"))
+        .header(AUTHORIZATION, format!("Bearer {token}"))
+        .send()
+        .await;
+
+    let status = dbg!(res.status());
+
+    let json = res.json::<Value>().await;
+    dbg!(&json);
+    assert_eq!(status, 200);
+
+    let image_key1 = json["images"].as_array().unwrap()[0].as_object().unwrap()["key"]
+        .as_str()
+        .unwrap();
+    let image_key2 = json["images"].as_array().unwrap()[1].as_object().unwrap()["key"]
+        .as_str()
+        .unwrap();
+
+    assert_eq!(image_key1, expected_image_key1);
+    assert_eq!(image_key2, expected_image_key2);
+}

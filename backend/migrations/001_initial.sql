@@ -69,8 +69,9 @@ CREATE TABLE albums (
 CREATE TABLE album_image_associations (
     image_key TEXT NOT NULL, -- image is a part of:
     album_key TEXT NOT NULL, -- this album
+    idx INTEGER NOT NULL, -- position in the album
 
-    UNIQUE(image_key, album_key),
+    UNIQUE(image_key, album_key, idx),
     CONSTRAINT fk_image_key_assoc
         FOREIGN KEY (image_key)
         REFERENCES images (key)

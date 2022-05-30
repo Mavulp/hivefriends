@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use crate::api::{auth::Authorize, error::Error};
+use crate::api::{auth::Authorize, error::Error, image::image_exists};
 use crate::util::non_empty_str;
 use crate::{AppState, DbInteractable, SqliteDatabase};
 
@@ -40,10 +40,6 @@ pub(super) async fn post<D: SqliteDatabase>(
     let Json(request) = request?;
     let conn = state.pool.get().await.context("Failed to get connection")?;
 
-    if !request.image_keys.contains(&request.cover_key) {
-        return Err(Error::InvalidCoverKey);
-    }
-
     if let (Some(from), Some(to)) = (request.timeframe.from, request.timeframe.to) {
         if from > to {
             return Err(Error::InvalidTimeframe);
@@ -58,6 +54,10 @@ pub(super) async fn post<D: SqliteDatabase>(
 
     let album_key = key.clone();
     conn.interact::<_, Result<_, Error>>(move |conn| {
+        if !image_exists(&request.cover_key, &conn)? {
+            return Err(Error::InvalidCoverKey);
+        }
+
         let tx = conn.transaction().context("Failed to create transaction")?;
 
         super::insert_album(
@@ -138,20 +138,19 @@ mod test {
 
         let conn = state.pool.get().await.unwrap();
 
-        let result: anyhow::Result<(String, String)> = conn
+        let result: anyhow::Result<String> = conn
             .interact(move |conn| {
                 let user = insert_user("test", conn)?;
-                let image = insert_image(&user, conn)?;
 
-                Ok((user, image))
+                Ok(user)
             })
             .await;
 
-        let (user, image) = result.unwrap();
+        let user = result.unwrap();
 
         let request = CreateAlbumRequest {
             title: "album".into(),
-            cover_key: image,
+            cover_key: "invalid key".into(),
             ..Default::default()
         };
 

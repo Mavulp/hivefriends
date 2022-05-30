@@ -7,9 +7,9 @@ use serde_rusqlite::from_row;
 
 use std::sync::Arc;
 
-use crate::api::public_auth::PublicAuthorize;
 use crate::api::error::Error;
 use crate::api::image::{DbImageMetadata, ImageMetadata};
+use crate::api::public_auth::PublicAuthorize;
 use crate::{AppState, DbInteractable, SqliteDatabase};
 
 use super::{DbAlbum, Timeframe};

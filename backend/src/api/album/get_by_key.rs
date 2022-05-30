@@ -76,7 +76,8 @@ pub(super) async fn get<D: SqliteDatabase>(
                         i.focal_length \
                     FROM images i \
                     INNER JOIN album_image_associations aia ON aia.image_key=i.key \
-                    WHERE aia.album_key=?1",
+                    WHERE aia.album_key=?1
+                    ORDER BY aia.idx",
                 )
                 .context("Failed to prepare statement for image query")?;
             let image_iter = stmt
@@ -99,7 +100,7 @@ pub(super) async fn get<D: SqliteDatabase>(
                 .context("Failed to prepare statement for album query")?;
             let tagged_users = stmt
                 .query_map(params![&db_album.key], |row| row.get(0))
-                .context("Failed to query images")?
+                .context("Failed to query tagged users")?
                 .collect::<Result<Vec<String>, _>>()
                 .context("Failed to collect tagged users")?;
 

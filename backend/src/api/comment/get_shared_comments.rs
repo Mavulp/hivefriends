@@ -4,9 +4,9 @@ use rusqlite::params;
 
 use std::sync::Arc;
 
-use crate::api::public_auth::PublicAuthorize;
 use crate::api::error::Error;
 use crate::api::image;
+use crate::api::public_auth::PublicAuthorize;
 use crate::{AppState, DbInteractable, SqliteDatabase};
 
 use super::Comment;

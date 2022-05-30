@@ -34,7 +34,7 @@ pub enum Error {
     #[error("timeframe contains an invalid range")]
     InvalidTimeframe,
 
-    #[error("coverKey is not an image in this album")]
+    #[error("coverKey is not a valid image key")]
     InvalidCoverKey,
 
     #[error("One of the album or image keys is not valid")]

@@ -70,11 +70,11 @@ pub mod util;
 pub mod api {
     pub mod album;
     pub mod auth;
-    pub mod public_auth;
     pub mod comment;
     pub mod error;
     pub mod image;
     pub mod login;
+    pub mod public_auth;
     pub mod settings;
     pub mod user;
 }

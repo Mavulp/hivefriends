@@ -1,6 +1,6 @@
 use anyhow::Context;
 use axum::{
-    routing::{get, post},
+    routing::{get, post, put},
     Router,
 };
 use rusqlite::{params, Connection};
@@ -17,12 +17,14 @@ mod create_share_token;
 mod get_all;
 mod get_by_key;
 mod get_by_share_token;
+mod update;
 
 pub fn api_route() -> Router {
     Router::new()
         .route("/", post(create::post::<FileDb>))
         .route("/", get(get_all::get::<FileDb>))
         .route("/:key", get(get_by_key::get::<FileDb>))
+        .route("/:key", put(update::put::<FileDb>))
 }
 
 pub fn public_api_route() -> Router {
@@ -33,7 +35,7 @@ pub fn public_api_route() -> Router {
 
 #[derive(Default, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct Timeframe {
+pub struct Timeframe {
     from: Option<u64>,
     to: Option<u64>,
 }
@@ -117,17 +119,20 @@ pub fn insert_album(album: InsertAlbum, conn: &Connection) -> Result<(), Error> 
     )
     .context("Failed to insert album")?;
 
+    let mut idx = 0;
     for image_key in album.image_keys {
         if !image::image_exists(image_key, conn)? {
             return Err(Error::InvalidKey);
         }
 
         conn.execute(
-            "INSERT INTO album_image_associations (album_key, image_key) \
-            SELECT ?1, key FROM images WHERE key = ?2",
-            params![album.key, image_key],
+            "INSERT INTO album_image_associations (album_key, idx, image_key) \
+            SELECT ?1, ?2, key FROM images WHERE key = ?3",
+            params![album.key, idx, image_key],
         )
         .context("Failed to insert album image associations")?;
+
+        idx += 1;
     }
 
     for user in album.tagged_users {
