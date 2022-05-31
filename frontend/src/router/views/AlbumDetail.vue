@@ -5,12 +5,12 @@ import { useAlbums, Album, imageUrl, Image } from "../../store/album"
 import { useLoading } from "../../store/loading"
 import { isEmpty } from "lodash"
 import { useUser } from "../../store/user"
-import { formatDate } from "../../js/utils"
+import { formatDate, sanitize } from "../../js/utils"
 import { useClipboard, useCssVar, usePreferredDark } from "@vueuse/core"
 import { useBread } from "../../store/bread"
 import { url } from "../../js/fetch"
 import { useToast } from "../../store/toast"
-// import { useHead } from "@vueuse/head"
+import { formatTextUsernames } from "../../js/_composables"
 
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 import AlbumTimestamp from "../../components/albums/AlbumTimestamp.vue"
@@ -32,7 +32,7 @@ const album = reactive<Album>({} as Album)
 const wrap = ref(null)
 const color = useCssVar("--color-highlight", wrap)
 
-const _id = computed(() => `${route.params.id}`)
+const _id = computed(() => route?.params?.id.toString() ?? null)
 
 onBeforeMount(async () => {
   const token = route.params.token
@@ -42,24 +42,6 @@ onBeforeMount(async () => {
     Object.assign(album, data)
 
     bread.set(`${album.title} ${album.draft ? "(draft)" : ""} by ${user.getUsername(data.author)}`)
-
-    // Set metadata
-    // useHead({
-    //   meta: [
-    //     {
-    //       name: "og:title",
-    //       content: album.title
-    //     },
-    //     {
-    //       name: "og:descrption",
-    //       content: album.description
-    //     },
-    //     {
-    //       name: "og:image",
-    //       content: imageUrl(album.coverKey, "medium")
-    //     }
-    //   ]
-    // })
   }
 
   const isDark = usePreferredDark()
@@ -183,7 +165,7 @@ const enableMap = computed(() => album.images.some((image) => image.location))
         <AlbumTimestamp class="dark" :timeframe="album.timeframe" />
 
         <h1>{{ album.title }}</h1>
-        <p>{{ album.description }}</p>
+        <p v-if="album.description" v-html="sanitize(formatTextUsernames(album.description, user))"></p>
 
         <div class="album-meta-cells">
           <span class="material-icons">&#xe3f4;</span>
@@ -249,7 +231,7 @@ const enableMap = computed(() => album.images.some((image) => image.location))
                   @error="(e: any) => e.target.classList.add('image-error')"
                 />
                 <span>{{ user.getUsername(item) }}</span>
-                <div class="tag tag-blue" v-if="item === album.author">Author</div>
+                <div class="tag tag-orange" v-if="item === album.author">Author</div>
                 <div class="background"></div>
                 <div class="background" :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"></div>
               </router-link>

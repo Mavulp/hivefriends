@@ -161,12 +161,14 @@
   @include flex($gap: 4px, $justify: center);
   margin: 0;
   color: rgb(var(--color-text-light));
+  font-size: 1.5rem !important;
 
   .material-icons {
     color: rgb(var(--color-border));
   }
 
   a {
+    font-size: inherit;
     color: rgb(var(--color-highlight));
   }
 }

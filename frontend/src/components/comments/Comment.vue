@@ -4,7 +4,7 @@ import { Comment, useComments } from "../../store/comments"
 import { imageUrl } from "../../store/album"
 import { useUser } from "../../store/user"
 import { sanitize } from "../../js/utils"
-
+import { formatTextUsernames } from "../../js/_composables"
 const user = useUser()
 const comments = useComments()
 
@@ -27,15 +27,11 @@ function formatTimestamp(date: number) {
   })}`
 }
 
-// const _regex = /(https?:\/\/[^ ]*)/
-const _regex = /\bhttps?:\/\/\S+/gi
-const formats = [".jpeg", ".gif", ".png", ".apng", ".svg", ".bmp", ".bmp", ".ico", ".jpg"]
-
-const text = computed(() => {
-  if (!props.data.text) return ""
+function formatTextImages(text: string) {
+  const _regex = /\bhttps?:\/\/\S+/gi
+  const formats = [".jpeg", ".gif", ".png", ".apng", ".svg", ".bmp", ".bmp", ".ico", ".jpg"]
 
   const urls = [...new Set(props.data.text.match(_regex))]
-  let text = props.data.text
 
   const _img = (_url: string) => `<img src="${_url}" />`
   const _a = (_url: string) => `<a href="${_url}" target="_blank">${_url}</a>`
@@ -56,6 +52,17 @@ const text = computed(() => {
       text = text.replace(url, chunk)
     }
   }
+
+  return text
+}
+
+const text = computed(() => {
+  if (!props.data.text) return ""
+
+  let text = props.data.text
+
+  text = formatTextImages(text)
+  text = formatTextUsernames(text, user)
 
   return text
 })
@@ -87,7 +94,7 @@ const text = computed(() => {
         <span>{{ user.getUsername(props.data.author) }}</span>
       </router-link>
 
-      <div class="tag tag-blue" v-if="props.uploader === props.data.author">Author</div>
+      <div class="tag tag-orange" v-if="props.uploader === props.data.author">Author</div>
     </div>
 
     <div class="comment-body">

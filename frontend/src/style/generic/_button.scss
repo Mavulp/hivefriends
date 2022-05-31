@@ -88,10 +88,10 @@
   }
 
   &.btn-blue {
-    background-color: rgb(var(--color-highlight));
+    background-color: rgb(var(--color-info));
 
     &:hover {
-      background-color: rgba(var(--color-highlight), 0.9);
+      background-color: rgba(var(--color-info), 0.9);
     }
   }
 }

@@ -209,6 +209,11 @@
           text-transform: uppercase;
           color: rgb(var(--color-text-light));
           margin-bottom: 8px;
+          margin-top: 32px;
+
+          &:first-of-type {
+            margin-top: 0;
+          }
         }
 
         .user-image {
@@ -233,8 +238,12 @@
         a,
         p,
         strong {
-          margin-bottom: 32px;
+          // margin-bottom: 32px;
           font-size: 1.4rem;
+
+          &.file-name {
+            margin-bottom: 4px;
+          }
         }
       }
     }

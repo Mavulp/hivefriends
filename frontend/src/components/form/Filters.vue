@@ -3,5 +3,8 @@ import { ref } from "vue"
 </script>
 
 <template>
-  <div class="form-filters">test</div>
+  <div class="filters">
+    <h6>Filters</h6>
+    <div class="form-filters"></div>
+  </div>
 </template>

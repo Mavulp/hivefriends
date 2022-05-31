@@ -21,7 +21,7 @@ const bread = useBread()
 
 const wrap = ref(null)
 const color = useCssVar("--color-highlight", wrap)
-const _id = computed(() => `${route.params.user}`)
+const _id = computed(() => route?.params?.user?.toString() ?? null)
 const userAlbums = ref<Array<Album>>([])
 const bgscrollpos = ref("50%")
 const imgheight = 512

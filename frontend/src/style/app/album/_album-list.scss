@@ -1,61 +1,34 @@
-.hi-album-list-user {
-  @include flex($align: start, $gap: 0);
-  position: relative;
-  width: 100%;
-  max-width: 1920px;
-  margin: auto;
+.hi-albums-user {
+  h1 {
+    @include font(600);
+    word-wrap: break-word;
+    font-size: 4rem;
+    margin-bottom: 32px;
 
-  .album-list-title {
-    @include t(0.15s);
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    justify-content: center;
-    border-bottom: 1px solid rgb(var(--color-border-light));
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    background-color: rgb(var(--color-background));
-    width: 40%;
-    padding: 64px;
-    height: calc(100vh - $header);
-    border-bottom: 0;
+    a {
+      @include font(900);
+      word-wrap: break-word;
+      font-size: 5.4rem;
+      color: inherit;
 
-    .title-wrap {
-      display: block;
-      width: 100%;
-
-      .inline-wrap {
-        @include flex($gap: 16px, $justify: space-between);
-        width: 100%;
-        margin-bottom: 40px;
-      }
-
-      h3 {
-        font-size: 6.4rem;
-        margin-bottom: 8px;
-      }
-
-      .album-subtitle {
-        @include flex($gap: 40px, $align: center);
-        margin-bottom: 64px;
-
-        p {
-          display: block;
-          font-size: 1.6rem;
-          color: rgb(var(--color-text-light));
-          margin-bottom: 0;
-        }
+      &:hover {
+        text-decoration: underline;
+        text-decoration-line: double;
+        text-decoration-color: rgb(var(--color-highlight));
       }
     }
   }
 
-  .album-list-content {
-    display: block;
-    width: 60%;
-    border-left: 1px solid rgb(var(--color-border-light));
-    padding: 64px;
-    min-height: calc(100vh - $header);
+  .album-subtitle {
+    @include flex($gap: 32px);
+
+    p {
+      margin: 0;
+    }
+  }
+
+  hr {
+    margin: 40px 0;
   }
 }
 
@@ -106,6 +79,10 @@
   .draft-wrap {
     display: block;
 
+    .hover-bubble {
+      display: inline-block;
+    }
+
     .album-draft {
       @include radius(4px);
       display: inline-block;
@@ -120,11 +97,13 @@
   }
 
   .album-image {
+    @include radius(6px);
     width: 100%;
     display: block;
     position: relative;
     overflow: hidden;
     height: 392px;
+    box-shadow: var(--shadow);
 
     img {
       @include t(0.2s);
@@ -176,6 +155,7 @@
     .album-author {
       @include flex($gap: 12px, $align: center);
       margin-top: 16px;
+      display: inline-flex;
 
       span {
         margin: 0;
@@ -239,7 +219,8 @@
 
     .album-list-controls {
       p {
-        margin-bottom: 64px;
+        // margin-bottom: 64px;
+        margin-bottom: 20px;
       }
       // hr {
       //   margin: 64px 0;

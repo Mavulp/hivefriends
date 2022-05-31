@@ -7,17 +7,18 @@ import { useLoading } from "../../store/loading"
 import { onKeyStroke, useClipboard, useCssVar, usePreferredDark, whenever } from "@vueuse/core"
 import { map_access, map_dark, map_light, getBounds } from "../../js/map"
 import { useUser } from "../../store/user"
-import { RGB_TO_HEX, formatDate, formatFileSize } from "../../js/utils"
+import { RGB_TO_HEX, formatDate, formatFileSize, sanitize } from "../../js/utils"
 import { useComments } from "../../store/comments"
 import { useToast } from "../../store/toast"
 import { useBread } from "../../store/bread"
 import { url } from "../../js/fetch"
+import { Map } from "mapbox-gl"
+import { formatTextUsernames } from "../../js/_composables"
 
 import { MapboxMap, MapboxMarker } from "vue-mapbox-ts"
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 import CommentsWrap from "../../components/comments/CommentsWrap.vue"
 import Modal from "../../components/Modal.vue"
-import { Map } from "mapbox-gl"
 
 /**
  *  Setup
@@ -71,8 +72,8 @@ const transDir = ref("imagenext")
 const showComments = ref(false)
 
 // Shut the fuck up typescript
-const albumKey = computed(() => `${route.params.album}`)
-const imageKey = computed(() => `${route.params.image}`)
+const albumKey = computed(() => route.params?.album?.toString() ?? null)
+const imageKey = computed(() => route.params?.image?.toString() ?? null)
 
 // Get album data
 const album = computed<Album>(() => albums.getAlbum(albumKey.value) as Album)
@@ -83,6 +84,8 @@ const index = computed<number>(() => album.value?.images.findIndex((item) => ite
 
 const prevIndex = computed(() => album.value.images[index.value - 1])
 const nextIndex = computed(() => album.value.images[index.value + 1])
+
+const metadata = computed(() => albums.getImageMetadata(imageKey.value))
 
 function setIndex(where: string) {
   transDir.value = `image${where}`
@@ -110,25 +113,24 @@ function setIndex(where: string) {
 watch(
   imageKey,
   (key) => {
-    // Works too but is weird
-    // imageDetailUrl.value = imageUrl(key, "large")
+    if (key) {
+      // Reset
+      imageDetailUrl.value = null
 
-    // Reset
-    imageDetailUrl.value = null
+      let img = new Image()
+      img.src = imageUrl(key, "large")
+      img.onload = () => {
+        imageDetailUrl.value = img.src
+      }
 
-    let img = new Image()
-    img.src = imageUrl(key, "large")
-    img.onload = () => {
-      imageDetailUrl.value = img.src
-    }
+      albums.fetchImageMetadata(key)
 
-    if (image.value) {
-      bread.set(`${image.value.fileName} by ${user.getUsername(image.value.uploader)}`)
+      if (image.value) {
+        bread.set(`${image.value.fileName} by ${user.getUsername(image.value.uploader)}`)
+      }
     }
   },
-  {
-    immediate: true
-  }
+  { immediate: true }
 )
 
 // Arrow keys
@@ -138,16 +140,14 @@ onKeyStroke("Escape", () => {
   router.push({ name: "AlbumDetail", params: { id: albumKey.value } })
 })
 
-watchEffect(() => {
-  if (album.value) {
-    const accent = user.getUser(album.value.author, "accentColor")
-    color.value = accent
+whenever(album, () => {
+  const accent = user.getUser(album.value.author, "accentColor")
+  color.value = accent
 
-    album.value.images.map((image) => {
-      const img = new Image()
-      img.src = imageUrl(image.key, "large")
-    })
-  }
+  album.value.images.map((image) => {
+    const img = new Image()
+    img.src = imageUrl(image.key, "large")
+  })
 })
 
 /**
@@ -410,12 +410,8 @@ function doCopy(type: string) {
               </router-link>
 
               <span>Name</span>
-              <strong>{{ image.fileName }}</strong>
-
-              <template v-if="image.description">
-                <span>description</span>
-                <p>{{ image.description }}</p>
-              </template>
+              <strong class="file-name">{{ image.fileName }}</strong>
+              <p v-if="metadata?.description" v-html="sanitize(formatTextUsernames(metadata.description, user))"></p>
 
               <template v-if="image.takenAt">
                 <span>Taken</span>

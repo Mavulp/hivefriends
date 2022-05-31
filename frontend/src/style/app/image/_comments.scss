@@ -103,6 +103,10 @@
         p {
           // margin: 0;
           margin-bottom: 8px;
+
+          a {
+            color: rgb(var(--color-info));
+          }
         }
 
         span {
@@ -157,4 +161,15 @@
       }
     }
   }
+}
+
+.comment-user-link {
+  @include font(600);
+  @include radius(4px);
+  display: inline;
+  padding: 2px 3px;
+  margin: 0 !important;
+  font-size: inherit;
+  color: rgb(var(--color-info)) !important;
+  background-color: rgba(var(--color-info), 0.1) !important;
 }

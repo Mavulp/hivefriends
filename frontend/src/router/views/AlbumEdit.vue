@@ -25,7 +25,7 @@ const route = useRoute()
 const albums = useAlbums()
 const user = useUser()
 
-const _id = computed(() => `${route.params.id}`)
+const _id = computed(() => route?.params?.id.toString() ?? null)
 const IS_OK = ref(false)
 
 onBeforeMount(async () => {
@@ -322,24 +322,21 @@ function dragCompare() {
 
         <InputCheckbox v-model:check="album.draft" label="Save as a draft. It won't be published" />
 
-        <Button class="btn-blue btn-icon" v-if="IS_OK" :to="{ name: 'AlbumDetail', params: { id: key } }">
-          View Album
-          <span class="material-icons"> &#xe941; </span>
-        </Button>
-
-        <template v-else>
+        <div class="buttons" style="padding-top: 16px">
           <Button
             :class="{ 'btn-disabled': files.values.length === 0 || isLoading || !album.title }"
             class="btn-icon btn-black"
-            style="width: 100%; margin-bottom: 20px"
             @click="submit"
           >
             {{ album.draft ? "Save Draft" : "Publish Album" }}
             <LoadingSpin class="dark" v-if="isLoading" />
           </Button>
 
-          <!-- <p v-if="isLoading">{{ uploadProgress }} photos uploaded</p> -->
-        </template>
+          <Button class="btn-blue btn-icon" :to="{ name: 'AlbumDetail', params: { id: key } }">
+            View Album
+            <!-- <span class="material-icons"> &#xe941; </span> -->
+          </Button>
+        </div>
       </div>
     </div>
   </div>

@@ -5,12 +5,13 @@ import Navigation from "./components/navigation/Navigation.vue"
 import Toasts from "./components/navigation/Toasts.vue"
 import LoadingSpin from "./components/loading/LoadingSpin.vue"
 
-import { watch, computed, ref, onMounted } from "vue"
+import { watch, computed, ref, onMounted, onUpdated, nextTick } from "vue"
 import { useUser } from "./store/user"
-
 import { useLoading } from "./store/loading"
 import { useRoute } from "vue-router"
 import { useToast } from "./store/toast"
+import router from "./router"
+// import { useHead } from "@vueuse/head"
 
 const user = useUser()
 const { addLoading, delLoading, getLoading } = useLoading()
@@ -47,6 +48,38 @@ watch(
   },
   { immediate: true }
 )
+
+// Set metadata
+// useHead({
+//   meta: [
+//     {
+//       name: "og:title",
+//       content: album.title
+//     },
+//     {
+//       name: "og:descrption",
+//       content: album.description
+//     },
+//     {
+//       name: "og:image",
+//       content: imageUrl(album.coverKey, "medium")
+//     }
+//   ]
+// })
+
+onMounted(() => {
+  document.addEventListener("click", (e: any) => {
+    const attr = e.target.attributes["data-comment-link"]
+
+    if (attr) {
+      e.preventDefault()
+      router.push({
+        name: "UserProfile",
+        params: { user: attr.value }
+      })
+    }
+  })
+})
 </script>
 
 <template>

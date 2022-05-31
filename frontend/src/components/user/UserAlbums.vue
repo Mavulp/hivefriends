@@ -46,15 +46,15 @@ const sortedAlbums = computed(() => {
 </script>
 
 <template>
-  <div class="hi-album-list-user">
-    <div class="album-list-title">
-      <div class="title-wrap">
-        <div class="inline-wrap">
-          <h3>
-            {{ route.params.id === user.getKey ? "Your albums" : `${user.getUsername(route.params.user)}'s albums` }}
-          </h3>
-          <!-- <Button class="btn-black" @click="open = !open">{{ open ? "Close" : "Filter" }}</Button> -->
-        </div>
+  <div class="hi-album-list hi-albums-user">
+    <div class="hi-album-list-layout">
+      <div class="layout-item album-list-controls">
+        <h1>
+          Albums by
+          <router-link :to="{ name: 'UserProfile', params: { user: route.params.user } }">
+            {{ user.getUsername(route.params.user) }}
+          </router-link>
+        </h1>
 
         <div class="album-subtitle">
           <!-- <p>4 draft(s)</p> -->
@@ -63,29 +63,27 @@ const sortedAlbums = computed(() => {
         </div>
 
         <Search placeholder="Search for albums..." v-model:value="search" />
+        <hr />
+        <Filters class="active" />
       </div>
 
-      <!-- <Filters :class="{ active: open }" /> -->
-    </div>
-
-    <div class="album-list-content">
-      <div class="album-list-status" v-if="getLoading('albums')">
-        <div class="flex">
-          <LoadingSpin class="dark" />
-          <h3>Loading</h3>
+      <div class="layout-item">
+        <div class="album-list-status" v-if="getLoading('albums')">
+          <div class="flex">
+            <LoadingSpin class="dark" />
+            <h3>Loading</h3>
+          </div>
+        </div>
+        <div class="album-list-status" v-else-if="data?.length === 0 || !data">
+          <div>
+            <h3>Cringe</h3>
+            <p>No albums found</p>
+          </div>
+        </div>
+        <div class="album-list-wrap" v-else>
+          <AlbumListItem v-for="album in sortedAlbums" :data="album" :key="album.key" />
         </div>
       </div>
-      <div class="album-list-status" v-else-if="data?.length === 0 || !data">
-        <div>
-          <!-- <span class="material-icons">&#xe88b;</span> -->
-          <h3>Lmao</h3>
-          <p>No albums found</p>
-          <Button class="center auto btn-black" :to="{ name: 'Upload' }">Add New?</Button>
-        </div>
-      </div>
-      <template v-else>
-        <AlbumListItem v-for="album in sortedAlbums" :data="album" :key="album.key" />
-      </template>
     </div>
   </div>
 </template>

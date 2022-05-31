@@ -14,4 +14,9 @@
     background-color: rgba(var(--color-info), 0.25);
     color: rgb(var(--color-info));
   }
+
+  &.tag-orange {
+    background-color: rgba(var(--color-orange), 0.25);
+    color: rgb(var(--color-orange));
+  }
 }
