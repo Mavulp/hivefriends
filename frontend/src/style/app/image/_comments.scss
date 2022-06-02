@@ -172,4 +172,8 @@
   font-size: inherit;
   color: rgb(var(--color-info)) !important;
   background-color: rgba(var(--color-info), 0.1) !important;
+
+  &:hover {
+    background-color: rgba(var(--color-info), 0.25) !important;
+  }
 }

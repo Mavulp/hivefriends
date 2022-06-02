@@ -208,4 +208,12 @@
       }
     }
   }
+
+  hr {
+    border-color: rgb(var(--color-border-light));
+  }
+
+  .album-list-item .album-meta p {
+    color: rgba(var(--color-text), 0.75);
+  }
 }

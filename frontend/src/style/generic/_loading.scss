@@ -82,3 +82,10 @@
     transform: rotate(360deg);
   }
 }
+
+.loading-full-age {
+  position: fixed;
+  inset: 0;
+  top: $header;
+  background-color: rgb(var(--color-background));
+}

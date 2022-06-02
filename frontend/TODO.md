@@ -6,6 +6,8 @@
 
 - [ ] Correct meta tags in head
 
+- [ ] 'albums by dolanske', underline under dolanske should be like 4-6px
+
 - [ ] Album List
 
   - [ ] Add filtering to album lists

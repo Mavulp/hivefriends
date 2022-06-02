@@ -136,7 +136,7 @@
 
         & + label {
           @include flex($align: center, $justify: center, $direction: column, $gap: 8px);
-          @include radius(32px);
+          @include radius(16px);
           width: 100%;
           height: 100%;
           border: 3px dashed rgb(var(--color-border));

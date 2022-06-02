@@ -118,6 +118,11 @@
 
       &:last-of-type {
         justify-content: flex-end;
+        gap: 24px;
+
+        p {
+          margin-right: 16px;
+        }
       }
     }
 

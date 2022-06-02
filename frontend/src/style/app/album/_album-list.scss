@@ -102,7 +102,7 @@
     display: block;
     position: relative;
     overflow: hidden;
-    height: 392px;
+    height: 316px;
     box-shadow: var(--shadow);
 
     img {
@@ -200,7 +200,7 @@
       .album-list-wrap {
         display: grid;
         width: 100%;
-        gap: 40px;
+        gap: 32px;
         grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
 
         .album-list-item {
@@ -221,6 +221,10 @@
       p {
         // margin-bottom: 64px;
         margin-bottom: 20px;
+      }
+
+      .form-search {
+        margin-bottom: 32px;
       }
       // hr {
       //   margin: 64px 0;

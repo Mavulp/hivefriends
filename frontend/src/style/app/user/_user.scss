@@ -103,7 +103,8 @@
       width: 60%;
 
       .user-info-meta {
-        @include flex($gap: 0, $align: flex-start);
+        @include flex($gap: 4px 0, $align: flex-start, $wrap: wrap);
+
         width: 100%;
         margin-bottom: 40px;
 
@@ -111,6 +112,7 @@
           display: block;
           margin: 0;
           font-size: 1.6rem;
+          white-space: nowrap;
 
           &:first-child {
             margin-right: 16px;
@@ -152,7 +154,7 @@
 
   .user-albums {
     padding: 64px 128px;
-    width: 75%;
+    width: 80%;
     margin: 0 auto;
 
     .albums-title-wrap {
@@ -175,7 +177,7 @@
     }
 
     .user-albums-list {
-      @include grid(48px, 1fr 1fr);
+      @include grid(32px, 1fr 1fr);
 
       .album-list-item {
         margin-bottom: 0;
