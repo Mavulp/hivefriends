@@ -1,9 +1,22 @@
-use serde::Deserializer;
+use serde::{Deserialize, Deserializer};
 
 pub(super) fn non_empty_str<'de, D: Deserializer<'de>>(d: D) -> Result<Option<String>, D::Error> {
-    use serde::Deserialize;
     let o: Option<String> = Option::deserialize(d)?;
     Ok(o.filter(|s| !s.is_empty()))
+}
+
+pub fn comma_string<'de, D>(deserializer: D) -> Result<Option<Vec<String>>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let s: Option<String> = Option::deserialize(deserializer)?;
+    if let Some(s) = s {
+        return Ok(Some(
+            s.split(',').map(|s| s.to_string()).collect::<Vec<_>>(),
+        ));
+    }
+
+    Ok(None)
 }
 
 #[cfg(test)]
