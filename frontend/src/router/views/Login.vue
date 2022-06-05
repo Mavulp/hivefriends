@@ -83,7 +83,7 @@ onBeforeMount(async () => {
     await auth.fetchUser(key)
     router.push({ name: "Home" })
   } else {
-    bread.set("Please log in to hi!friends")
+    bread.set("Welcome to hi!friends")
   }
 })
 </script>
