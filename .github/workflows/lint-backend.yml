@@ -1,4 +1,4 @@
-name: backend-lint
+name: Lint backend
 
 on:
   push:
@@ -7,24 +7,21 @@ on:
 
 jobs:
   lint:
-    name: lint
+    name: Lint backend
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: backend
     steps:
-      - name: checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      - name: install cargo
-        uses: actions-rs/toolchain@v1
+      - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
           toolchain: stable
           components: cargo, clippy
 
-      - name: cache
-        uses: actions/cache@v3
+      - uses: actions/cache@v3
         with:
           path: |
             ~/.cargo/bin/
@@ -34,7 +31,7 @@ jobs:
             backend/target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: clippy
+      - name: run cargo clippy
         uses: actions-rs/clippy-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
