@@ -8,6 +8,111 @@
   padding: 0 24px;
   background-color: rgb(var(--color-background));
 
+  &.is-phone {
+    .hi-header-phone {
+      display: block;
+      background-color: rgb(var(--color-background));
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 80%;
+      bottom: 0;
+      padding: 24px 32px;
+
+      .header-phone-top {
+        @include flex($justify: space-between);
+        margin-bottom: 32px;
+
+        h4 {
+          margin: 0;
+        }
+      }
+
+      .header-user {
+        @include grid(25px, 64px 1fr);
+        align-items: center;
+        margin-bottom: 16px;
+        height: unset !important;
+        line-height: unset !important;
+
+        .user-image {
+          @include radius(50%);
+          display: block;
+          object-fit: cover;
+          object-position: center;
+          position: relative;
+          width: 64px;
+          height: 64px;
+          background-color: rgb(var(--color-highlight));
+        }
+
+        strong {
+          @include font(600);
+          font-size: 2rem;
+          color: rgb(var(--color-text));
+          margin-bottom: 4px;
+        }
+      }
+
+      hr {
+        margin: 24px 0;
+      }
+
+      .nav-link {
+        padding-left: 16px;
+      }
+
+      .nav-link,
+      .nav-link-icon {
+        @include t();
+        display: block;
+        margin-bottom: 16px;
+        height: 32px !important;
+        line-height: 32px !important;
+        text-align: left;
+        position: relative;
+        color: rgb(var(--color-text));
+        z-index: 5;
+        font-size: 1.4rem;
+
+        &:after {
+          content: "";
+          @include t();
+          @include radius(6px);
+          display: block;
+          position: absolute;
+          z-index: -1;
+          top: -5px;
+          bottom: -5px;
+          right: -8px;
+          left: -8px;
+          opacity: 0;
+          transform: scale(0.9);
+          background-color: rgba(var(--color-highlight), 0.25);
+        }
+
+        &.router-link-active:after {
+          opacity: 1;
+          transform: scale(1);
+        }
+
+        .material-icons {
+          line-height: unset;
+          color: rgb(var(--color-highlight));
+        }
+
+        &:last-of-type {
+          margin-bottom: 0;
+        }
+      }
+
+      .nav-link-icon {
+        @include grid(16px, 32px 1fr);
+        width: 100%;
+      }
+    }
+  }
+
   .logo-wrap {
     @include font(500);
     @include flex($align: center); // text-transform: uppercase;
@@ -62,6 +167,7 @@
     }
   }
 
+  a:not(.nav-link-icon),
   a:not(.nav-link) {
     @include flex($gap: 12px);
     height: 24px;
