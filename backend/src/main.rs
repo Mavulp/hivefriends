@@ -26,7 +26,7 @@ async fn main() {
 }
 
 async fn run() -> anyhow::Result<()> {
-    let foo = 0;
+    let bar = 0;
 
     let args: cli::Args = argh::from_env();
 
