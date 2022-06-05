@@ -2,11 +2,9 @@
 
 - [ ] highlight color is messed up when displaying current user's or relevant user's colors
 
-# Todo
+## Todo
 
 - [ ] Correct meta tags in head
-
-- [ ] 'albums by dolanske', underline under dolanske should be like 4-6px
 
 - [ ] Album List
 

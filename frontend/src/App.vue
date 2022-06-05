@@ -11,7 +11,6 @@ import { useLoading } from "./store/loading"
 import { useRoute } from "vue-router"
 import { useToast } from "./store/toast"
 import router from "./router"
-// import { useHead } from "@vueuse/head"
 
 const user = useUser()
 const { addLoading, delLoading, getLoading } = useLoading()
@@ -48,24 +47,6 @@ watch(
   },
   { immediate: true }
 )
-
-// Set metadata
-// useHead({
-//   meta: [
-//     {
-//       name: "og:title",
-//       content: album.title
-//     },
-//     {
-//       name: "og:descrption",
-//       content: album.description
-//     },
-//     {
-//       name: "og:image",
-//       content: imageUrl(album.coverKey, "medium")
-//     }
-//   ]
-// })
 
 onMounted(() => {
   document.addEventListener("click", (e: any) => {
