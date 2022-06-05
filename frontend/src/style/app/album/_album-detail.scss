@@ -137,6 +137,8 @@
           background-color: rgb(var(--color-white));
           z-index: -1;
           overflow-y: auto;
+          scrollbar-width: thin;
+          scrollbar-width: 4px;
 
           &.active {
             left: 0;

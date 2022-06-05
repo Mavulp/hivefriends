@@ -201,7 +201,7 @@
         display: grid;
         width: 100%;
         gap: 32px;
-        grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(496px, 1fr));
 
         .album-list-item {
           display: block;
