@@ -1,0 +1,23 @@
+name: backend-test
+
+on:
+  pull_request:
+    paths:
+      - 'backend/**'
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu:latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      
+      - name: test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+
