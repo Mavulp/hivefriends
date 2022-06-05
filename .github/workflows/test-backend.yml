@@ -25,7 +25,7 @@ jobs:
             backend/target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: run cargo test
+      - name: Run cargo test
         uses: actions-rs/cargo@v1
         with:
           command: test
