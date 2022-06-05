@@ -102,6 +102,8 @@
       display: block;
 
       .layout-item {
+        padding: 32px;
+
         &:first-of-type {
           height: unset !important;
           position: relative;
@@ -132,8 +134,8 @@
       }
     }
 
-    .draft-wrap {
-    }
+    // .draft-wrap {
+    // }
 
     .album-image {
       height: 192px;
@@ -164,6 +166,15 @@
 
   .hi-album-list .hi-album-list-layout .layout-item .album-list-wrap .album-list-item h2 {
     font-size: 2.2rem;
+  }
+
+  .hi-albums-user h1 {
+    font-size: 2.2rem;
+
+    a {
+      display: block;
+      font-size: 3rem;
+    }
   }
 
   h1,
@@ -214,11 +225,89 @@
   a,
   span,
   p {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
   }
 
-  p {
-    display: block;
-    margin-bottom: 20px;
+  .hi-about {
+    .container {
+      // width: 100%;
+      padding: 32px;
+      padding-bottom: 0;
+
+      h1 {
+        font-size: 4rem;
+      }
+
+      p {
+        font-size: 1.6rem;
+      }
+
+      .link-out {
+        margin-bottom: 40px;
+
+        img {
+          max-width: 96px;
+        }
+      }
+
+      .copyright {
+        padding-top: 0;
+        margin: 64px 0;
+      }
+    }
+  }
+
+  .hi-user-page {
+    padding: 32px;
+  }
+  .hi-user-settings-items {
+    width: 100%;
+
+    h1 {
+      margin-bottom: 32px;
+    }
+
+    h5,
+    h4 {
+      margin-bottom: 32px;
+    }
+
+    h5 + p {
+      margin-bottom: 32px !important;
+    }
+
+    .accent-color {
+      gap: 16px;
+
+      .example-block {
+        &:not(.text.color),
+        &:not(.text) {
+          display: none !important;
+        }
+
+        input + label {
+          min-width: 72px;
+        }
+      }
+    }
+
+    .settings-upload-image {
+      display: block;
+
+      .drop-section {
+        margin-bottom: 16px;
+      }
+
+      .drop-section,
+      .preview-section {
+        display: block;
+      }
+    }
+  }
+
+  .hi-user-settings-items .user-settings-list li {
+    padding-right: 0;
+    margin-bottom: 32px;
+    padding-bottom: 32px;
   }
 }
