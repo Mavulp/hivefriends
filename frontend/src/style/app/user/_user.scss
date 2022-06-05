@@ -153,9 +153,11 @@
   }
 
   .user-albums {
-    padding: 64px 128px;
-    width: 80%;
-    margin: 0 auto;
+    width: 100%;
+    padding: 64px;
+    padding-bottom: 256px;
+
+    // margin: 0 auto;
 
     .albums-title-wrap {
       @include flex($justify: space-between);
@@ -177,7 +179,10 @@
     }
 
     .user-albums-list {
-      @include grid(32px, 1fr 1fr);
+      display: grid;
+      width: 100%;
+      gap: 32px;
+      grid-template-columns: repeat(auto-fit, minmax(416px, 1fr));
 
       .album-list-item {
         margin-bottom: 0;

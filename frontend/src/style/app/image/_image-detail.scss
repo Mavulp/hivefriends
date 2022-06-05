@@ -35,6 +35,8 @@
       bottom: 0;
       width: $comments-width;
       overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-width: 4px;
       border-left: 1px solid rgb(var(--color-border-light));
     }
   }

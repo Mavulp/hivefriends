@@ -4,8 +4,6 @@
 
 ## Todo
 
-- [ ] Correct meta tags in head
-
 - [ ] Album List
 
   - [ ] Add filtering to album lists

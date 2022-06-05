@@ -65,6 +65,7 @@
   cursor: pointer;
   display: block;
   width: 100%;
+  max-width: 996px;
   position: relative;
   margin-bottom: 64px;
 
@@ -178,7 +179,7 @@
   width: 100%;
 
   .hi-album-list-layout {
-    @include grid(0, 512px 1fr);
+    @include grid(0, 498px 1fr);
     position: relative;
 
     .layout-item {
@@ -201,7 +202,7 @@
         display: grid;
         width: 100%;
         gap: 32px;
-        grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(496px, 1fr));
 
         .album-list-item {
           display: block;

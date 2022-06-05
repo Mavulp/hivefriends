@@ -1,0 +1,313 @@
+@media only screen and (max-width: 512px) {
+  .route-login {
+    @include flex($direction: column-reverse, $gap: 0);
+
+    .route-login-split {
+      padding: 0;
+      width: 100%;
+      padding: 32px;
+
+      &.has-block {
+        padding-top: 0;
+      }
+
+      img {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 32px;
+        margin-top: 32px;
+      }
+
+      .block {
+        width: 100%;
+        padding: 32px;
+        font-size: 3rem;
+      }
+    }
+  }
+
+  .copyright {
+    margin: 32px 0;
+
+    font-size: 1.2rem !important;
+  }
+
+  .hi-home {
+    padding-bottom: 64px;
+    .container {
+      width: 100%;
+      padding: 0 32px;
+    }
+
+    .home-landing {
+      @include flex($gap: 0, $align: flex-start, $wrap: wrap, $justify: center, $direction: column);
+      padding: 32px;
+      height: 512px;
+      margin-bottom: 0px;
+
+      h1 {
+        width: 100%;
+        font-size: 16vw;
+        margin-bottom: 16px;
+      }
+
+      h3 {
+        font-size: 4rem;
+      }
+
+      .album-thumbnail {
+        display: none;
+      }
+    }
+
+    .home-users {
+      margin-bottom: 64px;
+
+      h4 {
+        margin-bottom: 32px;
+      }
+
+      .home-user {
+        margin-bottom: 8px;
+        padding: 16px;
+
+        .user-image {
+          width: 40px;
+          height: 40px;
+          margin-right: 8px;
+        }
+
+        h5 {
+          font-size: 1.4rem;
+        }
+
+        button {
+          display: none;
+        }
+      }
+    }
+
+    .copyright {
+      margin: 0;
+    }
+  }
+
+  .flag {
+    max-width: 24px;
+    max-height: 16px;
+  }
+
+  .hi-album-list {
+    .hi-album-list-layout {
+      display: block;
+
+      .layout-item {
+        padding: 32px;
+
+        &:first-of-type {
+          height: unset !important;
+          position: relative;
+          top: unset;
+        }
+
+        &:last-of-type {
+          min-height: unset !important;
+          padding-top: 0 !important;
+        }
+
+        .album-list-wrap {
+          display: block;
+        }
+      }
+    }
+  }
+
+  .album-list-item {
+    margin-bottom: 40px;
+
+    .album-timestamp {
+      padding-top: 8px;
+      margin-bottom: -12px;
+
+      span {
+        font-size: 1.1rem;
+      }
+    }
+
+    // .draft-wrap {
+    // }
+
+    .album-image {
+      height: 192px;
+    }
+
+    .album-meta {
+      padding-top: 0px;
+
+      h2 {
+        font-size: 2.2rem;
+        margin-top: 8px;
+      }
+
+      p {
+        font-size: 1.2rem;
+      }
+    }
+  }
+
+  .album-list-item .album-meta .album-author .user-image {
+    width: 24px;
+    height: 24px;
+  }
+
+  .hi-album-list .hi-album-list-layout .layout-item .album-list-wrap .album-list-item {
+    margin-bottom: 40px;
+  }
+
+  .hi-album-list .hi-album-list-layout .layout-item .album-list-wrap .album-list-item h2 {
+    font-size: 2.2rem;
+  }
+
+  .hi-albums-user h1 {
+    font-size: 2.2rem;
+
+    a {
+      display: block;
+      font-size: 3rem;
+    }
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  b,
+  strong {
+    @include font(700);
+    display: block;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    @include font(900);
+    font-size: 3.6rem;
+  }
+
+  h2 {
+    @include font(900);
+    font-size: 3rem;
+  }
+
+  h3 {
+    @include font(900);
+    font-size: 2.4rem;
+  }
+
+  h4 {
+    @include font(900);
+    font-size: 2.2rem;
+  }
+
+  h5 {
+    @include font(900);
+    font-size: 2rem;
+  }
+
+  h6 {
+    @include font(900);
+    font-size: 1.6rem;
+  }
+
+  strong,
+  b,
+  a,
+  span,
+  p {
+    font-size: 1.2rem;
+  }
+
+  .hi-about {
+    .container {
+      // width: 100%;
+      padding: 32px;
+      padding-bottom: 0;
+
+      h1 {
+        font-size: 4rem;
+      }
+
+      p {
+        font-size: 1.6rem;
+      }
+
+      .link-out {
+        margin-bottom: 40px;
+
+        img {
+          max-width: 96px;
+        }
+      }
+
+      .copyright {
+        padding-top: 0;
+        margin: 64px 0;
+      }
+    }
+  }
+
+  .hi-user-page {
+    padding: 32px;
+  }
+  .hi-user-settings-items {
+    width: 100%;
+
+    h1 {
+      margin-bottom: 32px;
+    }
+
+    h5,
+    h4 {
+      margin-bottom: 32px;
+    }
+
+    h5 + p {
+      margin-bottom: 32px !important;
+    }
+
+    .accent-color {
+      gap: 16px;
+
+      .example-block {
+        &:not(.text.color),
+        &:not(.text) {
+          display: none !important;
+        }
+
+        input + label {
+          min-width: 72px;
+        }
+      }
+    }
+
+    .settings-upload-image {
+      display: block;
+
+      .drop-section {
+        margin-bottom: 16px;
+      }
+
+      .drop-section,
+      .preview-section {
+        display: block;
+      }
+    }
+  }
+
+  .hi-user-settings-items .user-settings-list li {
+    padding-right: 0;
+    margin-bottom: 32px;
+    padding-bottom: 32px;
+  }
+}

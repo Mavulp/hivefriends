@@ -17,7 +17,7 @@ const latest = computed<Album>(() => albums?.value[0] ?? null)
 onBeforeMount(async () => {
   albums.value = await album.fetchAlbums()
 
-  bread.set("Welcome to hi!friends")
+  bread.set("Homepage | url to irl")
 })
 
 const accent = computed(() => user.user.accentColor.split(",").map((item: string) => Number(item)))
