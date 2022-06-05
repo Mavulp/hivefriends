@@ -27,6 +27,7 @@ async fn main() {
 
 async fn run() -> anyhow::Result<()> {
     let args: cli::Args = argh::from_env();
+    let _foo = 0;
 
     let db_path: PathBuf = std::env::var("DB_PATH").context("DB_PATH not set")?.into();
     let pool = setup_database(&db_path).await?;
