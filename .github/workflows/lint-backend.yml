@@ -1,7 +1,7 @@
 name: Lint backend
 
 on:
-  push:
+  [push, pull_request]:
     paths:
       - 'backend/**'
 
