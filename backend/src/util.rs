@@ -78,6 +78,19 @@ pub mod test {
         Ok(name.to_string())
     }
 
+    pub fn insert_alias(
+        name: &str,
+        content: &str,
+        conn: &rusqlite::Connection,
+    ) -> anyhow::Result<()> {
+        conn.execute(
+            "INSERT INTO aliases (name, content) VALUES (?1, ?2)",
+            rusqlite::params![name, content],
+        )?;
+
+        Ok(())
+    }
+
     pub fn insert_image(uploader: &str, conn: &rusqlite::Connection) -> anyhow::Result<String> {
         let key = blob_uuid::random_blob();
 
