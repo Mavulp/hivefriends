@@ -1,0 +1,40 @@
+name: backend-lint
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu:latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: install cargo
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          components: cargo, clippy
+
+      - name: cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            backend/target/
+
+      - name: clippy
+        uses: actions-rs/clippy-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: --all-features
