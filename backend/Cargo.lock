@@ -1533,7 +1533,7 @@ dependencies = [
 [[package]]
 name = "rusqlite_migration"
 version = "1.0.0"
-source = "git+https://github.com/fkaa/rusqlite_migration?branch=fkaa/const-fns#8628edb178cf5f769b7afdff6612f707771bddaf"
+source = "git+https://github.com/cljoly/rusqlite_migration#3bdd7bf7da461aafc5d53032c00e5777ff0c93df"
 dependencies = [
  "log",
  "rusqlite",

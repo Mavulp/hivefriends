@@ -42,6 +42,12 @@ CREATE TABLE comments (
         ON DELETE CASCADE
 ) STRICT;
 
+
+CREATE TABLE aliases (
+    name TEXT PRIMARY KEY NOT NULL,
+    content TEXT NOT NULL
+) STRICT;
+
 CREATE TABLE albums (
     key TEXT PRIMARY KEY NOT NULL, -- used in API responses
     title TEXT NOT NULL,
