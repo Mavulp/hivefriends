@@ -126,7 +126,7 @@ watchEffect(() => {
           <div class="albums-title-wrap">
             <h2>Latest albums</h2>
             <Button
-              v-if="userAlbums.length > 2"
+              v-if="userAlbums.length > 3"
               :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]"
               class="btn-highlight"
               :to="{ name: 'UserAlbums', params: { user: _id } }"
@@ -134,7 +134,7 @@ watchEffect(() => {
             >
           </div>
           <div class="user-albums-list">
-            <AlbumListItem v-for="item in [...userAlbums].slice(0, 2)" :data="item" />
+            <AlbumListItem v-for="item in [...userAlbums].slice(0, 3)" :data="item" />
           </div>
         </template>
       </div>
