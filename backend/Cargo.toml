@@ -34,6 +34,7 @@ chrono = "0.4.19"
 deadpool = "0.9.5"
 deadpool-sync = "0.1.0"
 async-trait = "0.1.53"
+itertools = "0.10.3"
 
 [dev-dependencies]
 reqwest = "0.11.10"
