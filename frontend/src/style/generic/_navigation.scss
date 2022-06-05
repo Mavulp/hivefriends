@@ -9,6 +9,10 @@
   background-color: rgb(var(--color-background));
 
   &.is-phone {
+    span.bread {
+      font-size: 1rem !important;
+    }
+
     .hi-header-phone {
       display: block;
       background-color: rgb(var(--color-background));

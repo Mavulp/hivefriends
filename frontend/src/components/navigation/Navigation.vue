@@ -81,6 +81,11 @@ onClickOutside(dropdown, () => (open.value = false))
     <template v-else>
       <div class="flex-1"></div>
 
+      <transition name="fade" appear mode="out-in">
+        <span class="bread" v-if="bread.title">{{ bread.title }}</span>
+      </transition>
+      <div class="flex-1"></div>
+
       <div ref="dropdown" class="hi-phone-header-wrapper">
         <button class="hover-bubble" :class="{ active: open }" @click="open = !open">
           <span class="material-icons">&#xe5d2;</span>
