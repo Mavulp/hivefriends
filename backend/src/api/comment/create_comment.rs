@@ -9,7 +9,9 @@ use crate::api::error::Error;
 use crate::api::image;
 use crate::{AppState, DbInteractable, SqliteDatabase};
 
-use rusqlite::{params, OptionalExtension};
+use rusqlite::{params, Connection, OptionalExtension};
+
+use itertools::Itertools;
 
 use super::Comment;
 
@@ -26,12 +28,14 @@ pub(super) async fn post<D: SqliteDatabase>(
 
     // Chek for possible aliases within the text
     // and return the modified string
-    text = extract_alias(text, &state).await?;
+    // text = extract_alias(text, &state).await?;
 
     conn.interact(move |conn| {
         if !image::image_exists(&image_key, conn)? {
             return Err(Error::NotFound);
         }
+
+        text = extract_alias(text, conn)?;
 
         let comment = super::insert_comment(user, text, image_key, album_key, now, conn)?;
 
@@ -40,40 +44,33 @@ pub(super) async fn post<D: SqliteDatabase>(
     .await
 }
 
-async fn extract_alias<D: SqliteDatabase>(
-    mut text: String,
-    state: &Arc<AppState<D>>,
-) -> anyhow::Result<String> {
+fn extract_alias(mut text: String, conn: &Connection) -> anyhow::Result<String> {
     let aliases: Vec<String> = text
-        .split(" ")
-        .filter(|word| word.starts_with("!"))
+        .split(' ')
+        .filter(|word| word.starts_with('!'))
         .map(|word| word[1..].to_string())
         .filter(|word| !word.is_empty())
+        .unique()
         .collect();
+
+    // let conn = state.pool.get().await.context("Failed to get connection")?;
 
     for alias in aliases {
         // For each alias, fetch the link
-        //
         // If link is available, replace alias with link
-        //
         // If no alias is available, skip
         let cloned = alias.clone();
-        let conn = state.pool.get().await.context("Failed to get connection")?;
 
-        let alias_link = conn
-            .interact(move |conn| {
-                conn.query_row(
-                    r"SELECT content FROM aliases WHERE name=?1",
-                    params![&cloned],
-                    |row| Ok(serde_rusqlite::from_row::<String>(row).unwrap()),
-                )
-                .optional()
-            })
-            .await
-            .unwrap();
+        let alias_content = conn
+            .query_row(
+                r"SELECT content FROM aliases WHERE name=?1",
+                params![&cloned],
+                |row| Ok(serde_rusqlite::from_row::<String>(row).unwrap()),
+            )
+            .optional()?;
 
-        if let Some(alias_link) = alias_link {
-            text = text.replace(&format!("!{alias}"), &alias_link);
+        if let Some(alias_content) = alias_content {
+            text = text.replace(&format!("!{alias}"), &alias_content);
         }
     }
 
@@ -167,9 +164,11 @@ mod test {
         });
     }
 
-    #[test_case("LMAO !pogu", "LMAO __pog__u__url__", vec![("pogu","__pog__u__url__")])]
-    #[test_case("LMAO!", "LMAO!", vec![("pogu","__pog__u__url__")])]
-    #[test_case("LMAO !pogu !clueless XDX!!!!!", "LMAO __pog__u__url__ __clueless_url__ XDX!!!!!", vec![("pogu","__pog__u__url__"), ("clueless", "__clueless_url__")])]
+    #[test_case("!pogu", "_pogu_", vec![("pogu","_pogu_")])]
+    #[test_case("LMAO!", "LMAO!", vec![("pogu","_pogu_")])]
+    #[test_case("Hey !pogu !pogu", "Hey _pogu_ _pogu_", vec![("pogu","_pogu_")])]
+    #[test_case("!pogu !clueless test!", "_pogu_ _clueless_ test!", vec![("pogu","_pogu_"), ("clueless", "_clueless_")])]
+    #[test_case("Haha! !nonexistent", "Haha! !nonexistent", vec![("pogu","_pogu_")])]
     #[tokio::test]
     async fn create_comment_alias(
         comment_text: &str,
@@ -181,12 +180,12 @@ mod test {
 
         let result: anyhow::Result<(String, String, String)> = conn
             .interact(move |conn| {
-                for alias in aliases {
-                    insert_alias(alias.0, alias.1, conn)?;
+                for (name, content) in aliases {
+                    insert_alias(name, content, conn).unwrap();
                 }
 
-                let user = insert_user("test", conn)?;
-                let image = insert_image(&user, conn).context("")?;
+                let user = insert_user("test", conn).unwrap();
+                let image = insert_image(&user, conn).context("").unwrap();
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
