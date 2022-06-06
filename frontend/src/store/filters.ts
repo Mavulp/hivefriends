@@ -5,11 +5,11 @@ import { useLoading } from "./loading"
 import { useToast } from "./toast"
 import { get } from "../js/fetch"
 
-interface Options {
+export interface Options {
   authors?: string[]
   hasDrafts?: boolean
   timeframes?: Array<{ from: number; to: number }>
-  years?: number[]
+  years?: number[] | string[]
 }
 
 interface Filters {
@@ -24,6 +24,19 @@ export const useFilters = defineStore("filters", {
       available: {}
     } as Filters),
   actions: {
+    // set(key: string, value: string | null) {
+    //   if (!value) this.active[key] = null
+
+    //   if (this.active[key].includes(value)) {
+    //     // Remove
+
+    //   } else {
+    //     // Add
+    //   }
+
+    //   this.active[key].push(value)
+    // },
+    // del(key: string, value)
     // set(key: string, value: string | Array<string> | null) {
     //   // If filters dont exist or value is null, remove the active filters completely
     //   if (!this.active[key] || !value) this.active[key] = new Set()

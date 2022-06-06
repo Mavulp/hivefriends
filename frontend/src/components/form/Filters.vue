@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { onBeforeMount, computed, ref } from "vue"
+import { onBeforeMount, computed, ref, onBeforeUnmount, watch, watchEffect } from "vue"
 import { useFilters } from "../../store/filters"
 import { useLoading } from "../../store/loading"
+import { useUser } from "../../store/user"
+import { isEmpty } from "lodash"
 
 import InputSelect from "./InputSelect.vue"
 import LoadingSpin from "../loading/LoadingSpin.vue"
-import { useUser } from "../../store/user"
+import Button from "../Button.vue"
 
 const { getLoading } = useLoading()
 const filters = useFilters()
@@ -17,6 +19,21 @@ const emit = defineEmits<{
 
 onBeforeMount(() => {
   filters.fetchOptions()
+})
+
+onBeforeUnmount(() => {
+  filters.reset()
+})
+
+function clear() {
+  filters.reset()
+  emit("call")
+}
+
+watchEffect(() => {
+  if (!isEmpty(filters.active)) {
+    emit("call")
+  }
 })
 
 /**
@@ -34,9 +51,7 @@ const authorOptions = computed(() => {
 
 const authors = computed<Array<string>>({
   get: () => filters.getActiveFilter("authors"),
-  set(value) {
-    // setting
-  }
+  set: (value) => (filters.active.authors = value)
 })
 
 /**
@@ -55,8 +70,8 @@ const yearsOptions = computed(() => {
 
 const years = computed<Array<string>>({
   get: () => filters.getActiveFilter("years"),
-  set(value) {
-    // setting
+  set: (value) => {
+    filters.active.years = value
   }
 })
 
@@ -97,6 +112,7 @@ const years = computed<Array<string>>({
         placeholder="Filter by authors"
         :options="authorOptions"
         v-model:selected="authors"
+        multiple
       />
 
       <InputSelect
@@ -105,9 +121,14 @@ const years = computed<Array<string>>({
         placeholder="Filter albums by event years"
         :options="yearsOptions"
         v-model:selected="years"
+        multiple
       />
 
       <div class="filter-timeframe"></div>
+
+      <template v-if="!isEmpty(filters.active)">
+        <Button class="dark" @click="clear()">Clear</Button>
+      </template>
       <!-- <pre>
         {{ filters.getAvailableFilters }}
       </pre> -->

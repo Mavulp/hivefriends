@@ -63,7 +63,7 @@ const sortedAlbums = computed(() => {
 
         <Search placeholder="Search for albums..." v-model:value="search" />
         <!-- <hr /> -->
-        <Filters class="active" />
+        <!-- <Filters class="active" /> -->
       </div>
 
       <div class="layout-item">

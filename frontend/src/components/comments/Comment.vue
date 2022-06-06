@@ -29,7 +29,7 @@ function formatTimestamp(date: number) {
 
 function formatTextImages(text: string) {
   const _regex = /\bhttps?:\/\/\S+/gi
-  const formats = [".jpeg", ".gif", ".png", ".apng", ".svg", ".bmp", ".bmp", ".ico", ".jpg"]
+  const formats = [".jpeg", ".gif", ".png", ".apng", ".svg", ".bmp", ".bmp", ".ico", ".jpg", ".webp"]
 
   const urls = [...new Set(props.data.text.match(_regex))]
 

@@ -3,6 +3,8 @@ import { get, rootUrl, post, put, del } from "../js/fetch"
 import { useLoading } from "./loading"
 import { useToast } from "./toast"
 import { FetchError } from "../js/global-types"
+import { useFilters } from "./filters"
+import { query } from "../js/query"
 
 export interface Image {
   key: string
@@ -109,9 +111,15 @@ export const useAlbums = defineStore("album", {
 
     async fetchAlbums(draft: boolean = false) {
       const { addLoading, delLoading } = useLoading()
+      const filters = useFilters()
       addLoading("albums")
 
-      return get(`/api/albums/?draft=${draft}`)
+      const formatQuery = query({
+        filters: filters.active,
+        draft
+      })
+
+      return get(`/api/albums/${formatQuery}`)
         .then((albums) => {
           return albums
         })
@@ -126,7 +134,7 @@ export const useAlbums = defineStore("album", {
       const { addLoading, delLoading } = useLoading()
       addLoading(`albums`)
 
-      return get(`/api/albums/?user=${user}&draft=${draft}`)
+      return get(`/api/albums/?authors=${user}&draft=${draft}`)
         .then((albums) => {
           this.userAlbums[user] = albums
 

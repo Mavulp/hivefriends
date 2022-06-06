@@ -45,7 +45,7 @@ const sortedAlbums = computed(() => {
           <p>{{ sortedAlbums?.length ?? 0 }} filtered</p>
         </div> -->
 
-        <Filters>
+        <Filters @call="album.fetchAlbums()">
           <Search placeholder="Search for albums..." v-model:value="search" />
           <hr style="margin: 48px 0" />
         </Filters>
