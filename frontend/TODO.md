@@ -4,6 +4,8 @@
 
 ## Todo
 
+- Image upload, add a line loader under header for percentage of loaded items to all items
+
 - [ ] Album List
 
   - [ ] Add filtering to album lists

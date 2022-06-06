@@ -126,21 +126,6 @@ input:-webkit-autofill:active {
   }
 }
 
-.form-filters {
-  @include flex();
-  @include t(0.15s);
-
-  overflow: hidden;
-  height: 0;
-  line-height: 0;
-
-  &.active {
-    height: 64px;
-    line-height: 64px;
-    padding-top: 32px;
-  }
-}
-
 .form-search {
   @include flex($align: center, $gap: 0);
   width: 100%;

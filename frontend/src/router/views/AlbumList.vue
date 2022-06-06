@@ -8,8 +8,11 @@ import { onBeforeMount, computed, ref } from "vue"
 import { useAlbums, Album } from "../../store/album"
 import { useLoading } from "../../store/loading"
 import { useBread } from "../../store/bread"
+// import { useFilters } from "../../store/filters"
 
 const { getLoading } = useLoading()
+
+// const filters = useFilters()
 const album = useAlbums()
 const data = ref<Array<Album>>()
 const bread = useBread()

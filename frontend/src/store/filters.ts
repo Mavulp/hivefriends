@@ -1,5 +1,9 @@
 import { isArray } from "lodash"
 import { defineStore } from "pinia"
+import { FetchError } from "../js/global-types"
+import { useLoading } from "./loading"
+import { useToast } from "./toast"
+import { get } from "../js/fetch"
 
 type Filter = {
   [key: string]: Set<string>
@@ -34,10 +38,26 @@ export const useFilters = defineStore("filters", {
       this.active = {}
       this.available = {}
     },
-    createOptions(data: Array<any>) {
-      // Iterate over all datasets and create options
-      // Add custom filters
-      // REVIEW: decide if front or backend should handle these
+    async fetchOptions() {
+      const { addLoading, delLoading } = useLoading()
+
+      addLoading("options")
+
+      // /api/albums/filters?draft=true&from=10&to=100
+      // Also can use filters to narrow down possible filtering
+      return get(`/api/albums/filters`)
+        .then((response) => {
+          console.log(response)
+
+          return response
+        })
+        .catch((error: FetchError) => {
+          const toast = useToast()
+          toast.add(error.message, "error")
+        })
+        .finally(() => {
+          delLoading("options")
+        })
     }
   },
   getters: {
