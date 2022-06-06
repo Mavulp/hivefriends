@@ -19,12 +19,12 @@ pub(super) struct AvailableAlbumFilters {
     has_drafts: bool,
 }
 
-// This function returns available filters.
-// If filters are sent in it returns the available filters that can be used alternatively.
-// As an example, the returned authors are all authors that can be found
-// with all other filters applied. If the author is filtered on that is ignored for the
-// returned author since otherwise it would only return one value.
-// The same logic applies to all other filters.
+// This function returns available filters. If filters are sent in it returns the available filters
+// that can be used alternatively.
+//
+// Example: The returned authors are all authors that can be found with all other filters applied.
+// If the author is filtered on that is ignored for the returned author since otherwise it would
+// only return one value. The same logic applies to all other filters.
 pub(super) async fn get<D: SqliteDatabase>(
     Authorize(username): Authorize,
     Query(filter): Query<AlbumFilters>,
