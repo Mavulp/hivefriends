@@ -6,4 +6,17 @@
     height: 80px;
     width: 100%;
   }
+
+  h6 {
+    @include flex();
+    margin-bottom: 32px;
+  }
+
+  .form-select {
+    margin-bottom: 32px;
+  }
+
+  .filter-timeframe {
+    @include grid(16px, 2);
+  }
 }

@@ -4,12 +4,6 @@
 
 ## Todo
 
-- Image upload, add a line loader under header for percentage of loaded items to all items
-
-- [ ] Album List
-
-  - [ ] Add filtering to album lists
-
 - [ ] Responsive layout for everything
   - [ ] Phone
   - [ ] Tablet
@@ -29,6 +23,9 @@
 - [ ] Split Album Editing & Uploading into reusable components & composable logic
 
 - [ ] Page which lists every single picture uploaded user
+
   - [ ] Click for full screen view in a modal
   - [ ] button to delete
   - [ ] button to share (only hotlinks)
+
+- [ ] range filtering for timeframes (a slider?)

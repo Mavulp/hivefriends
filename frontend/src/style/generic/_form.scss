@@ -129,7 +129,7 @@ input:-webkit-autofill:active {
 .form-search {
   @include flex($align: center, $gap: 0);
   width: 100%;
-  padding: 0 32px;
+  padding: 0 24px;
   background-color: rgb(var(--color-white));
   box-shadow: var(--shadow);
 
@@ -247,6 +247,7 @@ input:-webkit-autofill:active {
   }
 
   &.is-open {
+    z-index: 100;
     .select-dropdown {
       top: calc(100% + 8px);
       z-index: 100;

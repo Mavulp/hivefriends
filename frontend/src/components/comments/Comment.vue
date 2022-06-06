@@ -29,16 +29,16 @@ function formatTimestamp(date: number) {
 
 function formatTextImages(text: string) {
   const _regex = /\bhttps?:\/\/\S+/gi
-  const formats = [".jpeg", ".gif", ".png", ".apng", ".svg", ".bmp", ".bmp", ".ico", ".jpg"]
+  const formats = [".jpeg", ".gif", ".png", ".apng", ".svg", ".bmp", ".bmp", ".ico", ".jpg", ".webp"]
 
   const urls = [...new Set(props.data.text.match(_regex))]
 
   const _img = (_url: string) => `<img src="${_url}" />`
   const _a = (_url: string) => `<a href="${_url}" target="_blank">${_url}</a>`
 
-  if (urls.length > 0) {
+  if (urls && urls.length > 0) {
     // Loop over each url
-    for (const url of urls) {
+    urls.map((url) => {
       let chunk
 
       if (formats.some((format) => url.endsWith(format))) {
@@ -49,8 +49,8 @@ function formatTextImages(text: string) {
         chunk = _a(url)
       }
 
-      text = text.replace(url, chunk)
-    }
+      text = text.replaceAll(url, chunk)
+    })
   }
 
   return text

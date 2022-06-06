@@ -19,16 +19,16 @@
     }
   }
 
-  .album-subtitle {
-    @include flex($gap: 32px);
-
-    p {
-      margin: 0;
-    }
-  }
-
   hr {
     margin: 40px 0;
+  }
+}
+
+.album-subtitle {
+  @include flex($gap: 32px);
+
+  p {
+    margin: 0;
   }
 }
 
@@ -177,6 +177,14 @@
 .hi-album-list {
   display: block;
   width: 100%;
+
+  h1 {
+    margin-bottom: 32px;
+
+    &.has-loading {
+      @include flex();
+    }
+  }
 
   .hi-album-list-layout {
     @include grid(0, 498px 1fr);

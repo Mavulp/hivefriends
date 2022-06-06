@@ -33,7 +33,10 @@ function goto() {
 
       <h2 @click="goto">{{ props.data.title }}</h2>
       <p @click="goto">{{ props.data.description }}</p>
-      <div v-if="props.data.author !== user.user.username && route.name !== 'UserProfile'" class="draft-wrap">
+      <div
+        v-if="(props.data.author !== user.user.username && route.name !== 'UserProfile') || route.name === 'Albums'"
+        class="draft-wrap"
+      >
         <router-link
           :to="{ name: 'UserProfile', params: { user: props.data.author } }"
           class="album-author hover-bubble"

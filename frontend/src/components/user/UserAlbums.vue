@@ -21,18 +21,23 @@ const bread = useBread()
 
 const data = ref<Array<Album>>([])
 const search = ref("")
+const username = computed(() => String(route.params.user))
+
+const init = ref(false)
 
 onBeforeMount(async () => {
-  const username = String(route.params.user)
-
-  bread.set(`${user.getUsername(username)}'s albums`)
-
-  if (username) {
-    Promise.all([store.fetchUserAlbums(username), store.fetchUserAlbums(username, true)]).then((res) => {
-      data.value = res.flat()
-    })
-  }
+  bread.set(`${user.getUsername(username.value)}'s albums`)
+  await queryAlbums()
+  init.value = true
 })
+
+async function queryAlbums() {
+  return Promise.all([store.fetchUserAlbums(username.value), store.fetchUserAlbums(username.value, true)]).then(
+    (res) => {
+      data.value = res.flat()
+    }
+  )
+}
 
 const sortedAlbums = computed(() => {
   if (!search.value || !data.value || data.value.length === 0) return data.value
@@ -57,18 +62,23 @@ const sortedAlbums = computed(() => {
         </h1>
 
         <div class="album-subtitle">
-          <!-- <p>4 draft(s)</p> -->
           <p>{{ data?.length ?? 0 }} total</p>
           <p>{{ sortedAlbums?.length ?? 0 }} filtered</p>
         </div>
 
         <Search placeholder="Search for albums..." v-model:value="search" />
         <!-- <hr /> -->
-        <Filters class="active" />
+        <Filters
+          class="active"
+          :disable="['authors']"
+          @call="queryAlbums()"
+          :filters="{ authors: [username] }"
+          :loading="getLoading('albums') && init"
+        />
       </div>
 
       <div class="layout-item">
-        <div class="album-list-status" v-if="getLoading('albums')">
+        <div class="album-list-status" v-if="getLoading('albums') && !init">
           <div class="flex">
             <LoadingSpin class="dark" />
             <h3>Loading</h3>
