@@ -178,8 +178,8 @@ pub(super) struct AlbumFilters {
     #[serde(default, deserialize_with = "comma_string")]
     authors: Option<Vec<String>>,
 
-    from: Option<u64>,
-    to: Option<u64>,
+    from: Option<i64>,
+    to: Option<i64>,
 
     #[serde(default)]
     draft: bool,
@@ -228,14 +228,14 @@ fn author_filter_query(parameters: &mut Vec<Box<dyn ToSql>>, authors: Vec<String
     )
 }
 
-fn from_filter_query(parameters: &mut Vec<Box<dyn ToSql>>, from: u64) -> String {
+fn from_filter_query(parameters: &mut Vec<Box<dyn ToSql>>, from: i64) -> String {
     parameters.push(Box::new(from));
     let p = parameters.len();
 
     format!("(timeframe_from >= ?{p} OR timeframe_to >= ?{p})")
 }
 
-fn to_filter_query(parameters: &mut Vec<Box<dyn ToSql>>, to: u64) -> String {
+fn to_filter_query(parameters: &mut Vec<Box<dyn ToSql>>, to: i64) -> String {
     parameters.push(Box::new(to));
     let p = parameters.len();
 
