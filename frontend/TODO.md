@@ -1,15 +1,8 @@
 # Fix
 
 - [ ] highlight color is messed up when displaying current user's or relevant user's colors
-- [ ] instead of set use array for links within
 
 ## Todo
-
-- [x] Press enter to submit a comment
-- [ ] Image upload, add a line loader under header for percentage of loaded items to all items
-- [ ] Album List
-
-  - [ ] Add filtering to album lists
 
 - [ ] Responsive layout for everything
   - [ ] Phone

@@ -114,12 +114,12 @@ export const useAlbums = defineStore("album", {
       const filters = useFilters()
       addLoading("albums")
 
-      const formatQuery = query({
+      const q = query({
         filters: filters.active,
         draft
       })
 
-      return get(`/api/albums/${formatQuery}`)
+      return get(`/api/albums/${q}`)
         .then((albums) => {
           return albums
         })
@@ -132,9 +132,19 @@ export const useAlbums = defineStore("album", {
 
     async fetchUserAlbums(user: string, draft: boolean = false) {
       const { addLoading, delLoading } = useLoading()
+      const filters = useFilters()
+
       addLoading(`albums`)
 
-      return get(`/api/albums/?authors=${user}&draft=${draft}`)
+      const q = query({
+        filters: {
+          ...filters.active,
+          authors: [user]
+        },
+        draft
+      })
+
+      return get(`/api/albums/${q}`)
         .then((albums) => {
           this.userAlbums[user] = albums
 

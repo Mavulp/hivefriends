@@ -23,6 +23,10 @@ onBeforeMount(async () => {
   data.value = await album.fetchAlbums()
 })
 
+async function fetchUpdate() {
+  data.value = await album.fetchAlbums()
+}
+
 const sortedAlbums = computed(() => {
   if (!search.value || !data.value || data.value.length === 0) return data.value
 
@@ -45,7 +49,7 @@ const sortedAlbums = computed(() => {
           <p>{{ sortedAlbums?.length ?? 0 }} filtered</p>
         </div> -->
 
-        <Filters @call="album.fetchAlbums()">
+        <Filters @call="fetchUpdate">
           <Search placeholder="Search for albums..." v-model:value="search" />
           <hr style="margin: 48px 0" />
         </Filters>

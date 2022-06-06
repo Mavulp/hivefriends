@@ -52,6 +52,9 @@ const rawFileLength = ref(0)
 const isLoading = computed(() => files.values.some((file) => file.loading))
 // const uploadProgress = computed(() => `${[...files.values].filter((item) => item.key).length} / ${rawFileLength.value}`)
 const remainingProgress = computed(() => rawFileLength.value - [...files.values].filter((item) => item.key).length)
+const uploadPercentage = computed(
+  () => ([...files.values].filter((item) => item.key).length / rawFileLength.value) * 100
+)
 const imageKeys = computed<Array<any>>(() => files.values.map((file) => file.key).filter((item) => item))
 
 /**
@@ -235,6 +238,10 @@ function dragCompare() {
 
     <div class="album-upload-layout">
       <div class="album-upload-items">
+        <div class="upload-looading-bar" v-show="isLoading">
+          <div class="bar" :style="{ width: uploadPercentage + '%' }"></div>
+        </div>
+
         <div
           class="album-drag-input"
           id="drop-area"
@@ -250,9 +257,7 @@ function dragCompare() {
         </div>
 
         <div class="album-upload-items-list" v-if="files.values.length > 0">
-          <p class="upload-amount-indicator" v-if="remainingProgress > 0">
-            {{ remainingProgress }} file(s) left to upload
-          </p>
+          <p class="upload-amount-indicator" v-show="isLoading">{{ remainingProgress }} file(s) left to upload</p>
 
           <ImageUploadItem
             v-for="(item, index) in files.values"

@@ -21,18 +21,18 @@ const bread = useBread()
 
 const data = ref<Array<Album>>([])
 const search = ref("")
+const username = computed(() => String(route.params.user))
 
 onBeforeMount(async () => {
-  const username = String(route.params.user)
-
-  bread.set(`${user.getUsername(username)}'s albums`)
-
-  if (username) {
-    Promise.all([store.fetchUserAlbums(username), store.fetchUserAlbums(username, true)]).then((res) => {
-      data.value = res.flat()
-    })
-  }
+  bread.set(`${user.getUsername(username.value)}'s albums`)
+  queryAlbums()
 })
+
+function queryAlbums() {
+  Promise.all([store.fetchUserAlbums(username.value), store.fetchUserAlbums(username.value, true)]).then((res) => {
+    data.value = res.flat()
+  })
+}
 
 const sortedAlbums = computed(() => {
   if (!search.value || !data.value || data.value.length === 0) return data.value
@@ -63,7 +63,7 @@ const sortedAlbums = computed(() => {
 
         <Search placeholder="Search for albums..." v-model:value="search" />
         <!-- <hr /> -->
-        <!-- <Filters class="active" /> -->
+        <Filters class="active" :disable="['authors']" @call="queryAlbums" :filters="{ authors: [username] }" />
       </div>
 
       <div class="layout-item">

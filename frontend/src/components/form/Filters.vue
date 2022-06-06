@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onBeforeMount, computed, ref, onBeforeUnmount, watch, watchEffect } from "vue"
-import { useFilters } from "../../store/filters"
+import { useFilters, Options } from "../../store/filters"
 import { useLoading } from "../../store/loading"
 import { useUser } from "../../store/user"
 import { isEmpty } from "lodash"
@@ -10,38 +10,45 @@ import LoadingSpin from "../loading/LoadingSpin.vue"
 import Button from "../Button.vue"
 
 const { getLoading } = useLoading()
-const filters = useFilters()
+const filter = useFilters()
 const user = useUser()
 
 const emit = defineEmits<{
   (e: "call"): void
 }>()
 
+const { disable = [], filters } = defineProps<{
+  disable?: Array<string>
+  filters?: Options
+}>()
+
 onBeforeMount(() => {
-  filters.fetchOptions()
+  filter.fetchOptions(filters)
 })
 
 onBeforeUnmount(() => {
-  filters.reset()
+  filter.reset()
 })
 
 function clear() {
-  filters.reset()
+  filter.clear()
   emit("call")
 }
 
-watchEffect(() => {
-  if (!isEmpty(filters.active)) {
+watch(
+  () => filter.active,
+  (value) => {
     emit("call")
-  }
-})
+  },
+  { deep: true }
+)
 
 /**
  * Authors
  */
 
 const authorOptions = computed(() => {
-  const authors = filters.getAvailableFilters("authors")
+  const authors = filter.getAvailableFilters("authors")
 
   return authors.map((item: string) => ({
     label: user.getUsername(item),
@@ -50,15 +57,21 @@ const authorOptions = computed(() => {
 })
 
 const authors = computed<Array<string>>({
-  get: () => filters.getActiveFilter("authors"),
-  set: (value) => (filters.active.authors = value)
+  get: () => filter.getActiveFilter("authors"),
+  set: (value) => {
+    filter.active.authors = value
+
+    if (!value || isEmpty(value)) {
+      delete filter.active.authors
+    }
+  }
 })
 
 /**
  * Years
  */
 const yearsOptions = computed(() => {
-  const years = filters.getAvailableFilters("years")
+  const years = filter.getAvailableFilters("years")
 
   return years.map((year: number) => {
     return {
@@ -69,9 +82,13 @@ const yearsOptions = computed(() => {
 })
 
 const years = computed<Array<string>>({
-  get: () => filters.getActiveFilter("years"),
+  get: () => filter.getActiveFilter("years"),
   set: (value) => {
-    filters.active.years = value
+    filter.active.years = value
+
+    if (!value || isEmpty(value)) {
+      delete filter.active.years
+    }
   }
 })
 
@@ -107,7 +124,7 @@ const years = computed<Array<string>>({
       <!-- Authors -->
 
       <InputSelect
-        v-if="authorOptions"
+        v-if="authorOptions && !disable.includes('authors')"
         label="Authors"
         placeholder="Filter by authors"
         :options="authorOptions"
@@ -116,7 +133,7 @@ const years = computed<Array<string>>({
       />
 
       <InputSelect
-        v-if="yearsOptions"
+        v-if="yearsOptions && !disable.includes('years')"
         label="Years"
         placeholder="Filter albums by event years"
         :options="yearsOptions"
@@ -126,8 +143,8 @@ const years = computed<Array<string>>({
 
       <div class="filter-timeframe"></div>
 
-      <template v-if="!isEmpty(filters.active)">
-        <Button class="dark" @click="clear()">Clear</Button>
+      <template v-if="!isEmpty(filter.active)">
+        <Button class="btn-blue" @click="clear()">Clear</Button>
       </template>
       <!-- <pre>
         {{ filters.getAvailableFilters }}

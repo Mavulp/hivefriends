@@ -4,6 +4,7 @@ import { FetchError } from "../js/global-types"
 import { useLoading } from "./loading"
 import { useToast } from "./toast"
 import { get } from "../js/fetch"
+import { query } from "../js/query"
 
 export interface Options {
   authors?: string[]
@@ -24,44 +25,23 @@ export const useFilters = defineStore("filters", {
       available: {}
     } as Filters),
   actions: {
-    // set(key: string, value: string | null) {
-    //   if (!value) this.active[key] = null
-
-    //   if (this.active[key].includes(value)) {
-    //     // Remove
-
-    //   } else {
-    //     // Add
-    //   }
-
-    //   this.active[key].push(value)
-    // },
-    // del(key: string, value)
-    // set(key: string, value: string | Array<string> | null) {
-    //   // If filters dont exist or value is null, remove the active filters completely
-    //   if (!this.active[key] || !value) this.active[key] = new Set()
-
-    //   if (typeof value === "string") {
-    //     this.active[key].add(value)
-    //   } else if (isArray(value)) {
-    //     value.map((item) => this.active[key].add(item))
-    //   }
-    // },
-    // del(key: string) {
-    //   this.active[key] = new Set()
-    // },
+    clear() {
+      this.active = {}
+    },
     reset() {
       this.active = {}
       this.available = {}
     },
-    async fetchOptions() {
+    async fetchOptions(filters?: Options) {
       const { addLoading, delLoading } = useLoading()
 
       addLoading("options")
 
+      const q = query({ filters })
+
       // /api/albums/filters?draft=true&from=10&to=100
       // Also can use filters to narrow down possible filtering
-      return get(`/api/albums/filters`)
+      return get(`/api/albums/filters/${q}`)
         .then((response: Options) => {
           if (response.timeframes) {
             const all = response.timeframes
@@ -75,7 +55,6 @@ export const useFilters = defineStore("filters", {
           }
 
           this.available = response
-          console.log(response)
 
           return response
         })
