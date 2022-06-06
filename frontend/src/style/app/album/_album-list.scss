@@ -180,6 +180,10 @@
 
   h1 {
     margin-bottom: 32px;
+
+    &.has-loading {
+      @include flex();
+    }
   }
 
   .hi-album-list-layout {

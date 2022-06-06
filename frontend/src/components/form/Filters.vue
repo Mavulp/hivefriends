@@ -17,9 +17,14 @@ const emit = defineEmits<{
   (e: "call"): void
 }>()
 
-const { disable = [], filters } = defineProps<{
+const {
+  disable = [],
+  filters,
+  loading = false
+} = defineProps<{
   disable?: Array<string>
   filters?: Options
+  loading?: boolean
 }>()
 
 onBeforeMount(() => {
@@ -59,6 +64,8 @@ const authorOptions = computed(() => {
 const authors = computed<Array<string>>({
   get: () => filter.getActiveFilter("authors"),
   set: (value) => {
+    // TODO: move into function
+    // maybe move to action (fix typing)
     filter.active.authors = value
 
     if (!value || isEmpty(value)) {
@@ -112,7 +119,10 @@ const years = computed<Array<string>>({
 
 <template>
   <div class="filters">
-    <h6>Filters</h6>
+    <h6>
+      Filters
+      <LoadingSpin class="dark small" v-if="loading" />
+    </h6>
 
     <slot />
 

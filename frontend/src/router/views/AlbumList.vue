@@ -17,10 +17,16 @@ const data = ref<Array<Album>>()
 const bread = useBread()
 const search = ref("")
 
+// This is used to diasble loading after the initial load
+// When filtering, we will use a spinner somewhere else
+// to prevent flashing of the page
+const init = ref(false)
+
 onBeforeMount(async () => {
   bread.set("All public albums")
 
   data.value = await album.fetchAlbums()
+  init.value = true
 })
 
 async function fetchUpdate() {
@@ -49,14 +55,14 @@ const sortedAlbums = computed(() => {
           <p>{{ sortedAlbums?.length ?? 0 }} filtered</p>
         </div> -->
 
-        <Filters @call="fetchUpdate">
+        <Filters @call="fetchUpdate" :loading="getLoading('albums') && init">
           <Search placeholder="Search for albums..." v-model:value="search" />
           <hr style="margin: 48px 0" />
         </Filters>
       </div>
 
       <div class="layout-item">
-        <div class="album-list-status" v-if="getLoading('albums')">
+        <div class="album-list-status" v-if="getLoading('albums') && !init">
           <div class="flex">
             <LoadingSpin class="dark" />
             <h3>Loading</h3>

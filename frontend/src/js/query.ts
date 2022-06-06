@@ -33,8 +33,6 @@ export function query(options: QueryOptions) {
 
   add("draft", draft ? true : false)
 
-  console.log(q)
-
   // Replace first "&" with "?"
   return "?" + q.substring(1)
 }

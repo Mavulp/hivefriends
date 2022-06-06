@@ -23,15 +23,20 @@ const data = ref<Array<Album>>([])
 const search = ref("")
 const username = computed(() => String(route.params.user))
 
+const init = ref(false)
+
 onBeforeMount(async () => {
   bread.set(`${user.getUsername(username.value)}'s albums`)
-  queryAlbums()
+  await queryAlbums()
+  init.value = true
 })
 
-function queryAlbums() {
-  Promise.all([store.fetchUserAlbums(username.value), store.fetchUserAlbums(username.value, true)]).then((res) => {
-    data.value = res.flat()
-  })
+async function queryAlbums() {
+  return Promise.all([store.fetchUserAlbums(username.value), store.fetchUserAlbums(username.value, true)]).then(
+    (res) => {
+      data.value = res.flat()
+    }
+  )
 }
 
 const sortedAlbums = computed(() => {
@@ -63,11 +68,17 @@ const sortedAlbums = computed(() => {
 
         <Search placeholder="Search for albums..." v-model:value="search" />
         <!-- <hr /> -->
-        <Filters class="active" :disable="['authors']" @call="queryAlbums" :filters="{ authors: [username] }" />
+        <Filters
+          class="active"
+          :disable="['authors']"
+          @call="queryAlbums()"
+          :filters="{ authors: [username] }"
+          :loading="getLoading('albums') && init"
+        />
       </div>
 
       <div class="layout-item">
-        <div class="album-list-status" v-if="getLoading('albums')">
+        <div class="album-list-status" v-if="getLoading('albums') && !init">
           <div class="flex">
             <LoadingSpin class="dark" />
             <h3>Loading</h3>
