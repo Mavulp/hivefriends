@@ -19,7 +19,7 @@ use super::Location;
 pub(super) struct PutImageMetadataRequest {
     #[serde(default, deserialize_with = "non_empty_str")]
     file_name: Option<String>,
-    taken_at: Option<u64>,
+    taken_at: Option<i64>,
     location: Option<Location>,
     #[serde(default, deserialize_with = "non_empty_str")]
     camera_brand: Option<String>,
