@@ -37,7 +37,7 @@ pub(super) async fn get<D: SqliteDatabase>(
             conn,
             "author",
             AlbumFilters {
-                author: None,
+                authors: None,
                 ..filter
             },
             username.clone(),

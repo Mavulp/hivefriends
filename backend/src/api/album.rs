@@ -176,7 +176,7 @@ pub fn insert_share_token(rows: InsertShareToken, conn: &Connection) -> Result<(
 #[derive(Clone, Default, Deserialize)]
 pub(super) struct AlbumFilters {
     #[serde(default, deserialize_with = "comma_string")]
-    author: Option<Vec<String>>,
+    authors: Option<Vec<String>>,
 
     from: Option<u64>,
     to: Option<u64>,
@@ -193,7 +193,7 @@ fn apply_filters(
 ) {
     let mut filter_queries = Vec::new();
 
-    if let Some(authors) = filters.author {
+    if let Some(authors) = filters.authors {
         filter_queries.push(author_filter_query(parameters, authors));
     }
 
