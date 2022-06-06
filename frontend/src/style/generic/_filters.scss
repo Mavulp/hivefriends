@@ -6,4 +6,12 @@
     height: 80px;
     width: 100%;
   }
+
+  .form-select {
+    margin-bottom: 32px;
+  }
+
+  .filter-timeframe {
+    @include grid(16px, 2);
+  }
 }

@@ -100,6 +100,9 @@
       }
 
       .comment-body {
+        * {
+          vertical-align: middle;
+        }
         p {
           // margin: 0;
           margin-bottom: 8px;
@@ -117,10 +120,11 @@
         }
 
         img {
-          display: block;
+          display: inline-block;
           max-height: 512px;
           max-width: 100%;
-          margin: 6px 0;
+          margin: 0 6px;
+          vertical-align: middle;
         }
       }
     }

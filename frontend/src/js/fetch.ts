@@ -95,6 +95,15 @@ async function _handleResponse(response: Response) {
     return
   }
 
+  if (response.status !== 200) {
+    return response.json().then((data) => {
+      return Promise.reject({
+        status: response.status,
+        message: data.message
+      })
+    })
+  }
+
   return response.text().then((text: string) => {
     const data = text && JSON.parse(text)
 

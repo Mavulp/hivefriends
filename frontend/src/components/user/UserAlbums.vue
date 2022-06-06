@@ -57,7 +57,6 @@ const sortedAlbums = computed(() => {
         </h1>
 
         <div class="album-subtitle">
-          <!-- <p>4 draft(s)</p> -->
           <p>{{ data?.length ?? 0 }} total</p>
           <p>{{ sortedAlbums?.length ?? 0 }} filtered</p>
         </div>

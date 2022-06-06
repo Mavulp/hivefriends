@@ -1,11 +1,12 @@
 # Fix
 
 - [ ] highlight color is messed up when displaying current user's or relevant user's colors
+- [ ] instead of set use array for links within
 
 ## Todo
 
-- Image upload, add a line loader under header for percentage of loaded items to all items
-
+- [x] Press enter to submit a comment
+- [ ] Image upload, add a line loader under header for percentage of loaded items to all items
 - [ ] Album List
 
   - [ ] Add filtering to album lists
@@ -29,6 +30,9 @@
 - [ ] Split Album Editing & Uploading into reusable components & composable logic
 
 - [ ] Page which lists every single picture uploaded user
+
   - [ ] Click for full screen view in a modal
   - [ ] button to delete
   - [ ] button to share (only hotlinks)
+
+- [ ] range filtering for timeframes (a slider?)

@@ -11,7 +11,7 @@ interface Props {
   label?: string
   placeholder?: string
   multiple?: boolean
-  options?: Array<Option | string> | null
+  options?: Array<Option | string> | null | undefined
   selected: Array<string> | string | null | undefined
   cantclear?: boolean
   required?: boolean
@@ -41,7 +41,7 @@ const formattedOptions = computed(() => {
 
   return options
     .map((item) => {
-      if (typeof item === "string") {
+      if (typeof item === "string" || typeof item === "number") {
         return {
           label: item,
           value: item
@@ -50,7 +50,7 @@ const formattedOptions = computed(() => {
         return item
       }
     })
-    .filter((option) => option.label.toLowerCase().includes(search.value.toLowerCase()))
+    .filter((option) => option.label.toString().toLowerCase().includes(search.value.toLowerCase()))
 })
 
 const selectedLabels = computed(() => {
