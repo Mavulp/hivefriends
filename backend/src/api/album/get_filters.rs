@@ -43,6 +43,7 @@ pub(super) async fn get<D: SqliteDatabase>(
             username.clone(),
         )?;
 
+        authors.sort();
         authors.dedup();
 
         let mut timeframes: Vec<Timeframe> = get_filtered_values(
@@ -56,6 +57,7 @@ pub(super) async fn get<D: SqliteDatabase>(
             username.clone(),
         )?;
 
+        timeframes.sort();
         timeframes.dedup();
 
         let drafts: Vec<i64> = get_filtered_values(

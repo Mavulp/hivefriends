@@ -36,7 +36,10 @@ pub fn public_api_route() -> Router {
         .route("/:album/:token", get(get_by_share_token::get::<FileDb>))
 }
 
-#[derive(Default, Debug, Serialize, Deserialize, PartialEq, Eq)]
+// The timeframe is serialized into the database which uses snake_case and responses which use
+// camelCase so neither is correct. If we ever need another field made up of two words this needs
+// to be split into two structs for responses and database respectively.
+#[derive(Default, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Timeframe {
     from: Option<i64>,
     to: Option<i64>,
