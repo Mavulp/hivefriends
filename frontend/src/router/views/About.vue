@@ -44,8 +44,7 @@ onBeforeMount(() => {
       <p>
         Did you find a bug or thought of a cool feature which would enhance our site? You can create a
         <a target="_blank" href="https://github.com/Mavulp/hivefriends/issues">Github issue</a> or send us a message on
-        <a target="_blank" href="https://discord.com/invite/Uh4WJ6vV">Discord</a> in the
-        <strong>#lounge</strong> channel.
+        <a target="_blank" href="https://discord.com/invite/Uh4WJ6vV">Discord</a> in the <strong>#chat</strong> channel.
       </p>
 
       <p class="copyright">

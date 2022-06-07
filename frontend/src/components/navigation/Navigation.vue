@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from "vue"
-import { useRouter } from "vue-router"
+import { ref, watch } from "vue"
+import { useRouter, useRoute } from "vue-router"
 import { useUser } from "../../store/user"
 import { useBread } from "../../store/bread"
 import { imageUrl } from "../../store/album"
@@ -8,6 +8,7 @@ import { onClickOutside, useMediaQuery } from "@vueuse/core"
 import Modal from "../Modal.vue"
 
 const router = useRouter()
+const route = useRoute()
 const auth = useUser()
 const bread = useBread()
 
@@ -22,6 +23,13 @@ const dropdown = ref(null)
 const isPhone = useMediaQuery("(max-width: 512px)")
 
 onClickOutside(dropdown, () => (open.value = false))
+
+watch(
+  () => route.name,
+  () => {
+    open.value = false
+  }
+)
 </script>
 
 <template>
