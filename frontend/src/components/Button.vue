@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useMediaQuery } from "@vueuse/core"
 import { computed, useAttrs } from "vue"
 
 const attrs = useAttrs()
@@ -11,13 +12,15 @@ interface Props {
   center?: boolean
 }
 
-const { size = "44px", pad = "32px", to, color, center } = defineProps<Props>()
+const isPhone = useMediaQuery("(max-width: 512px)")
+
+const { size, pad, to, color, center } = defineProps<Props>()
 
 const style = computed(() => ({
-  height: size,
-  lineHeight: size,
-  paddingLeft: pad,
-  paddingRight: pad,
+  height: size ?? isPhone.value ? "36px" : "44px",
+  lineHeight: size ?? isPhone.value ? "36px" : "44px",
+  paddingLeft: pad ?? isPhone.value ? "16px" : "32px",
+  paddingRight: pad ?? isPhone.value ? "16px" : "32px",
   // alignText: 'center',
   ...(color && { color }),
   ...(center && { alignText: "center" })

@@ -15,6 +15,7 @@ import { useUser, User } from "../../store/user"
 import { useFormValidation, required } from "../../js/validation"
 import { clone } from "lodash"
 import { upload } from "../../js/fetch"
+import { useBread } from "../../store/bread"
 
 /**
  * Setup
@@ -24,12 +25,14 @@ const { addLoading, getLoading, delLoading } = useLoading()
 const route = useRoute()
 const albums = useAlbums()
 const user = useUser()
+const bread = useBread()
 
 const _id = computed(() => route?.params?.id.toString() ?? null)
 const IS_OK = ref(false)
 
 onBeforeMount(async () => {
   addLoading("edit")
+  bread.set("Edit an album")
 
   const album = await albums.fetchAlbum(_id.value)
   if (album) setupForm(album)

@@ -1,15 +1,9 @@
 # Fix
 
 - [ ] highlight color is messed up when displaying current user's or relevant user's colors
+- [ ] Handle touch swiping on image detail <https://stackoverflow.com/questions/2264072/detect-a-finger-swipe-through-javascript-on-the-iphone-and-android>
 
-## Todo
-
-- [ ] Responsive layout for everything
-
-  - [ ] Phone
-
-- [ ] Handle touch swiping on image detail
-  - https://stackoverflow.com/questions/2264072/detect-a-finger-swipe-through-javascript-on-the-iphone-and-android
+  ***
 
 ## Post Launch TODO
 

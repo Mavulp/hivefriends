@@ -57,47 +57,17 @@ onBeforeUnmount(() => {
  */
 
 onMounted(() => {
-  // window.addEventListener("scroll", () => {})
-
   // Add Touch listeners
-
   if (isPhone.value) {
-    window.addEventListener("touchstart", touchStart, false)
-    window.addEventListener("touchmove", touchMove, false)
+    document.addEventListener("swiped-left", function (e) {
+      setIndex("prev")
+    })
+
+    document.addEventListener("swiped-right", function (e) {
+      setIndex("next")
+    })
   }
 })
-
-const getTouch = (e: TouchEvent) => e.touches
-let xDown: number | null = null
-let yDown: number | null = null
-
-function touchStart(e: TouchEvent) {
-  const firstTouch = getTouch(e)[0]
-  xDown = firstTouch.clientX
-}
-
-function touchMove(e: TouchEvent) {
-  if (!xDown || !yDown) return
-
-  let xUp = e.touches[0].clientX
-  let yUp = e.touches[0].clientY
-
-  let xDiff = xDown - xUp
-  let yDiff = yDown - yUp
-
-  if (Math.abs(xDiff) > Math.abs(yDiff)) {
-    if (xDiff > 0) {
-      /* right swipe */
-      setIndex("next")
-    } else {
-      /* left swipe */
-      setIndex("prev")
-    }
-  }
-
-  xDown = null
-  yDown = null
-}
 
 /**
  * Image navigation
@@ -333,7 +303,7 @@ function doCopy(type: string) {
       </Teleport>
 
       <div class="hi-image-container">
-        <div class="hi-image-wrapper">
+        <div class="hi-image-wrapper" data-swipe-threshold="100" data-swipe-timeout="500">
           <transition :name="transDir" mode="out-in">
             <img v-if="imageDetailUrl" :src="imageDetailUrl" ref="imageel" />
             <div v-else class="image-loading">
@@ -346,6 +316,7 @@ function doCopy(type: string) {
           <div class="context-col">
             <router-link
               class="hover-bubble"
+              :class="{ active: isPhone }"
               :to="{
                 name: user.public_token ? 'PublicAlbumDetail' : 'AlbumDetail',
                 params: { id: albumKey, ...(user.public_token && { token: user.public_token }) }
