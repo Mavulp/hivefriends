@@ -25,6 +25,7 @@ import Modal from "../../components/Modal.vue"
  */
 const wrap = ref(null)
 const color = useCssVar("--color-highlight", wrap)
+const isPhone = useMediaQuery("(max-width: 512px)")
 
 /**
  * Lifecycle
@@ -51,11 +52,44 @@ onBeforeUnmount(() => {
   window.removeEventListener("scroll", () => {})
 })
 
+/**
+ * Handle touch (phone swiping)
+ */
+
 onMounted(() => {
-  window.addEventListener("scroll", () => {})
+  // window.addEventListener("scroll", () => {})
+
+  // Add Touch listeners
+
+  if (isPhone.value) {
+    window.addEventListener("touchstart", touchStart, false)
+    window.addEventListener("touchmove", touchMove, false)
+  }
 })
 
-const isPhone = useMediaQuery("(max-width: 512px)")
+const getTouch = (e: TouchEvent) => e.touches
+let xDown: number = 0
+
+function touchStart(e: TouchEvent) {
+  const firstTouch = getTouch(e)[0]
+  xDown = firstTouch.clientX
+}
+
+function touchMove(e: TouchEvent) {
+  if (!xDown) return
+
+  let xUp = e.touches[0].clientX
+  let xDiff = xDown - xUp
+
+  if (xDiff > 0) {
+    /* right swipe */
+    setIndex("next")
+  } else {
+    /* left swipe */
+    setIndex("prev")
+  }
+  xDown = 0
+}
 
 /**
  * Image navigation
