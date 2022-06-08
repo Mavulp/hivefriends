@@ -68,7 +68,8 @@ onMounted(() => {
 })
 
 const getTouch = (e: TouchEvent) => e.touches
-let xDown: number = 0
+let xDown: number | null = null
+let yDown: number | null = null
 
 function touchStart(e: TouchEvent) {
   const firstTouch = getTouch(e)[0]
@@ -76,19 +77,26 @@ function touchStart(e: TouchEvent) {
 }
 
 function touchMove(e: TouchEvent) {
-  if (!xDown) return
+  if (!xDown || !yDown) return
 
   let xUp = e.touches[0].clientX
-  let xDiff = xDown - xUp
+  let yUp = e.touches[0].clientY
 
-  if (xDiff > 0) {
-    /* right swipe */
-    setIndex("next")
-  } else {
-    /* left swipe */
-    setIndex("prev")
+  let xDiff = xDown - xUp
+  let yDiff = yDown - yUp
+
+  if (Math.abs(xDiff) > Math.abs(yDiff)) {
+    if (xDiff > 0) {
+      /* right swipe */
+      setIndex("next")
+    } else {
+      /* left swipe */
+      setIndex("prev")
+    }
   }
-  xDown = 0
+
+  xDown = null
+  yDown = null
 }
 
 /**
