@@ -758,6 +758,27 @@
   }
 
   .hi-album-upload {
+    .album-drafts {
+      display: block;
+      padding: 16px;
+
+      .title {
+        margin-bottom: 8px;
+
+        h6 {
+          font-size: 1.4rem;
+        }
+
+        p {
+          font-size: 1rem;
+        }
+      }
+
+      .draft {
+        padding: 8px;
+      }
+    }
+
     .album-upload-layout {
       display: block;
 

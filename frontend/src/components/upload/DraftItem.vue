@@ -37,7 +37,8 @@ const timestamp = computed(() => {
     <!-- This div does nothing but enforce a boundary for outside clicking detection -->
     <div ref="wrap">
       <button class="hover-bubble dropdown-button" :class="{ active: open }" @click="open = !open">
-        <span class="material-icons"> &#xe5d2; </span>
+        <!-- <span class="material-icons"> &#xe5d2; </span> -->
+        <span class="material-icons"> &#xe5d4; </span>
       </button>
 
       <div class="draft-dropdown" :class="{ active: open }">
@@ -57,6 +58,7 @@ const timestamp = computed(() => {
           @click="albums.deleteAlbum(props.data.key)"
         >
           <span class="material-icons"> &#xe872; </span>
+
           Delete
 
           <span class="material-icons rotate" v-if="getLoading('delete-album')">&#xe863;</span>
