@@ -264,6 +264,10 @@
         align-items: center;
         padding-left: 0;
         margin-bottom: 32px;
+        // white-space: ;
+        word-wrap: break-word;
+        word-break: break-all;
+        // overflow: x;
 
         &:before {
           display: none;
