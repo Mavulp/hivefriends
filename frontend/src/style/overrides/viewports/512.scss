@@ -756,4 +756,57 @@
       display: none;
     }
   }
+
+  .hi-album-upload {
+    .album-upload-layout {
+      display: block;
+
+      .album-upload-items {
+        padding: 16px;
+        gap: 16px;
+
+        .album-upload-item {
+          .album-upload-item-header {
+            height: 48px;
+            gap: 16px;
+            padding: 0 12px;
+
+            button,
+            .hover-bubble {
+              .material-icons {
+                font-size: 1.6rem;
+              }
+            }
+
+            .file-size,
+            strong {
+              font-size: 1rem;
+            }
+
+            strong {
+              max-width: 80px;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+            }
+
+            .loading-bar {
+              width: 16px;
+              min-width: 16px;
+            }
+          }
+        }
+      }
+
+      .album-upload-metadata {
+        padding: 16px 32px;
+        padding-bottom: 128px;
+
+        h3 {
+          font-size: 1.8rem;
+          margin-bottom: 24px;
+        }
+      }
+    }
+  }
 }

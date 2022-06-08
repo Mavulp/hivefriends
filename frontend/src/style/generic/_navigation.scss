@@ -9,6 +9,7 @@
   background-color: rgb(var(--color-background));
 
   &.is-phone {
+    z-index: 250;
     span.bread {
       font-size: 1rem !important;
     }
@@ -22,6 +23,7 @@
       width: 80%;
       bottom: 0;
       padding: 24px 32px;
+      border-left: 1px solid rgb(var(--color-border-light));
 
       .header-phone-top {
         @include flex($justify: space-between);
