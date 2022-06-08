@@ -28,6 +28,7 @@ function updateValue(e: any) {
       class="border-smoke font-14"
       :type="type"
       @input="updateValue"
+      @keydown="(e) => e.stopPropagation()"
       :value="value"
     />
     <div class="input-error-list" v-if="error && error.invalid">
