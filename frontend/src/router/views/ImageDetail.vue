@@ -4,7 +4,7 @@ import { useRoute, useRouter } from "vue-router"
 import { imageUrl, useAlbums, Album, Image as ImageStruct } from "../../store/album"
 import { isEmpty, isNil } from "lodash"
 import { useLoading } from "../../store/loading"
-import { onKeyStroke, useClipboard, useCssVar, usePreferredDark, whenever } from "@vueuse/core"
+import { onKeyStroke, useClipboard, useCssVar, useMediaQuery, usePreferredDark, whenever } from "@vueuse/core"
 import { map_access, map_dark, map_light, getBounds } from "../../js/map"
 import { useUser } from "../../store/user"
 import { RGB_TO_HEX, formatDate, formatFileSize, sanitize } from "../../js/utils"
@@ -25,6 +25,7 @@ import Modal from "../../components/Modal.vue"
  */
 const wrap = ref(null)
 const color = useCssVar("--color-highlight", wrap)
+const isPhone = useMediaQuery("(max-width: 512px)")
 
 /**
  * Lifecycle
@@ -51,9 +52,44 @@ onBeforeUnmount(() => {
   window.removeEventListener("scroll", () => {})
 })
 
+/**
+ * Handle touch (phone swiping)
+ */
+
 onMounted(() => {
-  window.addEventListener("scroll", () => {})
+  // window.addEventListener("scroll", () => {})
+
+  // Add Touch listeners
+
+  if (isPhone.value) {
+    window.addEventListener("touchstart", touchStart, false)
+    window.addEventListener("touchmove", touchMove, false)
+  }
 })
+
+const getTouch = (e: TouchEvent) => e.touches
+let xDown: number = 0
+
+function touchStart(e: TouchEvent) {
+  const firstTouch = getTouch(e)[0]
+  xDown = firstTouch.clientX
+}
+
+function touchMove(e: TouchEvent) {
+  if (!xDown) return
+
+  let xUp = e.touches[0].clientX
+  let xDiff = xDown - xUp
+
+  if (xDiff > 0) {
+    /* right swipe */
+    setIndex("next")
+  } else {
+    /* left swipe */
+    setIndex("prev")
+  }
+  xDown = 0
+}
 
 /**
  * Image navigation
@@ -342,7 +378,8 @@ function doCopy(type: string) {
               :class="{ disabled: isNil(prevIndex) }"
               @click="setIndex('prev')"
             >
-              <img src="/icons/arrow-left-long.svg" alt=" " />
+              <span class="material-icons" v-if="isPhone"> &#xf1e6;</span>
+              <img src="/icons/arrow-left-long.svg" v-else alt=" " />
             </button>
 
             <button
@@ -351,7 +388,8 @@ function doCopy(type: string) {
               :class="{ disabled: isNil(nextIndex) }"
               @click="setIndex('next')"
             >
-              <img src="/icons/arrow-right-long.svg" alt=" " />
+              <span class="material-icons" v-if="isPhone"> &#xf1df;</span>
+              <img src="/icons/arrow-right-long.svg" v-else alt=" " />
             </button>
           </div>
         </div>

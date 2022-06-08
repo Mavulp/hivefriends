@@ -17,6 +17,7 @@ import AlbumTimestamp from "../../components/albums/AlbumTimestamp.vue"
 import ImageListitem from "../../components/albums/ImageListitem.vue"
 import Modal from "../../components/Modal.vue"
 import AlbumMap from "../../components/albums/AlbumMap.vue"
+import Button from "../../components/Button.vue"
 
 const albums = useAlbums()
 const route = useRoute()
@@ -114,11 +115,16 @@ async function getPublicLink() {
   if (!publicLink.value) return
 
   if (isSupported) {
-    copy(publicLink.value)
-    toast.add("Album share link copied to clipboard")
+    copyPublic()
   } else {
     modal.value = true
   }
+}
+
+function copyPublic() {
+  copy(publicLink.value)
+  toast.add("Album share link copied to clipboard")
+  modal.value = false
 }
 
 /**

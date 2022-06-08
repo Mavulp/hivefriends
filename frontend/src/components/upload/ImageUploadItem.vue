@@ -27,8 +27,8 @@ const { getLoading } = useLoading()
 
 const open = ref(false)
 const size = () => {
-  if (data.size / 1000000 > 1) return data.size / 1000000 + "MB"
-  return data.size / 1000 + "KB"
+  if (data.size / 1000000 > 1) return Math.round(data.size / 1000000) + "MB"
+  return Math.round(data.size / 1000) + "KB"
 }
 
 const _key = computed(() => data.key)
