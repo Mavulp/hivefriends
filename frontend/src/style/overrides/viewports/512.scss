@@ -291,6 +291,10 @@
       }
     }
 
+    .form-select {
+      width: 100%;
+    }
+
     .settings-upload-image {
       display: block;
 
@@ -533,8 +537,11 @@
     // padding: 0 24px;
     .album-map-header {
       // right: 32px;
-      inset: 32px;
-      bottom: unset;
+      // inset: 32px;
+      top: 32px;
+      left: 16px;
+      right: 32px;
+      // bottom: unset;
 
       p {
         font-size: 1.4rem;
@@ -644,21 +651,23 @@
       position: fixed;
       // inset: 0;
       height: unset;
-      min-width: unset;
-      width: 100%;
+      min-width: auto;
+      max-width: auto;
+      width: auto;
       top: 0;
       bottom: 0;
       right: -100%;
+      left: 100%;
 
       &.active {
-        width: 100%;
         right: 0;
+        left: 0;
       }
 
       .hi-comments {
         position: absolute;
         inset: 0 !important;
-        width: 100%;
+        width: auto;
       }
     }
 
@@ -808,11 +817,19 @@
         padding: 16px;
         gap: 16px;
 
+        .album-upload-items-list {
+          gap: 8px;
+        }
+
         .album-upload-item {
           .album-upload-item-header {
             height: 48px;
             gap: 16px;
             padding: 0 12px;
+
+            .hover-bubble.bubble-info {
+              display: none;
+            }
 
             button,
             .hover-bubble {
@@ -827,7 +844,7 @@
             }
 
             strong {
-              max-width: 80px;
+              max-width: 96px;
               overflow: hidden;
               white-space: nowrap;
               text-overflow: ellipsis;
@@ -836,6 +853,18 @@
             .loading-bar {
               width: 16px;
               min-width: 16px;
+            }
+          }
+
+          .album-upload-content {
+            padding: 16px;
+
+            .grid-view {
+              @include flex($gap: 32px, $wrap: wrap, $direction: column-reverse);
+
+              h6 {
+                margin-bottom: 16px;
+              }
             }
           }
         }
@@ -850,6 +879,17 @@
           margin-bottom: 24px;
         }
       }
+    }
+  }
+
+  .button {
+    font-size: 1.2rem;
+  }
+
+  .form-input {
+    textarea,
+    input {
+      font-size: 1.2rem;
     }
   }
 }

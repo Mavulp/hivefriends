@@ -9,6 +9,7 @@ import { computed, reactive, ref, watch } from "vue"
 import { useAlbums, imageUrl } from "../../store/album"
 import { minLength, useFormValidation, required } from "../../js/validation"
 import { useLoading } from "../../store/loading"
+import { useMediaQuery } from "@vueuse/core"
 
 interface Props {
   data: any
@@ -24,6 +25,7 @@ const emit = defineEmits<{
 
 const albums = useAlbums()
 const { getLoading } = useLoading()
+const isPhone = useMediaQuery("(max-width: 512px)")
 
 const open = ref(false)
 const size = () => {
@@ -87,9 +89,9 @@ async function submit() {
 
       <strong>{{ form.fileName.length > 0 ? form.fileName : data.name }}</strong>
 
-      <span class="file-size">Size: {{ size() }}</span>
+      <span class="file-size">{{ isPhone ? "" : "Size:" }} {{ size() }}</span>
 
-      <span class="tag tag-blue">Album Cover</span>
+      <span class="tag tag-blue">{{ isPhone ? "Cover" : "Album Cover" }}</span>
 
       <div class="flex-1"></div>
       <p v-if="data.error">{{ data.error.message }}</p>

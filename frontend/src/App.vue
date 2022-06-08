@@ -11,6 +11,7 @@ import { useLoading } from "./store/loading"
 import { useRoute } from "vue-router"
 import { useToast } from "./store/toast"
 import router from "./router"
+import { useMediaQuery } from "@vueuse/core"
 
 const user = useUser()
 const { addLoading, delLoading, getLoading } = useLoading()
@@ -19,6 +20,7 @@ const toast = useToast()
 
 const islogged = computed(() => user.logged)
 const isInit = ref(false)
+const isPhone = useMediaQuery("(max-width: 512px)")
 
 watch(
   islogged,
@@ -73,7 +75,7 @@ onMounted(() => {
 
     <div class="hi-router-layout" v-else>
       <router-view v-slot="{ Component }">
-        <transition name="pagetransition" mode="out-in">
+        <transition :name="isPhone ? 'fade' : 'pagetransition'" mode="out-in">
           <component :is="Component" :key="route.path.includes('image') ? '' : route.fullPath" />
         </transition>
       </router-view>
