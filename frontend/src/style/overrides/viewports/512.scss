@@ -475,8 +475,17 @@
           width: 100%;
           padding: 0 32px;
 
-          gap: 20px;
+          gap: 24px;
           justify-content: flex-start;
+
+          a,
+          button {
+            font-size: 1.2rem;
+
+            .material-icons {
+              font-size: 1.4rem !important;
+            }
+          }
         }
 
         .thumbnail-image-wrap {
@@ -660,6 +669,20 @@
             padding-bottom: 24px;
             border-bottom: 1px solid rgb(var(--color-border-light));
           }
+
+          .hi-image-metadata-list li {
+            gap: 16px;
+            span,
+            p {
+              font-size: 1.2rem;
+
+              &.material-icons {
+                font-size: 1.6rem;
+                // margin-right: 0;
+                width: 24px;
+              }
+            }
+          }
         }
       }
 
@@ -729,8 +752,6 @@
   [data-title-top],
   [data-title-top-left],
   [data-title-top-right] {
-    // display: none;
-
     &:before {
       display: none;
     }

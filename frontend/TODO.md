@@ -5,10 +5,11 @@
 ## Todo
 
 - [ ] Responsive layout for everything
+
   - [ ] Phone
-  - [ ] Tablet
-  - [ ] Small Screens
-  - [ ] (>1920)
+
+- [ ] Handle touch swiping on image detail
+  - https://stackoverflow.com/questions/2264072/detect-a-finger-swipe-through-javascript-on-the-iphone-and-android
 
 ## Post Launch TODO
 
@@ -29,3 +30,5 @@
   - [ ] button to share (only hotlinks)
 
 - [ ] range filtering for timeframes (a slider?)
+
+- [ ] Complete responsiveness on all devices
