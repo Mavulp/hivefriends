@@ -640,6 +640,28 @@
       margin-bottom: 32px;
     }
 
+    .comment-wrap {
+      position: fixed;
+      // inset: 0;
+      height: unset;
+      min-width: unset;
+      width: 100%;
+      top: 0;
+      bottom: 0;
+      right: -100%;
+
+      &.active {
+        width: 100%;
+        right: 0;
+      }
+
+      .hi-comments {
+        position: absolute;
+        inset: 0 !important;
+        width: 100%;
+      }
+    }
+
     .hi-image-container {
       .hi-image-meta {
         padding: 0 32px;
