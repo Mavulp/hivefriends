@@ -25,14 +25,14 @@ pub struct Alias {
 }
 
 async fn get_aliases<D: SqliteDatabase>(
-    Authorize(_username): Authorize,
+    Authorize(_): Authorize,
     Extension(state): Extension<Arc<AppState<D>>>,
 ) -> Result<Json<Vec<Alias>>, Error> {
     let conn = state.pool.get().await.context("Failed to get connection")?;
 
     conn.interact(move |conn| {
         let mut query = conn
-            .prepare("SELECT * FROM ALIASES")
+            .prepare("SELECT * FROM aliases")
             .context("Failed to prepare statement for aliases query")?;
 
         let dbdata = query
