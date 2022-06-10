@@ -86,7 +86,7 @@ async function _handleResponse(response: Response) {
   console.log(response)
 
   // Reset on 403
-  if ([403].includes(response.status)) {
+  if ([401].includes(response.status)) {
     localStorage.removeItem("user")
     localStorage.removeItem("bearer_token")
 
