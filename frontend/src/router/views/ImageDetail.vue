@@ -53,23 +53,6 @@ onBeforeUnmount(() => {
 })
 
 /**
- * Handle touch (phone swiping)
- */
-
-onMounted(() => {
-  // Add Touch listeners
-  if (isPhone.value) {
-    document.addEventListener("swiped-left", function (e) {
-      setIndex("prev")
-    })
-
-    document.addEventListener("swiped-right", function (e) {
-      setIndex("next")
-    })
-  }
-})
-
-/**
  * Image navigation
  */
 
@@ -108,8 +91,14 @@ function setIndex(where: string) {
 
   if (where === "prev" && prevIndex) {
     newIndex = index.value - 1
+
+    // Cancel click
+    if (newIndex < 0) return
   } else if (where === "next" && nextIndex) {
     newIndex = index.value + 1
+
+    // Cancel click
+    if (newIndex >= album.value.images.length) return
   }
 
   if (!isNil(newIndex)) {
@@ -254,6 +243,43 @@ function doCopy(type: string) {
     toast.add("Image share link copied to clipboard")
   }
 }
+
+/**
+ * Swiping
+ */
+
+let touchstartX = 0
+let touchendX = 0
+const threshold = 100
+
+function checkDirection() {
+  if (touchstartX === touchendX || window.scrollY > window.innerHeight * 0.25) return
+
+  if (touchendX - threshold > touchstartX) {
+    // swipe right, go to previous
+    setIndex("prev")
+  }
+  if (touchendX + threshold < touchstartX) {
+    // swipe left, go to next
+    setIndex("next")
+  }
+}
+
+onMounted(() => {
+  document.addEventListener("touchstart", (e) => {
+    touchstartX = e.changedTouches[0].screenX
+  })
+
+  document.addEventListener("touchend", (e) => {
+    touchendX = e.changedTouches[0].screenX
+    checkDirection()
+  })
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener("touchstart", () => {})
+  document.removeEventListener("touchend", () => {})
+})
 </script>
 
 <template>
@@ -303,7 +329,7 @@ function doCopy(type: string) {
       </Teleport>
 
       <div class="hi-image-container">
-        <div class="hi-image-wrapper" data-swipe-threshold="100" data-swipe-timeout="500">
+        <div class="hi-image-wrapper">
           <transition :name="transDir" mode="out-in">
             <img v-if="imageDetailUrl" :src="imageDetailUrl" ref="imageel" />
             <div v-else class="image-loading">
@@ -387,7 +413,7 @@ function doCopy(type: string) {
               &#xe8fd;
             </span>
           </h4>
-          <div class="hi-map-wrap" v-if="image.location">
+          <div class="hi-map-wrap" v-if="image.location && image.location.latitude && image.location.longitude">
             <mapbox-map
               :accessToken="map_access"
               :mapStyle="mapStyle"

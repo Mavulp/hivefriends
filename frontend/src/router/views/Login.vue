@@ -110,7 +110,7 @@ onBeforeMount(async () => {
           placeholder="***************"
         />
 
-        <Button class="btn-login btn-black" type="submit" size="56px">
+        <Button class="btn-login btn-black" type="submit">
           <span>Log In</span>
 
           <span class="material-icons"> &#xea77; </span>
