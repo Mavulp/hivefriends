@@ -57,10 +57,6 @@ export const useUser = defineStore("user", {
 
       return post("/api/login/", credentials)
         .then(async (res) => {
-          // if (isNil(res)) throw { message: "Unexpected issue. Please clear site data, reload and try again." }
-
-          console.log(res)
-
           localStorage.setItem("bearer_token", res.bearerToken)
 
           await this.fetchUser(res.username)
