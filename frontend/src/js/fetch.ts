@@ -83,6 +83,8 @@ async function _handleFetch(url: string, options: object) {
 }
 
 async function _handleResponse(response: Response) {
+  console.log(response)
+
   // Reset on 403
   if ([403].includes(response.status)) {
     localStorage.removeItem("user")
