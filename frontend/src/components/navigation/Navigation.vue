@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue"
+import { computed, ref, watch } from "vue"
 import { useRouter, useRoute } from "vue-router"
 import { useUser } from "../../store/user"
 import { useBread } from "../../store/bread"
@@ -30,12 +30,14 @@ watch(
     open.value = false
   }
 )
+
+const isDark = computed(() => auth.settings.colorTheme === "dark-normal")
 </script>
 
 <template>
   <div class="hi-header" :class="{ 'is-phone': isPhone }">
     <router-link :to="{ name: 'Home' }" class="logo-wrap" title="嘿，伙计，我在哪里可以买到火腿和鸡蛋">
-      <img src="/Sharp.png" alt=" " />
+      <img :src="isDark ? '/Sharp.png' : '/Sharp2.png'" alt=" " />
     </router-link>
 
     <template v-if="!isPhone">
