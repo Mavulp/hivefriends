@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useMagicKeys, whenever } from "@vueuse/core"
-import { onBeforeMount, onBeforeUnmount } from "vue"
-// import { ref } from "vue"
+import { defineAsyncComponent, onBeforeMount, onBeforeUnmount, shallowRef } from "vue"
 
 const emit = defineEmits<{
   (e: "close"): void

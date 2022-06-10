@@ -1,0 +1,117 @@
+.modal .modal-wrap {
+  &.modal-alias {
+    padding: 40px;
+    width: 848px;
+    transform: translateX(-50%);
+    top: 40px;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    scrollbar-width: 4px;
+    scrollbar-width: thin;
+
+    .modal-content {
+      .alias-search {
+        display: block;
+        z-index: 10;
+        align-items: center;
+        margin-bottom: 40px;
+        position: sticky;
+        top: -16px;
+
+        span {
+          text-align: right;
+        }
+      }
+
+      .alias-list {
+        .alias-item {
+          border-bottom: 1px solid rgb(var(--color-border-light));
+
+          &:last-child {
+            border-bottom: 0;
+
+            .alias-item-header {
+              padding-bottom: 0;
+              border-bottom: 0;
+            }
+          }
+
+          &.alias-text {
+            .alias-item-header {
+              .alias-image {
+                padding-left: 16px;
+
+                img {
+                  display: none;
+                }
+              }
+            }
+
+            .alias-text-content {
+              display: block;
+            }
+          }
+
+          &.alias-link .alias-item-header {
+            .alias-image {
+              .material-icons {
+                display: none;
+              }
+            }
+          }
+
+          .alias-text-content {
+            display: none;
+            background-color: rgb(var(--color-background));
+            padding: 24px;
+            font-size: 1.4rem;
+            margin: 0;
+            line-height: 1.5em;
+          }
+
+          .alias-item-header {
+            padding: 16px 0;
+            @include flex($gap: 24px);
+            width: 100%;
+            padding-right: 32px;
+
+            .alias-image {
+              display: block;
+              width: 80px;
+              margin-right: 64px;
+
+              img {
+                display: block;
+                max-width: 80px;
+                max-height: 80px;
+              }
+
+              .material-icons {
+                color: rgb(var(--color-text-light));
+              }
+            }
+
+            p {
+              @include font(400);
+              display: block;
+              flex: 1;
+              font-size: 1.4rem;
+              margin: 0;
+
+              b {
+                display: inline;
+              }
+            }
+
+            button {
+              .material-icons {
+                font-size: 2rem;
+                color: rgb(var(--color-text));
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

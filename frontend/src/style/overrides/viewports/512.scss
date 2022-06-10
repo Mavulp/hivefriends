@@ -627,15 +627,35 @@
 
   .modal {
     .modal-wrap {
-      // border-left-style: /;
       left: 16px;
       right: 16px;
       transform: translateY(-50%);
+
+      &.modal-alias,
       &.modal-copy {
         width: auto;
         padding: 16px;
         min-width: unset;
         max-width: unset;
+      }
+
+      &.modal-alias {
+        // width: 100%;
+        transform: unset;
+
+        .modal-content .alias-list .alias-item .alias-item-header {
+          padding: 12px 0;
+          padding-right: 8px;
+
+          .alias-image {
+            width: 56px;
+            margin-right: 0;
+            img {
+              max-width: 56px;
+              max-height: 56px;
+            }
+          }
+        }
       }
     }
   }

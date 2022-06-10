@@ -3,7 +3,7 @@ import { computed, ref } from "vue"
 import { Comment, useComments } from "../../store/comments"
 import { imageUrl } from "../../store/album"
 import { useUser } from "../../store/user"
-import { sanitize } from "../../js/utils"
+import { sanitize, isValidImage } from "../../js/utils"
 import { formatTextUsernames } from "../../js/_composables"
 const user = useUser()
 const comments = useComments()
@@ -29,7 +29,6 @@ function formatTimestamp(date: number) {
 
 function formatTextImages(text: string) {
   const _regex = /\bhttps?:\/\/\S+/gi
-  const formats = [".jpeg", ".gif", ".png", ".apng", ".svg", ".bmp", ".bmp", ".ico", ".jpg", ".webp"]
 
   const urls = [...new Set(props.data.text.match(_regex))]
 
@@ -41,7 +40,7 @@ function formatTextImages(text: string) {
     urls.map((url) => {
       let chunk
 
-      if (formats.some((format) => url.endsWith(format))) {
+      if (isValidImage(url)) {
         // Is an image
         chunk = _img(url)
       } else {

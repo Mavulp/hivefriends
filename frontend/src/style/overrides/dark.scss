@@ -159,6 +159,7 @@
   .modal {
     background-color: rgba(var(--color-background-dimmed), 0.9);
 
+    .modal-wrap.modal-alias,
     .modal-wrap.modal-copy {
       background-color: rgb(var(--color-background));
       border: 1px solid rgb(var(--color-border-light));
@@ -216,5 +217,9 @@
 
   .album-list-item .album-meta p {
     color: rgba(var(--color-text), 0.75);
+  }
+
+  .modal .modal-wrap.modal-alias .modal-content .alias-list .alias-item.alias-text .alias-text-content {
+    background-color: rgba(var(--color-background-dark), 0.5);
   }
 }

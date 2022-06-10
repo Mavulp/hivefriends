@@ -1,0 +1,86 @@
+.modal .modal-wrap {
+  &.modal-copy {
+    padding: 40px;
+    width: 50%;
+    max-width: 1024px;
+    min-width: 680px;
+
+    hr {
+      margin: 32px 0;
+    }
+
+    p {
+      &:first-of-type {
+        font-size: 1.6rem;
+      }
+    }
+
+    .input-with-copy {
+      display: grid;
+      grid-template-columns: 20px 1fr 88px;
+      gap: 16px;
+      align-items: center;
+
+      & > .material-icons {
+        color: rgb(var(--color-highlight));
+      }
+
+      button {
+        height: 28px;
+        line-height: 28px;
+      }
+
+      &:nth-of-type(2) {
+        & > .material-icons {
+          color: rgb(var(--color-info));
+        }
+
+        input {
+          background-color: rgba(var(--color-info), 0.1);
+          color: rgb(var(--color-info));
+
+          &:focus {
+            border-color: rgb(var(--color-info));
+          }
+        }
+      }
+    }
+
+    button {
+      @include flex($gap: 4px);
+      color: rgb(var(--color-text));
+
+      &:hover {
+        .material-icons {
+          color: rgb(var(--color-text));
+        }
+      }
+
+      .material-icons {
+        font-size: 1.4rem;
+        color: rgb(var(--color-text-light));
+      }
+    }
+
+    input {
+      @include radius(8px);
+      display: block;
+      width: 100%;
+      border: none;
+      height: 40px;
+      background-color: rgba(var(--color-highlight), 0.1);
+      color: rgb(var(--color-highlight));
+      line-height: 40px;
+      padding: 0 20px;
+      font-size: 1.6rem;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      border: 2px solid transparent;
+
+      &:focus {
+        border-color: rgb(var(--color-highlight));
+      }
+    }
+  }
+}
