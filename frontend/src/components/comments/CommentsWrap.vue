@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch, computed, reactive, nextTick } from "vue"
+import { watch, computed, reactive, nextTick, ref } from "vue"
 import { Comment, useComments } from "../../store/comments"
 import { useLoading } from "../../store/loading"
 import { useUser } from "../../store/user"
@@ -8,6 +8,8 @@ import { minLength, required, useFormValidation } from "../../js/validation"
 import LoadingSpin from "../loading/LoadingSpin.vue"
 import InputTextarea from "../form/InputTextarea.vue"
 import CommentVue from "./Comment.vue"
+import AliasModal from "./AliasModal.vue"
+import Modal from "../Modal.vue"
 
 const comments = useComments()
 const user = useUser()
@@ -26,6 +28,7 @@ const emit = defineEmits<{
 }>()
 
 const data = computed<Array<Comment>>(() => comments.comments)
+const modal = ref(false)
 
 watch(
   () => props.imageKey,
@@ -108,6 +111,18 @@ async function submit() {
         <div class="buttons">
           <button type="submit" class="hover-bubble">Send</button>
           <LoadingSpin class="dark small" v-if="getLoading('add-comments')" />
+
+          <div class="flex-1"></div>
+
+          <button @click.prevent="modal = true" class="hover-bubble">
+            <span class="material-icons"> &#xe1d3; </span>
+          </button>
+
+          <Teleport to="body" v-if="modal">
+            <Modal @close="modal = false">
+              <AliasModal @close="modal = false" />
+            </Modal>
+          </Teleport>
         </div>
       </form>
     </div>

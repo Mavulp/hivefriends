@@ -96,8 +96,14 @@
         right: -100%;
         z-index: 50;
         border-left: 1px solid rgb(var(--color-border-light));
-        scrollbar-width: thin;
-        scrollbar-width: 4px;
+
+        overflow-y: auto;
+        -ms-overflow-style: none; /* Internet Explorer 10+ */
+        scrollbar-width: none; /* Firefox */
+
+        &:-webkit-scrollbar {
+          display: none; /* Safari and Chrome */
+        }
 
         &.active {
           right: 0;

@@ -150,9 +150,9 @@ watch(
 // Arrow keys
 onKeyStroke("ArrowLeft", () => setIndex("prev"))
 onKeyStroke("ArrowRight", () => setIndex("next"))
-onKeyStroke("Escape", () => {
-  router.push({ name: "AlbumDetail", params: { id: albumKey.value } })
-})
+// onKeyStroke("Escape", () => {
+//   router.push({ name: "AlbumDetail", params: { id: albumKey.value } })
+// })
 
 whenever(album, () => {
   const accent = user.getUser(album.value.author, "accentColor")

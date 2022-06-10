@@ -80,3 +80,9 @@ export function sanitize(text: string) {
   const regex = /\bon\w+=\S+(?=.*>)/g
   return text.replaceAll(regex, "")
 }
+
+export const formats = [".jpeg", ".gif", ".png", ".apng", ".svg", ".bmp", ".bmp", ".ico", ".jpg", ".webp"]
+
+export function isValidImage(text: string) {
+  return formats.some((format) => text.endsWith(format))
+}
