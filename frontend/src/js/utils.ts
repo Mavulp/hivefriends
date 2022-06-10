@@ -77,7 +77,7 @@ export function median(numbers: Array<number>) {
 export function sanitize(text: string) {
   if (!text) return null
 
-  const regex = /\bon\w+=\S+(?=.*>)/g
+  const regex = /\bon\w+\=\"?[\w\:\(\)\']+\"?/g
   return text.replaceAll(regex, "")
 }
 
