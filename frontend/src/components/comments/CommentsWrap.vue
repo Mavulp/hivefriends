@@ -75,6 +75,13 @@ async function submit() {
     })
   })
 }
+
+function insert(text: string) {
+  let t = `!${text}`
+  if (form.comment) t = " " + t
+
+  form.comment += t
+}
 </script>
 
 <template>
@@ -120,7 +127,7 @@ async function submit() {
 
           <Teleport to="body" v-if="modal">
             <Modal @close="modal = false">
-              <AliasModal @close="modal = false" />
+              <AliasModal @close="modal = false" @insert="insert" />
             </Modal>
           </Teleport>
         </div>

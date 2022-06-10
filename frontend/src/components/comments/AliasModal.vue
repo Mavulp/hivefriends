@@ -5,6 +5,7 @@ import { get } from "../../js/fetch"
 import { isValidImage } from "../../js/utils"
 
 import Search from "../form/Search.vue"
+import { useClipboard } from "@vueuse/core"
 
 const emit = defineEmits<{
   (e: "close"): void
@@ -31,23 +32,28 @@ const filterList = computed<Array<Alias>>(() => {
   return list.value.filter((item: Alias) => `!${item.name.toLowerCase()}`.includes(search.value.toLowerCase()))
 })
 
-let called = false
-function loadImage(e: any) {
-  if (!called) {
-    console.log(e)
-    called = true
-  }
-}
+// let called = false
+// function loadImage(e: any) {
+//   if (!called) {
+//     console.log(e)
+//     called = true
+//   }
+// }
 
 /**
- * Alias list
- *
- * - can search
- * - shows amount of items and amount of found items
- *
- * - can click to copy to clipboard
- * - canc click "insert" (which inserts this alias to currently written comment + closes modal)
+ * Copy
  */
+
+const { copy, isSupported } = useClipboard()
+
+/**
+ * Insert text
+ */
+
+function emitInsert(name: string) {
+  emit("insert", name)
+  emit("close")
+}
 </script>
 
 <template>
@@ -70,17 +76,26 @@ function loadImage(e: any) {
             <div class="alias-item" :class="[isValidImage(alias.content) ? 'alias-link' : 'alias-text']">
               <div class="alias-item-header">
                 <div class="alias-image">
-                  <img :src="alias.content" alt="" load="lazy" lazyload="true" @load="loadImage" />
+                  <img :src="alias.content" alt="" load="lazy" lazyload="true" />
                   <span class="material-icons">&#xe262; </span>
                 </div>
 
                 <p><b>!</b>{{ alias.name }}</p>
 
-                <button class="hover-bubble bubble-info" data-title-top="Insert into comment">
+                <button
+                  class="hover-bubble bubble-info"
+                  data-title-top="Insert into comment"
+                  @click="emitInsert(alias.name)"
+                >
                   <span class="material-icons"> &#xe745; </span>
                 </button>
 
-                <button class="hover-bubble bubble-orange" data-title-top="Copy alias">
+                <button
+                  class="hover-bubble bubble-orange"
+                  data-title-top="Copy alias"
+                  v-if="isSupported"
+                  @click="copy(`!${alias.name}`)"
+                >
                   <span class="material-icons"> &#xe14d; </span>
                 </button>
               </div>
