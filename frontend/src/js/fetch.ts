@@ -84,7 +84,7 @@ async function _handleFetch(url: string, options: object) {
 
 async function _handleResponse(response: Response) {
   // Reset on 403
-  if ([403, 401].includes(response.status)) {
+  if ([403].includes(response.status)) {
     localStorage.removeItem("user")
     localStorage.removeItem("bearer_token")
 
