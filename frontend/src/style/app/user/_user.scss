@@ -6,16 +6,15 @@
 }
 
 .hi-user-profile {
-  // @include grid(0, 1.5fr 1fr);
   width: 100%;
   margin: 0 auto;
-  max-width: 1920px;
+  // max-width: 1920px;
+  padding: 32px;
 
   .user-profile-upper {
     background-color: rgb(var(--color-highlight));
 
     &.black * {
-      // color: rgb(var(--colo));
       color: #191716;
     }
 
@@ -35,17 +34,6 @@
         height: 100%;
         z-index: 2;
         position: relative;
-        // object-fit: cover;
-        // object-position: center;
-
-        // &:after {
-        //   content: "";
-        //   display: block;
-        //   position: absolute;
-        //   inset: 0;
-        //   z-index: 5;
-        //   background-color: rgba(var(--color-highlight), 0.1);
-        // }
 
         background-position: center 50%;
         background-repeat: no-repeat;
@@ -57,16 +45,85 @@
           opacity: 0.25;
         }
       }
+    }
+
+    .user-information-wrap {
+      // display: block;
+      @include grid(40px, 1fr 0.5fr);
+      width: 100%;
+      margin: 0 auto;
+      max-width: 1480px;
+      padding: 0 32px;
+      margin-bottom: 32px;
+
+      .user-information {
+        padding: 32px 0;
+
+        .user-info-meta {
+          @include flex($gap: 4px 0, $align: flex-start, $wrap: wrap);
+
+          width: 100%;
+          margin-bottom: 40px;
+
+          span {
+            display: block;
+            margin: 0;
+            font-size: 1.6rem;
+            white-space: nowrap;
+
+            &:first-child {
+              margin-right: 16px;
+            }
+
+            &:not(:first-child) {
+              margin-right: 40px;
+            }
+
+            b {
+              font-size: 1.6rem;
+              display: inline;
+            }
+          }
+        }
+
+        h1 {
+          font-size: 6.4rem;
+          margin-bottom: 20px;
+        }
+
+        p {
+          font-size: 2rem;
+          line-height: 1.8em;
+          margin: 0;
+
+          &.black {
+            color: #191716 !important;
+          }
+
+          &.white {
+            color: #fff !important;
+          }
+        }
+      }
 
       .avatar-wrap {
         display: block;
-        top: 40%;
-        position: absolute;
-        right: 128px;
-        // right: 10%;
         z-index: 10;
+        margin-top: -50%;
+        position: relative;
+
+        &:before {
+          content: "";
+          position: absolute;
+          display: block;
+          inset: -16px;
+          bottom: 45%;
+          z-index: 1;
+          background-color: rgb(Var(--color-highlight));
+        }
 
         .avatar {
+          // @include radius(8px);
           display: block;
           width: 512px;
           height: 512px;
@@ -74,7 +131,7 @@
           position: relative;
           object-position: center;
           margin-bottom: 32px;
-          border: 20px solid rgb(var(--color-highlight));
+          z-index: 5;
 
           &.image-error {
             border-color: rgb(var(--color-background));
@@ -97,67 +154,14 @@
         }
       }
     }
-
-    .user-information {
-      padding: 40px 128px;
-      width: 60%;
-
-      .user-info-meta {
-        @include flex($gap: 4px 0, $align: flex-start, $wrap: wrap);
-
-        width: 100%;
-        margin-bottom: 40px;
-
-        span {
-          display: block;
-          margin: 0;
-          font-size: 1.6rem;
-          white-space: nowrap;
-
-          &:first-child {
-            margin-right: 16px;
-          }
-
-          &:not(:first-child) {
-            margin-right: 40px;
-          }
-
-          b {
-            font-size: 1.6rem;
-            display: inline;
-          }
-        }
-      }
-
-      h1 {
-        font-size: 6.4rem;
-        margin-bottom: 20px;
-      }
-
-      p {
-        font-size: 2rem;
-        line-height: 1.8em;
-        margin: 0;
-        // padding: 32px;
-        // background-color: rgb(var(--color-highlight));
-
-        &.black {
-          color: #191716 !important;
-        }
-
-        &.white {
-          color: #fff !important;
-        }
-      }
-    }
   }
 
   .user-albums {
     width: 100%;
-    padding: 64px;
+    margin: 0 auto;
+    max-width: 1480px;
+    padding: 32px;
     padding-bottom: 256px;
-
-    // margin: 0 auto;
 
     .albums-title-wrap {
       @include flex($justify: space-between);

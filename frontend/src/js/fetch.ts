@@ -88,11 +88,13 @@ async function _handleResponse(response: Response) {
     localStorage.removeItem("user")
     localStorage.removeItem("bearer_token")
 
-    if (window.location.href === "/login") {
-      window.location.href = "/login"
-    }
+    setTimeout(() => {
+      if (window.location.href === "/login") {
+        window.location.href = "/login"
+      }
 
-    return
+      return
+    })
   }
 
   if (response.status !== 200) {
