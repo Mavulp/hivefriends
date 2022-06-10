@@ -397,7 +397,15 @@
     }
 
     .user-albums {
-      padding: 32px;
+      padding: 0;
+
+      p {
+        font-size: 1.4rem;
+
+        b {
+          font-size: inherit;
+        }
+      }
 
       .albums-title-wrap {
         display: block;
