@@ -85,6 +85,27 @@ watchEffect(() => {
               backgroundPositionY: bgscrollpos
             }"
           />
+        </div>
+
+        <div class="user-information-wrap">
+          <div class="user-information">
+            <h1>{{ user.displayName ?? user.username }}</h1>
+            <div class="user-info-meta">
+              <span v-if="user.country" :data-title-top="countries[user.country].name">
+                <img class="flag" :src="flag(user.country)" alt="" />
+              </span>
+              <span>
+                Joined <b>{{ formatDate(user.createdAt) }}</b>
+              </span>
+              <span>
+                <b>{{ user.albumsUploaded.length }}</b> {{ user.albumsUploaded.length === 1 ? "album" : "albums" }}
+              </span>
+              <span>
+                met <b>{{ user.met.length }}</b> people
+              </span>
+            </div>
+            <p v-html="sanitize(user.bio)"></p>
+          </div>
 
           <div class="avatar-wrap">
             <img
@@ -94,25 +115,6 @@ watchEffect(() => {
               @error="(e: any) => e.target.classList.add('image-error')"
             />
           </div>
-        </div>
-
-        <div class="user-information">
-          <h1>{{ user.displayName ?? user.username }}</h1>
-          <div class="user-info-meta">
-            <span v-if="user.country" :data-title-top="countries[user.country].name">
-              <img class="flag" :src="flag(user.country)" alt="" />
-            </span>
-            <span>
-              Joined <b>{{ formatDate(user.createdAt) }}</b>
-            </span>
-            <span>
-              <b>{{ user.albumsUploaded.length }}</b> {{ user.albumsUploaded.length === 1 ? "album" : "albums" }}
-            </span>
-            <span>
-              met <b>{{ user.met.length }}</b> people
-            </span>
-          </div>
-          <p v-html="sanitize(user.bio)"></p>
         </div>
       </div>
       <div class="user-albums">

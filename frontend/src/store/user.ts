@@ -1,4 +1,4 @@
-import { isObject } from "lodash"
+import { isNil } from "lodash"
 import { defineStore } from "pinia"
 import { get, post, put } from "../js/fetch"
 import { useToast } from "./toast"
@@ -57,6 +57,8 @@ export const useUser = defineStore("user", {
 
       return post("/api/login/", credentials)
         .then(async (res) => {
+          if (isNil(res)) throw { message: "Unexpected issue. Please clear site data, reload and try again." }
+
           localStorage.setItem("bearer_token", res.bearerToken)
 
           await this.fetchUser(res.username)
