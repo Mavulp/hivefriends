@@ -32,6 +32,7 @@
       margin: auto;
       position: relative;
       z-index: 5;
+      max-width: 512px;
 
       .loading-overlay {
         display: block;

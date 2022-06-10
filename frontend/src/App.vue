@@ -21,6 +21,7 @@ const toast = useToast()
 const islogged = computed(() => user.logged)
 const isInit = ref(false)
 const isPhone = useMediaQuery("(max-width: 512px)")
+const root = document.documentElement
 
 watch(
   islogged,
@@ -63,6 +64,21 @@ onMounted(() => {
     }
   })
 })
+
+watch(
+  () => route.fullPath,
+  () => {
+    // If route is NOT one of these, change highlight color to default users
+
+    if (
+      !["AlbumDetail", "PublicAlbumDetail", "ImageDetail", "PublicImageDetail", "UserProfile"].includes(
+        String(route.name)
+      )
+    ) {
+      root.style.setProperty("--color-highlight", user.user.accentColor)
+    }
+  }
+)
 </script>
 
 <template>

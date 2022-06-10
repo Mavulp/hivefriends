@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onBeforeMount, computed, reactive, ref, watchEffect } from "vue"
-import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router"
+import { onBeforeMount, computed, reactive, ref, watchEffect, onMounted } from "vue"
+import { useRoute, useRouter } from "vue-router"
 import { useAlbums, Album, imageUrl, Image } from "../../store/album"
 import { useLoading } from "../../store/loading"
 import { isEmpty } from "lodash"
