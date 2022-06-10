@@ -100,7 +100,7 @@ onBeforeMount(async () => {
           <LoadingSpin class="dark center-parent" />
         </div>
 
-        <img src="/Sharp.png" alt=" " />
+        <img src="/Sharp2.png" alt=" " />
         <InputText :error="errors.username" v-model:value="form.username" label="Username" :placeholder="placeholder" />
         <InputText
           :error="errors.password"

@@ -29,7 +29,7 @@ export interface UserSettings {
   accentColor: string
   featredAlbumKey: string
   // private: boolean
-  colorTheme: "light-theme" | "dark-theme" | "dark-contrast"
+  colorTheme: "light-theme" | "dark-normal" | "dark-contrast"
 }
 
 export interface State {
