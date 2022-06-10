@@ -96,7 +96,7 @@ async function _handleResponse(response: Response) {
       return Promise.reject({
         message: "Unexpected issue. Please clear site data, reload and try again."
       })
-    })
+    }, 50)
   }
 
   if (response.status !== 200) {
