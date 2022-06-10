@@ -251,7 +251,7 @@ export const useAlbums = defineStore("album", {
   }
 })
 
-export function imageUrl(key: string, size: string = "original") {
+export function imageUrl(key: string, size: string = "full") {
   if (!key) return ""
-  return rootUrl + `/data/image/${key}/${size}.png`
+  return rootUrl + `/data/image/${key}/${size}.jpg`
 }
