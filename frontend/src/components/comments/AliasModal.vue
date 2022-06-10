@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, reactive, computed, onBeforeMount } from "vue"
+import { ref, computed, onBeforeMount } from "vue"
 import { useLoading } from "../../store/loading"
 import { get } from "../../js/fetch"
 import { isValidImage } from "../../js/utils"
+import { useClipboard } from "@vueuse/core"
 
 import Search from "../form/Search.vue"
-import { useClipboard } from "@vueuse/core"
+import LoadingSpin from "../loading/LoadingSpin.vue"
 
 const emit = defineEmits<{
   (e: "close"): void
@@ -71,39 +72,44 @@ function emitInsert(name: string) {
       </div>
 
       <div class="alias-list">
-        <template v-for="alias in filterList" :key="alias.name">
-          <template v-if="alias.name && alias.content">
-            <div class="alias-item" :class="[isValidImage(alias.content) ? 'alias-link' : 'alias-text']">
-              <div class="alias-item-header">
-                <div class="alias-image">
-                  <img :src="alias.content" alt="" load="lazy" lazyload="true" />
-                  <span class="material-icons">&#xe262; </span>
+        <template v-if="getLoading('aliases')">
+          <LoadingSpin class="dark small center-parent" />
+        </template>
+        <template v-else>
+          <template v-for="alias in filterList" :key="alias.name">
+            <template v-if="alias.name && alias.content">
+              <div class="alias-item" :class="[isValidImage(alias.content) ? 'alias-link' : 'alias-text']">
+                <div class="alias-item-header">
+                  <div class="alias-image">
+                    <img :src="alias.content" alt="" load="lazy" lazyload="true" />
+                    <span class="material-icons">&#xe262; </span>
+                  </div>
+
+                  <p><b>!</b>{{ alias.name }}</p>
+
+                  <button
+                    class="hover-bubble bubble-info"
+                    data-title-top="Insert into comment"
+                    @click="emitInsert(alias.name)"
+                  >
+                    <span class="material-icons"> &#xe745; </span>
+                  </button>
+
+                  <button
+                    class="hover-bubble bubble-orange"
+                    data-title-top="Copy alias"
+                    v-if="isSupported"
+                    @click="copy(`!${alias.name}`)"
+                  >
+                    <span class="material-icons"> &#xe14d; </span>
+                  </button>
                 </div>
 
-                <p><b>!</b>{{ alias.name }}</p>
-
-                <button
-                  class="hover-bubble bubble-info"
-                  data-title-top="Insert into comment"
-                  @click="emitInsert(alias.name)"
-                >
-                  <span class="material-icons"> &#xe745; </span>
-                </button>
-
-                <button
-                  class="hover-bubble bubble-orange"
-                  data-title-top="Copy alias"
-                  v-if="isSupported"
-                  @click="copy(`!${alias.name}`)"
-                >
-                  <span class="material-icons"> &#xe14d; </span>
-                </button>
+                <p class="alias-text-content">
+                  {{ alias.content }}
+                </p>
               </div>
-
-              <p class="alias-text-content">
-                {{ alias.content }}
-              </p>
-            </div>
+            </template>
           </template>
         </template>
       </div>

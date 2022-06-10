@@ -24,6 +24,9 @@
       }
 
       .alias-list {
+        min-height: 80px;
+        position: relative;
+
         .alias-item {
           border-bottom: 1px solid rgb(var(--color-border-light));
 
