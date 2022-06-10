@@ -5,6 +5,7 @@ use axum::{
 };
 use rusqlite::ToSql;
 use serde::{Deserialize, Serialize};
+use tokio::fs;
 
 use std::sync::Arc;
 
@@ -43,6 +44,38 @@ pub(super) async fn put<D: SqliteDatabase>(
 ) -> Result<Json<&'static str>, Error> {
     let Json(request) = request?;
     let conn = state.pool.get().await.context("Failed to get connection")?;
+
+    if let Some(new_name) = &request.file_name {
+        let mut image_path = state.data_path.clone();
+        image_path.push(&image_key);
+        image_path.push("original");
+
+        while let Some(old_file) = fs::read_dir(&image_path)
+            .await
+            .context("Failed to read original dir")?
+            .next_entry()
+            .await
+            .context("Failed to read entry from original dir")?
+        {
+            if !old_file
+                .file_type()
+                .await
+                .context("Failed to check file type")?
+                .is_file()
+            {
+                continue;
+            }
+
+            let mut old_path = image_path.clone();
+            old_path.push(old_file.file_name());
+            let mut new_path = image_path.clone();
+            new_path.push(&new_name);
+
+            fs::rename(old_path, new_path)
+                .await
+                .context("Failed to rename original file")?;
+        }
+    }
 
     let update_str = request.update_str();
     if !update_str.is_empty() {

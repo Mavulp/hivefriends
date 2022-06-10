@@ -2,7 +2,7 @@ CREATE TABLE images (
     key TEXT PRIMARY KEY NOT NULL, -- used for filesystem path and in API responses
 
     -- metadata
-    file_name TEXT NULL,
+    file_name TEXT NOT NULL,
     size_bytes INTEGER NOT NULL,
     taken_at INTEGER NULL, -- unix ts
     location_latitude TEXT NULL, -- gps data

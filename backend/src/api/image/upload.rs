@@ -1,3 +1,4 @@
+use anyhow::Context;
 use axum::{
     extract::{
         multipart::MultipartRejection, rejection::ContentLengthLimitRejection, ContentLengthLimit,
@@ -66,7 +67,10 @@ async fn upload_image(
         .await?
         .ok_or(ImageCreationError::NoImage)?;
 
-    let file_name = field.file_name().map(|s| s.to_owned());
+    let file_name = field
+        .file_name()
+        .map(|s| s.to_owned())
+        .unwrap_or_else(|| String::from("unknown"));
     let data = field.bytes().await?;
     let size_bytes = data.len() as u64;
 
@@ -112,6 +116,7 @@ async fn upload_image(
     store_image(
         state.data_path.clone(),
         &image_key,
+        &metadata.file_name,
         &data,
         &orientation.unwrap_or(ExifOrientation::Normal),
     )
@@ -234,6 +239,7 @@ fn generate_or_symlink_image(
 async fn store_image(
     directory: PathBuf,
     key: &str,
+    file_name: &str,
     data: &[u8],
     orientation: &ExifOrientation,
 ) -> anyhow::Result<()> {
@@ -249,15 +255,21 @@ async fn store_image(
     let mut image_dir = directory;
     image_dir.push(key);
 
-    fs::create_dir_all(&image_dir).await?;
+    let mut original_path = image_dir.clone();
+    original_path.push("original");
+
+    fs::create_dir_all(&original_path).await?;
+    original_path.push(file_name);
+
+    fs::write(original_path, &data).await.context("Failed to write original file")?;
 
     let mut buffer = Vec::new();
 
     for (image, name) in &[
-        (image, "original.png"),
-        (large, "large.png"),
-        (medium, "medium.png"),
-        (tiny, "tiny.png"),
+        (image, "full.jpg"),
+        (large, "large.jpg"),
+        (medium, "medium.jpg"),
+        (tiny, "tiny.jpg"),
     ] {
         let mut path = image_dir.clone();
         path.push(name);
@@ -266,11 +278,11 @@ async fn store_image(
             ImageKind::Generated(image) => {
                 buffer.clear();
                 let mut cursor = Cursor::new(&mut buffer);
-                image.write_to(&mut cursor, image::ImageOutputFormat::Png)?;
-                fs::write(path, &buffer).await?;
+                image.write_to(&mut cursor, image::ImageOutputFormat::Jpeg(100))?;
+                fs::write(path, &buffer).await.context("Failed to write jpg")?;
             }
             ImageKind::Symlink(_) => {
-                symlink("original.png", path)?;
+                symlink("full.jpg", path)?;
             }
         }
     }

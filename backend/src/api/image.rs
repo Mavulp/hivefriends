@@ -25,7 +25,7 @@ pub fn api_route() -> Router {
 pub(super) struct ImageMetadata {
     key: String,
 
-    file_name: Option<String>,
+    file_name: String,
     size_bytes: u64,
     taken_at: Option<i64>,
     location: Option<Location>,
@@ -84,7 +84,7 @@ impl ImageMetadata {
 pub struct DbImageMetadata {
     pub key: String,
 
-    pub file_name: Option<String>,
+    pub file_name: String,
     pub size_bytes: u64,
     pub taken_at: Option<i64>,
     pub location_latitude: Option<String>,
