@@ -1,5 +1,7 @@
 img {
   &.user-image {
+    position: relative;
+
     &.image-error {
       &:before {
         display: block;
