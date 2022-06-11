@@ -41,7 +41,8 @@ pub(super) async fn post(
 
     let field = multipart
         .next_field()
-        .await.context("Failed to read multipart field")?
+        .await
+        .context("Failed to read multipart field")?
         .ok_or(Error::NoImage)?;
 
     let file_name = field
@@ -76,18 +77,23 @@ pub(super) async fn post(
 
     let mut bufreader = std::io::BufReader::new(Cursor::new(&*data));
     let exifreader = exif::Reader::new();
-    if let Ok(exif) = exifreader.read_from_container(&mut bufreader) {
-        populate_metadata_from_exif(&mut metadata, &exif);
-        orientation = exif
-            .get_field(exif::Tag::Orientation, exif::In::PRIMARY)
-            .and_then(|f| {
-                if let exif::Value::Short(v) = &f.value {
-                    ExifOrientation::try_from(v[0]).ok()
-                } else {
-                    warn!("Unexpected format of camera model exif field");
-                    None
-                }
-            });
+    match exifreader.read_from_container(&mut bufreader) {
+        Ok(exif) => {
+            populate_metadata_from_exif(&mut metadata, &exif);
+            orientation = exif
+                .get_field(exif::Tag::Orientation, exif::In::PRIMARY)
+                .and_then(|f| {
+                    if let exif::Value::Short(v) = &f.value {
+                        ExifOrientation::try_from(v[0]).ok()
+                    } else {
+                        warn!("Unexpected format of camera model exif field");
+                        None
+                    }
+                });
+        }
+        Err(e) => {
+            warn!("Failed to read EXIF metadata: {}", e);
+        }
     }
 
     store_image(
@@ -100,7 +106,11 @@ pub(super) async fn post(
     .await?;
 
     let cmetadata = metadata.clone();
-    let conn = state.pool.get().await.context("Failed getting DB connection")?;
+    let conn = state
+        .pool
+        .get()
+        .await
+        .context("Failed getting DB connection")?;
     conn.interact(move |conn| super::insert(&cmetadata, conn))
         .await
         .unwrap()?;
@@ -235,7 +245,9 @@ async fn store_image(
     let mut original_path = image_dir.clone();
     original_path.push("original");
 
-    fs::create_dir_all(&original_path).await.context("Failed to create image directory")?;
+    fs::create_dir_all(&original_path)
+        .await
+        .context("Failed to create image directory")?;
     original_path.push(file_name);
 
     fs::write(original_path, &data)
