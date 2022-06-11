@@ -62,18 +62,21 @@ pub(super) async fn put<D: SqliteDatabase>(
         image_path.push(&image_key);
         image_path.push("original");
 
-        while let Some(old_file) = fs::read_dir(&image_path)
+        let mut entries = fs::read_dir(&image_path)
             .await
-            .context("Failed to read original dir")?
+            .context("Failed to read original dir")?;
+
+        while let Some(old_file) = entries
             .next_entry()
             .await
             .context("Failed to read entry from original dir")?
         {
-            if !old_file
-                .file_type()
-                .await
-                .context("Failed to check file type")?
-                .is_file()
+            if old_file.file_name().to_str() == Some(new_name)
+                || !old_file
+                    .file_type()
+                    .await
+                    .context("Failed to check file type")?
+                    .is_file()
             {
                 continue;
             }
