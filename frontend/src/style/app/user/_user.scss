@@ -156,6 +156,8 @@
     }
   }
 
+  // .hi-user-profile .user-albums .user-albums-list
+
   .user-albums {
     width: 100%;
     margin: 0 auto;
@@ -186,7 +188,8 @@
       display: grid;
       width: 100%;
       gap: 32px;
-      grid-template-columns: repeat(auto-fit, minmax(416px, 1fr));
+      // grid-template-columns: repeat(auto-fit, minmax(416px, 1fr));
+      grid-template-columns: 1fr 1fr;
 
       .album-list-item {
         margin-bottom: 0;
