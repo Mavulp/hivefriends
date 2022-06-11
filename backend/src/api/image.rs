@@ -8,6 +8,7 @@ use rusqlite::{params, Connection, OptionalExtension};
 use serde::{Deserialize, Serialize};
 use serde_rusqlite::{from_row, to_params_named};
 
+mod get_all;
 mod get_by_key;
 mod orientation;
 mod update_metadata;
@@ -21,6 +22,7 @@ pub fn api_route() -> Router {
         .route("/", post(upload::post))
         .route("/:key", get(get_by_key::get))
         .route("/:key", put(update_metadata::put::<FileDb>))
+        .route("/", get(get_all::get_all_images::<FileDb>))
 }
 
 #[derive(Debug, Serialize, Deserialize)]
