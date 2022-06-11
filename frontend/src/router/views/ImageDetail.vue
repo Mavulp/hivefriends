@@ -121,7 +121,7 @@ watch(
       imageDetailUrl.value = null
 
       let img = new Image()
-      img.src = imageUrl(key, "large")
+      img.src = imageUrl(key)
       img.onload = () => {
         imageDetailUrl.value = img.src
       }
