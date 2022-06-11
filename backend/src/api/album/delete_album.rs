@@ -16,14 +16,16 @@ pub(super) async fn delete<D: SqliteDatabase>(
 ) -> Result<Json<()>, Error> {
     let conn = state.pool.get().await.context("Failed to get connection")?;
 
-    conn.interact(move |conn| if super::is_owner(&album_key, &user, conn)? {
+    conn.interact(move |conn| {
+        if super::is_owner(&album_key, &user, conn)? {
             info!("Deleting album {album_key}");
             conn.execute("DELETE FROM albums WHERE key = ?1", params![album_key])
                 .context("Failed to delete album")?;
 
             Ok(Json(()))
-    } else {
-        Err(Error::Unathorized)
+        } else {
+            Err(Error::Unathorized)
+        }
     })
     .await
 }
