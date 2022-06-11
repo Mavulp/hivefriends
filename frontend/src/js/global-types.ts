@@ -3,3 +3,8 @@ export type FetchError = {
   status?: number
   message: string
 }
+
+export type Social = {
+  name?: string
+  url: string
+}

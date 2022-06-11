@@ -2,6 +2,7 @@
 import LoadingSpin from "../loading/LoadingSpin.vue"
 import AlbumListItem from "../albums/AlbumListItem.vue"
 import Button from "../Button.vue"
+import SocialLink from "./SocialLink.vue"
 
 import { computed, onBeforeMount, onBeforeUnmount, onMounted, ref, watchEffect } from "vue"
 import { useUser, User } from "../../store/user"
@@ -12,6 +13,7 @@ import { useLoading } from "../../store/loading"
 import { useCssVar } from "@vueuse/core"
 import countries from "../../js/countries"
 import { useBread } from "../../store/bread"
+import { Social } from "../../js/global-types"
 
 const { addLoading, delLoading, getLoading } = useLoading()
 const users = useUser()
@@ -64,6 +66,33 @@ watchEffect(() => {
     color.value = user.value.accentColor ?? "128,128,128"
   }
 })
+
+/**
+ * Social Links
+ */
+
+const social: Array<Social> = [
+  {
+    name: "Twitter",
+    url: "https://twitter.com/dolanske"
+  },
+  {
+    name: "Steam",
+    url: "https://steamcommunity.com/id/dolanske/"
+  },
+  {
+    name: "Github",
+    url: "https://github.com/dolanske"
+  },
+  {
+    name: "Facebook",
+    url: "https://www.facebook.com/dolanske"
+  },
+  {
+    name: "Phone",
+    url: "tel:420734171734"
+  }
+]
 </script>
 
 <template>
@@ -78,6 +107,10 @@ watchEffect(() => {
     <template v-else>
       <div class="user-profile-upper" :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]">
         <div class="hi-user-banner">
+          <div class="social-wrap" :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]">
+            <SocialLink v-for="link in social" :key="link.name" :link="link" />
+          </div>
+
           <div
             class="banner"
             :style="{

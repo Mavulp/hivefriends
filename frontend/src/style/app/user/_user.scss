@@ -28,6 +28,15 @@
       height: 456px;
       position: relative;
 
+      .social-wrap {
+        @include flex($gap: 12px, $justify: flex-left);
+        position: absolute;
+        top: 32px;
+        left: 32px;
+        right: 32px;
+        z-index: 10;
+      }
+
       .banner {
         display: block;
         width: 100%;
@@ -202,5 +211,43 @@
         }
       }
     }
+  }
+}
+
+.social-wrap {
+  &.black .social-link {
+    color: #191716 !important;
+  }
+
+  &.white .social-link {
+    color: #fff !important;
+
+    img {
+      filter: invert(1);
+    }
+  }
+}
+
+.social-link {
+  @include t(0.1s);
+  @include radius(4px);
+  @include font(600);
+  @include flex($gap: 8px);
+  padding: 6px 12px;
+  width: auto;
+  background-color: rgba(var(--color-highlight), 0.6);
+
+  &:hover {
+    background-color: rgba(var(--color-highlight), 1);
+  }
+
+  font-size: 1.4rem;
+
+  img {
+    display: block;
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    object-position: center;
   }
 }
