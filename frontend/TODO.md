@@ -1,9 +1,3 @@
-# Todo
-
-- Delete Album
-  - From album editing
-  - from album upload draft list
-
 # Post Launch TODO
 
 - [ ] Image detail
