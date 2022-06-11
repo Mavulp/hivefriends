@@ -10,7 +10,7 @@ import DraftItem from "../../components/upload/DraftItem.vue"
 
 import { onMounted, reactive, ref, computed, onBeforeMount, nextTick } from "vue"
 import { upload } from "../../js/fetch"
-import { useFormValidation, required } from "../../js/validation"
+import { useFormValidation, required, maxLength } from "../../js/validation"
 import { useAlbums, NewAlbum, imageUrl, Album, ImageFile } from "../../store/album"
 import { clone, isEmpty } from "lodash"
 import { useUser, User } from "../../store/user"
@@ -148,7 +148,8 @@ function delImage(index: number) {
 }
 
 const rules = computed(() => ({
-  title: { required }
+  title: { required },
+  description: { maxLength: maxLength(600) }
 }))
 
 const { validate, errors } = useFormValidation(album, rules)
