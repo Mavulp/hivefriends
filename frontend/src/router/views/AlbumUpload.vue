@@ -40,7 +40,8 @@ const album = reactive<NewAlbum>({
   draft: false
 })
 
-const drafts = ref<Array<Album>>([])
+// const drafts = ref<Array<Album>>([])
+const drafts = computed<Array<Album>>(() => store.drafts)
 
 // If album was successfuly generated, this will get populated
 const albumKey = ref()
@@ -80,7 +81,7 @@ onBeforeMount(async () => {
 
   addLoading("album-upload")
   await user.fetchUsers()
-  drafts.value = await store.fetchAlbums(true)
+  await store.fetchDrafts()
 
   setTimeout(() => {
     delLoading("album-upload")
@@ -152,7 +153,7 @@ const rules = computed(() => ({
   description: { maxLength: maxLength(600) }
 }))
 
-const { validate, errors } = useFormValidation(album, rules)
+const { validate, errors } = useFormValidation(album, rules, { autoclear: true })
 
 async function submit() {
   validate().then(async () => {
@@ -279,7 +280,12 @@ function dragCompare() {
         <h3>Create album</h3>
 
         <InputText v-model:value="album.title" placeholder="Album name" label="Title" required :error="errors.title" />
-        <InputTextarea v-model:value="album.description" placeholder="Album description" label="Description" />
+        <InputTextarea
+          v-model:value="album.description"
+          placeholder="Album description"
+          label="Description"
+          :error="errors.description"
+        />
 
         <h6>Event Dates</h6>
         <div class="form-date" :class="{ single: singleDate }">
