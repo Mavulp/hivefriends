@@ -220,7 +220,7 @@ async fn store_image(
     data: &[u8],
     orientation: &ExifOrientation,
 ) -> Result<(), Error> {
-    let image = image::load_from_memory(data).context("Failed to decode image")?;
+    let image = image::load_from_memory(data).map_err(|e| Error::ImageError(e))?;
     let image = orientation.apply_to_image(image);
     let (width, height) = (image.width(), image.height());
     let image = ImageKind::Generated(Arc::new(image));
