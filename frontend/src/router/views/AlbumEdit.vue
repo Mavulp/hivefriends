@@ -77,7 +77,8 @@ function onSubmitHandler(e: any, fromField: boolean = false) {
 
 async function uploadFiles(_files: any) {
   let i = files.values.length
-  rawFileLength.value = _files.length
+
+  rawFileLength.value += _files.length
 
   for (const file of _files) {
     if (!file) continue
