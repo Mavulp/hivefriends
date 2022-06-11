@@ -10,7 +10,7 @@ use tokio::fs;
 use std::sync::Arc;
 
 use crate::api::{auth::Authorize, error::Error};
-use crate::util::non_empty_str;
+use crate::util::{check_length, non_empty_str};
 use crate::{AppState, DbInteractable, SqliteDatabase};
 
 use super::Location;
@@ -44,6 +44,18 @@ pub(super) async fn put<D: SqliteDatabase>(
 ) -> Result<Json<&'static str>, Error> {
     let Json(request) = request?;
     let conn = state.pool.get().await.context("Failed to get connection")?;
+
+    check_length(
+        "fileName",
+        request.file_name.as_deref(),
+        super::MAXIMUM_FILE_NAME_LENGTH,
+    )?;
+
+    check_length(
+        "description",
+        request.description.as_deref(),
+        super::MAXIMUM_DESCRIPTION_LENGTH,
+    )?;
 
     if let Some(new_name) = &request.file_name {
         let mut image_path = state.data_path.clone();

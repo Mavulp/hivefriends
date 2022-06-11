@@ -6,7 +6,7 @@ use serde::Deserialize;
 use std::sync::Arc;
 
 use crate::api::{auth::Authorize, error::Error, image::image_exists, user::user_exists};
-use crate::util::non_empty_str;
+use crate::util::{check_length, non_empty_str};
 use crate::{AppState, DbInteractable, SqliteDatabase};
 
 use super::Timeframe;
@@ -37,6 +37,18 @@ pub(super) async fn put<D: SqliteDatabase>(
 ) -> Result<Json<&'static str>, Error> {
     let Json(request) = request?;
     let conn = state.pool.get().await.context("Failed to get connection")?;
+
+    check_length(
+        "title",
+        request.title.as_deref(),
+        super::MAXIMUM_TITLE_LENGTH,
+    )?;
+
+    check_length(
+        "description",
+        request.description.as_deref(),
+        super::MAXIMUM_DESCRIPTION_LENGTH,
+    )?;
 
     conn.interact(move |conn| {
         let tx = conn.transaction().context("Failed to create transaction")?;

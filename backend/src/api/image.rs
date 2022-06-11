@@ -13,6 +13,9 @@ mod orientation;
 mod update_metadata;
 mod upload;
 
+const MAXIMUM_FILE_NAME_LENGTH: u64 = 96;
+const MAXIMUM_DESCRIPTION_LENGTH: u64 = 600;
+
 pub fn api_route() -> Router {
     Router::new()
         .route("/", post(upload::post))

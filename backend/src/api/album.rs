@@ -23,6 +23,9 @@ mod get_by_share_token;
 mod get_filters;
 mod update;
 
+const MAXIMUM_TITLE_LENGTH: u64 = 96;
+const MAXIMUM_DESCRIPTION_LENGTH: u64 = 600;
+
 pub fn api_route() -> Router {
     Router::new()
         .route("/", post(create::post::<FileDb>))
