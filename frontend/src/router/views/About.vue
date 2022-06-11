@@ -61,8 +61,8 @@ onBeforeMount(() => {
 
       <p>
         Running all the servers and storage adds to cost each month. We do all the financing out of our own pockets. If
-        you want to support us, feel free to donate a small amount to our
-        <a href="https://ko-fi.com/hivecom">ko-fi</a> or join our patreon.
+        you want to support us, feel free to donate a small amount <br />
+        to our <a href="https://ko-fi.com/hivecom">ko-fi</a> or join our patreon.
       </p>
 
       <a target="_blank" href="https://www.patreon.com/hivecom" class="link-out">

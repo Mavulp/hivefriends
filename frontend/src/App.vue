@@ -30,7 +30,9 @@ watch(
       addLoading("app")
 
       Promise.all([user.fetchUsers(), user.fetchSettings()])
-        .then(() => {
+        .then(() => delLoading("app"))
+        .catch((e) => toast.add(e.message, "error"))
+        .finally(() => {
           const theme = user.settings.colorTheme ?? "light-theme"
           const r = document.querySelector(":root")
           if (r) {
@@ -38,14 +40,12 @@ watch(
             r.classList.add(theme)
           }
 
-          delLoading("app")
-        })
-        .catch((e) => {
-          toast.add(e.message, "error")
-        })
-        .finally(() => {
           isInit.value = true
         })
+    }
+
+    if (!val) {
+      isInit.value = false
     }
   },
   { immediate: true }
