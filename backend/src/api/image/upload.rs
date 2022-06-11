@@ -261,7 +261,9 @@ async fn store_image(
     fs::create_dir_all(&original_path).await?;
     original_path.push(file_name);
 
-    fs::write(original_path, &data).await.context("Failed to write original file")?;
+    fs::write(original_path, &data)
+        .await
+        .context("Failed to write original file")?;
 
     let mut buffer = Vec::new();
 
@@ -279,7 +281,9 @@ async fn store_image(
                 buffer.clear();
                 let mut cursor = Cursor::new(&mut buffer);
                 image.write_to(&mut cursor, image::ImageOutputFormat::Jpeg(100))?;
-                fs::write(path, &buffer).await.context("Failed to write jpg")?;
+                fs::write(path, &buffer)
+                    .await
+                    .context("Failed to write jpg")?;
             }
             ImageKind::Symlink(_) => {
                 symlink("full.jpg", path)?;

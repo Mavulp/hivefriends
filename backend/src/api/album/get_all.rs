@@ -1,7 +1,6 @@
 use anyhow::Context;
 use axum::{extract::Query, Extension, Json};
 use rusqlite::params;
-use serde::Serialize;
 use serde_rusqlite::from_row;
 
 use std::sync::Arc;
@@ -9,27 +8,13 @@ use std::sync::Arc;
 use crate::api::{auth::Authorize, error::Error};
 use crate::{AppState, DbInteractable, SqliteDatabase};
 
-use super::{apply_filters, AlbumFilters, DbAlbum, Timeframe};
-
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub(super) struct AlbumResponse {
-    key: String,
-    title: String,
-    description: Option<String>,
-    cover_key: String,
-    author: String,
-    draft: bool,
-    timeframe: Timeframe,
-    created_at: u64,
-    tagged_users: Vec<String>,
-}
+use super::{apply_filters, AlbumFilters, AlbumMetadata, DbAlbum, Timeframe};
 
 pub(super) async fn get<D: SqliteDatabase>(
     Authorize(username): Authorize,
     Query(filter): Query<AlbumFilters>,
     Extension(state): Extension<Arc<AppState<D>>>,
-) -> Result<Json<Vec<AlbumResponse>>, Error> {
+) -> Result<Json<Vec<AlbumMetadata>>, Error> {
     let conn = state.pool.get().await.context("Failed to get connection")?;
 
     conn.interact(move |conn| {
@@ -79,7 +64,7 @@ pub(super) async fn get<D: SqliteDatabase>(
                 .collect::<Result<Vec<String>, _>>()
                 .context("Failed to collect tagged users")?;
 
-            albums.push(AlbumResponse {
+            albums.push(AlbumMetadata {
                 key: db_album.key,
                 title: db_album.title,
                 description: db_album.description,
