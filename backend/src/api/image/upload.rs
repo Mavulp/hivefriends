@@ -29,49 +29,26 @@ pub(super) async fn post(
         ContentLengthLimit<Multipart, { 25 * MB }>,
         ContentLengthLimitRejection<MultipartRejection>,
     >,
-    Authorize(username): Authorize,
+    Authorize(uploader): Authorize,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<ImageMetadata>, Error> {
-    let multipart = multipart?.0;
+    let mut multipart = multipart?.0;
 
-    match upload_image(multipart, username, &state).await {
-        Ok(response) => Ok(Json(response)),
-        Err(e) if e.is::<ImageCreationError>() => {
-            match e.downcast_ref::<ImageCreationError>().unwrap() {
-                ImageCreationError::NoImage => Err(Error::InvalidArguments(e)),
-                ImageCreationError::ImageError(_) => Err(Error::InvalidArguments(e)),
-            }
-        }
-        Err(e) => Err(Error::InternalError(e)),
-    }
-}
-
-#[derive(Debug, thiserror::Error)]
-enum ImageCreationError {
-    #[error("Missing image data in multipart message")]
-    NoImage,
-
-    #[error("Failed to process image: {0}")]
-    ImageError(#[from] image::ImageError),
-}
-
-async fn upload_image(
-    mut multipart: Multipart,
-    uploader: String,
-    state: &Arc<AppState>,
-) -> anyhow::Result<ImageMetadata> {
-    let uploaded_at = SystemTime::UNIX_EPOCH.elapsed()?.as_secs();
+    let uploaded_at = SystemTime::UNIX_EPOCH
+        .elapsed()
+        .context("Failed to get timestamp")?
+        .as_secs();
 
     let field = multipart
         .next_field()
-        .await?
-        .ok_or(ImageCreationError::NoImage)?;
+        .await.context("Failed to read multipart field")?
+        .ok_or(Error::NoImage)?;
 
     let file_name = field
         .file_name()
         .map(|s| s.to_owned())
         .unwrap_or_else(|| String::from("unknown"));
-    let data = field.bytes().await?;
+    let data = field.bytes().await.context("Failed to get image data")?;
     let size_bytes = data.len() as u64;
 
     let key = blob_uuid::random_blob();
@@ -123,12 +100,12 @@ async fn upload_image(
     .await?;
 
     let cmetadata = metadata.clone();
-    let conn = state.pool.get().await?;
+    let conn = state.pool.get().await.context("Failed getting DB connection")?;
     conn.interact(move |conn| super::insert(&cmetadata, conn))
         .await
         .unwrap()?;
 
-    Ok(ImageMetadata::from_db(metadata))
+    Ok(Json(ImageMetadata::from_db(metadata)))
 }
 
 fn populate_metadata_from_exif(metadata: &mut DbImageMetadata, exif: &exif::Exif) {
@@ -242,8 +219,8 @@ async fn store_image(
     file_name: &str,
     data: &[u8],
     orientation: &ExifOrientation,
-) -> anyhow::Result<()> {
-    let image = image::load_from_memory(data)?;
+) -> Result<(), Error> {
+    let image = image::load_from_memory(data).context("Failed to decode image")?;
     let image = orientation.apply_to_image(image);
     let (width, height) = (image.width(), image.height());
     let image = ImageKind::Generated(Arc::new(image));
@@ -258,7 +235,7 @@ async fn store_image(
     let mut original_path = image_dir.clone();
     original_path.push("original");
 
-    fs::create_dir_all(&original_path).await?;
+    fs::create_dir_all(&original_path).await.context("Failed to create image directory")?;
     original_path.push(file_name);
 
     fs::write(original_path, &data)
@@ -286,7 +263,7 @@ async fn store_image(
                     .context("Failed to write jpg")?;
             }
             ImageKind::Symlink(_) => {
-                symlink("full.jpg", path)?;
+                symlink("full.jpg", path).context("Failed to create symlink")?;
             }
         }
     }

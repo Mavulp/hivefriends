@@ -19,6 +19,12 @@ pub enum Error {
     #[error("Unathorized")]
     Unathorized,
 
+    #[error("Missing image data in multipart message")]
+    NoImage,
+
+    #[error("Failed to process image: {0}")]
+    ImageError(#[from] image::ImageError),
+
     #[error("Comment does not belong to specified image")]
     WrongImage,
 
@@ -77,6 +83,8 @@ impl IntoResponse for Error {
             }
             Error::InvalidCoverKey
             | Error::InvalidKey
+            | Error::NoImage
+            | Error::ImageError(_)
             | Error::InvalidTimeframe
             | Error::InvalidUsername
             | Error::WrongImage
