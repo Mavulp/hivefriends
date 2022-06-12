@@ -42,13 +42,13 @@ pub(super) struct ImageMetadata {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub(super) struct Image {
-    key: String,
-    description: Option<String>,
-    uploader: String,
-    uploaded_at: u64,
+    pub key: String,
+    pub description: Option<String>,
+    pub uploader: String,
+    pub uploaded_at: u64,
 
     #[serde(flatten)]
-    metadata: ImageMetadata,
+    pub metadata: ImageMetadata,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

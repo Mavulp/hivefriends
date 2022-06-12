@@ -51,6 +51,32 @@ pub struct Timeframe {
     to: Option<i64>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub(super) struct AlbumImage {
+    pub comment_count: u32,
+
+    #[serde(flatten)]
+    pub image: Image,
+}
+
+impl From<DbAlbumImage> for AlbumImage {
+    fn from(meta: DbAlbumImage) -> Self {
+        AlbumImage {
+            comment_count: meta.comment_count,
+            image: Image::from_db(meta.image),
+        }
+    }
+}
+
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+pub(super) struct DbAlbumImage {
+    comment_count: u32,
+
+    #[serde(flatten)]
+    image: DbImage,
+}
+
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub(super) struct Album {
@@ -62,7 +88,7 @@ pub(super) struct Album {
     draft: bool,
     timeframe: Timeframe,
     created_at: u64,
-    images: Vec<Image>,
+    images: Vec<AlbumImage>,
     tagged_users: Vec<String>,
 }
 
@@ -158,6 +184,7 @@ pub(super) fn get_album(album_key: &str, conn: &Connection) -> anyhow::Result<Op
             .prepare(
                 "SELECT \
                     i.key, \
+                    i.description, \
                     i.uploader, \
                     i.uploaded_at, \
                     i.file_name, \
@@ -169,16 +196,19 @@ pub(super) fn get_album(album_key: &str, conn: &Connection) -> anyhow::Result<Op
                     i.camera_model, \
                     i.exposure_time, \
                     i.f_number, \
-                    i.focal_length \
+                    i.focal_length, \
+                    COUNT(c.id) AS comment_count \
                 FROM images i \
                 INNER JOIN album_image_associations aia ON aia.image_key=i.key \
-                WHERE aia.album_key=?1
+                LEFT JOIN comments c ON c.image_key=i.key \
+                WHERE aia.album_key=?1 \
+                GROUP BY i.key \
                 ORDER BY aia.idx",
             )
             .context("Failed to prepare statement for image query")?;
         let image_iter = stmt
             .query_map(params![db_album.key], |row| {
-                Ok(Image::from_db(from_row::<DbImage>(row).unwrap()))
+                Ok(AlbumImage::from(from_row::<DbAlbumImage>(row).unwrap()))
             })
             .context("Failed to query images for album")?;
 
