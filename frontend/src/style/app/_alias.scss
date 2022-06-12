@@ -1,118 +1,111 @@
-.modal .modal-wrap {
-  &.modal-alias {
-    padding: 40px;
-    width: 848px;
-    transform: translateX(-50%);
-    top: 40px;
-    max-height: calc(100vh - 80px);
-    overflow-y: auto;
-    scrollbar-width: 4px;
-    scrollbar-width: thin;
+.alias-picker {
+  display: block;
+  padding: 16px;
+  position: absolute;
+  right: 32px;
+  bottom: 190px;
+  width: 640px;
+  height: 512px;
+  overflow-y: auto;
+  scrollbar-width: 4px;
+  scrollbar-width: thin;
+  background-color: rgb(var(--color-background-dark));
+  z-index: 100;
+  border: 1px solid rgb(var(--color-border-light));
 
-    .modal-content {
-      .alias-search {
-        display: block;
-        z-index: 10;
-        align-items: center;
-        margin-bottom: 40px;
-        position: sticky;
-        top: -16px;
+  .modal-content {
+    .alias-search {
+      display: block;
+      z-index: 10;
+      align-items: center;
+      margin-bottom: 16px;
+      position: sticky;
+      top: 0px;
 
-        span {
-          text-align: right;
+      .form-search {
+        padding: 0 16px;
+
+        input {
+          height: 48px;
+          line-height: 48px;
         }
       }
 
-      .alias-list {
-        min-height: 80px;
+      span {
+        text-align: right;
+      }
+    }
+
+    .alias-list {
+      @include grid(8px, repeat(6, 1fr));
+      min-height: 80px;
+      position: relative;
+      overflow: hidden;
+
+      .alias-item {
+        display: block;
+        @include radius(8px);
         position: relative;
+        padding-bottom: 12px;
+        min-width: 0;
 
-        .alias-item {
-          border-bottom: 1px solid rgb(var(--color-border-light));
+        background-color: rgba(var(--color-background-dimmed), 0.1);
 
-          &:last-child {
-            border-bottom: 0;
+        &:hover {
+          background-color: rgba(var(--color-highlight), 0.25);
 
-            .alias-item-header {
-              padding-bottom: 0;
-              border-bottom: 0;
-            }
+          .alias-name {
+            color: rgb(var(--color-highlight));
+          }
+        }
+
+        .alias-content {
+          @include flex($align: center, $justify: center);
+          height: 88px;
+          position: relative;
+          margin-bottom: 8px;
+          min-width: 0;
+
+          p,
+          .alias-image {
+            position: absolute;
+            inset: 12px;
+            bottom: 0;
+            color: rgb(var(--color-text));
           }
 
-          &.alias-text {
-            .alias-item-header {
-              .alias-image {
-                padding-left: 16px;
-
-                img {
-                  display: none;
-                }
-              }
-            }
-
-            .alias-text-content {
-              display: block;
-            }
-          }
-
-          &.alias-link .alias-item-header {
-            .alias-image {
-              .material-icons {
-                display: none;
-              }
-            }
-          }
-
-          .alias-text-content {
-            display: none;
-            background-color: rgb(var(--color-background));
-            padding: 24px;
-            font-size: 1.4rem;
+          p {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
             margin: 0;
-            line-height: 1.5em;
           }
 
-          .alias-item-header {
-            padding: 16px 0;
-            @include flex($gap: 24px);
-            width: 100%;
-            padding-right: 32px;
+          .alias-image {
+            @include flex($align: center, $justify: center);
+            @include radius(4px);
+            overflow: hidden;
 
-            .alias-image {
+            img {
               display: block;
-              width: 80px;
-              margin-right: 64px;
-
-              img {
-                display: block;
-                max-width: 80px;
-                max-height: 80px;
-              }
-
-              .material-icons {
-                color: rgb(var(--color-text-light));
-              }
-            }
-
-            p {
-              @include font(400);
-              display: block;
-              flex: 1;
-              font-size: 1.4rem;
-              margin: 0;
-
-              b {
-                display: inline;
-              }
-            }
-
-            button {
-              .material-icons {
-                font-size: 2rem;
-                color: rgb(var(--color-text));
-              }
+              object-position: center;
+              object-fit: contain;
+              max-width: 100%;
+              max-height: 100%;
             }
           }
+        }
+
+        .alias-name {
+          display: block;
+          width: 100%;
+          @include font(600);
+          color: rgb(var(--color-text-light));
+          font-size: 1.1rem;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
         }
       }
     }

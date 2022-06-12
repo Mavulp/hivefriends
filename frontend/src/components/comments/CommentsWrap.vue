@@ -62,6 +62,8 @@ const rules = computed(() => ({
 const { validate, errors, reset } = useFormValidation(form, rules, { autoclear: true })
 
 async function submit() {
+  modal.value = false
+
   validate().then(() => {
     comments.addComment({
       albumKey: props.albumKey,
@@ -69,10 +71,10 @@ async function submit() {
       text: form.comment
     })
 
-    nextTick(() => {
+    setTimeout(() => {
       form.comment = ""
       reset()
-    })
+    }, 25)
   })
 }
 
@@ -81,6 +83,23 @@ function insert(text: string) {
   if (form.comment) t = " " + t
 
   form.comment += t
+}
+
+/**
+ * Detect if user pressed enter while writing
+ */
+
+let keys: Array<string> = []
+
+function handleKeys(e: any) {
+  keys.push(e.key)
+
+  if (e.key === "Enter" && !keys.includes("Shift")) {
+    keys = []
+    submit()
+  }
+
+  if (keys.length > 5) keys = []
 }
 </script>
 
@@ -113,7 +132,12 @@ function insert(text: string) {
 
     <div class="hi-add-comment" v-if="!user.public_token">
       <form @submit.prevent="submit">
-        <InputTextarea v-model:value="form.comment" placeholder="Write comment..." :error="errors.comment" />
+        <InputTextarea
+          v-model:value="form.comment"
+          placeholder="Write comment..."
+          :error="errors.comment"
+          @keydown="handleKeys"
+        />
 
         <div class="buttons">
           <button type="submit" class="hover-bubble">Send</button>
@@ -121,17 +145,12 @@ function insert(text: string) {
 
           <div class="flex-1"></div>
 
-          <button @click.prevent="modal = true" class="hover-bubble">
+          <button @click.prevent="modal = !modal" class="hover-bubble" :class="{ active: modal }">
             <span class="material-icons"> &#xe1d3; </span>
           </button>
-
-          <Teleport to="body" v-if="modal">
-            <Modal @close="modal = false">
-              <AliasModal @close="modal = false" @insert="insert" />
-            </Modal>
-          </Teleport>
         </div>
       </form>
     </div>
   </div>
+  <AliasModal v-if="modal" @close="modal = false" @insert="insert" />
 </template>
