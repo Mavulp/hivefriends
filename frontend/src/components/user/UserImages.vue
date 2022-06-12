@@ -5,14 +5,16 @@ import { Image, useAlbums } from "../../store/album"
 import { useBread } from "../../store/bread"
 import { useLoading } from "../../store/loading"
 import { upload } from "../../js/fetch"
+import { useToast } from "../../store/toast"
+import { FetchError } from "../../js/global-types"
+import { useUser } from "../../store/user"
 
 import UserImageItem from "../image/UserImageItem.vue"
 import LoadingSpin from "../loading/LoadingSpin.vue"
-import { useToast } from "../../store/toast"
-import { FetchError } from "../../js/global-types"
 
 const bread = useBread()
 const toast = useToast()
+const user = useUser()
 const album = useAlbums()
 const { getLoading, addLoading, delLoading } = useLoading()
 const data = ref<Array<Image>>([])
@@ -26,7 +28,8 @@ const chunks = computed<Array<Array<Image>>>(() =>
 
 onBeforeMount(async () => {
   bread.set("All your uploaded images")
-  data.value = await album.fetchUserImages()
+  const raw = await album.fetchUserImages()
+  data.value = raw.filter((item: Image) => item.key !== user.settings.avatarKey && item.key !== user.settings.bannerKey)
 })
 
 // const imagesInAlbums = computed(() => data.value?.filter(item => item.albumKey).length)

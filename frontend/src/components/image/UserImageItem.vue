@@ -38,9 +38,14 @@ function copyImage() {
 </script>
 
 <template>
-  <div class="hi-album-image" @mouseenter="hover = true" @mouseleave="hover = false">
+  <div
+    class="hi-album-image"
+    @mouseenter="hover = true"
+    @mouseleave="hover = false"
+    :class="{ 'is-selected': props.isSelect }"
+  >
     <div class="all-image-checkbox" v-if="mode">
-      <InputCheckbox :check="isSelect" @update:check="emit('select', props.image)" />
+      <InputCheckbox :check="props.isSelect" @update:check="emit('select', props.image)" />
     </div>
 
     <div class="all-image-controls" v-show="hover && !mode">

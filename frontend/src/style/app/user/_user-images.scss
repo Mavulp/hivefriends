@@ -1,8 +1,18 @@
 .hi-image-list {
+  display: block;
+  padding: 32px;
+  width: 100%;
+
   .hi-image-list-upload {
     margin-bottom: 16px;
+    display: block;
+    max-width: 724px;
+    margin: 0 auto 64px;
+
     p {
-      margin-bottom: 40px;
+      font-size: 1.6rem;
+      line-height: 1.5em;
+      margin-bottom: 32px;
     }
 
     input {
@@ -46,16 +56,23 @@
 
   .hi-album-images {
     grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
+    gap: 10px;
 
     .hi-album-image-col {
-      gap: 16px;
+      gap: 10px;
 
       .hi-album-image {
+        @include radius(8px);
         position: relative;
         cursor: pointer;
+        border: 3px solid transparent;
+
+        &.is-selected {
+          border-color: rgb(var(--color-highlight));
+        }
 
         img {
+          @include radius(4px);
           min-height: 130px;
         }
       }
@@ -99,6 +116,7 @@
 
   .hover-bubble {
     @include flex($gap: 8px);
+    color: rgb(var(--color-text));
   }
 }
 
