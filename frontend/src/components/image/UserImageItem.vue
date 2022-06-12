@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref, reactive, computed } from "vue"
+import { ref } from "vue"
 import { Image, imageUrl } from "../../store/album"
+import { useClipboard } from "@vueuse/core"
 
 import InputCheckbox from "../form/InputCheckbox.vue"
 import Modal from "../../components/Modal.vue"
+import { useToast } from "../../store/toast"
 
 interface Props {
   image: Image
@@ -11,12 +13,14 @@ interface Props {
   isSelect: boolean
 }
 
+const toast = useToast()
 const props = defineProps<Props>()
 const emit = defineEmits<{
   (e: "select", value: Image): void
 }>()
 const open = ref(false)
 const hover = ref(false)
+const { copy } = useClipboard()
 
 function imageClick() {
   if (props.mode) {
@@ -25,6 +29,11 @@ function imageClick() {
   } else {
     open.value = true
   }
+}
+
+function copyImage() {
+  copy(imageUrl(props.image.key))
+  toast.add("Image url copied to clipboard")
 }
 </script>
 
@@ -38,7 +47,7 @@ function imageClick() {
       <button data-title-left="Go to album">
         <span class="material-icons"> &#xe89e; </span>
       </button>
-      <button data-title-left="Share link">
+      <button data-title-left="Share link" @click="copyImage">
         <span class="material-icons"> &#xe80d; </span>
       </button>
       <button data-title-left="Delete">
@@ -55,13 +64,13 @@ function imageClick() {
         <div class="modal-wrap modal-image">
           <div>
             <div class="all-image-controls">
-              <button data-title-left="Close">
+              <button data-title-left="Close" @click="open = false">
                 <span class="material-icons">&#xe5cd;</span>
               </button>
               <button data-title-left="Go to album">
                 <span class="material-icons"> &#xe89e; </span>
               </button>
-              <button data-title-left="Share link">
+              <button data-title-left="Share link" @click="copyImage">
                 <span class="material-icons"> &#xe80d; </span>
               </button>
               <button data-title-left="Delete">
