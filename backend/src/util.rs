@@ -127,10 +127,9 @@ pub mod test {
     pub fn insert_image(uploader: &str, conn: &rusqlite::Connection) -> anyhow::Result<String> {
         let key = blob_uuid::random_blob();
 
-        let i = image::DbImageMetadata {
+        let i = image::DbImage {
             key: key.clone(),
             uploader: uploader.to_string(),
-            size_bytes: 0,
             uploaded_at: 0,
 
             ..Default::default()

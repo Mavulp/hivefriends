@@ -12,7 +12,7 @@ use crate::util::comma_string;
 use crate::FileDb;
 
 use super::{image, user};
-use crate::api::image::{DbImageMetadata, ImageMetadata};
+use crate::api::image::{DbImage, Image};
 
 mod create;
 mod create_share_token;
@@ -62,7 +62,7 @@ pub(super) struct Album {
     draft: bool,
     timeframe: Timeframe,
     created_at: u64,
-    images: Vec<ImageMetadata>,
+    images: Vec<Image>,
     tagged_users: Vec<String>,
 }
 
@@ -178,9 +178,7 @@ pub(super) fn get_album(album_key: &str, conn: &Connection) -> anyhow::Result<Op
             .context("Failed to prepare statement for image query")?;
         let image_iter = stmt
             .query_map(params![db_album.key], |row| {
-                Ok(ImageMetadata::from_db(
-                    from_row::<DbImageMetadata>(row).unwrap(),
-                ))
+                Ok(Image::from_db(from_row::<DbImage>(row).unwrap()))
             })
             .context("Failed to query images for album")?;
 

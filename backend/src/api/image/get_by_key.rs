@@ -3,14 +3,14 @@ use axum::{extract::Path, Extension, Json};
 
 use std::sync::Arc;
 
-use super::ImageMetadata;
+use super::Image;
 use crate::{api::auth::Authorize, api::error::Error, AppState};
 
 pub(super) async fn get(
     Path(key): Path<String>,
     Authorize(_): Authorize,
     Extension(state): Extension<Arc<AppState>>,
-) -> Result<Json<ImageMetadata>, Error> {
+) -> Result<Json<Image>, Error> {
     let conn = state.pool.get().await.context("Failed to get connection")?;
     let ckey = key.clone();
     let result = conn
@@ -20,7 +20,7 @@ pub(super) async fn get(
         .context("Failed to query image metadata")?;
 
     if let Some(image_metadata) = result {
-        Ok(Json(ImageMetadata::from_db(image_metadata)))
+        Ok(Json(Image::from_db(image_metadata)))
     } else {
         Err(Error::NotFound)
     }

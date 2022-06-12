@@ -18,8 +18,8 @@ use std::sync::Arc;
 use std::time::SystemTime;
 
 use super::orientation::ExifOrientation;
-use super::DbImageMetadata;
-use crate::api::{auth::Authorize, error::Error, image::ImageMetadata};
+use super::{DbImage, DbImageMetadata, Image};
+use crate::api::{auth::Authorize, error::Error};
 use crate::AppState;
 
 const MB: u64 = 1024 * 1024;
@@ -31,7 +31,7 @@ pub(super) async fn post(
     >,
     Authorize(uploader): Authorize,
     Extension(state): Extension<Arc<AppState>>,
-) -> Result<Json<ImageMetadata>, Error> {
+) -> Result<Json<Image>, Error> {
     let mut multipart = multipart?.0;
 
     let uploaded_at = SystemTime::UNIX_EPOCH
@@ -55,22 +55,23 @@ pub(super) async fn post(
     let key = blob_uuid::random_blob();
     let image_key = key.clone();
 
-    let mut metadata = DbImageMetadata {
+    let mut metadata = DbImage {
         key,
-        uploader,
-        file_name,
-        size_bytes,
-        taken_at: None,
-        location_latitude: None,
-        location_longitude: None,
-        camera_brand: None,
-        camera_model: None,
-        exposure_time: None,
-        f_number: None,
-        focal_length: None,
-
         description: None,
+        uploader,
         uploaded_at,
+        metadata: DbImageMetadata {
+            file_name,
+            size_bytes,
+            taken_at: None,
+            location_latitude: None,
+            location_longitude: None,
+            camera_brand: None,
+            camera_model: None,
+            exposure_time: None,
+            f_number: None,
+            focal_length: None,
+        },
     };
 
     let mut orientation = None;
@@ -79,7 +80,7 @@ pub(super) async fn post(
     let exifreader = exif::Reader::new();
     match exifreader.read_from_container(&mut bufreader) {
         Ok(exif) => {
-            populate_metadata_from_exif(&mut metadata, &exif);
+            populate_metadata_from_exif(&mut metadata.metadata, &exif);
             orientation = exif
                 .get_field(exif::Tag::Orientation, exif::In::PRIMARY)
                 .and_then(|f| {
@@ -99,7 +100,7 @@ pub(super) async fn post(
     store_image(
         state.data_path.clone(),
         &image_key,
-        &metadata.file_name,
+        &metadata.metadata.file_name,
         &data,
         &orientation.unwrap_or(ExifOrientation::Normal),
     )
@@ -115,7 +116,7 @@ pub(super) async fn post(
         .await
         .unwrap()?;
 
-    Ok(Json(ImageMetadata::from_db(metadata)))
+    Ok(Json(Image::from_db(metadata)))
 }
 
 fn populate_metadata_from_exif(metadata: &mut DbImageMetadata, exif: &exif::Exif) {
