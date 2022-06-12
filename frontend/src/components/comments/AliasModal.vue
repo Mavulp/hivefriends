@@ -3,7 +3,6 @@ import { ref, computed, onBeforeMount } from "vue"
 import { useLoading } from "../../store/loading"
 import { get } from "../../js/fetch"
 import { isValidImage } from "../../js/utils"
-import { useClipboard } from "@vueuse/core"
 
 import Search from "../form/Search.vue"
 import LoadingSpin from "../loading/LoadingSpin.vue"
@@ -33,38 +32,24 @@ const filterList = computed<Array<Alias>>(() => {
   return list.value.filter((item: Alias) => `!${item.name.toLowerCase()}`.includes(search.value.toLowerCase()))
 })
 
-// let called = false
-// function loadImage(e: any) {
-//   if (!called) {
-//     console.log(e)
-//     called = true
-//   }
-// }
-
-/**
- * Copy
- */
-
-const { copy, isSupported } = useClipboard()
-
 /**
  * Insert text
  */
 
 function emitInsert(name: string) {
   emit("insert", name)
-  emit("close")
+  // emit("close")
 }
 </script>
 
 <template>
-  <div class="modal-wrap modal-alias">
-    <div class="modal-title">
+  <div class="alias-picker">
+    <!-- <div class="modal-title">
       <h4>Alias list</h4>
       <button class="modal-close" @click="emit('close')">
         <span class="material-icons">&#xe5cd;</span>
       </button>
-    </div>
+    </div> -->
 
     <div class="modal-content">
       <div class="alias-search">
@@ -78,37 +63,16 @@ function emitInsert(name: string) {
         <template v-else>
           <template v-for="alias in filterList" :key="alias.name">
             <template v-if="alias.name && alias.content">
-              <div class="alias-item" :class="[isValidImage(alias.content) ? 'alias-link' : 'alias-text']">
-                <div class="alias-item-header">
-                  <div class="alias-image">
+              <button class="alias-item" @click="emitInsert(alias.name)">
+                <div class="alias-content">
+                  <div class="alias-image" v-if="isValidImage(alias.content)">
                     <img :src="alias.content" alt="" load="lazy" lazyload="true" />
-                    <span class="material-icons">&#xe262; </span>
                   </div>
-
-                  <p><b>!</b>{{ alias.name }}</p>
-
-                  <button
-                    class="hover-bubble bubble-info"
-                    data-title-top="Insert into comment"
-                    @click="emitInsert(alias.name)"
-                  >
-                    <span class="material-icons"> &#xe745; </span>
-                  </button>
-
-                  <button
-                    class="hover-bubble bubble-orange"
-                    data-title-top="Copy alias"
-                    v-if="isSupported"
-                    @click="copy(`!${alias.name}`)"
-                  >
-                    <span class="material-icons"> &#xe14d; </span>
-                  </button>
+                  <p v-else>{{ alias.content }}</p>
                 </div>
 
-                <p class="alias-text-content">
-                  {{ alias.content }}
-                </p>
-              </div>
+                <span class="alias-name">!{{ alias.name }}</span>
+              </button>
             </template>
           </template>
         </template>
