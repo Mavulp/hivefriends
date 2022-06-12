@@ -57,6 +57,7 @@
   .hi-album-images {
     grid-template-columns: repeat(5, 1fr);
     gap: 10px;
+    margin: 0 auto;
 
     .hi-album-image-col {
       gap: 10px;
@@ -87,6 +88,7 @@
   padding: 24px 64px;
   position: sticky;
   top: 0;
+  margin: 0 auto;
   z-index: 16;
   background-color: rgb(var(--color-background));
 
