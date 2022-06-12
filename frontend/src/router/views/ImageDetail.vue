@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeMount, onBeforeUnmount, onMounted, watch, ref, watchEffect } from "vue"
+import { computed, onBeforeMount, onBeforeUnmount, onMounted, watch, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { imageUrl, useAlbums, Album, Image as ImageStruct } from "../../store/album"
 import { isEmpty, isNil } from "lodash"
@@ -66,7 +66,9 @@ const bread = useBread()
 const { getLoading, addLoading, delLoading } = useLoading()
 
 const transDir = ref("imagenext")
-const showComments = ref(false)
+const showComments = ref(Boolean(localStorage.getItem("show-comments")) ?? false)
+
+watch(showComments, (val: boolean) => localStorage.setItem("show-comments", String(val)))
 
 // Shut the fuck up typescript
 const albumKey = computed(() => route.params?.album?.toString() ?? null)
