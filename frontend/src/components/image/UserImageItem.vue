@@ -6,6 +6,8 @@ import { useClipboard } from "@vueuse/core"
 import InputCheckbox from "../form/InputCheckbox.vue"
 import Modal from "../../components/Modal.vue"
 import { useToast } from "../../store/toast"
+import { useUser } from "../../store/user"
+import { useLoading } from "../../store/loading"
 
 interface Props {
   image: Image
@@ -14,6 +16,7 @@ interface Props {
 }
 
 const toast = useToast()
+const user = useUser()
 const props = defineProps<Props>()
 const emit = defineEmits<{
   (e: "select", value: Image): void
@@ -35,6 +38,19 @@ function copyImage() {
   copy(imageUrl(props.image.key))
   toast.add("Image url copied to clipboard")
 }
+
+/**
+ * Set as avatar / banner
+ */
+const loading = ref(false)
+
+async function setAs(key: string) {
+  loading.value = true
+  await user.setSetting(key, props.image.key)
+  loading.value = false
+
+  toast.add(`Updated ${key === "avatarKey" ? "avatar" : "banner"} image`)
+}
 </script>
 
 <template>
@@ -55,8 +71,11 @@ function copyImage() {
       <button data-title-left="Share link" @click="copyImage">
         <span class="material-icons"> &#xe80d; </span>
       </button>
-      <button data-title-left="Delete">
-        <span class="material-icons"> &#xe872; </span>
+      <button data-title-left="Use as avatar" @click="setAs('avatarKey')" :class="{ 'btn-disabled': loading }">
+        <span class="material-icons"> &#xe853; </span>
+      </button>
+      <button data-title-left="Use as banner" @click="setAs('bannerKey')" :class="{ 'btn-disabled': loading }">
+        <span class="material-icons"> &#xe40b; </span>
       </button>
     </div>
 
@@ -78,8 +97,11 @@ function copyImage() {
               <button data-title-left="Share link" @click="copyImage">
                 <span class="material-icons"> &#xe80d; </span>
               </button>
-              <button data-title-left="Delete">
-                <span class="material-icons"> &#xe872; </span>
+              <button data-title-left="Use as avatar" @click="setAs('avatarKey')" :class="{ 'btn-disabled': loading }">
+                <span class="material-icons"> &#xe853; </span>
+              </button>
+              <button data-title-left="Use as banner" @click="setAs('bannerKey')" :class="{ 'btn-disabled': loading }">
+                <span class="material-icons"> &#xe40b; </span>
               </button>
             </div>
             <img :src="imageUrl(props.image.key)" alt="" />
