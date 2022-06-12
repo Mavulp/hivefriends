@@ -50,7 +50,6 @@ const singleDate = ref(false)
 const rawFileLength = ref(0)
 
 const isLoading = computed(() => files.values.some((file) => file.loading))
-// const uploadProgress = computed(() => `${[...files.values].filter((item) => item.key).length} / ${rawFileLength.value}`)
 const remainingProgress = computed(() => rawFileLength.value - [...files.values].filter((item) => item.key).length)
 const uploadPercentage = computed(
   () => ([...files.values].filter((item) => item.key).length / rawFileLength.value) * 100

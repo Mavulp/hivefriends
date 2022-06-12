@@ -15,9 +15,12 @@ export function formatTextUsernames(text: string, userStore: any) {
   })
 }
 
-export function getImageChunks(images: Array<Image>) {
+export function getImageChunks(images: Array<Image>, columns = 3) {
   if (!images) return []
-  const chunks: Array<Array<Image>> = [[], [], []]
+
+  const makeArray = (cols: number) => Array.from(Array(cols).keys()).map(() => [])
+
+  const chunks: Array<Array<Image>> = makeArray(columns)
 
   let i: number = 0
   let j: number = 0
@@ -25,7 +28,7 @@ export function getImageChunks(images: Array<Image>) {
   while (i !== images.length) {
     chunks[j].push(images[i])
 
-    if (j >= 2) j = 0
+    if (j >= columns - 1) j = 0
     else j++
 
     i++

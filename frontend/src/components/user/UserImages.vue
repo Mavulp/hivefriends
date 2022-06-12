@@ -1,150 +1,138 @@
 <script setup lang="ts">
-import { ref, reactive, computed, onBeforeMount, onMounted } from "vue"
+import { ref, onBeforeMount, watch, computed } from "vue"
 import { getImageChunks } from "../../js/_composables"
+import { Image, useAlbums } from "../../store/album"
 import { useBread } from "../../store/bread"
+import { useLoading } from "../../store/loading"
+import { upload } from "../../js/fetch"
 
-// const open = ref(false)
+import UserImageItem from "../image/UserImageItem.vue"
+import LoadingSpin from "../loading/LoadingSpin.vue"
+import { useToast } from "../../store/toast"
+import { FetchError } from "../../js/global-types"
+
 const bread = useBread()
+const toast = useToast()
+const album = useAlbums()
+const { getLoading, addLoading, delLoading } = useLoading()
+const data = ref<Array<Image>>([])
 
-onBeforeMount(() => {
-  bread.set("All images list")
-})
-
-const chunks = computed(() =>
-  getImageChunks([
-    // {
-    //   key: "TsQTZopMQYu5huvkuVn1pw",
-    //   fileName: "black-mesa.jpg",
-    //   sizeBytes: 440410,
-    //   uploader: "Jokler",
-    //   uploadedAt: 1654906142
-    // },
-    // {
-    //   key: "8vrqbq-JRFSxgIdsBwTUJQ",
-    //   fileName: "asteroid-station.png",
-    //   sizeBytes: 10145583,
-    //   uploader: "Jokler",
-    //   uploadedAt: 1654907150
-    // },
-    // {
-    //   key: "FvK9jmF-SXWyiB2QyaT1jQ",
-    //   fileName: "elisabeth-nagurnaya-necromancer.jpg",
-    //   sizeBytes: 2183323,
-    //   uploader: "Jokler",
-    //   uploadedAt: 1654907266
-    // },
-    // {
-    //   key: "pf5txMllQaiJ-FtZNeC0Pg",
-    //   fileName: "artur-sadlos-to-sh300-ooh-as-05i.jpg",
-    //   sizeBytes: 714894,
-    //   uploader: "Jokler",
-    //   uploadedAt: 1654907330
-    // },
-    // {
-    //   key: "RP2riPdlQteYrVt1FTkSmQ",
-    //   fileName: "cloudy_days.png",
-    //   sizeBytes: 2555734,
-    //   uploader: "Jokler",
-    //   uploadedAt: 1654907341
-    // }
-  ])
+const chunks = computed<Array<Array<Image>>>(() =>
+  getImageChunks(
+    data.value.sort((a, b) => (a.uploadedAt > b.uploadedAt ? -1 : 1)),
+    5
+  )
 )
 
-// onMounted(() => {
-//     const el = document.getElementById("drop-area")
+onBeforeMount(async () => {
+  bread.set("All your uploaded images")
+  data.value = await album.fetchUserImages()
+})
 
-//   if (el) {
-//     el.addEventListener("dragenter", onSubmitHandler, false)
-//     el.addEventListener("dragleave", onSubmitHandler, false)
-//     el.addEventListener("dragover", onSubmitHandler, false)
-//     el.addEventListener("drop", onSubmitHandler, false)
-//     el.addEventListener("input", (e) => onSubmitHandler(e, true), false)
-//   }
-// })
+// const imagesInAlbums = computed(() => data.value?.filter(item => item.albumKey).length)
+const imagesInAlbums = 74
 
-// function onSubmitHandler(e: any, fromField: boolean = false) {
-//   e.preventDefault()
-//   e.stopPropagation()
+async function uploadImage(e: any) {
+  if (!e) return
 
-//   let files = fromField ? e.target.files : e.dataTransfer.files
+  addLoading("upload")
 
-//   if (files.length > 0) {
-//     uploadFiles(files)
-//   }
-// }
+  e.preventDefault()
+  e.stopPropagation()
 
-// async function uploadFiles(_files: any) {
-//   let i = files.values.length
-//   rawFileLength.value = _files.length + imageKeys.value.length
+  const file = new FormData()
+  file.append("file", e.target.files[0])
 
-//   for (const file of _files) {
-//     if (!file) continue
+  return upload("/api/images/", file)
+    .then((response: any) => data.value.unshift(response))
+    .catch((error: FetchError) => toast.add(error.message, "error"))
+    .finally(() => delLoading("upload"))
+}
 
-//     let formData = new FormData()
-//     formData.append("file", file)
+/**
+ * Image selecting
+ */
 
-//     await uploadFile(file, formData, clone(i))
+const selected = ref(new Map())
+const selectMode = ref(false)
 
-//     i++
-//   }
-// }
+watch(selected, (value) => {
+  console.log(value)
+})
 
-// async function uploadFile(file: any, formData: any, index: number) {
-//   files.values[index] = {
-//     name: file.name,
-//     size: file.size,
-//     loading: true,
-//     key: null
-//   }
+function selectItem(item: Image) {
+  if (selected.value.has(item.key)) {
+    selected.value.delete(item.key)
+  } else {
+    selected.value.set(item.key, item)
+  }
+}
 
-//   return upload("/api/images/", formData)
-//     .then((response: any) => {
-//       Object.assign(files.values[index], {
-//         loading: false,
-//         key: response.key
-//       })
-//     })
-//     .catch((error) => {
-//       Object.assign(files.values[index], {
-//         loading: false,
-//         error
-//       })
-//     })
-// }
+function clearSelect() {
+  selected.value = new Map()
+  selectMode.value = false
+}
+function createSelect() {}
+function deleteSelect() {}
 </script>
 
 <template>
   <div class="hi-image-list">
     <div class="hi-image-list-upload">
-      <h1>Upload Images</h1>
+      <h1>All photos</h1>
       <p>
-        This is not the recommended way to use the site, but if you want to upload singular images not tied to an album,
-        you can do so here. The main use of this should be to store and share standalone images.
+        List of every uploaded photo by you. It is not intended to use the site like that, but you can optionally upload
+        a few images which live outside of any albums. To store them or quickly share with someone.
       </p>
 
-      <!-- <div
-          class="album-drag-input"
-          id="drop-area"
-          @dragenter="draggingOver = true"
-          @mouseleave="draggingOver = false"
-          :class="{ hovering: draggingOver, empty: files.values.length === 0 }"
-        >
-          <input id="draginput" name="draginput" type="file" multiple accept="image/*" />
-          <label for="draginput">
-            <span class="material-icons">&#xe439;</span>
-            <span>{{ draggingOver ? "Drop the files!" : "Cllick me / Drag files over here" }}</span>
-          </label>
-        </div> -->
+      <input type="file" name="imgfile" id="imgfile" accept="image/*" @input="uploadImage" />
+      <label for="imgfile">
+        <span class="material-icons"> &#xe3f4; </span>
+        <span>Upload an image</span>
+
+        <div class="flex-1"></div>
+
+        <LoadingSpin v-if="getLoading('upload')" class="dark small" />
+      </label>
+    </div>
+
+    <div class="hi-image-list-info">
+      <div>
+        <p>Sorting by upload date</p>
+      </div>
+
+      <div>
+        <p>{{ data?.length }} photos</p>
+        <p>{{ imagesInAlbums }} in albums</p>
+        <p v-if="selected.size > 0">{{ selected.size }} {{ selected.size === 1 ? "photo" : "photos" }} selected</p>
+      </div>
+
+      <div>
+        <template v-if="selected.size > 0 && selectMode">
+          <button class="hover-bubble bubble-highlight" @click="clearSelect">Clear selection</button>
+
+          <button class="hover-bubble bubble-orange" @click="createSelect">Create album</button>
+          <button class="hover-bubble bubble-red" @click="deleteSelect">Delete selected</button>
+        </template>
+
+        <button v-else class="hover-bubble bubble-highlight" @click="selectMode = !selectMode">
+          <span class="material-icons" v-if="selectMode"> &#xe5cd; </span>
+          <span class="material-icons" v-else> &#xe03c;</span>
+          {{ selectMode ? "Cancel" : "Select" }}
+        </button>
+      </div>
     </div>
 
     <div class="hi-album-images">
-      <div class="hi-album-image-col" v-for="chunk in chunks" :key="chunk.length">
-        <!-- <ImageListitem v-for="image in chunk" :key="image.key" :image="image" :album-key="album.key" /> -->
-
-        <!-- <img src="" alt=""> -->
-        <pre>
-          {{ chunk }}
-        </pre>
+      <div class="hi-album-image-col" v-for="(chunk, index) in chunks" :key="index">
+        <UserImageItem
+          v-for="image in chunk"
+          :image="image"
+          :key="image.key"
+          @select="selectItem"
+          :isSelect="selected.has(image.key)"
+          :mode="selectMode"
+        />
       </div>
     </div>
   </div>

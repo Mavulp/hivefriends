@@ -2,7 +2,7 @@
 import { computed } from "vue"
 
 interface Props {
-  label: string
+  label?: string
   check: boolean
 }
 
@@ -21,7 +21,7 @@ const data = computed<boolean>({
   }
 })
 
-const d = computed(() => props.label ?? new Date().getTime())
+const d = computed(() => "id" + Math.random().toString(16).slice(2))
 </script>
 
 <template>
@@ -33,7 +33,7 @@ const d = computed(() => props.label ?? new Date().getTime())
         <span v-else class="material-icons">&#xe835;</span>
       </div>
 
-      <p>{{ props.label }}</p>
+      <p v-if="props.label">{{ props.label }}</p>
     </label>
   </div>
 </template>
