@@ -152,6 +152,11 @@
           width: 100%;
           flex: 1;
 
+          img {
+            display: inline;
+            width: auto;
+          }
+
           .hi-comments-list,
           .hi-comments-header {
             padding: 20px;
