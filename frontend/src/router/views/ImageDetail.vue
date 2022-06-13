@@ -405,7 +405,7 @@ onBeforeUnmount(() => {
       <div class="hi-image-container">
         <div class="hi-image-meta">
           <h4>
-            Location and metadata
+            Photo details
 
             <span
               v-if="image.location"
@@ -441,8 +441,20 @@ onBeforeUnmount(() => {
 
           <div class="hi-image-metadata">
             <div class="hi-image-properties">
-              <span>Uploader</span>
+              <template v-if="metadata?.description">
+                <span>Description</span>
+                <p v-html="sanitize(formatTextUsernames(metadata.description, user))"></p>
+              </template>
 
+              <span>Name</span>
+              <strong class="file-name">{{ image.fileName }}</strong>
+
+              <template v-if="image.takenAt">
+                <span>Taken</span>
+                <p>{{ formatDate(image.takenAt) }}</p>
+              </template>
+
+              <span>Uploader</span>
               <router-link class="hover-bubble" :to="{ name: 'UserProfile', params: { user: image.uploader } }">
                 <img
                   class="user-image"
@@ -453,15 +465,6 @@ onBeforeUnmount(() => {
                 />
                 {{ image.uploader }}
               </router-link>
-
-              <span>Name</span>
-              <strong class="file-name">{{ image.fileName }}</strong>
-              <p v-if="metadata?.description" v-html="sanitize(formatTextUsernames(metadata.description, user))"></p>
-
-              <template v-if="image.takenAt">
-                <span>Taken</span>
-                <p>{{ formatDate(image.takenAt) }}</p>
-              </template>
             </div>
 
             <ul class="hi-image-metadata-list">

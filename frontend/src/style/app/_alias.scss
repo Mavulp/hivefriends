@@ -9,7 +9,7 @@
   overflow-y: auto;
   scrollbar-width: 4px;
   scrollbar-width: thin;
-  background-color: rgb(var(--color-background-dark));
+  background-color: rgb(var(--color-background));
   z-index: 100;
   border: 1px solid rgb(var(--color-border-light));
 
@@ -80,6 +80,7 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
             margin: 0;
+            font-size: 1rem;
           }
 
           .alias-image {
