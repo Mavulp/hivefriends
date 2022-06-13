@@ -680,6 +680,10 @@
 
       .alias-list {
         @include grid(8px, repeat(3, 1fr));
+
+        .alias-item {
+          background-color: rgb(var(--color-background-dimmed));
+        }
       }
     }
   }
@@ -747,6 +751,7 @@
 
           .hi-image-metadata-list li {
             gap: 16px;
+
             span,
             p {
               font-size: 1.2rem;
