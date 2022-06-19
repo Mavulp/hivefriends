@@ -63,7 +63,6 @@
       gap: 10px;
 
       .hi-album-image {
-        @include radius(8px);
         position: relative;
         cursor: pointer;
         border: 3px solid transparent;
@@ -73,7 +72,6 @@
         }
 
         img {
-          @include radius(4px);
           min-height: 130px;
         }
       }
@@ -213,24 +211,30 @@
     max-width: 628px;
     width: 100%;
 
+    & > button {
+      position: absolute;
+      right: 24px;
+      top: 24px;
+
+      .material-icons {
+        font-size: 1.6rem;
+        color: rgb(var(--color-text));
+      }
+    }
+
+    & > p {
+      margin-bottom: 32px;
+    }
+
     .select-album-item {
       @include radius(8px);
-      @include flex($align: flex-start);
+      @include t(0.1s);
+      @include flex($align: flex-start, $gap: 24px);
       position: relative;
       color: rgb(var(--color-text));
-      padding: 12px;
-      margin: 0 -8px 8px;
-      // background-color: rgba(var(--color-background-dark), 0.05);
-
-      // &:after {
-      //   content: "";
-      //   display: block;
-      //   left: 0;
-      //   right: 0;
-      //   position: absolute;
-      //   bottom: -10px;
-      //   border-bottom: 1px solid rgb(var(--color-border-light));
-      // }
+      padding: 8px 12px;
+      padding-left: 8px;
+      margin: 0 -8px 4px;
 
       &:hover {
         background-color: rgba(var(--color-highlight), 0.1);
@@ -248,7 +252,7 @@
       $image-width: 56px;
 
       .album-item-image {
-        // @include radius(3px);
+        @include radius(4px);
         display: block;
         width: $image-width;
         height: $image-width;
@@ -271,6 +275,7 @@
         padding-top: 8px;
 
         strong {
+          @include t(0.1s);
           font-size: 2rem;
           margin-bottom: 4px;
           word-wrap: break-word;
@@ -278,6 +283,7 @@
         }
 
         p {
+          @include t(0.1s);
           font-size: 1.2rem;
           margin: 0;
           font-style: italic;

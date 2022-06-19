@@ -61,6 +61,7 @@ async function setAs(key: string) {
 const keys = useMagicKeys()
 whenever(keys["Escape"], () => {
   open.value = false
+  selectingAlbum.value = false
 })
 
 /**
@@ -72,8 +73,6 @@ const selectingLoading = ref(false)
 const albums = ref<Array<Album>>()
 
 async function tryToAlbum() {
-  console.log(props.image)
-
   if (props.image.albumKeys.length === 1) {
     router.push({ name: "AlbumDetail", params: { id: props.image.albumKeys[0] } })
   } else {
@@ -123,6 +122,10 @@ function goto(key: string) {}
     <Teleport to="body" v-if="selectingAlbum">
       <Modal @click="selectingAlbum = false">
         <div class="modal-wrap modal-select-album">
+          <button data-title-left="Close" @click="open = false">
+            <span class="material-icons">&#xe5cd;</span>
+          </button>
+
           <h2>Select an album</h2>
           <p>This image is part of multiple albums. Please choose which one you wish to view.</p>
 

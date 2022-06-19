@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onBeforeMount, watch, computed } from "vue"
 import { getImageChunks } from "../../js/_composables"
-import { Image, useAlbums } from "../../store/album"
+import { AllImageItem, Image, useAlbums } from "../../store/album"
 import { useBread } from "../../store/bread"
 import { useLoading } from "../../store/loading"
 import { upload } from "../../js/fetch"
@@ -19,10 +19,10 @@ const toast = useToast()
 const user = useUser()
 const album = useAlbums()
 const { getLoading, addLoading, delLoading } = useLoading()
-const data = ref<Array<Image>>([])
+const data = ref<Array<AllImageItem>>([])
 const isPhone = useMediaQuery("(max-width: 512px)")
 
-const chunks = computed<Array<Array<Image>>>(() =>
+const chunks = computed<Array<Array<AllImageItem>>>(() =>
   getImageChunks(
     data.value.sort((a, b) => (a.uploadedAt > b.uploadedAt ? -1 : 1)),
     isPhone.value ? 3 : 5
@@ -32,11 +32,12 @@ const chunks = computed<Array<Array<Image>>>(() =>
 onBeforeMount(async () => {
   bread.set("All your uploaded images")
   const raw = await album.fetchUserImages()
-  data.value = raw.filter((item: Image) => item.key !== user.settings.avatarKey && item.key !== user.settings.bannerKey)
+  data.value = raw.filter(
+    (item: AllImageItem) => item.key !== user.settings.avatarKey && item.key !== user.settings.bannerKey
+  )
 })
 
-// const imagesInAlbums = computed(() => data.value?.filter(item => item.albumKey).length)
-const imagesInAlbums = 74
+const imagesInAlbums = computed(() => data.value?.filter((item: AllImageItem) => item.albumKeys.length > 0).length)
 
 async function uploadImage(e: any) {
   if (!e) return
@@ -130,7 +131,7 @@ function deleteSelect() {
 
           <button class="hover-bubble bubble-orange" @click="createSelect">
             <span class="material-icons">&#xe2cc;</span>
-            {{ isPhone ? "Album" + `(${selected.size})` : "Create album" }}
+            {{ isPhone ? "Create" + `(${selected.size})` : "Create album" }}
           </button>
 
           <button class="hover-bubble bubble-highlight" @click="clearSelect">
