@@ -11,6 +11,7 @@ import { useUser } from "../../store/user"
 
 import UserImageItem from "../image/UserImageItem.vue"
 import LoadingSpin from "../loading/LoadingSpin.vue"
+import router from "../../router"
 
 const bread = useBread()
 const toast = useToast()
@@ -75,7 +76,14 @@ function clearSelect() {
   selected.value = new Map()
   selectMode.value = false
 }
-function createSelect() {}
+function createSelect() {
+  router.push({
+    name: "Upload",
+    params: {
+      images: JSON.stringify([...selected.value.values()])
+    }
+  })
+}
 function deleteSelect() {}
 </script>
 
@@ -107,15 +115,27 @@ function deleteSelect() {}
       <div>
         <p>{{ data?.length }} photos</p>
         <p>{{ imagesInAlbums }} in albums</p>
-        <p v-if="selected.size > 0">{{ selected.size }} {{ selected.size === 1 ? "photo" : "photos" }} selected</p>
+        <p v-if="selected.size > 0">
+          <b>{{ selected.size }} {{ selected.size === 1 ? "photo" : "photos" }} selected</b>
+        </p>
       </div>
 
       <div>
         <template v-if="selected.size > 0 && selectMode">
-          <button class="hover-bubble bubble-highlight" @click="clearSelect">Clear selection</button>
+          <button class="hover-bubble bubble-red" @click="deleteSelect">
+            <span class="material-icons">&#xe872;</span>
+            Delete selected
+          </button>
 
-          <button class="hover-bubble bubble-orange" @click="createSelect">Create album</button>
-          <button class="hover-bubble bubble-red" @click="deleteSelect">Delete selected</button>
+          <button class="hover-bubble bubble-orange" @click="createSelect">
+            <span class="material-icons">&#xe2cc;</span>
+            Create album
+          </button>
+
+          <button class="hover-bubble bubble-highlight" @click="clearSelect">
+            <span class="material-icons">&#xe5cd;</span>
+            Clear selection
+          </button>
         </template>
 
         <button v-else class="hover-bubble bubble-highlight" @click="selectMode = !selectMode">

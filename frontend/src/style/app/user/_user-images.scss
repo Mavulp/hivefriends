@@ -144,8 +144,14 @@
       z-index: 1;
     }
 
+    &:hover {
+      .material-icons {
+        color: rgb(#fff, 1);
+      }
+    }
+
     .material-icons {
-      color: #fff;
+      color: rgba(#fff, 0.8);
       font-size: 1.8rem;
       transform: translateY(2px);
     }

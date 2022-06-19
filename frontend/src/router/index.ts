@@ -110,6 +110,7 @@ const router = createRouter({
       path: "/upload/album",
       name: "Upload",
       component: AlbumUpload,
+      props: true,
       meta: {
         title: "Upload",
         requiresAuth: true

@@ -11,6 +11,11 @@ strong {
   margin-bottom: 20px;
 }
 
+b,
+strong {
+  margin-bottom: 0;
+}
+
 h1 {
   @include font(900);
   font-size: 4.2rem;
