@@ -105,6 +105,7 @@ watchEffect(() => {
                 <b>{{ user.albumsUploaded.length }}</b> {{ user.albumsUploaded.length === 1 ? "album" : "albums" }}
               </span>
               <router-link
+                v-if="user.albumsUploaded.length > 0"
                 :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]"
                 :to="{ name: 'UserAlbums', params: { user: user.username } }"
               >
@@ -129,8 +130,7 @@ watchEffect(() => {
         <div class="user-albums">
           <template v-if="userAlbums.length === 0">
             <p>
-              Looks like <b>{{ user.displayName ?? user.username }}</b> did not upload any albums yet. Are they touching
-              grass rn?
+              Looks like <b>{{ user.displayName ?? user.username }}</b> has not uploaded any albums yet.
             </p>
           </template>
           <template v-else>
