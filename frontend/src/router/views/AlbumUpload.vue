@@ -347,7 +347,7 @@ function dragCompare() {
           </div>
         </div>
 
-        <InputCheckbox v-model:check="album.draft" label="Save as a draft. It won't be published" />
+        <InputCheckbox v-model:check="album.draft" label="Save as draft. Album will be visible only to you." />
 
         <Button
           style="margin-top: 32px"
@@ -366,11 +366,9 @@ function dragCompare() {
             style="width: 100%; margin-bottom: 20px"
             @click="submit"
           >
-            {{ album.draft ? "Save Draft" : "Publish Album" }}
+            {{ album.draft ? "Save Draft" : "Save Album" }}
             <LoadingSpin class="dark" v-if="isLoading" />
           </Button>
-
-          <!-- <p v-if="isLoading">{{ uploadProgress }} photos uploaded</p> -->
         </template>
       </div>
     </div>

@@ -26,6 +26,10 @@ export interface Image {
   uploadedAt: number
 }
 
+export interface AllImageItem extends Image {
+  albumKeys: Array<string>
+}
+
 export interface ImageFile {
   values: Array<{
     name: string
@@ -274,7 +278,9 @@ export const useAlbums = defineStore("album", {
   }
 })
 
-export function imageUrl(key: string, size: string = "full") {
+type sizes = "full" | "large" | "medium" | "tiny"
+
+export function imageUrl(key: string, size: sizes = "full") {
   if (!key) return ""
   return rootUrl + `/data/image/${key}/${size}.jpg`
 }

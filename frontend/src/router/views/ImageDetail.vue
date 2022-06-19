@@ -66,7 +66,7 @@ const bread = useBread()
 const { getLoading, addLoading, delLoading } = useLoading()
 
 const transDir = ref("imagenext")
-const showComments = ref(Boolean(localStorage.getItem("show-comments")) ?? false)
+const showComments = ref(isPhone.value ? false : Boolean(localStorage.getItem("show-comments")) ?? false)
 
 watch(showComments, (val: boolean) => localStorage.setItem("show-comments", String(val)))
 
@@ -343,15 +343,19 @@ onBeforeUnmount(() => {
         <div class="hi-image-context">
           <div class="context-col">
             <router-link
-              class="hover-bubble"
-              :class="{ active: isPhone }"
+              :class="[isPhone ? 'phone-go-back' : 'hover-bubble']"
               :to="{
                 name: user.public_token ? 'PublicAlbumDetail' : 'AlbumDetail',
                 params: { id: albumKey, ...(user.public_token && { token: user.public_token }) }
               }"
             >
-              <span class="material-icons"> &#xe2ea; </span>
-              Go back
+              <template v-if="isPhone">
+                <span class="material-icons"> &#xe5cd; </span>
+              </template>
+              <template v-else>
+                <span class="material-icons"> &#xe2ea; </span>
+                Go back
+              </template>
             </router-link>
           </div>
 

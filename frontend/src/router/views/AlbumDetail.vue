@@ -112,7 +112,9 @@ function copyPublic() {
  *  Album map
  */
 const map = ref(false)
-const enableMap = computed(() => album.images.some((image) => image.location))
+const enableMap = computed(() =>
+  album.images.some((image) => image.location && image.location.latitude && image.location.longitude)
+)
 </script>
 
 <template>
