@@ -239,10 +239,10 @@ async function getPublicLink() {
 function doCopy(type: string) {
   if (type === "url") {
     copy(imageDetailUrl.value ?? "")
-    toast.add("Image url copied to clipboard")
+    toast.add("Photo url copied to clipboard")
   } else if (type === "public") {
     copy(publicLink.value)
-    toast.add("Image share link copied to clipboard")
+    toast.add("Photo share link copied to clipboard")
   }
 }
 

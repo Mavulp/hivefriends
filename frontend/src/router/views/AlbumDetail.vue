@@ -10,7 +10,7 @@ import { useClipboard, useCssVar, usePreferredDark } from "@vueuse/core"
 import { useBread } from "../../store/bread"
 import { url } from "../../js/fetch"
 import { useToast } from "../../store/toast"
-import { formatTextUsernames } from "../../js/_composables"
+import { formatTextUsernames, getImageChunks } from "../../js/_composables"
 
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 import AlbumTimestamp from "../../components/albums/AlbumTimestamp.vue"
@@ -62,26 +62,7 @@ watchEffect(() => {
   }
 })
 
-const chunks = computed(() => {
-  if (!album.images) return []
-
-  const images: any = album.images
-  const chunks: Array<Array<Image>> = [[], [], []]
-
-  let i: number = 0
-  let j: number = 0
-
-  while (i !== images.length) {
-    chunks[j].push(images[i])
-
-    if (j >= 2) j = 0
-    else j++
-
-    i++
-  }
-
-  return chunks
-})
+const chunks = computed(() => getImageChunks(album.images))
 
 function openCoverImage() {
   router.push({

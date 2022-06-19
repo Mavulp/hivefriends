@@ -1,0 +1,212 @@
+.hi-image-list {
+  display: block;
+  padding: 32px;
+  width: 100%;
+
+  .hi-image-list-upload {
+    margin-bottom: 16px;
+    display: block;
+    max-width: 724px;
+    margin: 0 auto 64px;
+
+    p {
+      font-size: 1.6rem;
+      line-height: 1.5em;
+      margin-bottom: 32px;
+    }
+
+    input {
+      display: none;
+
+      & + label {
+        @include t(0.1s);
+        @include flex($gap: 12px);
+        @include radius(16px);
+        width: 100%;
+        height: 56px;
+        // margin: 0 auto;
+        background-color: rgb(var(--color-white));
+        line-height: 52px;
+        padding: 0 32px;
+        border: 2px solid rgb(var(--color-border-light));
+        cursor: pointer;
+
+        &:hover {
+          border-color: rgb(var(--color-info));
+
+          .material-icons {
+            color: rgb(var(--color-info));
+          }
+        }
+
+        span {
+          @include t(0.1s);
+          color: rgb(var(--color-text));
+          font-size: 1.4rem;
+
+          &.material-icons {
+            @include t(0.1s);
+            font-size: 2rem;
+            color: rgb(var(--color-text-light));
+          }
+        }
+      }
+    }
+  }
+
+  .hi-album-images {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin: 0 auto;
+
+    .hi-album-image-col {
+      gap: 10px;
+
+      .hi-album-image {
+        @include radius(8px);
+        position: relative;
+        cursor: pointer;
+        border: 3px solid transparent;
+
+        &.is-selected {
+          border-color: rgb(var(--color-highlight));
+        }
+
+        img {
+          @include radius(4px);
+          min-height: 130px;
+        }
+      }
+    }
+  }
+}
+
+.hi-image-list-info {
+  @include grid(32px, repeat(3, 1fr));
+  width: 100%;
+  max-width: 1920px;
+  padding: 24px 64px;
+  position: sticky;
+  top: 0;
+  margin: 0 auto;
+  z-index: 16;
+  background-color: rgb(var(--color-background));
+
+  & > div {
+    @include flex(nowrap, 32px, $align: center);
+    height: 20px;
+
+    &:nth-of-type(2) {
+      justify-content: center;
+    }
+
+    &:last-of-type {
+      justify-content: flex-end;
+      padding-right: 8px;
+    }
+  }
+
+  span,
+  p {
+    margin: 0;
+  }
+
+  .material-icons {
+    font-size: 1.8rem;
+    transform: translateY(1px);
+  }
+
+  .hover-bubble {
+    @include flex($gap: 8px);
+    color: rgb(var(--color-text));
+  }
+}
+
+.all-image-controls {
+  @include flex($gap: 9px, $justify: flex-start, $direction: column);
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  bottom: 8px;
+  z-index: 10;
+
+  button {
+    @include radius(4px);
+    width: 32px;
+    height: 32px;
+    background-color: rgba(var(--color-background-dark), 0.5);
+
+    &:after {
+      content: "";
+      background-color: rgba(var(--color-background-dark), 0.8);
+
+      opacity: 1 !important;
+      z-index: 1;
+    }
+
+    &:hover {
+      .material-icons {
+        color: rgb(#fff, 1);
+      }
+    }
+
+    .material-icons {
+      color: rgba(#fff, 0.8);
+      font-size: 1.8rem;
+      transform: translateY(2px);
+    }
+  }
+}
+
+.all-image-checkbox {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+
+  .form-checkbox input[type="checkbox"] + label {
+    @include radius(4px);
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    background-color: rgba(var(--color-background-dark), 0.5);
+
+    span.material-icons {
+      color: #fff;
+      font-size: 2.2rem;
+      transform: translateY(1px);
+    }
+  }
+}
+
+.modal .modal-wrap {
+  &.modal-image {
+    transform: unset !important;
+    inset: 32px;
+    background-color: transparent;
+    text-align: center;
+
+    & > div {
+      display: inline-block;
+      width: auto;
+      margin: 0 auto;
+      position: relative;
+      z-index: 10;
+      height: calc(100vh - 64px);
+
+      .all-image-controls {
+        top: 16px;
+        right: 16px;
+      }
+
+      img {
+        display: block;
+        height: 100%;
+        max-width: 100%;
+        // margin: 0 auto;
+        object-fit: contain;
+        object-position: center;
+      }
+    }
+  }
+}

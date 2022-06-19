@@ -249,6 +249,21 @@ export const useAlbums = defineStore("album", {
           toast.add(error.message, "error")
         })
         .finally(() => delLoading("edit-album-submit"))
+    },
+
+    async fetchUserImages() {
+      const { addLoading, delLoading } = useLoading()
+      const toast = useToast()
+
+      addLoading("images")
+
+      return get("/api/images")
+        .then((data) => data)
+        .catch((error: FetchError) => {
+          toast.add(error.message, "error")
+          return []
+        })
+        .finally(() => delLoading("images"))
     }
   },
   getters: {

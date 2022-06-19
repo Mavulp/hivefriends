@@ -11,7 +11,7 @@ import DraftItem from "../../components/upload/DraftItem.vue"
 import { onMounted, reactive, ref, computed, onBeforeMount, nextTick } from "vue"
 import { upload } from "../../js/fetch"
 import { useFormValidation, required, maxLength } from "../../js/validation"
-import { useAlbums, NewAlbum, imageUrl, Album, ImageFile } from "../../store/album"
+import { useAlbums, NewAlbum, imageUrl, Album, ImageFile, Image } from "../../store/album"
 import { clone, isEmpty } from "lodash"
 import { useUser, User } from "../../store/user"
 import { useLoading } from "../../store/loading"
@@ -21,6 +21,10 @@ const store = useAlbums()
 const user = useUser()
 const bread = useBread()
 const { addLoading, delLoading, getLoading } = useLoading()
+
+interface Props {
+  images?: string
+}
 
 /**
  * Setup
@@ -40,6 +44,8 @@ const album = reactive<NewAlbum>({
   draft: false
 })
 
+const props = defineProps<Props>()
+
 // const drafts = ref<Array<Album>>([])
 const drafts = computed<Array<Album>>(() => store.drafts)
 
@@ -51,7 +57,6 @@ const singleDate = ref(false)
 const rawFileLength = ref(0)
 
 const isLoading = computed(() => files.values.some((file) => file.loading))
-// const uploadProgress = computed(() => `${[...files.values].filter((item) => item.key).length} / ${rawFileLength.value}`)
 const remainingProgress = computed(() => rawFileLength.value - [...files.values].filter((item) => item.key).length)
 const uploadPercentage = computed(
   () => ([...files.values].filter((item) => item.key).length / rawFileLength.value) * 100
@@ -78,6 +83,22 @@ onMounted(() => {
 
 onBeforeMount(async () => {
   bread.set("Upload a new album")
+
+  if (props.images) {
+    // Parse JSON of already existing images and assign them as if they were uploaded
+    const images = JSON.parse(props.images)
+
+    if (images.length > 0) {
+      for (const image of images) {
+        files.values.push({
+          name: image.fileName,
+          size: image.sizeBytes,
+          loading: false,
+          key: image.key
+        })
+      }
+    }
+  }
 
   addLoading("album-upload")
   await user.fetchUsers()
