@@ -60,10 +60,6 @@ async function uploadImage(e: any) {
 const selected = ref(new Map())
 const selectMode = ref(false)
 
-watch(selected, (value) => {
-  console.log(value)
-})
-
 function selectItem(item: Image) {
   if (selected.value.has(item.key)) {
     selected.value.delete(item.key)
@@ -76,6 +72,7 @@ function clearSelect() {
   selected.value = new Map()
   selectMode.value = false
 }
+
 function createSelect() {
   router.push({
     name: "Upload",
@@ -84,7 +81,9 @@ function createSelect() {
     }
   })
 }
-function deleteSelect() {}
+function deleteSelect() {
+  alert("Ask jokler or tmtu to implement")
+}
 </script>
 
 <template>

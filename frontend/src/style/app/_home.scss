@@ -152,6 +152,10 @@
   @include radius(3px);
   overflow: hidden;
   display: block;
+  max-width: 32px;
+  max-height: 24px;
+  object-fit: contain;
+  object-position: center;
 
   svg {
     display: block;

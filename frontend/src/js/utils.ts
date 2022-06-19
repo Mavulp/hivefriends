@@ -64,6 +64,10 @@ export async function fetchFlag(code: string, type: string = "svg"): Promise<str
   return fetch(url).then((r) => r.text())
 }
 
+export function flag(code: string, type: string = "svg") {
+  return `https://countryflagsapi.com/${type}/${code}`
+}
+
 export function median(numbers: Array<number>) {
   const sorted = Array.from(numbers).sort((a, b) => a - b)
   const middle = Math.floor(sorted.length / 2)
