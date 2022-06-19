@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { User, useUser } from "../../store/user"
-import { flag } from "../../js/utils"
+import { fetchFlag } from "../../js/utils"
 import { imageUrl } from "../../store/album"
 import countries from "../../js/countries"
+import { onBeforeMount, ref } from "vue"
 
 const user = useUser()
 
@@ -11,6 +12,13 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const flag = ref()
+
+onBeforeMount(async () => {
+  if (props.data.country) {
+    flag.value = await fetchFlag(props.data.country)
+  }
+})
 </script>
 
 <template>
@@ -26,7 +34,7 @@ const props = defineProps<Props>()
     <h5>{{ user.getUsername(props.data.username) }}</h5>
 
     <div v-if="props.data.country" :data-title-top="countries[props.data.country].name">
-      <img class="flag" :src="flag(props.data.country)" alt="" />
+      <div class="flag" v-html="flag"></div>
     </div>
     <div class="flex-1"></div>
 

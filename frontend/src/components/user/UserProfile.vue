@@ -7,7 +7,7 @@ import { computed, onBeforeMount, onBeforeUnmount, onMounted, ref, watchEffect }
 import { useUser, User } from "../../store/user"
 import { Album, imageUrl, useAlbums } from "../../store/album"
 import { useRoute } from "vue-router"
-import { TEXT_CONTRAST, formatDate, flag, sanitize } from "../../js/utils"
+import { TEXT_CONTRAST, formatDate, fetchFlag, sanitize } from "../../js/utils"
 import { useLoading } from "../../store/loading"
 import { useCssVar, useMediaQuery } from "@vueuse/core"
 import countries from "../../js/countries"
@@ -29,6 +29,7 @@ const imgheight = 512
 
 const user = computed<User>(() => users.users.find((item) => item.username === _id.value) as User)
 const accent = computed(() => color.value.split(",").map((item) => Number(item)))
+const flag = ref()
 
 onBeforeMount(() => {
   addLoading("profile")
@@ -36,9 +37,13 @@ onBeforeMount(() => {
   bread.set(`${users.getUsername(_id.value)}'s profile`)
 
   Promise.all([albums.fetchUserAlbums(_id.value), users.fetchUser(_id.value, true)])
-    .then(([albums]) => {
+    .then(async ([albums]) => {
       userAlbums.value = albums
       color.value = user.value.accentColor
+
+      if (user.value.country) {
+        flag.value = await fetchFlag(user.value.country)
+      }
     })
     .catch(() => {})
     .finally(() => {
@@ -95,7 +100,8 @@ watchEffect(() => {
             <h1>{{ user.displayName ?? user.username }}</h1>
             <div class="user-info-meta">
               <span v-if="user.country" :data-title-top="countries[user.country].name">
-                <img class="flag" :src="flag(user.country)" alt="" />
+                <!-- <img class="flag" :src="flag(user.country)" alt="" /> -->
+                <div class="flag" v-html="flag"></div>
               </span>
               <span>
                 Joined <b>{{ formatDate(user.createdAt) }}</b>
