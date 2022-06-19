@@ -9,7 +9,7 @@ import { Album, imageUrl, useAlbums } from "../../store/album"
 import { useRoute } from "vue-router"
 import { TEXT_CONTRAST, formatDate, flag, sanitize } from "../../js/utils"
 import { useLoading } from "../../store/loading"
-import { useCssVar } from "@vueuse/core"
+import { useCssVar, useMediaQuery } from "@vueuse/core"
 import countries from "../../js/countries"
 import { useBread } from "../../store/bread"
 
@@ -21,6 +21,7 @@ const bread = useBread()
 
 const wrap = ref(null)
 const color = useCssVar("--color-highlight", wrap)
+const isPhone = useMediaQuery("(max-width: 512px)")
 const _id = computed(() => route?.params?.user?.toString() ?? null)
 const userAlbums = ref<Array<Album>>([])
 const bgscrollpos = ref("50%")
@@ -49,12 +50,14 @@ onBeforeUnmount(() => {
   window.removeEventListener("scroll", () => {})
 })
 
+const strength = computed(() => (isPhone.value ? 1.2 : 2))
+
 onMounted(() => {
   window.addEventListener("scroll", () => {
     const top = window.scrollY
 
     if (top < imgheight) {
-      bgscrollpos.value = `calc(50% - ${top / 2}px)`
+      bgscrollpos.value = `calc(50% - ${top / strength.value}px)`
     }
   })
 })

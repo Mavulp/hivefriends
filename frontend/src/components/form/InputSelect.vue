@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onClickOutside } from "@vueuse/core"
+import { sanitize } from "../../js/utils"
 import { computed, ref, watch } from "vue"
 
 type Option = {
@@ -122,7 +123,7 @@ function setValue(item: Option) {
           :class="{ 'is-selected': selected && selected.includes(item.value) }"
           @click="setValue(item)"
         >
-          <div v-html="item.label" />
+          <div v-html="sanitize(item.label)" />
 
           <template v-if="!cantclear">
             <span class="remove-item material-icons" v-if="selected && selected.includes(item.value)"> &#xe5cd; </span>

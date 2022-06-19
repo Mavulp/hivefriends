@@ -267,6 +267,7 @@
           strong {
             margin-bottom: 0;
             font-size: 1.2rem;
+            white-space: nowrap;
           }
 
           button {
@@ -279,6 +280,7 @@
 
           .file-size {
             font-size: 1.2rem;
+            white-space: nowrap;
             color: rgb(var(--color-text-light));
           }
 
@@ -335,6 +337,19 @@
       padding: 40px;
       // background-color: rgb(var(--color-white));
       border-left: 1px solid rgb(var(--color-border-light));
+
+      .title-wrap {
+        @include flex($justify: space-between);
+        margin-bottom: 40px;
+
+        h3 {
+          margin-bottom: 0;
+        }
+
+        .hover-bubble {
+          color: rgb(var(--color-error));
+        }
+      }
 
       h3 {
         margin-bottom: 40px;

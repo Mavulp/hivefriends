@@ -6,7 +6,7 @@ use std::sync::Arc;
 use std::time::SystemTime;
 
 use crate::api::{auth::Authorize, error::Error, image::image_exists};
-use crate::util::non_empty_str;
+use crate::util::{check_length, non_empty_str};
 use crate::{AppState, DbInteractable, SqliteDatabase};
 
 use super::Timeframe;
@@ -45,6 +45,14 @@ pub(super) async fn post<D: SqliteDatabase>(
             return Err(Error::InvalidTimeframe);
         }
     }
+
+    check_length("title", Some(&request.title), super::MAXIMUM_TITLE_LENGTH)?;
+
+    check_length(
+        "description",
+        request.description.as_deref(),
+        super::MAXIMUM_DESCRIPTION_LENGTH,
+    )?;
 
     let now = SystemTime::UNIX_EPOCH
         .elapsed()

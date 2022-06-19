@@ -19,6 +19,12 @@ pub enum Error {
     #[error("Unathorized")]
     Unathorized,
 
+    #[error("Missing image data in multipart message")]
+    NoImage,
+
+    #[error("Failed to process image: {0}")]
+    ImageError(#[from] image::ImageError),
+
     #[error("Comment does not belong to specified image")]
     WrongImage,
 
@@ -39,6 +45,12 @@ pub enum Error {
 
     #[error("One of the album or image keys is not valid")]
     InvalidKey,
+
+    #[error("{field} should not be longer than {maximum_length} characters")]
+    TooManyCharacters {
+        field: &'static str,
+        maximum_length: u64,
+    },
 
     #[error("Invalid argument(s): {0}")]
     InvalidArguments(anyhow::Error),
@@ -71,9 +83,12 @@ impl IntoResponse for Error {
             }
             Error::InvalidCoverKey
             | Error::InvalidKey
+            | Error::NoImage
+            | Error::ImageError(_)
             | Error::InvalidTimeframe
             | Error::InvalidUsername
             | Error::WrongImage
+            | Error::TooManyCharacters { .. }
             | Error::JsonRejection(_)
             | Error::MultipartSizeRejection(_)
             | Error::InvalidArguments(_) => StatusCode::BAD_REQUEST,

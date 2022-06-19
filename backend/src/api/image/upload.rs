@@ -18,8 +18,8 @@ use std::sync::Arc;
 use std::time::SystemTime;
 
 use super::orientation::ExifOrientation;
-use super::DbImageMetadata;
-use crate::api::{auth::Authorize, error::Error, image::ImageMetadata};
+use super::{DbImage, DbImageMetadata, Image};
+use crate::api::{auth::Authorize, error::Error};
 use crate::AppState;
 
 const MB: u64 = 1024 * 1024;
@@ -29,106 +29,94 @@ pub(super) async fn post(
         ContentLengthLimit<Multipart, { 25 * MB }>,
         ContentLengthLimitRejection<MultipartRejection>,
     >,
-    Authorize(username): Authorize,
+    Authorize(uploader): Authorize,
     Extension(state): Extension<Arc<AppState>>,
-) -> Result<Json<ImageMetadata>, Error> {
-    let multipart = multipart?.0;
+) -> Result<Json<Image>, Error> {
+    let mut multipart = multipart?.0;
 
-    match upload_image(multipart, username, &state).await {
-        Ok(response) => Ok(Json(response)),
-        Err(e) if e.is::<ImageCreationError>() => {
-            match e.downcast_ref::<ImageCreationError>().unwrap() {
-                ImageCreationError::NoImage => Err(Error::InvalidArguments(e)),
-                ImageCreationError::ImageError(_) => Err(Error::InvalidArguments(e)),
-            }
-        }
-        Err(e) => Err(Error::InternalError(e)),
-    }
-}
-
-#[derive(Debug, thiserror::Error)]
-enum ImageCreationError {
-    #[error("Missing image data in multipart message")]
-    NoImage,
-
-    #[error("Failed to process image: {0}")]
-    ImageError(#[from] image::ImageError),
-}
-
-async fn upload_image(
-    mut multipart: Multipart,
-    uploader: String,
-    state: &Arc<AppState>,
-) -> anyhow::Result<ImageMetadata> {
-    let uploaded_at = SystemTime::UNIX_EPOCH.elapsed()?.as_secs();
+    let uploaded_at = SystemTime::UNIX_EPOCH
+        .elapsed()
+        .context("Failed to get timestamp")?
+        .as_secs();
 
     let field = multipart
         .next_field()
-        .await?
-        .ok_or(ImageCreationError::NoImage)?;
+        .await
+        .context("Failed to read multipart field")?
+        .ok_or(Error::NoImage)?;
 
     let file_name = field
         .file_name()
         .map(|s| s.to_owned())
         .unwrap_or_else(|| String::from("unknown"));
-    let data = field.bytes().await?;
+    let data = field.bytes().await.context("Failed to get image data")?;
     let size_bytes = data.len() as u64;
 
     let key = blob_uuid::random_blob();
     let image_key = key.clone();
 
-    let mut metadata = DbImageMetadata {
+    let mut metadata = DbImage {
         key,
-        uploader,
-        file_name,
-        size_bytes,
-        taken_at: None,
-        location_latitude: None,
-        location_longitude: None,
-        camera_brand: None,
-        camera_model: None,
-        exposure_time: None,
-        f_number: None,
-        focal_length: None,
-
         description: None,
+        uploader,
         uploaded_at,
+        metadata: DbImageMetadata {
+            file_name,
+            size_bytes,
+            taken_at: None,
+            location_latitude: None,
+            location_longitude: None,
+            camera_brand: None,
+            camera_model: None,
+            exposure_time: None,
+            f_number: None,
+            focal_length: None,
+        },
     };
 
     let mut orientation = None;
 
     let mut bufreader = std::io::BufReader::new(Cursor::new(&*data));
     let exifreader = exif::Reader::new();
-    if let Ok(exif) = exifreader.read_from_container(&mut bufreader) {
-        populate_metadata_from_exif(&mut metadata, &exif);
-        orientation = exif
-            .get_field(exif::Tag::Orientation, exif::In::PRIMARY)
-            .and_then(|f| {
-                if let exif::Value::Short(v) = &f.value {
-                    ExifOrientation::try_from(v[0]).ok()
-                } else {
-                    warn!("Unexpected format of camera model exif field");
-                    None
-                }
-            });
+    match exifreader.read_from_container(&mut bufreader) {
+        Ok(exif) => {
+            populate_metadata_from_exif(&mut metadata.metadata, &exif);
+            orientation = exif
+                .get_field(exif::Tag::Orientation, exif::In::PRIMARY)
+                .and_then(|f| {
+                    if let exif::Value::Short(v) = &f.value {
+                        ExifOrientation::try_from(v[0]).ok()
+                    } else {
+                        warn!("Unexpected format of camera model exif field");
+                        None
+                    }
+                });
+        }
+        Err(e) => {
+            warn!("Failed to read EXIF metadata: {}", e);
+        }
     }
 
     store_image(
         state.data_path.clone(),
         &image_key,
-        &metadata.file_name,
+        &metadata.metadata.file_name,
         &data,
         &orientation.unwrap_or(ExifOrientation::Normal),
     )
     .await?;
 
     let cmetadata = metadata.clone();
-    let conn = state.pool.get().await?;
+    let conn = state
+        .pool
+        .get()
+        .await
+        .context("Failed getting DB connection")?;
     conn.interact(move |conn| super::insert(&cmetadata, conn))
         .await
         .unwrap()?;
 
-    Ok(ImageMetadata::from_db(metadata))
+    Ok(Json(Image::from_db(metadata)))
 }
 
 fn populate_metadata_from_exif(metadata: &mut DbImageMetadata, exif: &exif::Exif) {
@@ -242,8 +230,8 @@ async fn store_image(
     file_name: &str,
     data: &[u8],
     orientation: &ExifOrientation,
-) -> anyhow::Result<()> {
-    let image = image::load_from_memory(data)?;
+) -> Result<(), Error> {
+    let image = image::load_from_memory(data).map_err(Error::ImageError)?;
     let image = orientation.apply_to_image(image);
     let (width, height) = (image.width(), image.height());
     let image = ImageKind::Generated(Arc::new(image));
@@ -258,10 +246,14 @@ async fn store_image(
     let mut original_path = image_dir.clone();
     original_path.push("original");
 
-    fs::create_dir_all(&original_path).await?;
+    fs::create_dir_all(&original_path)
+        .await
+        .context("Failed to create image directory")?;
     original_path.push(file_name);
 
-    fs::write(original_path, &data).await.context("Failed to write original file")?;
+    fs::write(original_path, &data)
+        .await
+        .context("Failed to write original file")?;
 
     let mut buffer = Vec::new();
 
@@ -279,10 +271,12 @@ async fn store_image(
                 buffer.clear();
                 let mut cursor = Cursor::new(&mut buffer);
                 image.write_to(&mut cursor, image::ImageOutputFormat::Jpeg(100))?;
-                fs::write(path, &buffer).await.context("Failed to write jpg")?;
+                fs::write(path, &buffer)
+                    .await
+                    .context("Failed to write jpg")?;
             }
             ImageKind::Symlink(_) => {
-                symlink("full.jpg", path)?;
+                symlink("full.jpg", path).context("Failed to create symlink")?;
             }
         }
     }

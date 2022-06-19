@@ -34,7 +34,8 @@ CREATE TABLE comments (
 
     CONSTRAINT fk_album_key_assoc
         FOREIGN KEY (album_key)
-        REFERENCES albums (key),
+        REFERENCES albums (key)
+        ON DELETE CASCADE,
 
     CONSTRAINT fk_image_key_assoc
         FOREIGN KEY (image_key)

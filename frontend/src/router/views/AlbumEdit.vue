@@ -8,7 +8,7 @@ import InputCheckbox from "../../components/form/InputCheckbox.vue"
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 
 import { computed, nextTick, onBeforeMount, reactive, ref, onMounted } from "vue"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import { Album, NewAlbum, useAlbums, imageUrl, ImageFile, Image } from "../../store/album"
 import { useLoading } from "../../store/loading"
 import { useUser, User } from "../../store/user"
@@ -23,6 +23,7 @@ import { useBread } from "../../store/bread"
 
 const { addLoading, getLoading, delLoading } = useLoading()
 const route = useRoute()
+const router = useRouter()
 const albums = useAlbums()
 const user = useUser()
 const bread = useBread()
@@ -76,7 +77,8 @@ function onSubmitHandler(e: any, fromField: boolean = false) {
 
 async function uploadFiles(_files: any) {
   let i = files.values.length
-  rawFileLength.value = _files.length
+
+  rawFileLength.value += _files.length
 
   for (const file of _files) {
     if (!file) continue
@@ -231,6 +233,15 @@ function dragCompare() {
     drag_over.value = null
   })
 }
+
+/**
+ * Delete album
+ */
+
+async function deleteAlbum() {
+  await albums.deleteAlbum(_id.value)
+  router.push({ name: "UserAlbums", params: { user: user.user.username } })
+}
 </script>
 
 <template>
@@ -275,7 +286,13 @@ function dragCompare() {
       </div>
 
       <div class="album-upload-metadata" v-if="!getLoading('edit')">
-        <h3>Edit album</h3>
+        <div class="title-wrap">
+          <h3>Edit album</h3>
+          <button @click="deleteAlbum" class="hover-bubble bubble-red">
+            Delete album
+            <span class="material-icons rotate" v-if="getLoading('delete-albums')">&#xe863;</span>
+          </button>
+        </div>
 
         <InputText v-model:value="album.title" placeholder="Album name" label="Title" required :error="errors.title" />
         <InputTextarea v-model:value="album.description" placeholder="Album description" label="Description" />

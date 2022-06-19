@@ -1,4 +1,6 @@
-# Post Launch TODO
+# Bugs
+
+## Post Launch TODO
 
 - [ ] Image detail
 

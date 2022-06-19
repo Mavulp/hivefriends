@@ -1,4 +1,6 @@
+use crate::api::error::Error;
 use serde::{Deserialize, Deserializer};
+use std::ops::Deref;
 
 pub(super) fn non_empty_str<'de, D: Deserializer<'de>>(d: D) -> Result<Option<String>, D::Error> {
     let o: Option<String> = Option::deserialize(d)?;
@@ -17,6 +19,24 @@ where
     }
 
     Ok(None)
+}
+
+pub fn check_length(
+    field_name: &'static str,
+    field: Option<&str>,
+    maximum_length: u64,
+) -> Result<(), Error> {
+    if let Some(field) = field {
+        let field = &field.deref();
+        if field.len() as u64 > maximum_length {
+            return Err(Error::TooManyCharacters {
+                field: field_name,
+                maximum_length,
+            });
+        }
+    }
+
+    Ok(())
 }
 
 #[cfg(test)]
@@ -107,10 +127,9 @@ pub mod test {
     pub fn insert_image(uploader: &str, conn: &rusqlite::Connection) -> anyhow::Result<String> {
         let key = blob_uuid::random_blob();
 
-        let i = image::DbImageMetadata {
+        let i = image::DbImage {
             key: key.clone(),
             uploader: uploader.to_string(),
-            size_bytes: 0,
             uploaded_at: 0,
 
             ..Default::default()

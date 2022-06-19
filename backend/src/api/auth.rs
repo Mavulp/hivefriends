@@ -90,9 +90,9 @@ pub enum AuthorizationRejection {
     Extension(#[from] ExtensionRejection),
     #[error("{0}")]
     Headers(#[from] TypedHeaderRejection),
-    #[error("Bearer token is invalid")]
+    #[error("Invalid session, please login again")]
     InvalidToken,
-    #[error("Bearer token has expired, login again")]
+    #[error("Your session has expired, please login again")]
     ExpiredToken,
     #[error("{0}")]
     Generic(#[from] anyhow::Error),

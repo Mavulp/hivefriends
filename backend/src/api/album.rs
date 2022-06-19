@@ -1,25 +1,30 @@
 use anyhow::Context;
 use axum::{
-    routing::{get, post, put},
+    routing::{delete, get, post, put},
     Router,
 };
-use rusqlite::{params, Connection, ToSql};
+use rusqlite::{params, Connection, OptionalExtension, ToSql};
 use serde::{Deserialize, Serialize};
-use serde_rusqlite::to_params_named;
+use serde_rusqlite::{from_row, to_params_named};
 
 use crate::api::error::Error;
 use crate::util::comma_string;
 use crate::FileDb;
 
 use super::{image, user};
+use crate::api::image::{DbImage, Image};
 
 mod create;
 mod create_share_token;
+mod delete_album;
 mod get_all;
 mod get_by_key;
 mod get_by_share_token;
 mod get_filters;
 mod update;
+
+const MAXIMUM_TITLE_LENGTH: u64 = 96;
+const MAXIMUM_DESCRIPTION_LENGTH: u64 = 600;
 
 pub fn api_route() -> Router {
     Router::new()
@@ -28,6 +33,7 @@ pub fn api_route() -> Router {
         .route("/filters", get(get_filters::get::<FileDb>))
         .route("/:key", get(get_by_key::get::<FileDb>))
         .route("/:key", put(update::put::<FileDb>))
+        .route("/:key", delete(delete_album::delete::<FileDb>))
 }
 
 pub fn public_api_route() -> Router {
@@ -43,6 +49,61 @@ pub fn public_api_route() -> Router {
 pub struct Timeframe {
     from: Option<i64>,
     to: Option<i64>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub(super) struct AlbumImage {
+    pub comment_count: u32,
+
+    #[serde(flatten)]
+    pub image: Image,
+}
+
+impl From<DbAlbumImage> for AlbumImage {
+    fn from(meta: DbAlbumImage) -> Self {
+        AlbumImage {
+            comment_count: meta.comment_count,
+            image: Image::from_db(meta.image),
+        }
+    }
+}
+
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+pub(super) struct DbAlbumImage {
+    comment_count: u32,
+
+    #[serde(flatten)]
+    image: DbImage,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(super) struct Album {
+    key: String,
+    title: String,
+    description: Option<String>,
+    cover_key: String,
+    author: String,
+    draft: bool,
+    timeframe: Timeframe,
+    created_at: u64,
+    images: Vec<AlbumImage>,
+    tagged_users: Vec<String>,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(super) struct AlbumMetadata {
+    key: String,
+    title: String,
+    description: Option<String>,
+    cover_key: String,
+    author: String,
+    draft: bool,
+    timeframe: Timeframe,
+    created_at: u64,
+    tagged_users: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -81,7 +142,7 @@ pub struct InsertShareToken<'a> {
     pub created_at: u64,
 }
 
-pub fn is_owner(album_key: &str, user: &str, conn: &Connection) -> anyhow::Result<bool> {
+pub fn is_owner(album_key: &str, user: &str, conn: &Connection) -> Result<bool, Error> {
     let result = conn.query_row(
         "SELECT author FROM albums WHERE key = ?1",
         params![album_key],
@@ -89,11 +150,101 @@ pub fn is_owner(album_key: &str, user: &str, conn: &Connection) -> anyhow::Resul
     );
 
     if matches!(result, Err(rusqlite::Error::QueryReturnedNoRows)) {
-        Ok(false)
+        Err(Error::NotFound)
     } else {
-        let author = result?;
+        let author = result.map_err(anyhow::Error::new)?;
 
         Ok(author == user)
+    }
+}
+
+pub(super) fn get_album(album_key: &str, conn: &Connection) -> anyhow::Result<Option<Album>> {
+    let result = conn
+        .query_row(
+            "SELECT \
+                key, \
+                title, \
+                description, \
+                cover_key, \
+                author, \
+                draft, \
+                timeframe_from, \
+                timeframe_to, \
+                created_at \
+            FROM albums \
+            WHERE key=?1",
+            params![album_key],
+            |row| Ok(from_row::<DbAlbum>(row).unwrap()),
+        )
+        .optional()
+        .context("Failed to query albums")?;
+
+    if let Some(db_album) = result {
+        let mut stmt = conn
+            .prepare(
+                "SELECT \
+                    i.key, \
+                    i.description, \
+                    i.uploader, \
+                    i.uploaded_at, \
+                    i.file_name, \
+                    i.size_bytes, \
+                    i.taken_at, \
+                    i.location_latitude, \
+                    i.location_longitude, \
+                    i.camera_brand, \
+                    i.camera_model, \
+                    i.exposure_time, \
+                    i.f_number, \
+                    i.focal_length, \
+                    COUNT(c.id) AS comment_count \
+                FROM images i \
+                INNER JOIN album_image_associations aia ON aia.image_key=i.key \
+                LEFT JOIN comments c ON c.image_key=i.key \
+                WHERE aia.album_key=?1 \
+                GROUP BY i.key \
+                ORDER BY aia.idx",
+            )
+            .context("Failed to prepare statement for image query")?;
+        let image_iter = stmt
+            .query_map(params![db_album.key], |row| {
+                Ok(AlbumImage::from(from_row::<DbAlbumImage>(row).unwrap()))
+            })
+            .context("Failed to query images for album")?;
+
+        let images = image_iter
+            .collect::<Result<Vec<_>, _>>()
+            .context("Failed to collect album images")?;
+
+        let mut stmt = conn
+            .prepare(
+                "SELECT username FROM user_album_associations \
+                    WHERE album_key = ?1",
+            )
+            .context("Failed to prepare statement for album query")?;
+        let tagged_users = stmt
+            .query_map(params![&db_album.key], |row| row.get(0))
+            .context("Failed to query tagged users")?
+            .collect::<Result<Vec<String>, _>>()
+            .context("Failed to collect tagged users")?;
+
+        Ok(Some(Album {
+            key: db_album.key,
+            title: db_album.title,
+            description: db_album.description,
+            cover_key: db_album.cover_key,
+            author: db_album.author,
+            draft: db_album.draft,
+            timeframe: Timeframe {
+                from: db_album.timeframe_from,
+                to: db_album.timeframe_to,
+            },
+            created_at: db_album.created_at,
+            images,
+            tagged_users,
+        }))
+    } else {
+        Ok(None)
     }
 }
 

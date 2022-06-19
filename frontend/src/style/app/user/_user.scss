@@ -35,7 +35,7 @@
         z-index: 2;
         position: relative;
 
-        background-position: center 50%;
+        background-position-y: calc(50% + 0px);
         background-repeat: no-repeat;
         background-size: cover;
         background-attachment: fixed;

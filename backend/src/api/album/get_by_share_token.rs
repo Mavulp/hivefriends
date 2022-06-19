@@ -8,7 +8,7 @@ use serde_rusqlite::from_row;
 use std::sync::Arc;
 
 use crate::api::error::Error;
-use crate::api::image::{DbImageMetadata, ImageMetadata};
+use crate::api::image::{DbImage, Image};
 use crate::api::public_auth::PublicAuthorize;
 use crate::{AppState, DbInteractable, SqliteDatabase};
 
@@ -25,7 +25,7 @@ pub(super) struct AlbumResponse {
     draft: bool,
     timeframe: Timeframe,
     created_at: u64,
-    images: Vec<ImageMetadata>,
+    images: Vec<Image>,
     tagged_users: Vec<String>,
 }
 
@@ -80,9 +80,7 @@ pub(super) async fn get<D: SqliteDatabase>(
                 .context("Failed to prepare statement for image query")?;
             let image_iter = stmt
                 .query_map(params![db_album.key], |row| {
-                    Ok(ImageMetadata::from_db(
-                        from_row::<DbImageMetadata>(row).unwrap(),
-                    ))
+                    Ok(Image::from_db(from_row::<DbImage>(row).unwrap()))
                 })
                 .context("Failed to query images for album")?;
 
