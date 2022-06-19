@@ -60,28 +60,58 @@
         padding: 32px 0;
 
         .user-info-meta {
-          @include flex($gap: 4px 0, $align: flex-start, $wrap: wrap);
+          @include flex($gap: 4px 0, $align: center, $wrap: wrap);
 
           width: 100%;
           margin-bottom: 40px;
 
+          a,
           span {
             display: block;
             margin: 0;
             font-size: 1.6rem;
             white-space: nowrap;
 
-            &:first-child {
-              margin-right: 16px;
+            &:nth-of-type(2) {
+              margin-left: 12px;
             }
 
-            &:not(:first-child) {
-              margin-right: 40px;
+            &:nth-of-type(3) {
+              margin-left: 48px;
             }
 
             b {
               font-size: 1.6rem;
               display: inline;
+            }
+          }
+
+          a {
+            @include radius(6px);
+            @include t(0.1s);
+            padding: 4px 8px;
+            margin-left: 8px;
+
+            &:hover {
+              &.black {
+                background-color: rgba(#fff, 0.75);
+              }
+
+              &.white {
+                background-color: rgba(#191716, 0.75);
+              }
+            }
+
+            &.black {
+              color: #191716 !important;
+
+              background-color: rgba(#fff, 0.3);
+            }
+
+            &.white {
+              color: #fff !important;
+
+              background-color: rgba(#191716, 0.3);
             }
           }
         }
@@ -156,51 +186,70 @@
     }
   }
 
-  // .hi-user-profile .user-albums .user-albums-list
-
-  .user-albums {
+  .user-expand {
+    @include grid(64px, 1fr 1fr);
     width: 100%;
     margin: 0 auto;
     max-width: 1480px;
     padding: 32px;
     padding-bottom: 256px;
 
-    .albums-title-wrap {
-      @include flex($justify: space-between);
-      margin-bottom: 40px;
-
+    .user-albums {
       h2 {
         color: rgb(var(--color-highlight));
-        margin: 0;
       }
-    }
 
-    p {
-      font-size: 2rem;
-
-      b {
+      p {
         font-size: 2rem;
-        display: inline;
+
+        b {
+          font-size: 2rem;
+          display: inline;
+        }
+      }
+
+      .user-albums-list {
+        .album-list-item {
+          margin-bottom: 40px;
+
+          .album-image {
+            height: 316px;
+          }
+
+          .album-meta {
+            h2 {
+              font-size: 3.6rem;
+            }
+          }
+        }
       }
     }
 
-    .user-albums-list {
-      display: grid;
-      width: 100%;
-      gap: 32px;
-      // grid-template-columns: repeat(auto-fit, minmax(416px, 1fr));
-      grid-template-columns: 1fr 1fr;
+    .user-met-with-wrap {
+      padding: 0 64px;
 
-      .album-list-item {
-        margin-bottom: 0;
+      .user-met-with {
+        max-width: 392px;
+        width: 100%;
+        margin: 0 auto;
 
-        .album-image {
-          height: 356px;
+        h4 {
+          @include flex();
+          span {
+            font-size: 4rem;
+            // transform: translateY(4px);
+            color: rgb(Var(--color-highlight));
+          }
         }
 
-        .album-meta {
-          h2 {
-            font-size: 3.6rem;
+        .album-tagged-user {
+          .user-image {
+            width: 48px;
+            height: 48px;
+          }
+
+          span {
+            font-size: 1.8rem;
           }
         }
       }
