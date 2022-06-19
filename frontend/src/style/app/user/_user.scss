@@ -267,6 +267,9 @@
 }
 
 .social-wrap {
+  @include flex($gap: 8px);
+  margin-bottom: 64px;
+
   &.black .social-link {
     color: #191716 !important;
   }
@@ -288,6 +291,7 @@
   padding: 6px 12px;
   width: auto;
   background-color: rgba(var(--color-highlight), 0.6);
+  color: rgb(Var(--color-text));
 
   &:hover {
     background-color: rgba(var(--color-highlight), 1);

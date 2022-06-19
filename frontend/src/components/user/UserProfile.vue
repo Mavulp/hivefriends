@@ -111,9 +111,9 @@ const social: Array<Social> = [
     <template v-else>
       <div class="user-profile-upper" :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]">
         <div class="hi-user-banner">
-          <div class="social-wrap" :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]">
+          <!-- <div class="social-wrap" :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]">
             <SocialLink v-for="link in social" :key="link.name" :link="link" />
-          </div>
+          </div> -->
 
           <div
             class="banner"
@@ -174,6 +174,11 @@ const social: Array<Social> = [
           </template>
         </div>
         <div class="user-met-with-wrap">
+          <div class="social-wrap">
+            i dont like it, put it somewher elese
+            <SocialLink v-for="link in social" :key="link.name" :link="link" />
+          </div>
+
           <div class="user-met-with" v-if="user.met.length > 0">
             <h4>
               <span class="material-icons">&#xe7fb;</span>
