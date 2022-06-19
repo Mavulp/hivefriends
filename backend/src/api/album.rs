@@ -9,7 +9,6 @@ use serde_rusqlite::{from_row, to_params_named};
 
 use crate::api::error::Error;
 use crate::util::comma_string;
-use crate::FileDb;
 
 use super::{image, user};
 use crate::api::image::{DbImage, Image};
@@ -28,18 +27,18 @@ const MAXIMUM_DESCRIPTION_LENGTH: u64 = 600;
 
 pub fn api_route() -> Router {
     Router::new()
-        .route("/", post(create::post::<FileDb>))
-        .route("/", get(get_all::get::<FileDb>))
-        .route("/filters", get(get_filters::get::<FileDb>))
-        .route("/:key", get(get_by_key::get::<FileDb>))
-        .route("/:key", put(update::put::<FileDb>))
-        .route("/:key", delete(delete_album::delete::<FileDb>))
+        .route("/", post(create::post))
+        .route("/", get(get_all::get))
+        .route("/filters", get(get_filters::get))
+        .route("/:key", get(get_by_key::get))
+        .route("/:key", put(update::put))
+        .route("/:key", delete(delete_album::delete))
 }
 
 pub fn public_api_route() -> Router {
     Router::new()
-        .route("/:album", post(create_share_token::post::<FileDb>))
-        .route("/:album/:token", get(get_by_share_token::get::<FileDb>))
+        .route("/:album", post(create_share_token::post))
+        .route("/:album/:token", get(get_by_share_token::get))
 }
 
 // The timeframe is serialized into the database which uses snake_case and responses which use

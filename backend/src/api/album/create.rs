@@ -7,7 +7,7 @@ use std::time::SystemTime;
 
 use crate::api::{auth::Authorize, error::Error, image::image_exists};
 use crate::util::{check_length, non_empty_str};
-use crate::{AppState, DbInteractable, SqliteDatabase};
+use crate::AppState;
 
 use super::Timeframe;
 
@@ -32,13 +32,12 @@ pub(super) struct CreateAlbumResponse {
     key: String,
 }
 
-pub(super) async fn post<D: SqliteDatabase>(
+pub(super) async fn post(
     request: Result<Json<CreateAlbumRequest>, JsonRejection>,
     Authorize(username): Authorize,
-    Extension(state): Extension<Arc<AppState<D>>>,
+    Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<CreateAlbumResponse>, Error> {
     let Json(request) = request?;
-    let conn = state.pool.get().await.context("Failed to get connection")?;
 
     if let (Some(from), Some(to)) = (request.timeframe.from, request.timeframe.to) {
         if from > to {
@@ -61,35 +60,37 @@ pub(super) async fn post<D: SqliteDatabase>(
     let key = blob_uuid::random_blob();
 
     let album_key = key.clone();
-    conn.interact::<_, Result<_, Error>>(move |conn| {
-        if !image_exists(&request.cover_key, conn)? {
-            return Err(Error::InvalidCoverKey);
-        }
+    state
+        .db
+        .call(move |conn| {
+            if !image_exists(&request.cover_key, conn)? {
+                return Err(Error::InvalidCoverKey);
+            }
 
-        let tx = conn.transaction().context("Failed to create transaction")?;
+            let tx = conn.transaction().context("Failed to create transaction")?;
 
-        super::insert_album(
-            super::InsertAlbum {
-                key: &album_key,
-                title: &request.title,
-                description: request.description.as_deref(),
-                cover_key: &request.cover_key,
-                author: &username,
-                draft: request.draft,
-                timeframe_from: request.timeframe.from,
-                timeframe_to: request.timeframe.to,
-                created_at: now,
-                image_keys: &request.image_keys,
-                tagged_users: &request.tagged_users,
-            },
-            &tx,
-        )?;
+            super::insert_album(
+                super::InsertAlbum {
+                    key: &album_key,
+                    title: &request.title,
+                    description: request.description.as_deref(),
+                    cover_key: &request.cover_key,
+                    author: &username,
+                    draft: request.draft,
+                    timeframe_from: request.timeframe.from,
+                    timeframe_to: request.timeframe.to,
+                    created_at: now,
+                    image_keys: &request.image_keys,
+                    tagged_users: &request.tagged_users,
+                },
+                &tx,
+            )?;
 
-        tx.commit().context("Failed to commit transaction")?;
+            tx.commit().context("Failed to commit transaction")?;
 
-        Ok(())
-    })
-    .await?;
+            Ok(())
+        })
+        .await?;
 
     Ok(Json(CreateAlbumResponse { key }))
 }
@@ -104,23 +105,20 @@ mod test {
     async fn create_album() {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
-
-        let result: anyhow::Result<(String, String, Vec<String>)> = conn
-            .interact(move |conn| {
-                let user = insert_user("test", conn)?;
-                let user2 = insert_user("test2", conn)?;
+        let (user_a, user_b, images) = state
+            .db
+            .call(move |conn| {
+                let user_a = insert_user("test", conn).unwrap();
+                let user_b = insert_user("test2", conn).unwrap();
                 let images = vec![
-                    insert_image(&user, conn)?,
-                    insert_image(&user, conn)?,
-                    insert_image(&user, conn)?,
+                    insert_image(&user_a, conn).unwrap(),
+                    insert_image(&user_a, conn).unwrap(),
+                    insert_image(&user_a, conn).unwrap(),
                 ];
 
-                Ok((user, user2, images))
+                (user_a, user_b, images)
             })
             .await;
-
-        let (user, user2, images) = result.unwrap();
 
         let request = CreateAlbumRequest {
             title: "album".into(),
@@ -131,11 +129,11 @@ mod test {
                 to: Some(10),
             },
             image_keys: images,
-            tagged_users: vec![user.clone(), user2],
+            tagged_users: vec![user_a.clone(), user_b],
             draft: true,
         };
 
-        let result = post(Ok(Json(request)), Authorize(user), Extension(state)).await;
+        let result = post(Ok(Json(request)), Authorize(user_a), Extension(state)).await;
 
         assert_matches!(result, Ok(_));
     }
@@ -144,17 +142,10 @@ mod test {
     async fn create_album_cover_key_not_in_image_keys() {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
-
-        let result: anyhow::Result<String> = conn
-            .interact(move |conn| {
-                let user = insert_user("test", conn)?;
-
-                Ok(user)
-            })
+        let user = state
+            .db
+            .call(move |conn| insert_user("test", conn).unwrap())
             .await;
-
-        let user = result.unwrap();
 
         let request = CreateAlbumRequest {
             title: "album".into(),
@@ -171,18 +162,15 @@ mod test {
     async fn create_album_invalid_tagged_user() {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
+        let (user, image) = state
+            .db
+            .call(move |conn| {
+                let user = insert_user("test", conn).unwrap();
+                let image = insert_image(&user, conn).unwrap();
 
-        let result: anyhow::Result<(String, String)> = conn
-            .interact(move |conn| {
-                let user = insert_user("test", conn)?;
-                let image = insert_image(&user, conn)?;
-
-                Ok((user, image))
+                (user, image)
             })
             .await;
-
-        let (user, image) = result.unwrap();
 
         let request = CreateAlbumRequest {
             title: "album".into(),
@@ -201,18 +189,15 @@ mod test {
     async fn create_album_invalid_timeframe() {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
+        let (user, image) = state
+            .db
+            .call(move |conn| {
+                let user = insert_user("test", conn).unwrap();
+                let image = insert_image(&user, conn).unwrap();
 
-        let result: anyhow::Result<(String, String)> = conn
-            .interact(move |conn| {
-                let user = insert_user("test", conn)?;
-                let image = insert_image(&user, conn)?;
-
-                Ok((user, image))
+                (user, image)
             })
             .await;
-
-        let (user, image) = result.unwrap();
 
         let request = CreateAlbumRequest {
             title: "album".into(),

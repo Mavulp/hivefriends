@@ -7,27 +7,27 @@ use std::sync::Arc;
 
 use crate::api::auth::Authorize;
 use crate::api::error::Error;
-use crate::{AppState, DbInteractable, SqliteDatabase};
+use crate::AppState;
 
-pub(super) async fn delete<D: SqliteDatabase>(
+pub(super) async fn delete(
     Path(album_key): Path<String>,
     Authorize(user): Authorize,
-    Extension(state): Extension<Arc<AppState<D>>>,
+    Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<()>, Error> {
-    let conn = state.pool.get().await.context("Failed to get connection")?;
+    state
+        .db
+        .call(move |conn| {
+            if super::is_owner(&album_key, &user, conn)? {
+                info!("Deleting album {album_key}");
+                conn.execute("DELETE FROM albums WHERE key = ?1", params![album_key])
+                    .context("Failed to delete album")?;
 
-    conn.interact(move |conn| {
-        if super::is_owner(&album_key, &user, conn)? {
-            info!("Deleting album {album_key}");
-            conn.execute("DELETE FROM albums WHERE key = ?1", params![album_key])
-                .context("Failed to delete album")?;
-
-            Ok(Json(()))
-        } else {
-            Err(Error::Unathorized)
-        }
-    })
-    .await
+                Ok(Json(()))
+            } else {
+                Err(Error::Unathorized)
+            }
+        })
+        .await
 }
 
 #[cfg(test)]
@@ -41,12 +41,11 @@ mod test {
     async fn delete_album_invalid_album() {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
-
-        let result: anyhow::Result<String> = conn
-            .interact(move |conn| {
-                let user = insert_user("test", conn)?;
-                let image = insert_image(&user, conn)?;
+        let user = state
+            .db
+            .call(move |conn| {
+                let user = insert_user("test", conn).unwrap();
+                let image = insert_image(&user, conn).unwrap();
                 let _ = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -55,13 +54,12 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )?;
+                )
+                .unwrap();
 
-                Ok(user)
+                user
             })
             .await;
-
-        let user = result.unwrap();
 
         let result = delete(Path(String::new()), Authorize(user), Extension(state)).await;
 
@@ -72,12 +70,11 @@ mod test {
     async fn delete_album_wrong_user() {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
-
-        let result: anyhow::Result<(String, String)> = conn
-            .interact(move |conn| {
-                let user = insert_user("test", conn)?;
-                let image = insert_image(&user, conn)?;
+        let (user2, album) = state
+            .db
+            .call(move |conn| {
+                let user = insert_user("test", conn).unwrap();
+                let image = insert_image(&user, conn).unwrap();
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -86,16 +83,15 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )?;
-                let user2 = insert_user("test2", conn)?;
+                )
+                .unwrap();
+                let user2 = insert_user("test2", conn).unwrap();
 
-                Ok((user2, album))
+                (user2, album)
             })
             .await;
 
-        let (user2, key) = result.unwrap();
-
-        let result = delete(Path(key), Authorize(user2), Extension(state)).await;
+        let result = delete(Path(album), Authorize(user2), Extension(state)).await;
 
         assert_matches!(result, Err(Error::Unathorized));
     }
@@ -104,12 +100,11 @@ mod test {
     async fn delete_album_same_user() {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
-
-        let result: anyhow::Result<(String, String)> = conn
-            .interact(move |conn| {
-                let user = insert_user("test", conn)?;
-                let image = insert_image(&user, conn)?;
+        let (user, album) = state
+            .db
+            .call(move |conn| {
+                let user = insert_user("test", conn).unwrap();
+                let image = insert_image(&user, conn).unwrap();
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -118,15 +113,14 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )?;
+                )
+                .unwrap();
 
-                Ok((user, album))
+                (user, album)
             })
             .await;
 
-        let (user, album_key) = result.unwrap();
-
-        let result = delete(Path(album_key.clone()), Authorize(user), Extension(state)).await;
+        let result = delete(Path(album.clone()), Authorize(user), Extension(state)).await;
 
         assert_matches!(result, Ok(Json(result)) => {
             assert_eq!((), result);

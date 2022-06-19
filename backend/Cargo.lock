@@ -747,6 +747,7 @@ dependencies = [
  "test-case",
  "thiserror",
  "tokio",
+ "tokio-rusqlite",
  "tower-http",
  "tracing",
  "tracing-appender",
@@ -1895,6 +1896,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f7d995660bd2b7f8c1568414c1126076c13fbb725c40112dc0120b78eb9b717b"
 dependencies = [
  "native-tls",
+ "tokio",
+]
+
+[[package]]
+name = "tokio-rusqlite"
+version = "0.1.0"
+source = "git+https://github.com/programatik29/tokio-rusqlite#9d1302256e0df8d7d1f738e48ebd1b3ce16dd928"
+dependencies = [
+ "crossbeam-channel",
+ "rusqlite",
  "tokio",
 ]
 

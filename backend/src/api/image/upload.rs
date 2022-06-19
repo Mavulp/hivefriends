@@ -107,14 +107,10 @@ pub(super) async fn post(
     .await?;
 
     let cmetadata = metadata.clone();
-    let conn = state
-        .pool
-        .get()
-        .await
-        .context("Failed getting DB connection")?;
-    conn.interact(move |conn| super::insert(&cmetadata, conn))
-        .await
-        .unwrap()?;
+    state
+        .db
+        .call(move |conn| super::insert(&cmetadata, conn))
+        .await?;
 
     Ok(Json(Image::from_db(metadata)))
 }

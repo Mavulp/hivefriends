@@ -8,7 +8,7 @@ use std::sync::Arc;
 use crate::api::album;
 use crate::api::auth::Authorize;
 use crate::api::error::Error;
-use crate::{AppState, DbInteractable, SqliteDatabase};
+use crate::AppState;
 
 use super::Comment;
 
@@ -18,28 +18,28 @@ pub struct DeleteCommentRequest {
     id: u64,
 }
 
-pub(super) async fn delete<D: SqliteDatabase>(
+pub(super) async fn delete(
     Path(comment_id): Path<i64>,
     Authorize(user): Authorize,
-    Extension(state): Extension<Arc<AppState<D>>>,
+    Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<Comment>, Error> {
-    let conn = state.pool.get().await.context("Failed to get connection")?;
+    state
+        .db
+        .call(move |conn| match super::get_comment(comment_id, conn)? {
+            Some(comment) => {
+                if comment.author != user && !album::is_owner(&comment.album_key, &user, conn)? {
+                    return Err(Error::Unathorized);
+                }
 
-    conn.interact(move |conn| match super::get_comment(comment_id, conn)? {
-        Some(comment) => {
-            if comment.author != user && !album::is_owner(&comment.album_key, &user, conn)? {
-                return Err(Error::Unathorized);
+                info!("Deleting comment {comment_id}");
+                conn.execute("DELETE FROM comments WHERE id = ?1", params![comment_id])
+                    .context("Failed to delete comment")?;
+
+                Ok(Json(comment))
             }
-
-            info!("Deleting comment {comment_id}");
-            conn.execute("DELETE FROM comments WHERE id = ?1", params![comment_id])
-                .context("Failed to delete comment")?;
-
-            Ok(Json(comment))
-        }
-        None => Err(Error::NotFound),
-    })
-    .await
+            None => Err(Error::NotFound),
+        })
+        .await
 }
 
 #[cfg(test)]
@@ -53,12 +53,11 @@ mod test {
     async fn delete_comment_invalid_comment() {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
-
-        let result: anyhow::Result<(String, String)> = conn
-            .interact(move |conn| {
-                let user = insert_user("test", conn)?;
-                let image = insert_image(&user, conn)?;
+        let user = state
+            .db
+            .call(move |conn| {
+                let user = insert_user("test", conn).unwrap();
+                let image = insert_image(&user, conn).unwrap();
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -67,14 +66,13 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )?;
-                let _ = insert_comment(&user, &image, &album, "text", conn)?;
+                )
+                .unwrap();
+                let _ = insert_comment(&user, &image, &album, "text", conn).unwrap();
 
-                Ok((user, image))
+                user
             })
             .await;
-
-        let (user, _image) = result.unwrap();
 
         let result = delete(Path(-1), Authorize(user), Extension(state)).await;
 
@@ -85,12 +83,11 @@ mod test {
     async fn delete_comment_wrong_user() {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
-
-        let result: anyhow::Result<(String, i64)> = conn
-            .interact(move |conn| {
-                let user = insert_user("test", conn)?;
-                let image = insert_image(&user, conn)?;
+        let (user, comment) = state
+            .db
+            .call(move |conn| {
+                let user = insert_user("test", conn).unwrap();
+                let image = insert_image(&user, conn).unwrap();
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -99,15 +96,15 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )?;
-                let Comment { id, .. } = insert_comment(&user, &image, &album, "text", conn)?;
-                let user2 = insert_user("test2", conn)?;
+                )
+                .unwrap();
+                let Comment { id, .. } =
+                    insert_comment(&user, &image, &album, "text", conn).unwrap();
+                let user2 = insert_user("test2", conn).unwrap();
 
-                Ok((user2, id))
+                (user2, id)
             })
             .await;
-
-        let (user, comment) = result.unwrap();
 
         let result = delete(Path(comment), Authorize(user), Extension(state)).await;
 
@@ -118,12 +115,11 @@ mod test {
     async fn delete_comment_same_user() {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
-
-        let result: anyhow::Result<(String, Comment)> = conn
-            .interact(move |conn| {
-                let user = insert_user("test", conn)?;
-                let image = insert_image(&user, conn)?;
+        let (user, comment) = state
+            .db
+            .call(move |conn| {
+                let user = insert_user("test", conn).unwrap();
+                let image = insert_image(&user, conn).unwrap();
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -132,14 +128,13 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )?;
-                let comment = insert_comment(&user, &image, &album, "text", conn)?;
+                )
+                .unwrap();
+                let comment = insert_comment(&user, &image, &album, "text", conn).unwrap();
 
-                Ok((user, comment))
+                (user, comment)
             })
             .await;
-
-        let (user, comment) = result.unwrap();
 
         let result = delete(Path(comment.id), Authorize(user), Extension(state)).await;
 
@@ -152,12 +147,11 @@ mod test {
     async fn delete_comment_album_user() {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
-
-        let result: anyhow::Result<(String, Comment)> = conn
-            .interact(move |conn| {
-                let user = insert_user("test", conn)?;
-                let image = insert_image(&user, conn)?;
+        let (user, comment) = state
+            .db
+            .call(move |conn| {
+                let user = insert_user("test", conn).unwrap();
+                let image = insert_image(&user, conn).unwrap();
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -166,15 +160,14 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )?;
-                let user2 = insert_user("test2", conn)?;
-                let comment = insert_comment(&user2, &image, &album, "text", conn)?;
+                )
+                .unwrap();
+                let user2 = insert_user("test2", conn).unwrap();
+                let comment = insert_comment(&user2, &image, &album, "text", conn).unwrap();
 
-                Ok((user, comment))
+                (user, comment)
             })
             .await;
-
-        let (user, comment) = result.unwrap();
 
         let result = delete(Path(comment.id), Authorize(user), Extension(state)).await;
 
