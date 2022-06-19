@@ -348,14 +348,13 @@ async function deleteAlbum() {
             class="btn-icon btn-black"
             @click="submit"
           >
-            {{ album.draft ? "Save Draft" : "Publish Album" }}
+            Save Changes
             <LoadingSpin class="dark" v-if="isLoading" />
           </Button>
 
-          <Button class="btn-blue btn-icon" :to="{ name: 'AlbumDetail', params: { id: key } }">
+          <!-- <Button class="btn-blue btn-icon" :to="{ name: 'AlbumDetail', params: { id: key } }">
             View Album
-            <!-- <span class="material-icons"> &#xe941; </span> -->
-          </Button>
+          </Button> -->
         </div>
       </div>
     </div>

@@ -794,9 +794,16 @@
 
           &:nth-of-type(1) {
             a {
+              @include radius(50%);
+              background-color: rgb(var(--color-white));
+              color: rgb(var(--color-text));
               position: absolute;
               top: 32px;
               left: 32px;
+              top: 16px;
+              right: 16px;
+              width: 40px;
+              height: 40px;
             }
           }
 

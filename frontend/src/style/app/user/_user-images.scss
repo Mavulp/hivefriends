@@ -134,12 +134,10 @@
     @include radius(4px);
     width: 32px;
     height: 32px;
-    background-color: rgba(var(--color-background-dark), 0.5);
+    background-color: rgb(var(--color-background-dark));
 
     &:after {
       content: "";
-      background-color: rgba(var(--color-background-dark), 0.8);
-
       opacity: 1 !important;
       z-index: 1;
     }
@@ -151,7 +149,7 @@
     }
 
     .material-icons {
-      color: rgba(#fff, 0.8);
+      color: rgba(#fff, 0.85);
       font-size: 1.8rem;
       transform: translateY(2px);
     }
@@ -206,6 +204,85 @@
         // margin: 0 auto;
         object-fit: contain;
         object-position: center;
+      }
+    }
+  }
+
+  &.modal-select-album {
+    padding: 32px;
+    max-width: 628px;
+    width: 100%;
+
+    .select-album-item {
+      @include radius(8px);
+      @include flex($align: flex-start);
+      position: relative;
+      color: rgb(var(--color-text));
+      padding: 12px;
+      margin: 0 -8px 8px;
+      // background-color: rgba(var(--color-background-dark), 0.05);
+
+      // &:after {
+      //   content: "";
+      //   display: block;
+      //   left: 0;
+      //   right: 0;
+      //   position: absolute;
+      //   bottom: -10px;
+      //   border-bottom: 1px solid rgb(var(--color-border-light));
+      // }
+
+      &:hover {
+        background-color: rgba(var(--color-highlight), 0.1);
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+        border-bottom: none;
+
+        &:after {
+          display: none;
+        }
+      }
+
+      $image-width: 56px;
+
+      .album-item-image {
+        // @include radius(3px);
+        display: block;
+        width: $image-width;
+        height: $image-width;
+        min-width: $image-width;
+        position: relative;
+        overflow: hidden;
+
+        img {
+          // display: block;
+          width: $image-width;
+          height: $image-width;
+          // object-fit: cover !important;
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+      }
+
+      .album-item-meta {
+        padding-top: 8px;
+
+        strong {
+          font-size: 2rem;
+          margin-bottom: 4px;
+          word-wrap: break-word;
+          word-break: break-all;
+        }
+
+        p {
+          font-size: 1.2rem;
+          margin: 0;
+          font-style: italic;
+          color: rgb(var(--color-text-light));
+        }
       }
     }
   }
