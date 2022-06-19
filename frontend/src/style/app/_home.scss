@@ -150,11 +150,14 @@
 
 .flag {
   @include radius(3px);
+  overflow: hidden;
   display: block;
-  object-fit: contain;
-  object-position: left;
-  max-width: 32px;
-  max-height: 24px;
+
+  svg {
+    display: block;
+    max-width: 32px;
+    max-height: 24px;
+  }
 }
 
 .copyright {
