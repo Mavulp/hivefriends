@@ -40,4 +40,4 @@ assert_matches = "1.5.0"
 
 [dev-dependencies.axum-test-helper]
 git = "https://github.com/jokler/axum-test-helper"
-branch = "remove-post-content-type"
+branch = "hivefriends-fixes"

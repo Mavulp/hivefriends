@@ -1,16 +1,19 @@
 use axum::{
-    routing::{get, post, put},
+    routing::{delete, get, post, put},
     Router,
 };
 use rusqlite::{params, Connection, OptionalExtension};
 use serde::{Deserialize, Serialize};
 use serde_rusqlite::{from_row, to_params_named};
 
+mod delete_image;
 mod get_all;
 mod get_by_key;
 mod orientation;
 mod update_metadata;
 mod upload;
+
+use crate::api::error::Error;
 
 const MAXIMUM_FILE_NAME_LENGTH: u64 = 96;
 const MAXIMUM_DESCRIPTION_LENGTH: u64 = 256;
@@ -20,6 +23,7 @@ pub fn api_route() -> Router {
         .route("/", post(upload::post))
         .route("/:key", get(get_by_key::get))
         .route("/:key", put(update_metadata::put))
+        .route("/:key", delete(delete_image::delete))
         .route("/", get(get_all::get))
 }
 
@@ -183,6 +187,22 @@ pub fn insert(metadata: &DbImage, conn: &Connection) -> anyhow::Result<()> {
     )?;
 
     Ok(())
+}
+
+pub fn is_owner(image_key: &str, user: &str, conn: &Connection) -> Result<bool, Error> {
+    let result = conn.query_row(
+        "SELECT uploader FROM images WHERE key = ?1",
+        params![image_key],
+        |row| row.get::<_, String>(0),
+    );
+
+    if matches!(result, Err(rusqlite::Error::QueryReturnedNoRows)) {
+        Err(Error::NotFound)
+    } else {
+        let uploader = result.map_err(anyhow::Error::new)?;
+
+        Ok(uploader == user)
+    }
 }
 
 pub fn select_image(key: &str, conn: &Connection) -> anyhow::Result<Option<DbImage>> {

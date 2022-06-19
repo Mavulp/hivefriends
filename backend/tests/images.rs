@@ -1,3 +1,4 @@
+use assert_matches::assert_matches;
 use axum::http::header::AUTHORIZATION;
 use serde_json::*;
 
@@ -73,6 +74,39 @@ async fn get_by_key() {
     assert_eq!(status, 200);
 
     assert_eq!(json["uploader"].as_str().unwrap().to_owned(), username);
+}
+
+#[tokio::test]
+async fn delete_by_key() {
+    let (client, temp) = setup_test_client().await;
+    let (token, _) = authenticate(&client).await;
+
+    let image_key = upload_test_image("./tests/testimage.png", &client, &token).await;
+
+    let image_dir = temp.path().join("data").join(&image_key);
+    assert_matches!(std::fs::read_dir(&image_dir), Ok(_));
+
+    let res = client
+        .delete(&format!("/api/images/{image_key}"))
+        .header(AUTHORIZATION, format!("Bearer {token}"))
+        .send()
+        .await;
+
+    let status = dbg!(res.status());
+    assert_eq!(status, 200);
+
+    assert_matches!(std::fs::read_dir(image_dir), Err(err) => {
+        assert_eq!(err.kind(), std::io::ErrorKind::NotFound);
+    });
+
+    let res = client
+        .get(&format!("/api/images/{image_key}"))
+        .header(AUTHORIZATION, format!("Bearer {token}"))
+        .send()
+        .await;
+
+    let status = dbg!(res.status());
+    assert_eq!(status, 404);
 }
 
 /* TODO Functionality to list images is still missing
