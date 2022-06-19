@@ -12,6 +12,7 @@ import { useUser } from "../../store/user"
 import UserImageItem from "../image/UserImageItem.vue"
 import LoadingSpin from "../loading/LoadingSpin.vue"
 import router from "../../router"
+import { useMediaQuery } from "@vueuse/core"
 
 const bread = useBread()
 const toast = useToast()
@@ -19,11 +20,12 @@ const user = useUser()
 const album = useAlbums()
 const { getLoading, addLoading, delLoading } = useLoading()
 const data = ref<Array<Image>>([])
+const isPhone = useMediaQuery("(max-width: 512px)")
 
 const chunks = computed<Array<Array<Image>>>(() =>
   getImageChunks(
     data.value.sort((a, b) => (a.uploadedAt > b.uploadedAt ? -1 : 1)),
-    5
+    isPhone.value ? 3 : 5
   )
 )
 
@@ -106,7 +108,7 @@ function deleteSelect() {
       </label>
     </div>
 
-    <div class="hi-image-list-info">
+    <div class="hi-image-list-info" :class="{ 'is-selecting': selected.size > 0 }">
       <div>
         <p>Sorting by upload date</p>
       </div>
@@ -123,17 +125,17 @@ function deleteSelect() {
         <template v-if="selected.size > 0 && selectMode">
           <button class="hover-bubble bubble-red" @click="deleteSelect">
             <span class="material-icons">&#xe872;</span>
-            Delete selected
+            {{ isPhone ? "Delete" : "Delete selected" }}
           </button>
 
           <button class="hover-bubble bubble-orange" @click="createSelect">
             <span class="material-icons">&#xe2cc;</span>
-            Create album
+            {{ isPhone ? "Album" + `(${selected.size})` : "Create album" }}
           </button>
 
           <button class="hover-bubble bubble-highlight" @click="clearSelect">
             <span class="material-icons">&#xe5cd;</span>
-            Clear selection
+            {{ isPhone ? "Clear" : "Clear selection" }}
           </button>
         </template>
 

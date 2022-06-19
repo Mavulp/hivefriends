@@ -182,9 +182,7 @@
   h3,
   h4,
   h5,
-  h6,
-  b,
-  strong {
+  h6 {
     @include font(700);
     display: block;
     margin-bottom: 20px;
@@ -948,6 +946,91 @@
     input {
       height: 48px;
       line-height: 48px;
+    }
+  }
+
+  .hi-image-list {
+    .hi-image-list-upload {
+      margin-bottom: 32px;
+    }
+
+    .hi-album-images {
+      padding: 0;
+      grid-template-columns: repeat(3, 1fr);
+
+      .hi-album-image-col {
+        .hi-album-image {
+          .image-wrap {
+            img {
+              // object-fit: contain;
+              min-height: unset;
+            }
+          }
+
+          .all-image-controls {
+            display: none !important;
+          }
+        }
+      }
+    }
+  }
+
+  .hi-image-list-info {
+    padding: 12px 0;
+    grid-template-columns: 1fr 1fr;
+
+    &.is-selecting {
+      grid-template-columns: 1fr;
+
+      & > div {
+        gap: 0px;
+        justify-content: space-between;
+
+        &:nth-child(1),
+        &:nth-child(2) {
+          display: none;
+        }
+
+        button {
+          .material-icons {
+            // display: none;
+            font-size: 1.6rem;
+          }
+        }
+      }
+    }
+
+    & > div {
+      height: auto;
+
+      &:nth-child(1) {
+        display: none;
+      }
+
+      &:nth-child(2) {
+        justify-content: flex-start;
+      }
+    }
+  }
+
+  .modal .modal-wrap.modal-image > div .all-image-controls {
+    bottom: unset;
+    right: 0;
+    left: 0;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  .all-image-controls button {
+    width: 44px;
+    line-height: 44px;
+    height: 44px;
+    background-color: rgb(var(--color-background-dark));
+
+    .material-icons {
+      font-size: 2rem;
+      transform: translateY(6px);
     }
   }
 }
