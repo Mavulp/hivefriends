@@ -1,4 +1,4 @@
-import { createPinia } from "pinia"
+fooimport { createPinia } from "pinia"
 import { createApp } from "vue"
 
 import App from "./App.vue"
