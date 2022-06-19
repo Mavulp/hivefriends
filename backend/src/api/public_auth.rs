@@ -38,10 +38,9 @@ where
         let Path(path) = Path::<PublicPath>::from_request(req).await?;
         let Extension(state) = Extension::<Arc<AppState>>::from_request(req).await?;
 
-        let conn = state.pool.get().await.map_err(anyhow::Error::new)?;
-
-        let album_key = conn
-            .interact(move |conn| {
+        let album_key = state
+            .db
+            .call(move |conn| {
                 conn.query_row(
                     r"SELECT album_key FROM album_share_tokens WHERE share_token=?1",
                     params![path.token],
@@ -50,7 +49,6 @@ where
                 .optional()
             })
             .await
-            .unwrap()
             .map_err(anyhow::Error::new)?;
 
         if let Some(album_key) = album_key {

@@ -155,7 +155,7 @@ async function savePassword() {
 </script>
 
 <template>
-  <div class="hi-user-page">
+  <div class="hi-user-page" style="max-width: unset">
     <LoadingSpin class="center-page" v-if="getLoading('settings')" />
 
     <div class="hi-user-settings-items">

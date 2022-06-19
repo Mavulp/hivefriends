@@ -51,10 +51,10 @@ async fn get_users(
     Authorize(_): Authorize,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<Vec<User>>, Error> {
-    let conn = state.pool.get().await.context("Failed to get connection")?;
-
-    conn.interact(move |conn| {
-        let query = "SELECT \
+    state
+        .db
+        .call(move |conn| {
+            let query = "SELECT \
                 username, \
                 display_name, \
                 bio, \
@@ -65,43 +65,43 @@ async fn get_users(
                 country, \
                 created_at \
                 FROM users"
-            .to_string();
+                .to_string();
 
-        let params: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
+            let params: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
 
-        let mut stmt = conn
-            .prepare(&query)
-            .context("Failed to prepare statement for album query")?;
-        let db_users = stmt
-            .query_map(rusqlite::params_from_iter(params.iter()), |row| {
-                Ok(from_row::<DbUser>(row).unwrap())
-            })
-            .context("Failed to query images")?
-            .collect::<Result<Vec<_>, _>>()
-            .context("Failed to collect albums")?;
-
-        let mut users = Vec::new();
-        for db_user in db_users {
             let mut stmt = conn
-                .prepare(
-                    "SELECT a.\"key\" FROM albums a \
+                .prepare(&query)
+                .context("Failed to prepare statement for album query")?;
+            let db_users = stmt
+                .query_map(rusqlite::params_from_iter(params.iter()), |row| {
+                    Ok(from_row::<DbUser>(row).unwrap())
+                })
+                .context("Failed to query images")?
+                .collect::<Result<Vec<_>, _>>()
+                .context("Failed to collect albums")?;
+
+            let mut users = Vec::new();
+            for db_user in db_users {
+                let mut stmt = conn
+                    .prepare(
+                        "SELECT a.\"key\" FROM albums a \
                     WHERE a.author = ?1 \
                     AND a.draft == false",
-                )
-                .context("Failed to prepare user albums query")?;
-            let album_key_iter = stmt
-                .query_map(params![db_user.username], |row| {
-                    Ok(from_row::<String>(row).unwrap())
-                })
-                .context("Failed to query user albums")?;
+                    )
+                    .context("Failed to prepare user albums query")?;
+                let album_key_iter = stmt
+                    .query_map(params![db_user.username], |row| {
+                        Ok(from_row::<String>(row).unwrap())
+                    })
+                    .context("Failed to query user albums")?;
 
-            let albums_uploaded = album_key_iter
-                .collect::<Result<Vec<_>, _>>()
-                .context("Failed to collect albums uploaded")?;
+                let albums_uploaded = album_key_iter
+                    .collect::<Result<Vec<_>, _>>()
+                    .context("Failed to collect albums uploaded")?;
 
-            let mut stmt = conn
-                .prepare(
-                    "SELECT u2.username FROM users u1 \
+                let mut stmt = conn
+                    .prepare(
+                        "SELECT u2.username FROM users u1 \
                     INNER JOIN user_album_associations uaa ON uaa.username = u1.username \
                     INNER JOIN albums a ON a.key = uaa.album_key \
                     INNER JOIN user_album_associations uaa2 ON uaa2.album_key = a.key \
@@ -109,36 +109,35 @@ async fn get_users(
                     WHERE u1.username = ?1 \
                     AND u2.username != ?1 \
                     AND a.draft == false",
-                )
-                .context("Failed to prepare met users query")?;
-            let met_iter = stmt
-                .query_map(params![db_user.username], |row| {
-                    Ok(from_row::<String>(row).unwrap())
-                })
-                .context("Failed to query met users")?;
+                    )
+                    .context("Failed to prepare met users query")?;
+                let met_iter = stmt
+                    .query_map(params![db_user.username], |row| {
+                        Ok(from_row::<String>(row).unwrap())
+                    })
+                    .context("Failed to query met users")?;
 
-            let met = met_iter
-                .collect::<Result<Vec<_>, _>>()
-                .context("Failed to collect met users")?;
+                let met = met_iter
+                    .collect::<Result<Vec<_>, _>>()
+                    .context("Failed to collect met users")?;
 
-            users.push(User {
-                username: db_user.username,
-                display_name: db_user.display_name,
-                avatar_key: db_user.avatar_key,
-                banner_key: db_user.banner_key,
-                accent_color: db_user.accent_color,
-                featured_album_key: db_user.featured_album_key,
-                country: db_user.country,
-                bio: db_user.bio,
-                met,
-                albums_uploaded,
-                created_at: db_user.created_at,
-            });
-        }
-        Ok(Json(users))
-    })
-    .await
-    .unwrap()
+                users.push(User {
+                    username: db_user.username,
+                    display_name: db_user.display_name,
+                    avatar_key: db_user.avatar_key,
+                    banner_key: db_user.banner_key,
+                    accent_color: db_user.accent_color,
+                    featured_album_key: db_user.featured_album_key,
+                    country: db_user.country,
+                    bio: db_user.bio,
+                    met,
+                    albums_uploaded,
+                    created_at: db_user.created_at,
+                });
+            }
+            Ok(Json(users))
+        })
+        .await
 }
 
 async fn get_user_by_username(
@@ -146,10 +145,9 @@ async fn get_user_by_username(
     Authorize(_): Authorize,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<User>, Error> {
-    let conn = state.pool.get().await.context("Failed to get connection")?;
-
-    let result = conn
-        .interact(move |conn| {
+    let user = state
+        .db
+        .call(move |conn| {
             conn.query_row(
                 "SELECT
                     username, \
@@ -168,13 +166,13 @@ async fn get_user_by_username(
             .optional()
         })
         .await
-        .unwrap()
         .context("Failed to query users")?;
 
-    if let Some(db_user) = result {
+    if let Some(db_user) = user {
         let cusername = db_user.username.clone();
-        let albums_uploaded = conn
-            .interact(move |conn| {
+        let albums_uploaded = state
+            .db
+            .call(move |conn| {
                 let mut stmt = conn.prepare(
                     "SELECT a.\"key\" FROM albums a \
                     WHERE a.author = ?1 \
@@ -187,12 +185,12 @@ async fn get_user_by_username(
                 album_iter.collect::<Result<Vec<_>, _>>()
             })
             .await
-            .unwrap()
             .context("Failed to query albums uploaded")?;
 
         let cusername = db_user.username.clone();
-        let met = conn
-            .interact(move |conn| {
+        let met = state
+            .db
+            .call(move |conn| {
                 let mut stmt = conn.prepare(
                     "SELECT u2.username FROM users u1 \
                     INNER JOIN user_album_associations uaa ON uaa.username = u1.username \
@@ -210,7 +208,6 @@ async fn get_user_by_username(
                 album_iter.collect::<Result<Vec<_>, _>>()
             })
             .await
-            .unwrap()
             .context("Failed to query met users")?;
 
         Ok(Json(User {

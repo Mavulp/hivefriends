@@ -7,7 +7,7 @@ import LoadingSpin from "../../components/loading/LoadingSpin.vue"
 
 import { computed, reactive, ref, watch } from "vue"
 import { useAlbums, imageUrl } from "../../store/album"
-import { minLength, useFormValidation, required } from "../../js/validation"
+import { minLength, useFormValidation, required, maxLength } from "../../js/validation"
 import { useLoading } from "../../store/loading"
 import { useMediaQuery } from "@vueuse/core"
 
@@ -58,7 +58,11 @@ watch(
 const rules = computed(() => ({
   fileName: {
     required,
-    minLength: minLength(3)
+    minLength: minLength(3),
+    maxLength: maxLength(96)
+  },
+  description: {
+    maxLength: maxLength(256)
   }
 }))
 

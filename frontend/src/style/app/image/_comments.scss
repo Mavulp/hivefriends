@@ -133,6 +133,8 @@
   .hi-add-comment {
     display: grid;
     width: 100%;
+    position: relative;
+    z-index: 100;
     // padding-top: 20px;
     border-top: 1px solid rgb(var(--color-border-light));
 

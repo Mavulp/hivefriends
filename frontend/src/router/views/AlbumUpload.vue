@@ -11,7 +11,7 @@ import DraftItem from "../../components/upload/DraftItem.vue"
 import { onMounted, reactive, ref, computed, onBeforeMount, nextTick } from "vue"
 import { upload } from "../../js/fetch"
 import { useFormValidation, required, maxLength } from "../../js/validation"
-import { useAlbums, NewAlbum, imageUrl, Album, ImageFile } from "../../store/album"
+import { useAlbums, NewAlbum, imageUrl, Album, ImageFile, Image } from "../../store/album"
 import { clone, isEmpty } from "lodash"
 import { useUser, User } from "../../store/user"
 import { useLoading } from "../../store/loading"
@@ -21,6 +21,10 @@ const store = useAlbums()
 const user = useUser()
 const bread = useBread()
 const { addLoading, delLoading, getLoading } = useLoading()
+
+interface Props {
+  images?: string
+}
 
 /**
  * Setup
@@ -40,7 +44,10 @@ const album = reactive<NewAlbum>({
   draft: false
 })
 
-const drafts = ref<Array<Album>>([])
+const props = defineProps<Props>()
+
+// const drafts = ref<Array<Album>>([])
+const drafts = computed<Array<Album>>(() => store.drafts)
 
 // If album was successfuly generated, this will get populated
 const albumKey = ref()
@@ -50,7 +57,6 @@ const singleDate = ref(false)
 const rawFileLength = ref(0)
 
 const isLoading = computed(() => files.values.some((file) => file.loading))
-// const uploadProgress = computed(() => `${[...files.values].filter((item) => item.key).length} / ${rawFileLength.value}`)
 const remainingProgress = computed(() => rawFileLength.value - [...files.values].filter((item) => item.key).length)
 const uploadPercentage = computed(
   () => ([...files.values].filter((item) => item.key).length / rawFileLength.value) * 100
@@ -78,9 +84,25 @@ onMounted(() => {
 onBeforeMount(async () => {
   bread.set("Upload a new album")
 
+  if (props.images) {
+    // Parse JSON of already existing images and assign them as if they were uploaded
+    const images = JSON.parse(props.images)
+
+    if (images.length > 0) {
+      for (const image of images) {
+        files.values.push({
+          name: image.fileName,
+          size: image.sizeBytes,
+          loading: false,
+          key: image.key
+        })
+      }
+    }
+  }
+
   addLoading("album-upload")
   await user.fetchUsers()
-  drafts.value = await store.fetchAlbums(true)
+  await store.fetchDrafts()
 
   setTimeout(() => {
     delLoading("album-upload")
@@ -104,7 +126,8 @@ function onSubmitHandler(e: any, fromField: boolean = false) {
 
 async function uploadFiles(_files: any) {
   let i = files.values.length
-  rawFileLength.value = _files.length + imageKeys.value.length
+
+  rawFileLength.value += _files.length
 
   for (const file of _files) {
     if (!file) continue
@@ -148,11 +171,11 @@ function delImage(index: number) {
 }
 
 const rules = computed(() => ({
-  title: { required },
+  title: { required, maxLength: maxLength(96) },
   description: { maxLength: maxLength(600) }
 }))
 
-const { validate, errors } = useFormValidation(album, rules)
+const { validate, errors } = useFormValidation(album, rules, { autoclear: true })
 
 async function submit() {
   validate().then(async () => {
@@ -279,7 +302,12 @@ function dragCompare() {
         <h3>Create album</h3>
 
         <InputText v-model:value="album.title" placeholder="Album name" label="Title" required :error="errors.title" />
-        <InputTextarea v-model:value="album.description" placeholder="Album description" label="Description" />
+        <InputTextarea
+          v-model:value="album.description"
+          placeholder="Album description"
+          label="Description"
+          :error="errors.description"
+        />
 
         <h6>Event Dates</h6>
         <div class="form-date" :class="{ single: singleDate }">
@@ -319,7 +347,7 @@ function dragCompare() {
           </div>
         </div>
 
-        <InputCheckbox v-model:check="album.draft" label="Save as a draft. It won't be published" />
+        <InputCheckbox v-model:check="album.draft" label="Save as draft. Album will be visible only to you." />
 
         <Button
           style="margin-top: 32px"
@@ -338,11 +366,9 @@ function dragCompare() {
             style="width: 100%; margin-bottom: 20px"
             @click="submit"
           >
-            {{ album.draft ? "Save Draft" : "Publish Album" }}
+            {{ album.draft ? "Save Draft" : "Save Album" }}
             <LoadingSpin class="dark" v-if="isLoading" />
           </Button>
-
-          <!-- <p v-if="isLoading">{{ uploadProgress }} photos uploaded</p> -->
         </template>
       </div>
     </div>

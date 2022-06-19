@@ -1,4 +1,3 @@
-use crate::FileDb;
 use anyhow::Context;
 use axum::{
     routing::{delete, get, post},
@@ -13,16 +12,13 @@ mod get_shared_comments;
 
 pub fn api_route() -> Router {
     Router::new()
-        .route("/:album/:image", get(get_all_comments::get::<FileDb>))
-        .route("/:album/:image", post(create_comment::post::<FileDb>))
-        .route("/:album", delete(delete_comment::delete::<FileDb>))
+        .route("/:album/:image", get(get_all_comments::get))
+        .route("/:album/:image", post(create_comment::post))
+        .route("/:album", delete(delete_comment::delete))
 }
 
 pub fn public_api_route() -> Router {
-    Router::new().route(
-        "/:album/:image/:token",
-        get(get_shared_comments::get::<FileDb>),
-    )
+    Router::new().route("/:album/:image/:token", get(get_shared_comments::get))
 }
 
 #[derive(Eq, PartialEq, Debug, serde::Serialize)]

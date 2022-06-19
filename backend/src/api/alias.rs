@@ -5,7 +5,7 @@ use axum::{Extension, Json};
 use serde::{Deserialize, Serialize};
 
 use crate::api::error::Error;
-use crate::{AppState, DbInteractable, FileDb, SqliteDatabase};
+use crate::AppState;
 
 use super::auth::Authorize;
 use std::sync::Arc;
@@ -15,7 +15,7 @@ use serde_rusqlite::from_row;
 use rusqlite::params;
 
 pub fn api_route() -> Router {
-    Router::new().route("/", get(get_aliases::<FileDb>))
+    Router::new().route("/", get(get_aliases))
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -24,24 +24,24 @@ pub struct Alias {
     content: String,
 }
 
-async fn get_aliases<D: SqliteDatabase>(
+async fn get_aliases(
     Authorize(_): Authorize,
-    Extension(state): Extension<Arc<AppState<D>>>,
+    Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<Vec<Alias>>, Error> {
-    let conn = state.pool.get().await.context("Failed to get connection")?;
+    state
+        .db
+        .call(move |conn| {
+            let mut query = conn
+                .prepare("SELECT * FROM aliases")
+                .context("Failed to prepare statement for aliases query")?;
 
-    conn.interact(move |conn| {
-        let mut query = conn
-            .prepare("SELECT * FROM aliases")
-            .context("Failed to prepare statement for aliases query")?;
+            let dbdata = query
+                .query_map(params![], |row| Ok(from_row::<Alias>(row).unwrap()))
+                .context("Failed to query aliases")?
+                .collect::<Result<Vec<_>, _>>()
+                .context("Failed to collect aliases")?;
 
-        let dbdata = query
-            .query_map(params![], |row| Ok(from_row::<Alias>(row).unwrap()))
-            .context("Failed to query aliases")?
-            .collect::<Result<Vec<_>, _>>()
-            .context("Failed to collect aliases")?;
-
-        Ok(Json(dbdata))
-    })
-    .await
+            Ok(Json(dbdata))
+        })
+        .await
 }

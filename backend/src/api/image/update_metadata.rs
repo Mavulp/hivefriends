@@ -10,8 +10,8 @@ use tokio::fs;
 use std::sync::Arc;
 
 use crate::api::{auth::Authorize, error::Error};
-use crate::util::non_empty_str;
-use crate::{AppState, DbInteractable, SqliteDatabase};
+use crate::util::{check_length, non_empty_str};
+use crate::AppState;
 
 use super::Location;
 
@@ -36,32 +36,46 @@ pub(super) struct PutImageMetadataRequest {
     description: Option<String>,
 }
 
-pub(super) async fn put<D: SqliteDatabase>(
+pub(super) async fn put(
     request: Result<Json<PutImageMetadataRequest>, JsonRejection>,
     Path(image_key): Path<String>,
     Authorize(_): Authorize,
-    Extension(state): Extension<Arc<AppState<D>>>,
+    Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<&'static str>, Error> {
     let Json(request) = request?;
-    let conn = state.pool.get().await.context("Failed to get connection")?;
+
+    check_length(
+        "fileName",
+        request.file_name.as_deref(),
+        super::MAXIMUM_FILE_NAME_LENGTH,
+    )?;
+
+    check_length(
+        "description",
+        request.description.as_deref(),
+        super::MAXIMUM_DESCRIPTION_LENGTH,
+    )?;
 
     if let Some(new_name) = &request.file_name {
         let mut image_path = state.data_path.clone();
         image_path.push(&image_key);
         image_path.push("original");
 
-        while let Some(old_file) = fs::read_dir(&image_path)
+        let mut entries = fs::read_dir(&image_path)
             .await
-            .context("Failed to read original dir")?
+            .context("Failed to read original dir")?;
+
+        while let Some(old_file) = entries
             .next_entry()
             .await
             .context("Failed to read entry from original dir")?
         {
-            if !old_file
-                .file_type()
-                .await
-                .context("Failed to check file type")?
-                .is_file()
+            if old_file.file_name().to_str() == Some(new_name)
+                || !old_file
+                    .file_type()
+                    .await
+                    .context("Failed to check file type")?
+                    .is_file()
             {
                 continue;
             }
@@ -80,16 +94,18 @@ pub(super) async fn put<D: SqliteDatabase>(
     let update_str = request.update_str();
     if !update_str.is_empty() {
         // FIXME there are a bunch of errors that need to be sent to the front end here
-        conn.interact(move |conn| {
-            let mut params = request.update_params();
-            params.push(Box::new(image_key));
-            conn.execute(
-                &format!("UPDATE images SET {update_str} WHERE key = ?"),
-                rusqlite::params_from_iter(params.iter()),
-            )
-        })
-        .await
-        .context("Failed to update image metadata")?;
+        state
+            .db
+            .call(move |conn| {
+                let mut params = request.update_params();
+                params.push(Box::new(image_key));
+                conn.execute(
+                    &format!("UPDATE images SET {update_str} WHERE key = ?"),
+                    rusqlite::params_from_iter(params.iter()),
+                )
+            })
+            .await
+            .context("Failed to update image metadata")?;
     } else {
         return Ok(Json("Nothing to do"));
     }
@@ -190,17 +206,15 @@ mod test {
     async fn update_metadata_description() {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
+        let (user, image) = state
+            .db
+            .call(move |conn| {
+                let user = insert_user("test", conn).unwrap();
+                let image = insert_image(&user, conn).unwrap();
 
-        let result: anyhow::Result<_> = conn
-            .interact(move |conn| {
-                let user = insert_user("test", conn)?;
-                let image = insert_image(&user, conn)?;
-
-                Ok((user, image))
+                (user, image)
             })
             .await;
-        let (user, image) = result.unwrap();
 
         let expected_description = Some(String::from("testing"));
 
@@ -212,20 +226,17 @@ mod test {
             })),
             Path(image.clone()),
             Authorize(user),
-            Extension(state),
+            Extension(state.clone()),
         )
         .await;
 
         assert_eq!(result.unwrap().0, "Success");
 
-        let result: anyhow::Result<_> = conn
-            .interact(move |conn| {
-                let metadata = crate::api::image::select_image(&image, conn)?;
-
-                Ok(metadata)
-            })
+        let metadata = state
+            .db
+            .call(move |conn| crate::api::image::select_image(&image, conn).unwrap())
             .await;
 
-        assert_eq!(result.unwrap().unwrap().description, expected_description);
+        assert_eq!(metadata.unwrap().description, expected_description);
     }
 }

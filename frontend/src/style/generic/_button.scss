@@ -206,3 +206,10 @@
 .buttons {
   @include flex($align: center, $wrap: wrap, $gap: 8px 16px);
 }
+
+button {
+  &.btn-disabled {
+    pointer-events: none;
+    // opacity: 0.8;
+  }
+}

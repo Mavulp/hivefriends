@@ -52,10 +52,9 @@ async fn get_settings(
     Authorize(username): Authorize,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<Settings>, Error> {
-    let conn = state.pool.get().await.context("Failed to get connection")?;
-
-    let result = conn
-        .interact(move |conn| {
+    let result = state
+        .db
+        .call(move |conn| {
             conn.query_row(
                 "SELECT
                     display_name, \
@@ -72,7 +71,6 @@ async fn get_settings(
             .optional()
         })
         .await
-        .unwrap()
         .context("Failed to query settings")?;
 
     if let Some(db_settings) = result {
@@ -118,12 +116,12 @@ async fn put_settings(
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<&'static str>, Error> {
     let Json(request) = request?;
-    let conn = state.pool.get().await.context("Failed to get connection")?;
 
     let update_str = request.update_str();
     if !update_str.is_empty() {
-        if let Err(rusqlite::Error::SqliteFailure(e, _)) = conn
-            .interact(move |conn| {
+        if let Err(rusqlite::Error::SqliteFailure(e, _)) = state
+            .db
+            .call(move |conn| {
                 let mut params = request.update_params();
                 params.push(Box::new(username));
                 conn.query_row(
@@ -134,7 +132,6 @@ async fn put_settings(
                 .optional()
             })
             .await
-            .unwrap()
         {
             match e.code {
                 rusqlite::ErrorCode::ConstraintViolation => return Err(Error::InvalidKey),
@@ -159,11 +156,11 @@ async fn put_password(
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<&'static str>, Error> {
     let Json(request) = request?;
-    let conn = state.pool.get().await.context("Failed to get connection")?;
 
     let cusername = username.clone();
-    let result = conn
-        .interact(move |conn| {
+    let result = state
+        .db
+        .call(move |conn| {
             conn.query_row(
                 "SELECT password_hash \
                 FROM users WHERE username=?1",
@@ -173,7 +170,6 @@ async fn put_password(
             .optional()
         })
         .await
-        .unwrap()
         .context("Failed to query username")?;
 
     if let Some(password_hash) = result {
@@ -184,9 +180,10 @@ async fn put_password(
             .verify_password(request.old.as_bytes(), &parsed_hash)
             .is_ok()
         {
-            conn.interact(move |conn| set_password(&username, &request.new, conn))
+            state
+                .db
+                .call(move |conn| set_password(&username, &request.new, conn))
                 .await
-                .unwrap()
                 .context("Failed to set password")?;
 
             Ok(Json("Success"))

@@ -15,32 +15,32 @@
     top: 40%;
     transform: translate(-50%, -50%);
     background-color: rgb(var(--color-white));
+  }
+}
 
-    .modal-title {
-      @include flex($justify: space-between);
-      margin-bottom: 24px;
+.modal-title {
+  @include flex($justify: space-between);
+  margin-bottom: 24px;
 
-      h1,
-      h2,
-      h3,
-      h4,
-      h5,
-      h6 {
-        margin: 0;
-      }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
+  }
 
-      .modal-close {
-        color: rgb(var(--color-text-light));
-        font-size: 1.8rem;
+  .modal-close {
+    color: rgb(var(--color-text-light));
+    font-size: 1.8rem;
 
-        &:hover {
-          color: rgb(var(--color-text));
-        }
+    &:hover {
+      color: rgb(var(--color-text));
+    }
 
-        .material-icons {
-          font-size: 1.8rem;
-        }
-      }
+    .material-icons {
+      font-size: 1.8rem;
     }
   }
 }

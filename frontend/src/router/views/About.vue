@@ -15,10 +15,8 @@ onBeforeMount(() => {
       <h1>The project</h1>
       <p>
         This project was created as a collaboration of friends from the Hivecom community and the dedicated development
-        team called <a target="_blank" href="https://github.com/mavulp">Mavulp</a>. The goal of Hi!Friends is to create
+        team called <a target="_blank" href="https://github.com/mavulp">Mavulp</a>. The goal of hi!friends is to create
         a centralized hub to share images of mostly real life gatherings, events and adventures we embark on together.
-        Given the fact we've all grown in different parts of the world and some of us have knonw each other for over 10
-        years, these albums can hold a lot of sentimntal value.
 
         <br />
         <br />

@@ -19,22 +19,20 @@ pub async fn setup_test_client() -> (TestClient, TempDir) {
     let temp_dir = TempDir::new("hivefriends-test").unwrap();
 
     let db_path = temp_dir.path().join("test.db");
-    let pool = setup_database(&db_path).await.unwrap();
+    let db = setup_database(&db_path).await.unwrap();
 
     let data_path = temp_dir.path().join("data").into();
 
-    let conn = pool.get().await.unwrap();
     let args = AddUserArgs {
         username: String::from("username"),
         password: Some(String::from("password")),
     };
     let sub = SubCommands::AddUser(args);
-    conn.interact(move |conn| run_subcommand(sub, conn))
+    db.call(move |conn| run_subcommand(sub, conn))
         .await
-        .unwrap()
         .unwrap();
 
-    (TestClient::new(api_route(pool, data_path)), temp_dir)
+    (TestClient::new(api_route(db, data_path)), temp_dir)
 }
 
 pub async fn authenticate(client: &TestClient) -> (String, String) {

@@ -85,9 +85,9 @@
 
   .hi-image-wrapper {
     @include flex($align: center);
-    padding: 32px 64px 0px;
+    padding: 0 64px;
     width: 100%;
-    height: calc(100vh - 128px);
+    height: calc(100vh - 88px);
     position: relative;
 
     .image-loading {
@@ -113,7 +113,7 @@
   .hi-image-context {
     @include grid(40px, 1fr 2fr 1fr);
     width: 100%;
-    padding: 52px 64px;
+    padding: 32px 64px;
 
     .context-col {
       @include flex($gap: 32px);

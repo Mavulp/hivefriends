@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeMount, onBeforeUnmount, onMounted, watch, ref, watchEffect } from "vue"
+import { computed, onBeforeMount, onBeforeUnmount, onMounted, watch, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { imageUrl, useAlbums, Album, Image as ImageStruct } from "../../store/album"
 import { isEmpty, isNil } from "lodash"
@@ -66,7 +66,9 @@ const bread = useBread()
 const { getLoading, addLoading, delLoading } = useLoading()
 
 const transDir = ref("imagenext")
-const showComments = ref(false)
+const showComments = ref(isPhone.value ? false : Boolean(localStorage.getItem("show-comments")) ?? false)
+
+watch(showComments, (val: boolean) => localStorage.setItem("show-comments", String(val)))
 
 // Shut the fuck up typescript
 const albumKey = computed(() => route.params?.album?.toString() ?? null)
@@ -237,10 +239,10 @@ async function getPublicLink() {
 function doCopy(type: string) {
   if (type === "url") {
     copy(imageDetailUrl.value ?? "")
-    toast.add("Image url copied to clipboard")
+    toast.add("Photo url copied to clipboard")
   } else if (type === "public") {
     copy(publicLink.value)
-    toast.add("Image share link copied to clipboard")
+    toast.add("Photo share link copied to clipboard")
   }
 }
 
@@ -341,15 +343,19 @@ onBeforeUnmount(() => {
         <div class="hi-image-context">
           <div class="context-col">
             <router-link
-              class="hover-bubble"
-              :class="{ active: isPhone }"
+              :class="[isPhone ? 'phone-go-back' : 'hover-bubble']"
               :to="{
                 name: user.public_token ? 'PublicAlbumDetail' : 'AlbumDetail',
                 params: { id: albumKey, ...(user.public_token && { token: user.public_token }) }
               }"
             >
-              <span class="material-icons"> &#xe2ea; </span>
-              Go back
+              <template v-if="isPhone">
+                <span class="material-icons"> &#xe5cd; </span>
+              </template>
+              <template v-else>
+                <span class="material-icons"> &#xe2ea; </span>
+                Go back
+              </template>
             </router-link>
           </div>
 
@@ -403,7 +409,7 @@ onBeforeUnmount(() => {
       <div class="hi-image-container">
         <div class="hi-image-meta">
           <h4>
-            Location and metadata
+            Photo details
 
             <span
               v-if="image.location"
@@ -439,8 +445,20 @@ onBeforeUnmount(() => {
 
           <div class="hi-image-metadata">
             <div class="hi-image-properties">
-              <span>Uploader</span>
+              <template v-if="metadata?.description">
+                <span>Description</span>
+                <p v-html="sanitize(formatTextUsernames(metadata.description, user))"></p>
+              </template>
 
+              <span>Name</span>
+              <strong class="file-name">{{ image.fileName }}</strong>
+
+              <template v-if="image.takenAt">
+                <span>Taken</span>
+                <p>{{ formatDate(image.takenAt) }}</p>
+              </template>
+
+              <span>Uploader</span>
               <router-link class="hover-bubble" :to="{ name: 'UserProfile', params: { user: image.uploader } }">
                 <img
                   class="user-image"
@@ -451,15 +469,6 @@ onBeforeUnmount(() => {
                 />
                 {{ image.uploader }}
               </router-link>
-
-              <span>Name</span>
-              <strong class="file-name">{{ image.fileName }}</strong>
-              <p v-if="metadata?.description" v-html="sanitize(formatTextUsernames(metadata.description, user))"></p>
-
-              <template v-if="image.takenAt">
-                <span>Taken</span>
-                <p>{{ formatDate(image.takenAt) }}</p>
-              </template>
             </div>
 
             <ul class="hi-image-metadata-list">

@@ -17,5 +17,9 @@ img {
         background-image: url("/user.svg");
       }
     }
+
+    &:not(.image-error) {
+      background-color: transparent !important;
+    }
   }
 }

@@ -79,6 +79,9 @@ const isDark = computed(() => auth.settings.colorTheme === "dark-normal")
         >
           <span class="material-icons">&#xe413;</span>
         </router-link>
+        <router-link class="hover-bubble" data-title-bottom="Your Images" :to="{ name: 'UserImages' }">
+          <span class="material-icons">&#xe5c3;</span>
+        </router-link>
         <router-link class="hover-bubble" data-title-bottom="Settings" :to="{ name: 'UserSettings' }">
           <span class="material-icons">&#xe8b8;</span>
         </router-link>
@@ -137,6 +140,12 @@ const isDark = computed(() => auth.settings.colorTheme === "dark-normal")
 
                 Your albums
               </router-link>
+
+              <router-link class="nav-link-icon" :to="{ name: 'UserImages' }">
+                <span class="material-icons">&#xe5c3;</span>
+                Your images
+              </router-link>
+
               <router-link class="nav-link-icon" :to="{ name: 'UserSettings' }">
                 <span class="material-icons">&#xe8b8;</span>
                 Settings

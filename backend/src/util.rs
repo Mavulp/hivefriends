@@ -1,4 +1,6 @@
+use crate::api::error::Error;
 use serde::{Deserialize, Deserializer};
+use std::ops::Deref;
 
 pub(super) fn non_empty_str<'de, D: Deserializer<'de>>(d: D) -> Result<Option<String>, D::Error> {
     let o: Option<String> = Option::deserialize(d)?;
@@ -19,70 +21,40 @@ where
     Ok(None)
 }
 
+pub fn check_length(
+    field_name: &'static str,
+    field: Option<&str>,
+    maximum_length: u64,
+) -> Result<(), Error> {
+    if let Some(field) = field {
+        let field = &field.deref();
+        if field.len() as u64 > maximum_length {
+            return Err(Error::TooManyCharacters {
+                field: field_name,
+                maximum_length,
+            });
+        }
+    }
+
+    Ok(())
+}
+
 #[cfg(test)]
 pub mod test {
     use crate::api::{
         album::{self, InsertAlbum, InsertShareToken},
         comment, image, user,
     };
-    use crate::DbInteractable;
-    use deadpool::{
-        async_trait,
-        managed::{self, Object, Pool, PoolBuilder},
-    };
     use rusqlite_migration::Migrations;
-    use std::sync::Arc;
-    use tokio::sync::Mutex;
 
-    pub struct InMemorySqliteManager(Arc<Mutex<rusqlite::Connection>>);
-
-    pub struct InMemoryWrapper(Arc<Mutex<rusqlite::Connection>>);
-
-    #[async_trait::async_trait]
-    impl DbInteractable for InMemoryWrapper {
-        async fn interact<F, R>(&self, f: F) -> R
-        where
-            F: FnOnce(&mut rusqlite::Connection) -> R + Send + 'static,
-            R: Send + 'static,
-        {
-            let mut conn = self.0.lock().await;
-
-            f(&mut *conn)
-        }
-    }
-
-    #[async_trait]
-    impl managed::Manager for InMemorySqliteManager {
-        type Type = InMemoryWrapper;
-        type Error = rusqlite::Error;
-
-        async fn create(&self) -> Result<Self::Type, Self::Error> {
-            Ok(InMemoryWrapper(self.0.clone()))
-        }
-
-        async fn recycle(&self, _conn: &mut Self::Type) -> managed::RecycleResult<Self::Error> {
-            Ok(())
-        }
-    }
-
-    pub type TestPool = crate::DbPool<InMemorySqliteManager>;
-    pub type TestPoolBuilder = PoolBuilder<InMemorySqliteManager, Object<InMemorySqliteManager>>;
-
-    impl crate::SqliteDatabase for InMemorySqliteManager {
-        type T = InMemoryWrapper;
-    }
-
-    pub async fn setup_database() -> anyhow::Result<TestPool> {
-        let conn = Arc::new(Mutex::new(rusqlite::Connection::open_in_memory()?));
-        let pool: TestPool = Pool::builder(InMemorySqliteManager(conn)).build()?;
+    pub async fn setup_database() -> anyhow::Result<tokio_rusqlite::Connection> {
+        let db = tokio_rusqlite::Connection::open_in_memory().await?;
 
         let migrations = Migrations::new(crate::MIGRATIONS.to_vec());
 
-        let conn = pool.get().await?;
-        conn.interact(move |conn| migrations.to_latest(conn))
-            .await?;
+        db.call(move |conn| migrations.to_latest(conn)).await?;
 
-        Ok(pool)
+        Ok(db)
     }
 
     pub fn insert_user(name: &str, conn: &rusqlite::Connection) -> anyhow::Result<String> {
@@ -107,10 +79,9 @@ pub mod test {
     pub fn insert_image(uploader: &str, conn: &rusqlite::Connection) -> anyhow::Result<String> {
         let key = blob_uuid::random_blob();
 
-        let i = image::DbImageMetadata {
+        let i = image::DbImage {
             key: key.clone(),
             uploader: uploader.to_string(),
-            size_bytes: 0,
             uploaded_at: 0,
 
             ..Default::default()

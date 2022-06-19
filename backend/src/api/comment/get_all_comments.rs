@@ -7,54 +7,54 @@ use std::sync::Arc;
 use crate::api::auth::Authorize;
 use crate::api::error::Error;
 use crate::api::image;
-use crate::{AppState, DbInteractable, SqliteDatabase};
+use crate::AppState;
 
 use super::Comment;
 
-pub(super) async fn get<D: SqliteDatabase>(
+pub(super) async fn get(
     Path((album_key, image_key)): Path<(String, String)>,
     Authorize(_): Authorize,
-    Extension(state): Extension<Arc<AppState<D>>>,
+    Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<Vec<Comment>>, Error> {
-    let conn = state.pool.get().await.context("Failed to get connection")?;
+    state
+        .db
+        .call(move |conn| {
+            if !image::image_exists(&image_key, conn)? {
+                return Err(Error::NotFound);
+            }
 
-    conn.interact(move |conn| {
-        if !image::image_exists(&image_key, conn)? {
-            return Err(Error::NotFound);
-        }
-
-        let mut stmt = conn
-            .prepare(
-                "SELECT c.id, c.text, c.author, c.created_at FROM comments c \
+            let mut stmt = conn
+                .prepare(
+                    "SELECT c.id, c.text, c.author, c.created_at FROM comments c \
                 INNER JOIN images i ON c.image_key=i.key \
                 WHERE i.key=?1",
-            )
-            .context("Failed to prepare statement for comment query")?;
+                )
+                .context("Failed to prepare statement for comment query")?;
 
-        let comment_iter = stmt
-            .query_map(params![image_key], |row| {
-                Ok(Comment {
-                    id: row.get(0)?,
-                    text: row.get(1)?,
-                    author: row.get(2)?,
-                    image_key: image_key.clone(),
-                    album_key: album_key.clone(),
-                    created_at: row.get(3)?,
+            let comment_iter = stmt
+                .query_map(params![image_key], |row| {
+                    Ok(Comment {
+                        id: row.get(0)?,
+                        text: row.get(1)?,
+                        author: row.get(2)?,
+                        image_key: image_key.clone(),
+                        album_key: album_key.clone(),
+                        created_at: row.get(3)?,
+                    })
                 })
-            })
-            .context("Failed to query comments for image")?;
+                .context("Failed to query comments for image")?;
 
-        let comments = comment_iter
-            .collect::<Result<Vec<_>, _>>()
-            .context("Failed to collect image comments");
+            let comments = comment_iter
+                .collect::<Result<Vec<_>, _>>()
+                .context("Failed to collect image comments");
 
-        if let Ok(comments) = comments {
-            Ok(Json(comments))
-        } else {
-            Err(Error::NotFound)
-        }
-    })
-    .await
+            if let Ok(comments) = comments {
+                Ok(Json(comments))
+            } else {
+                Err(Error::NotFound)
+            }
+        })
+        .await
 }
 
 #[cfg(test)]
@@ -86,12 +86,11 @@ mod test {
     async fn get_comments_single_image() {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
-
-        let result: anyhow::Result<(String, String)> = conn
-            .interact(move |conn| {
-                let user = insert_user("test", conn)?;
-                let image = insert_image(&user, conn).context("")?;
+        let (album, image) = state
+            .db
+            .call(move |conn| {
+                let user = insert_user("test", conn).unwrap();
+                let image = insert_image(&user, conn).unwrap();
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -100,15 +99,14 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )?;
-                insert_comment(&user, &image, &album, "foo", conn)?;
-                insert_comment(&user, &image, &album, "bar", conn)?;
+                )
+                .unwrap();
+                insert_comment(&user, &image, &album, "foo", conn).unwrap();
+                insert_comment(&user, &image, &album, "bar", conn).unwrap();
 
-                Ok((album, image))
+                (album, image)
             })
             .await;
-
-        let (album, image) = result.unwrap();
 
         let result = get(Path((album, image)), Authorize("".into()), Extension(state)).await;
 
@@ -122,12 +120,11 @@ mod test {
     async fn get_comments_multiple_images() {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
-
-        let result: anyhow::Result<(String, String)> = conn
-            .interact(move |conn| {
-                let user = insert_user("test", conn)?;
-                let key = insert_image(&user, conn).context("")?;
+        let (album, image) = state
+            .db
+            .call(move |conn| {
+                let user = insert_user("test", conn).unwrap();
+                let key = insert_image(&user, conn).unwrap();
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &key,
@@ -136,10 +133,11 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )?;
-                insert_comment(&user, &key, &album, "foo", conn)?;
-                insert_comment(&user, &key, &album, "bar", conn)?;
-                let key2 = insert_image(&user, conn).context("")?;
+                )
+                .unwrap();
+                insert_comment(&user, &key, &album, "foo", conn).unwrap();
+                insert_comment(&user, &key, &album, "bar", conn).unwrap();
+                let key2 = insert_image(&user, conn).unwrap();
                 let album2 = insert_album(
                     InsertAlbum {
                         cover_key: &key2,
@@ -148,14 +146,13 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )?;
-                insert_comment(&user, &key2, &album2, "quux", conn)?;
+                )
+                .unwrap();
+                insert_comment(&user, &key2, &album2, "quux", conn).unwrap();
 
-                Ok((album, key))
+                (album, key)
             })
             .await;
-
-        let (album, image) = result.unwrap();
 
         let result = get(Path((album, image)), Authorize("".into()), Extension(state)).await;
 

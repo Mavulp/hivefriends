@@ -14,6 +14,7 @@ import About from "./views/About.vue"
 import UserAlbums from "../components/user/UserAlbums.vue"
 import UserProfile from "../components/user/UserProfile.vue"
 import UserSettings from "../components/user/UserSettings.vue"
+import UserImages from "../components/user/UserImages.vue"
 
 // Navigation guards
 import beforeResolve from "./guards/beforeResolve"
@@ -109,6 +110,7 @@ const router = createRouter({
       path: "/upload/album",
       name: "Upload",
       component: AlbumUpload,
+      props: true,
       meta: {
         title: "Upload",
         requiresAuth: true
@@ -147,6 +149,15 @@ const router = createRouter({
       component: UserAlbums,
       meta: {
         title: "User Albums",
+        requiresAuth: true
+      }
+    },
+    {
+      path: "/user/images",
+      name: "UserImages",
+      component: UserImages,
+      meta: {
+        title: "User Images",
         requiresAuth: true
       }
     }

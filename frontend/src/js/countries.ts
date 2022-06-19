@@ -775,9 +775,9 @@ export default {
     name: "Sudan",
     code: "SD"
   },
-  SE: {
+  SWE: {
     name: "Sweden",
-    code: "SE"
+    code: "SWE"
   },
   SG: {
     name: "Singapore",

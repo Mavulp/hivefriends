@@ -5,6 +5,7 @@ import { useToast } from "./toast"
 import { FetchError } from "../js/global-types"
 import { useFilters } from "./filters"
 import { query } from "../js/query"
+import { remove } from "lodash"
 
 export interface Image {
   key: string
@@ -23,6 +24,10 @@ export interface Image {
   description?: string
   uploader: string
   uploadedAt: number
+}
+
+export interface AllImageItem extends Image {
+  albumKeys: Array<string>
 }
 
 export interface ImageFile {
@@ -53,6 +58,7 @@ export interface Album {
 
 interface State {
   albums: Array<Album>
+  drafts: Array<Album>
   userAlbums: {
     [key: string]: Album
   }
@@ -78,6 +84,7 @@ export const useAlbums = defineStore("album", {
   state: () =>
     ({
       albums: [],
+      drafts: [],
       userAlbums: {},
       imageMetadata: {}
     } as State),
@@ -107,6 +114,10 @@ export const useAlbums = defineStore("album", {
           toast.add(error.message, "error")
         })
         .finally(() => delLoading("get-album"))
+    },
+
+    async fetchDrafts() {
+      this.drafts = await this.fetchAlbums(true)
     },
 
     async fetchAlbums(draft: boolean = false) {
@@ -217,6 +228,7 @@ export const useAlbums = defineStore("album", {
 
       return del(`/api/albums/${key}`)
         .then(() => {
+          remove(this.albums, (item) => item.key === key)
           toast.add("Successfully deleted album", "success")
           return true
         })
@@ -241,6 +253,21 @@ export const useAlbums = defineStore("album", {
           toast.add(error.message, "error")
         })
         .finally(() => delLoading("edit-album-submit"))
+    },
+
+    async fetchUserImages() {
+      const { addLoading, delLoading } = useLoading()
+      const toast = useToast()
+
+      addLoading("images")
+
+      return get("/api/images")
+        .then((data) => data)
+        .catch((error: FetchError) => {
+          toast.add(error.message, "error")
+          return []
+        })
+        .finally(() => delLoading("images"))
     }
   },
   getters: {
@@ -251,7 +278,9 @@ export const useAlbums = defineStore("album", {
   }
 })
 
-export function imageUrl(key: string, size: string = "full") {
+type sizes = "full" | "large" | "medium" | "tiny"
+
+export function imageUrl(key: string, size: sizes = "full") {
   if (!key) return ""
   return rootUrl + `/data/image/${key}/${size}.jpg`
 }

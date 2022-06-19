@@ -27,6 +27,11 @@ const timestamp = computed(() => {
     day: "numeric"
   })
 })
+
+async function deleteDraft() {
+  await albums.deleteAlbum(props.data.key)
+  albums.fetchDrafts()
+}
 </script>
 
 <template>
@@ -55,7 +60,7 @@ const timestamp = computed(() => {
         <button
           class="hover-bubble bubble-red"
           :class="{ 'btn-disabled': getLoading('delete-album') }"
-          @click="albums.deleteAlbum(props.data.key)"
+          @click="deleteDraft"
         >
           <span class="material-icons"> &#xe872; </span>
 
