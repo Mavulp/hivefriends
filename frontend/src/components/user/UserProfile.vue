@@ -40,10 +40,6 @@ onBeforeMount(() => {
     .then(async ([albums]) => {
       userAlbums.value = albums
       color.value = user.value.accentColor
-
-      // if (user.value.country) {
-      //   flag.value = await fetchFlag(user.value.country)
-      // }
     })
     .catch(() => {})
     .finally(() => {
@@ -108,9 +104,12 @@ watchEffect(() => {
               <span>
                 <b>{{ user.albumsUploaded.length }}</b> {{ user.albumsUploaded.length === 1 ? "album" : "albums" }}
               </span>
-              <span>
-                met <b>{{ user.met.length }}</b> people
-              </span>
+              <router-link
+                :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]"
+                :to="{ name: 'UserAlbums', params: { user: user.username } }"
+              >
+                View All
+              </router-link>
             </div>
             <p v-html="sanitize(user.bio)"></p>
           </div>
@@ -125,28 +124,50 @@ watchEffect(() => {
           </div>
         </div>
       </div>
-      <div class="user-albums">
-        <template v-if="userAlbums.length === 0">
-          <p>
-            Looks like <b>{{ user.displayName ?? user.username }}</b> did not upload any albums yet. Are they touching
-            grass rn?
-          </p>
-        </template>
-        <template v-else>
-          <div class="albums-title-wrap">
+
+      <div class="user-expand">
+        <div class="user-albums">
+          <template v-if="userAlbums.length === 0">
+            <p>
+              Looks like <b>{{ user.displayName ?? user.username }}</b> did not upload any albums yet. Are they touching
+              grass rn?
+            </p>
+          </template>
+          <template v-else>
             <h2>Latest albums</h2>
-            <Button
-              v-if="userAlbums.length > 3"
-              :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]"
-              class="btn-highlight"
-              :to="{ name: 'UserAlbums', params: { user: _id } }"
-              >All Albums</Button
+            <div class="user-albums-list">
+              <AlbumListItem v-for="item in [...userAlbums].slice(0, 3)" :data="item" />
+            </div>
+          </template>
+        </div>
+        <div class="user-met-with-wrap">
+          <div class="user-met-with" v-if="user.met.length > 0">
+            <h4>
+              <span class="material-icons">&#xe7fb;</span>
+              Met with
+              <!-- {{ user.displayName ?? user.username }} has met -->
+            </h4>
+
+            <router-link
+              v-for="item in user.met"
+              :key="item"
+              class="album-tagged-user"
+              :to="{ name: 'UserProfile', params: { user: item } }"
             >
+              <img
+                class="user-image"
+                :src="imageUrl(users.getUser(item, 'avatarKey'), 'tiny')"
+                :style="[`backgroundColor: rgb(${users.getUser(item, 'accentColor')})`]"
+                alt=" "
+                @error="(e: any) => e.target.classList.add('image-error')"
+              />
+              <span>{{ users.getUsername(item) }}</span>
+              <div class="tag tag-orange" v-if="item === user.username">Author</div>
+              <div class="background"></div>
+              <div class="background" :style="[`backgroundColor: rgb(${users.getUser(item, 'accentColor')})`]"></div>
+            </router-link>
           </div>
-          <div class="user-albums-list">
-            <AlbumListItem v-for="item in [...userAlbums].slice(0, 3)" :data="item" />
-          </div>
-        </template>
+        </div>
       </div>
     </template>
   </div>

@@ -126,9 +126,9 @@
 
         .album-tagged-users {
           @include t(0.5s, cubic-bezier(0.65, 0, 0.35, 1));
-          display: block;
-          position: absolute;
           width: 380px;
+          position: absolute;
+          display: block;
           top: 0;
           padding: 40px 20px;
           bottom: 0;
@@ -158,49 +158,6 @@
 
             .material-icons {
               font-size: 1.8rem;
-            }
-          }
-
-          .album-tagged-user {
-            @include t(0.16s);
-            @include flex($gap: 16px);
-            width: 100%;
-            padding: 16px;
-            position: relative;
-            color: rgb(var(--color-text));
-            border-bottom: 1px solid rgb(var(--color-border-light));
-
-            &:last-of-type {
-              border-bottom: 0;
-              margin-bottom: 0;
-            }
-
-            &:hover {
-              .background {
-                opacity: 0.25;
-              }
-            }
-
-            .user-image {
-              @include radius(50%);
-              display: block;
-              object-fit: cover;
-              object-position: center;
-              width: 32px;
-              height: 32px;
-              position: relative;
-              background-color: rgb(var(--color-highlight));
-            }
-
-            .background {
-              @include radius(6px);
-              @include t(0.16s);
-              display: block;
-              position: absolute;
-              inset: 8px 0;
-              opacity: 0;
-              z-index: -1;
-              background-color: rgb(var(--color-background));
             }
           }
         }
@@ -247,5 +204,48 @@
         }
       }
     }
+  }
+}
+
+.album-tagged-user {
+  @include t(0.16s);
+  @include flex($gap: 16px);
+  width: 100%;
+  padding: 16px;
+  position: relative;
+  color: rgb(var(--color-text));
+  border-bottom: 1px solid rgb(var(--color-border-light));
+
+  &:last-of-type {
+    border-bottom: 0;
+    margin-bottom: 0;
+  }
+
+  &:hover {
+    .background {
+      opacity: 0.25;
+    }
+  }
+
+  .user-image {
+    @include radius(50%);
+    display: block;
+    object-fit: cover;
+    object-position: center;
+    width: 32px;
+    height: 32px;
+    position: relative;
+    background-color: rgb(var(--color-highlight));
+  }
+
+  .background {
+    @include radius(6px);
+    @include t(0.16s);
+    display: block;
+    position: absolute;
+    inset: 8px 0;
+    opacity: 0;
+    z-index: -1;
+    background-color: rgb(var(--color-background));
   }
 }

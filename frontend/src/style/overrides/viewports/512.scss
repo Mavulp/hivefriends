@@ -374,11 +374,16 @@
           .user-info-meta {
             margin-bottom: 20px;
 
+            a,
             span {
               font-size: 1.2rem;
 
               &:nth-child(2) {
                 display: none;
+              }
+
+              &:nth-child(3) {
+                margin-left: 8px;
               }
 
               b {
@@ -394,41 +399,74 @@
       }
     }
 
-    .user-albums {
+    .user-expand {
       padding: 0;
+      // display: block;
+      @include flex($direction: column-reverse);
 
-      p {
-        font-size: 1.4rem;
+      .user-albums {
+        p {
+          font-size: 1.4rem;
 
-        b {
-          font-size: inherit;
+          b {
+            font-size: inherit;
+          }
+        }
+
+        .albums-title-wrap {
+          display: block;
+          margin-bottom: 24px;
+
+          h2 {
+            margin-bottom: 8px;
+            font-size: 2rem;
+          }
+
+          .button {
+            display: inline-block;
+            width: auto;
+          }
+        }
+
+        .user-albums-list {
+          display: block;
+
+          .album-list-item {
+            width: 100%;
+            margin-bottom: 40px;
+
+            .album-timestamp {
+              margin-bottom: 0;
+            }
+          }
         }
       }
 
-      .albums-title-wrap {
-        display: block;
+      .user-met-with-wrap {
+        padding: 0;
         margin-bottom: 24px;
+        width: 100%;
 
-        h2 {
-          margin-bottom: 8px;
-          font-size: 2rem;
-        }
+        .user-met-with {
+          max-width: unset;
 
-        .button {
-          display: inline-block;
-          width: auto;
-        }
-      }
+          h4 {
+            @include flex();
+            span {
+              font-size: 2.6rem;
+              color: rgb(Var(--color-highlight));
+            }
+          }
 
-      .user-albums-list {
-        display: block;
+          .album-tagged-user {
+            .user-image {
+              width: 32px;
+              height: 32px;
+            }
 
-        .album-list-item {
-          width: 100%;
-          margin-bottom: 40px;
-
-          .album-timestamp {
-            margin-bottom: 0;
+            span {
+              font-size: 1.4rem;
+            }
           }
         }
       }
