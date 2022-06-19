@@ -11,12 +11,11 @@ pub(super) async fn get(
     Authorize(_): Authorize,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<Image>, Error> {
-    let conn = state.pool.get().await.context("Failed to get connection")?;
     let ckey = key.clone();
-    let result = conn
-        .interact(move |conn| super::select_image(&ckey, conn))
+    let result = state
+        .db
+        .call(move |conn| super::select_image(&ckey, conn))
         .await
-        .unwrap()
         .context("Failed to query image metadata")?;
 
     if let Some(image_metadata) = result {

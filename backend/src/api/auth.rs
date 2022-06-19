@@ -42,11 +42,10 @@ where
             TypedHeader::<Authorization<Bearer>>::from_request(req).await?;
         let Extension(state) = Extension::<Arc<AppState>>::from_request(req).await?;
 
-        let conn = state.pool.get().await.map_err(anyhow::Error::new)?;
-
         let bearer_token = bearer.token().to_owned();
-        let db_session = conn
-            .interact(move |conn| {
+        let db_session = state
+            .db
+            .call(move |conn| {
                 conn.query_row(
                     r"SELECT username, created_at FROM auth_sessions WHERE token=?1",
                     params![bearer.token()],
@@ -55,7 +54,6 @@ where
                 .optional()
             })
             .await
-            .unwrap()
             .map_err(anyhow::Error::new)?;
 
         if let Some(session) = db_session {
@@ -65,16 +63,17 @@ where
             if now < created_at + Duration::from_secs(crate::AUTH_TIME_SECONDS) {
                 Ok(Authorize(session.username))
             } else {
-                conn.interact(move |conn| {
-                    if let Err(e) = conn.execute(
-                        "DELETE FROM auth_sessions WHERE token=?1",
-                        params![bearer_token],
-                    ) {
-                        error!("Failed to delete auth token: {}", e);
-                    }
-                })
-                .await
-                .unwrap();
+                state
+                    .db
+                    .call(move |conn| {
+                        if let Err(e) = conn.execute(
+                            "DELETE FROM auth_sessions WHERE token=?1",
+                            params![bearer_token],
+                        ) {
+                            error!("Failed to delete auth token: {}", e);
+                        }
+                    })
+                    .await;
 
                 Err(AuthorizationRejection::ExpiredToken)
             }

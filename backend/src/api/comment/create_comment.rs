@@ -1,4 +1,3 @@
-use anyhow::Context;
 use axum::{extract::rejection::JsonRejection, extract::Path, Extension, Json};
 
 use std::sync::Arc;
@@ -7,7 +6,7 @@ use std::time::SystemTime;
 use crate::api::auth::Authorize;
 use crate::api::error::Error;
 use crate::api::image;
-use crate::{AppState, DbInteractable, SqliteDatabase};
+use crate::AppState;
 
 use rusqlite::{params, Connection, OptionalExtension};
 
@@ -15,14 +14,13 @@ use itertools::Itertools;
 
 use super::Comment;
 
-pub(super) async fn post<D: SqliteDatabase>(
+pub(super) async fn post(
     request: Result<Json<String>, JsonRejection>,
     Path((album_key, image_key)): Path<(String, String)>,
     Authorize(user): Authorize,
-    Extension(state): Extension<Arc<AppState<D>>>,
+    Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<Comment>, Error> {
     let Json(mut text) = request?;
-    let conn = state.pool.get().await.context("Failed to get connection")?;
 
     let now = SystemTime::UNIX_EPOCH.elapsed().unwrap().as_secs();
 
@@ -30,18 +28,20 @@ pub(super) async fn post<D: SqliteDatabase>(
     // and return the modified string
     // text = extract_alias(text, &state).await?;
 
-    conn.interact(move |conn| {
-        if !image::image_exists(&image_key, conn)? {
-            return Err(Error::NotFound);
-        }
+    state
+        .db
+        .call(move |conn| {
+            if !image::image_exists(&image_key, conn)? {
+                return Err(Error::NotFound);
+            }
 
-        text = extract_alias(text, conn)?;
+            text = extract_alias(text, conn)?;
 
-        let comment = super::insert_comment(user, text, image_key, album_key, now, conn)?;
+            let comment = super::insert_comment(user, text, image_key, album_key, now, conn)?;
 
-        Ok(Json(comment))
-    })
-    .await
+            Ok(Json(comment))
+        })
+        .await
 }
 
 fn extract_alias(mut text: String, conn: &Connection) -> anyhow::Result<String> {
@@ -89,12 +89,11 @@ mod test {
     async fn create_comment_invalid_image() {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
-
-        let result: anyhow::Result<(String, String)> = conn
-            .interact(move |conn| {
-                let user = insert_user("test", conn)?;
-                let image = insert_image(&user, conn)?;
+        let (user, album) = state
+            .db
+            .call(move |conn| {
+                let user = insert_user("test", conn).unwrap();
+                let image = insert_image(&user, conn).unwrap();
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -103,13 +102,12 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )?;
+                )
+                .unwrap();
 
-                Ok((user, album))
+                (user, album)
             })
             .await;
-
-        let (user, album) = result.unwrap();
 
         let result = post(
             Ok(Json("".into())),
@@ -129,12 +127,11 @@ mod test {
     async fn create_comment(comment_text: &str) {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
-
-        let result: anyhow::Result<(String, String, String)> = conn
-            .interact(move |conn| {
-                let user = insert_user("test", conn)?;
-                let image = insert_image(&user, conn).context("")?;
+        let (user, image, album) = state
+            .db
+            .call(move |conn| {
+                let user = insert_user("test", conn).unwrap();
+                let image = insert_image(&user, conn).unwrap();
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -143,13 +140,12 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )?;
+                )
+                .unwrap();
 
-                Ok((user, image, album))
+                (user, image, album)
             })
             .await;
-
-        let (user, image, album) = result.unwrap();
 
         let result = post(
             Ok(Json(comment_text.into())),
@@ -176,16 +172,16 @@ mod test {
         aliases: Vec<(&'static str, &'static str)>,
     ) {
         let state = AppState::in_memory_db().await;
-        let conn = state.pool.get().await.unwrap();
 
-        let result: anyhow::Result<(String, String, String)> = conn
-            .interact(move |conn| {
+        let (user, image, album) = state
+            .db
+            .call(move |conn| {
                 for (name, content) in aliases {
                     insert_alias(name, content, conn).unwrap();
                 }
 
                 let user = insert_user("test", conn).unwrap();
-                let image = insert_image(&user, conn).context("").unwrap();
+                let image = insert_image(&user, conn).unwrap();
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -194,13 +190,12 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )?;
+                )
+                .unwrap();
 
-                Ok((user, image, album))
+                (user, image, album)
             })
             .await;
-
-        let (user, image, album) = result.unwrap();
 
         let result = post(
             Ok(Json(comment_text.into())),

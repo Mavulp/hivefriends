@@ -7,7 +7,7 @@ use serde_rusqlite::from_row;
 use std::sync::Arc;
 
 use crate::api::{auth::Authorize, error::Error};
-use crate::{AppState, DbInteractable, SqliteDatabase};
+use crate::AppState;
 
 use super::{AlbumFilters, Timeframe};
 
@@ -25,58 +25,58 @@ pub(super) struct AvailableAlbumFilters {
 // Example: The returned authors are all authors that can be found with all other filters applied.
 // If the author is filtered on that is ignored for the returned author since otherwise it would
 // only return one value. The same logic applies to all other filters.
-pub(super) async fn get<D: SqliteDatabase>(
+pub(super) async fn get(
     Authorize(username): Authorize,
     Query(filter): Query<AlbumFilters>,
-    Extension(state): Extension<Arc<AppState<D>>>,
+    Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<AvailableAlbumFilters>, Error> {
-    let conn = state.pool.get().await.context("Failed to get connection")?;
+    state
+        .db
+        .call(move |conn| {
+            let mut authors: Vec<String> = get_filtered_values(
+                conn,
+                "author",
+                AlbumFilters {
+                    authors: None,
+                    ..filter
+                },
+                username.clone(),
+            )?;
 
-    conn.interact(move |conn| {
-        let mut authors: Vec<String> = get_filtered_values(
-            conn,
-            "author",
-            AlbumFilters {
-                authors: None,
-                ..filter
-            },
-            username.clone(),
-        )?;
+            authors.sort();
+            authors.dedup();
 
-        authors.sort();
-        authors.dedup();
+            let mut timeframes: Vec<Timeframe> = get_filtered_values(
+                conn,
+                "timeframe_from AS \"from\", timeframe_to AS \"to\"",
+                AlbumFilters {
+                    from: None,
+                    to: None,
+                    ..filter.clone()
+                },
+                username.clone(),
+            )?;
 
-        let mut timeframes: Vec<Timeframe> = get_filtered_values(
-            conn,
-            "timeframe_from AS \"from\", timeframe_to AS \"to\"",
-            AlbumFilters {
-                from: None,
-                to: None,
-                ..filter.clone()
-            },
-            username.clone(),
-        )?;
+            timeframes.sort();
+            timeframes.dedup();
 
-        timeframes.sort();
-        timeframes.dedup();
+            let drafts: Vec<i64> = get_filtered_values(
+                conn,
+                "1",
+                AlbumFilters {
+                    draft: true,
+                    ..filter
+                },
+                username,
+            )?;
 
-        let drafts: Vec<i64> = get_filtered_values(
-            conn,
-            "1",
-            AlbumFilters {
-                draft: true,
-                ..filter
-            },
-            username,
-        )?;
-
-        Ok(Json(AvailableAlbumFilters {
-            authors,
-            timeframes,
-            has_drafts: !drafts.is_empty(),
-        }))
-    })
-    .await
+            Ok(Json(AvailableAlbumFilters {
+                authors,
+                timeframes,
+                has_drafts: !drafts.is_empty(),
+            }))
+        })
+        .await
 }
 
 fn get_filtered_values<T: DeserializeOwned>(
@@ -117,10 +117,9 @@ mod test {
     async fn get_all_filters() {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
-
-        let user = conn
-            .interact(move |conn| {
+        let user = state
+            .db
+            .call(move |conn| {
                 let user = insert_user("test", conn).unwrap();
                 let image = insert_image(&user, conn).unwrap();
                 let _ = insert_album(
@@ -179,10 +178,9 @@ mod test {
     async fn get_draft_filters() {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
-
-        let user = conn
-            .interact(move |conn| {
+        let user = state
+            .db
+            .call(move |conn| {
                 let user = insert_user("test", conn).unwrap();
                 let image = insert_image(&user, conn).unwrap();
                 let _ = insert_album(

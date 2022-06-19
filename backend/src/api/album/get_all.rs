@@ -6,19 +6,19 @@ use serde_rusqlite::from_row;
 use std::sync::Arc;
 
 use crate::api::{auth::Authorize, error::Error};
-use crate::{AppState, DbInteractable, SqliteDatabase};
+use crate::AppState;
 
 use super::{apply_filters, AlbumFilters, AlbumMetadata, DbAlbum, Timeframe};
 
-pub(super) async fn get<D: SqliteDatabase>(
+pub(super) async fn get(
     Authorize(username): Authorize,
     Query(filter): Query<AlbumFilters>,
-    Extension(state): Extension<Arc<AppState<D>>>,
+    Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<Vec<AlbumMetadata>>, Error> {
-    let conn = state.pool.get().await.context("Failed to get connection")?;
-
-    conn.interact(move |conn| {
-        let mut query = "SELECT \
+    state
+        .db
+        .call(move |conn| {
+            let mut query = "SELECT \
                     key, \
                     title, \
                     description, \
@@ -29,59 +29,59 @@ pub(super) async fn get<D: SqliteDatabase>(
                     timeframe_to, \
                     created_at \
                 FROM albums"
-            .to_string();
+                .to_string();
 
-        let mut params: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
+            let mut params: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
 
-        apply_filters(&mut query, &mut params, filter, username);
+            apply_filters(&mut query, &mut params, filter, username);
 
-        let mut stmt = conn
-            .prepare(&format!(
-                "{query} \
+            let mut stmt = conn
+                .prepare(&format!(
+                    "{query} \
                 ORDER BY \
                     created_at DESC"
-            ))
-            .context("Failed to prepare statement for album query")?;
-        let db_albums = stmt
-            .query_map(rusqlite::params_from_iter(params.iter()), |row| {
-                Ok(from_row::<DbAlbum>(row).unwrap())
-            })
-            .context("Failed to query albums")?
-            .collect::<Result<Vec<_>, _>>()
-            .context("Failed to collect albums")?;
-
-        let mut albums = Vec::new();
-        for db_album in db_albums {
-            let mut stmt = conn
-                .prepare(
-                    "SELECT username FROM user_album_associations \
-                    WHERE album_key = ?1",
-                )
+                ))
                 .context("Failed to prepare statement for album query")?;
-            let tagged_users = stmt
-                .query_map(params![&db_album.key], |row| row.get(0))
-                .context("Failed to query tagged users")?
-                .collect::<Result<Vec<String>, _>>()
-                .context("Failed to collect tagged users")?;
+            let db_albums = stmt
+                .query_map(rusqlite::params_from_iter(params.iter()), |row| {
+                    Ok(from_row::<DbAlbum>(row).unwrap())
+                })
+                .context("Failed to query albums")?
+                .collect::<Result<Vec<_>, _>>()
+                .context("Failed to collect albums")?;
 
-            albums.push(AlbumMetadata {
-                key: db_album.key,
-                title: db_album.title,
-                description: db_album.description,
-                cover_key: db_album.cover_key,
-                author: db_album.author,
-                draft: db_album.draft,
-                timeframe: Timeframe {
-                    from: db_album.timeframe_from,
-                    to: db_album.timeframe_to,
-                },
-                created_at: db_album.created_at,
-                tagged_users,
-            })
-        }
-        Ok(Json(albums))
-    })
-    .await
+            let mut albums = Vec::new();
+            for db_album in db_albums {
+                let mut stmt = conn
+                    .prepare(
+                        "SELECT username FROM user_album_associations \
+                    WHERE album_key = ?1",
+                    )
+                    .context("Failed to prepare statement for album query")?;
+                let tagged_users = stmt
+                    .query_map(params![&db_album.key], |row| row.get(0))
+                    .context("Failed to query tagged users")?
+                    .collect::<Result<Vec<String>, _>>()
+                    .context("Failed to collect tagged users")?;
+
+                albums.push(AlbumMetadata {
+                    key: db_album.key,
+                    title: db_album.title,
+                    description: db_album.description,
+                    cover_key: db_album.cover_key,
+                    author: db_album.author,
+                    draft: db_album.draft,
+                    timeframe: Timeframe {
+                        from: db_album.timeframe_from,
+                        to: db_album.timeframe_to,
+                    },
+                    created_at: db_album.created_at,
+                    tagged_users,
+                })
+            }
+            Ok(Json(albums))
+        })
+        .await
 }
 
 #[cfg(test)]
@@ -95,13 +95,15 @@ mod test {
     async fn get_albums_tagged_users() {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
-
-        let result: anyhow::Result<Vec<String>> = conn
-            .interact(move |conn| {
-                let users = vec![insert_user("test", conn)?, insert_user("test2", conn)?];
+        let users = state
+            .db
+            .call(move |conn| {
+                let users = vec![
+                    insert_user("test", conn).unwrap(),
+                    insert_user("test2", conn).unwrap(),
+                ];
                 let user = users[0].clone();
-                let image = insert_image(&user, conn).context("")?;
+                let image = insert_image(&user, conn).unwrap();
                 let _ = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -111,13 +113,12 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )?;
+                )
+                .unwrap();
 
-                Ok(users)
+                users
             })
             .await;
-
-        let users = result.unwrap();
 
         let result = get(
             Authorize("".into()),

@@ -6,7 +6,7 @@ use std::sync::Arc;
 use std::time::SystemTime;
 
 use crate::api::{auth::Authorize, error::Error};
-use crate::{AppState, DbInteractable, SqliteDatabase};
+use crate::AppState;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -14,13 +14,11 @@ pub(super) struct CreateShareTokenResponse {
     token: String,
 }
 
-pub(super) async fn post<D: SqliteDatabase>(
+pub(super) async fn post(
     Path(album_key): Path<String>,
     Authorize(username): Authorize,
-    Extension(state): Extension<Arc<AppState<D>>>,
+    Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<CreateShareTokenResponse>, Error> {
-    let conn = state.pool.get().await.context("Failed to get connection")?;
-
     let now = SystemTime::UNIX_EPOCH
         .elapsed()
         .context("Failed to get current time")?
@@ -28,24 +26,26 @@ pub(super) async fn post<D: SqliteDatabase>(
     let token = blob_uuid::random_blob();
 
     let share_token = token.clone();
-    conn.interact::<_, Result<_, Error>>(move |conn| {
-        let tx = conn.transaction().context("Failed to create transaction")?;
+    state
+        .db
+        .call::<_, Result<_, Error>>(move |conn| {
+            let tx = conn.transaction().context("Failed to create transaction")?;
 
-        super::insert_share_token(
-            super::InsertShareToken {
-                share_token: &share_token,
-                album_key: &album_key,
-                created_by: &username,
-                created_at: now,
-            },
-            &tx,
-        )?;
+            super::insert_share_token(
+                super::InsertShareToken {
+                    share_token: &share_token,
+                    album_key: &album_key,
+                    created_by: &username,
+                    created_at: now,
+                },
+                &tx,
+            )?;
 
-        tx.commit().context("Failed to commit transaction")?;
+            tx.commit().context("Failed to commit transaction")?;
 
-        Ok(())
-    })
-    .await?;
+            Ok(())
+        })
+        .await?;
 
     Ok(Json(CreateShareTokenResponse { token }))
 }
@@ -61,12 +61,11 @@ mod test {
     async fn share_album() {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
-
-        let result: anyhow::Result<(String, String)> = conn
-            .interact(move |conn| {
-                let user = insert_user("test", conn)?;
-                let image = insert_image(&user, conn).context("")?;
+        let (user, album_key) = state
+            .db
+            .call(move |conn| {
+                let user = insert_user("test", conn).unwrap();
+                let image = insert_image(&user, conn).unwrap();
                 let album_key = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -74,13 +73,12 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )?;
+                )
+                .unwrap();
 
-                Ok((user, album_key))
+                (user, album_key)
             })
             .await;
-
-        let (user, album_key) = result.unwrap();
 
         let result = post(Path(album_key), Authorize(user), Extension(state)).await;
 

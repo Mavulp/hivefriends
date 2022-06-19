@@ -7,7 +7,7 @@ use std::sync::Arc;
 
 use crate::api::{auth::Authorize, error::Error, image::image_exists, user::user_exists};
 use crate::util::{check_length, non_empty_str};
-use crate::{AppState, DbInteractable, SqliteDatabase};
+use crate::AppState;
 
 use super::Timeframe;
 
@@ -29,14 +29,13 @@ pub struct PutAlbumRequest {
     pub tagged_users: Option<Vec<String>>,
 }
 
-pub(super) async fn put<D: SqliteDatabase>(
+pub(super) async fn put(
     request: Result<Json<PutAlbumRequest>, JsonRejection>,
     Path(album_key): Path<String>,
     Authorize(username): Authorize,
-    Extension(state): Extension<Arc<AppState<D>>>,
+    Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<&'static str>, Error> {
     let Json(request) = request?;
-    let conn = state.pool.get().await.context("Failed to get connection")?;
 
     check_length(
         "title",
@@ -50,82 +49,84 @@ pub(super) async fn put<D: SqliteDatabase>(
         super::MAXIMUM_DESCRIPTION_LENGTH,
     )?;
 
-    conn.interact(move |conn| {
-        let tx = conn.transaction().context("Failed to create transaction")?;
-        if !super::is_owner(&album_key, &username, &tx)? {
-            return Err(Error::Unathorized);
-        }
-
-        if let Some(cover_key) = &request.cover_key {
-            if !image_exists(cover_key, &tx)? {
-                return Err(Error::InvalidKey);
+    state
+        .db
+        .call(move |conn| {
+            let tx = conn.transaction().context("Failed to create transaction")?;
+            if !super::is_owner(&album_key, &username, &tx)? {
+                return Err(Error::Unathorized);
             }
-        }
 
-        if let Some(image_keys) = &request.image_keys {
-            tx.execute(
-                "DELETE FROM album_image_associations WHERE album_key = ?",
-                params![album_key],
-            )
-            .context("Failed to remove album image associations")?;
-
-            for (idx, image_key) in (0_i64..).zip(image_keys.iter()) {
-                if !image_exists(image_key, &tx)? {
+            if let Some(cover_key) = &request.cover_key {
+                if !image_exists(cover_key, &tx)? {
                     return Err(Error::InvalidKey);
                 }
+            }
 
+            if let Some(image_keys) = &request.image_keys {
                 tx.execute(
-                    "INSERT INTO album_image_associations (album_key, idx, image_key) \
+                    "DELETE FROM album_image_associations WHERE album_key = ?",
+                    params![album_key],
+                )
+                .context("Failed to remove album image associations")?;
+
+                for (idx, image_key) in (0_i64..).zip(image_keys.iter()) {
+                    if !image_exists(image_key, &tx)? {
+                        return Err(Error::InvalidKey);
+                    }
+
+                    tx.execute(
+                        "INSERT INTO album_image_associations (album_key, idx, image_key) \
                     SELECT ?1, ?2, key FROM images WHERE key = ?3",
-                    params![album_key, idx, image_key],
-                )
-                .context("Failed to insert album image associations")?;
-            }
-        }
-
-        if let Some(tagged_users) = &request.tagged_users {
-            tx.execute(
-                "DELETE FROM user_album_associations WHERE album_key = ?",
-                params![album_key],
-            )
-            .context("Failed to remove album image associations")?;
-
-            for tagged_user in tagged_users {
-                if !user_exists(tagged_user, &tx)? {
-                    return Err(Error::InvalidUsername);
+                        params![album_key, idx, image_key],
+                    )
+                    .context("Failed to insert album image associations")?;
                 }
-
-                tx.execute(
-                    "INSERT INTO user_album_associations (album_key, username) VALUES (?1, ?2)",
-                    params![album_key, tagged_user],
-                )
-                .context("Failed to insert album user associations")?;
             }
-        }
 
-        let update_str = request.album_update_str();
-        if !update_str.is_empty() {
-            let mut params = request.update_params();
-            params.push(Box::new(album_key));
-            if let Err(rusqlite::Error::SqliteFailure(e, _)) = tx.query_row(
-                &format!("UPDATE albums SET {update_str} WHERE key = ?"),
-                rusqlite::params_from_iter(params.iter()),
-                |_| Ok(()),
-            ) {
-                match e.code {
-                    rusqlite::ErrorCode::ConstraintViolation => Err(Error::InvalidKey),
-                    _ => panic!(),
+            if let Some(tagged_users) = &request.tagged_users {
+                tx.execute(
+                    "DELETE FROM user_album_associations WHERE album_key = ?",
+                    params![album_key],
+                )
+                .context("Failed to remove album image associations")?;
+
+                for tagged_user in tagged_users {
+                    if !user_exists(tagged_user, &tx)? {
+                        return Err(Error::InvalidUsername);
+                    }
+
+                    tx.execute(
+                        "INSERT INTO user_album_associations (album_key, username) VALUES (?1, ?2)",
+                        params![album_key, tagged_user],
+                    )
+                    .context("Failed to insert album user associations")?;
+                }
+            }
+
+            let update_str = request.album_update_str();
+            if !update_str.is_empty() {
+                let mut params = request.update_params();
+                params.push(Box::new(album_key));
+                if let Err(rusqlite::Error::SqliteFailure(e, _)) = tx.query_row(
+                    &format!("UPDATE albums SET {update_str} WHERE key = ?"),
+                    rusqlite::params_from_iter(params.iter()),
+                    |_| Ok(()),
+                ) {
+                    match e.code {
+                        rusqlite::ErrorCode::ConstraintViolation => Err(Error::InvalidKey),
+                        _ => panic!(),
+                    }
+                } else {
+                    tx.commit().context("Failed to commit transaction")?;
+                    Ok(())
                 }
             } else {
                 tx.commit().context("Failed to commit transaction")?;
                 Ok(())
             }
-        } else {
-            tx.commit().context("Failed to commit transaction")?;
-            Ok(())
-        }
-    })
-    .await?;
+        })
+        .await?;
 
     Ok(Json("Success"))
 }

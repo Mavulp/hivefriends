@@ -29,14 +29,10 @@ async fn run() -> anyhow::Result<()> {
     let args: cli::Args = argh::from_env();
 
     let db_path: PathBuf = std::env::var("DB_PATH").context("DB_PATH not set")?.into();
-    let pool = setup_database(&db_path).await?;
+    let db = setup_database(&db_path).await?;
 
     if let Some(sub) = args.subcommand {
-        let conn = pool.get().await.context("Failed to get connection")?;
-        return conn
-            .interact(move |conn| cli::run_subcommand(sub, conn))
-            .await
-            .unwrap();
+        return db.call(move |conn| cli::run_subcommand(sub, conn)).await;
     }
 
     let data_path = std::env::var("DATA_PATH")
@@ -50,7 +46,7 @@ async fn run() -> anyhow::Result<()> {
 
     info!("listening on {}", bind_addr);
     axum::Server::try_bind(&bind_addr)?
-        .serve(api_route(pool, data_path).into_make_service())
+        .serve(api_route(db, data_path).into_make_service())
         .await
         .unwrap();
 

@@ -1,5 +1,3 @@
-use crate::FileDb;
-
 use axum::{
     routing::{get, post, put},
     Router,
@@ -21,8 +19,8 @@ pub fn api_route() -> Router {
     Router::new()
         .route("/", post(upload::post))
         .route("/:key", get(get_by_key::get))
-        .route("/:key", put(update_metadata::put::<FileDb>))
-        .route("/", get(get_all::get_all_images::<FileDb>))
+        .route("/:key", put(update_metadata::put))
+        .route("/", get(get_all::get_all_images))
 }
 
 #[derive(Debug, Serialize, Deserialize)]

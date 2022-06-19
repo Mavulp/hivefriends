@@ -1,26 +1,25 @@
-use anyhow::Context;
 use axum::{extract::Path, Extension, Json};
 
 use std::sync::Arc;
 
 use crate::api::auth::Authorize;
 use crate::api::error::Error;
-use crate::{AppState, DbInteractable, SqliteDatabase};
+use crate::AppState;
 
 use super::Album;
 
-pub(super) async fn get<D: SqliteDatabase>(
+pub(super) async fn get(
     Path(album_key): Path<String>,
     Authorize(_): Authorize,
-    Extension(state): Extension<Arc<AppState<D>>>,
+    Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<Album>, Error> {
-    let conn = state.pool.get().await.context("Failed to get connection")?;
-
-    conn.interact(move |conn| match super::get_album(&album_key, conn)? {
-        Some(album) => Ok(Json(album)),
-        None => Err(Error::NotFound),
-    })
-    .await
+    state
+        .db
+        .call(move |conn| match super::get_album(&album_key, conn)? {
+            Some(album) => Ok(Json(album)),
+            None => Err(Error::NotFound),
+        })
+        .await
 }
 
 #[cfg(test)]
@@ -40,15 +39,14 @@ mod test {
     async fn get_album_comment_count(comment_count: &'static [u32]) {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
-
-        let result: anyhow::Result<(String, Vec<String>)> = conn
-            .interact(move |conn| {
-                let user = insert_user("test", conn)?;
+        let (album, images) = state
+            .db
+            .call(move |conn| {
+                let user = insert_user("test", conn).unwrap();
 
                 let mut images = Vec::new();
                 for _ in comment_count {
-                    images.push(insert_image(&user, conn).context("")?);
+                    images.push(insert_image(&user, conn).unwrap());
                 }
 
                 let album = insert_album(
@@ -59,7 +57,8 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )?;
+                )
+                .unwrap();
 
                 for (count, img) in comment_count.iter().zip(images.iter()) {
                     for _ in 0..*count {
@@ -67,11 +66,9 @@ mod test {
                     }
                 }
 
-                Ok((album, images))
+                (album, images)
             })
             .await;
-
-        let (album, images) = result.unwrap();
 
         let expected = images.iter().zip(comment_count).collect::<Vec<_>>();
         let result = get(Path(album), Authorize("".into()), Extension(state)).await;
@@ -86,13 +83,15 @@ mod test {
     async fn get_album_tagged_users() {
         let state = AppState::in_memory_db().await;
 
-        let conn = state.pool.get().await.unwrap();
-
-        let result: anyhow::Result<(String, Vec<String>)> = conn
-            .interact(move |conn| {
-                let users = vec![insert_user("test", conn)?, insert_user("test2", conn)?];
+        let (album, users) = state
+            .db
+            .call(move |conn| {
+                let users = vec![
+                    insert_user("test", conn).unwrap(),
+                    insert_user("test2", conn).unwrap(),
+                ];
                 let user = users[0].clone();
-                let image = insert_image(&user, conn).context("")?;
+                let image = insert_image(&user, conn).unwrap();
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -102,13 +101,12 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )?;
+                )
+                .unwrap();
 
-                Ok((album, users))
+                (album, users)
             })
             .await;
-
-        let (album, users) = result.unwrap();
 
         let result = get(Path(album), Authorize("".into()), Extension(state)).await;
 

@@ -39,11 +39,11 @@ async fn post_login(
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<LoginResponse>, Error> {
     let Json(req) = req?;
-    let conn = state.pool.get().await.context("Failed to get connection")?;
 
     let username = req.username.clone();
-    let result = conn
-        .interact(move |conn| {
+    let result = state
+        .db
+        .call(move |conn| {
             conn.query_row(
                 "SELECT password_hash \
                 FROM users WHERE username=?1",
@@ -53,7 +53,6 @@ async fn post_login(
             .optional()
         })
         .await
-        .unwrap()
         .context("Failed to query username")?;
 
     if let Some(password_hash) = result {
@@ -69,21 +68,17 @@ async fn post_login(
             let token = bearer_token.clone();
 
             let cusername = req.username.clone();
-            let conn = state
-                .pool
-                .get()
-                .await
-                .context("Failed getting DB connection")?;
-            conn.interact(move |conn| {
-                conn.execute(
-                    "INSERT INTO auth_sessions (username, token, created_at) \
+            state
+                .db
+                .call(move |conn| {
+                    conn.execute(
+                        "INSERT INTO auth_sessions (username, token, created_at) \
                     VALUES (?1, ?2, ?3)",
-                    params![cusername, token, now],
-                )
-            })
-            .await
-            .unwrap()
-            .context("Failed inserting token into DB")?;
+                        params![cusername, token, now],
+                    )
+                })
+                .await
+                .context("Failed inserting token into DB")?;
 
             Ok(Json(LoginResponse {
                 bearer_token,
