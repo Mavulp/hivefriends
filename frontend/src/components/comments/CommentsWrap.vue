@@ -107,6 +107,9 @@ function handleKeys(e: any) {
   <div class="hi-comments">
     <div class="hi-comments-header">
       <h5>Comments</h5>
+      <span>({{ data.length }})</span>
+
+      <div class="flex-1"></div>
 
       <button class="control-button" @click="emit('close')">
         <span class="material-icons">&#xe5cd;</span>
