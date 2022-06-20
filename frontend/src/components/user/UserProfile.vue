@@ -51,7 +51,7 @@ onBeforeUnmount(() => {
   window.removeEventListener("scroll", () => {})
 })
 
-const strength = computed(() => (isPhone.value ? 1.2 : 2))
+const strength = computed(() => (isPhone.value ? -2 : -3))
 
 onMounted(() => {
   window.addEventListener("scroll", () => {
@@ -93,13 +93,12 @@ watchEffect(() => {
 
         <div class="user-information-wrap">
           <div class="user-information">
-            <h1>{{ user.displayName ?? user.username }}</h1>
             <div class="user-info-meta">
               <span v-if="user.country" :data-title-top="countries[user.country].name">
                 <img class="flag" :src="flag(user.country, 'png')" alt="" />
               </span>
               <span>
-                Joined <b>{{ formatDate(user.createdAt) }}</b>
+                Joined <b>{{ formatDate(user.createdAt, ["weekday"]) }}</b>
               </span>
               <span>
                 <b>{{ user.albumsUploaded.length }}</b> {{ user.albumsUploaded.length === 1 ? "album" : "albums" }}
@@ -112,6 +111,8 @@ watchEffect(() => {
                 View All
               </router-link>
             </div>
+            <h1>{{ user.displayName ?? user.username }}</h1>
+
             <p v-html="sanitize(user.bio)"></p>
           </div>
 

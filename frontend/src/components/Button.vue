@@ -16,11 +16,13 @@ const isPhone = useMediaQuery("(max-width: 512px)")
 
 const { size, pad, to, color, center } = defineProps<Props>()
 
+console.log(size ? size : isPhone.value ? "36px" : "44px")
+
 const style = computed(() => ({
-  height: size ?? isPhone.value ? "36px" : "44px",
-  lineHeight: size ?? isPhone.value ? "36px" : "44px",
-  paddingLeft: pad ?? isPhone.value ? "16px" : "32px",
-  paddingRight: pad ?? isPhone.value ? "16px" : "32px",
+  height: size ? size : isPhone.value ? "36px" : "44px",
+  lineHeight: size ? size : isPhone.value ? "36px" : "44px",
+  paddingLeft: pad ? pad : isPhone.value ? "16px" : "32px",
+  paddingRight: pad ? pad : isPhone.value ? "16px" : "32px",
   // alignText: 'center',
   ...(color && { color }),
   ...(center && { alignText: "center" })

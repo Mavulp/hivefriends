@@ -33,8 +33,14 @@ const accent = computed(() => user.user.accentColor.split(",").map((item: string
         to the URL.
       </h3>
 
-      <Button class="btn-highlight" :to="{ name: 'Albums' }" :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]">
-        View Albums
+      <Button
+        size="48px"
+        pad="48px"
+        class="btn-highlight"
+        :to="{ name: 'Albums' }"
+        :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]"
+      >
+        Browse Albums
       </Button>
 
       <template v-if="latest">

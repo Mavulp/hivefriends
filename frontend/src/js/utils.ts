@@ -1,13 +1,16 @@
+import { omit } from "lodash"
+
 export function getRanMinMax(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-export function formatDate(date: Date | number) {
+export function formatDate(date: Date | number, toOmit?: Array<any>) {
   if (typeof date === "number") date *= 1000
 
   const d = new Date(date)
+  const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" }
 
-  return d.toLocaleDateString("en-GB", { weekday: "long", year: "numeric", month: "long", day: "numeric" })
+  return d.toLocaleDateString("en-GB", toOmit ? omit(options, toOmit) : options)
 }
 
 export function delay(ms: number) {

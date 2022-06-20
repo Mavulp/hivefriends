@@ -148,19 +148,23 @@
   }
 }
 
+$flag-h: 24px;
+$flag-w: 28px;
+
 .flag {
-  @include radius(3px);
+  @include radius(2px);
   overflow: hidden;
   display: block;
-  max-width: 32px;
-  max-height: 24px;
+  max-width: $flag-w;
+  max-height: $flag-h;
   object-fit: contain;
   object-position: center;
+  box-shadow: 0 0px 2px rgba(var(--color-background-dark), 0.2);
 
   svg {
     display: block;
-    max-width: 32px;
-    max-height: 24px;
+    max-width: $flag-w;
+    max-height: $flag-h;
   }
 }
 
