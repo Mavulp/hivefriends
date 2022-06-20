@@ -2,12 +2,17 @@
   display: block;
   width: 100%;
   height: 100vh;
+  max-width: 100%;
+  overflow-x: hidden;
+  // overflow-y: auto;
 
   @include flex($gap: 0, $wrap: nowrap, $align: flex-start);
 
   .content-wrap {
     display: block;
     width: 100%;
+    height: 100vh;
+    overflow-y: auto;
   }
 
   .comment-wrap {

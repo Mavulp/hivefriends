@@ -178,7 +178,9 @@ export const useUser = defineStore("user", {
     isLoggedIn: (state) => state.logged,
     getKey: (state) => state.user.username,
     getUser: (state) => (username: string, field?: string) => {
-      const u = state.users.find((item) => item.username === username)
+      const u =
+        state.users.find((item) => item.username === username) ||
+        state.users.find((item) => item.displayName === username)
       if (!u) return null
 
       if (!field) return u

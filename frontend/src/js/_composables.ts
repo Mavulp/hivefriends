@@ -8,10 +8,11 @@ export function formatTextUsernames(text: string, userStore: any) {
   const _regex = /@(\w+)/g
   return text.replaceAll(_regex, (original: string, parsed: string) => {
     // console.log(one, two, three)
+    const user = userStore.getUser(parsed)
 
-    if (!userStore.getUser(parsed)) return original
+    if (!user) return original
 
-    return /*html*/ `<button class="comment-user-link" data-comment-link="${parsed}" href="/${parsed}">${original}</button>`
+    return /*html*/ `<button class="comment-user-link" data-comment-link="${user.username}" href="/${user.username}">${original}</button>`
   })
 }
 

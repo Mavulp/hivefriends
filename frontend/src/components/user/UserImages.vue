@@ -84,8 +84,16 @@ function createSelect() {
     }
   })
 }
-function deleteSelect() {
-  alert("Ask jokler or tmtu to implement")
+async function deleteSelect() {
+  album.deleteImages([...selected.value.keys()]).finally(async () => {
+    const raw = await album.fetchUserImages()
+
+    data.value = raw.filter(
+      (item: AllImageItem) => item.key !== user.settings.avatarKey && item.key !== user.settings.bannerKey
+    )
+
+    clearSelect()
+  })
 }
 </script>
 
@@ -95,13 +103,13 @@ function deleteSelect() {
       <h1>All photos</h1>
       <p>
         List of every uploaded photo by you. It is not intended to use the site like that, but you can optionally upload
-        a few images which live outside of any albums. To store them or quickly share with someone.
+        a few photos which live outside of any albums. To store them or quickly share with someone.
       </p>
 
       <input type="file" name="imgfile" id="imgfile" accept="image/*" @input="uploadImage" />
       <label for="imgfile">
         <span class="material-icons"> &#xe3f4; </span>
-        <span>Upload an image</span>
+        <span>Upload a photo</span>
 
         <div class="flex-1"></div>
 
