@@ -85,7 +85,15 @@ function createSelect() {
   })
 }
 async function deleteSelect() {
-  album.deleteImages([...selected.value.keys()])
+  album.deleteImages([...selected.value.keys()]).finally(async () => {
+    const raw = await album.fetchUserImages()
+
+    data.value = raw.filter(
+      (item: AllImageItem) => item.key !== user.settings.avatarKey && item.key !== user.settings.bannerKey
+    )
+
+    clearSelect()
+  })
 }
 </script>
 

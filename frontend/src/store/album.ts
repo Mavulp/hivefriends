@@ -279,7 +279,7 @@ export const useAlbums = defineStore("album", {
 
       addLoading("delete-images")
 
-      Promise.all(keys.map((key: string) => del(`/api/image/${key}`)))
+      Promise.all(keys.map((key: string) => del(`/api/images/${key}`)))
         .then(() => {
           this.fetchUserImages()
         })
