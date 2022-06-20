@@ -101,7 +101,8 @@ async function _handleResponse(response: Response) {
 
   if (response.status !== 200) {
     return response.text().then((text: string) => {
-      let message = ""
+      let message = null
+
       try {
         const parsed = JSON.parse(text)
         message = parsed.message
@@ -111,7 +112,7 @@ async function _handleResponse(response: Response) {
 
       return Promise.reject({
         status: response.status,
-        message
+        message: message ? message : "An unexpected error occured: " + response.statusText
       })
     })
   }

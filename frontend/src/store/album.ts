@@ -268,6 +268,24 @@ export const useAlbums = defineStore("album", {
           return []
         })
         .finally(() => delLoading("images"))
+    },
+    async deleteImages(keys: string[] | string) {
+      if (!keys) return
+
+      if (typeof keys === "string") keys = [keys]
+
+      const { addLoading, delLoading } = useLoading()
+      const toast = useToast()
+
+      addLoading("delete-images")
+
+      Promise.all(keys.map((key: string) => del(`/api/image/${key}`)))
+        .catch((error: FetchError) => {
+          toast.add(error.message, "error")
+        })
+        .finally(() => {
+          delLoading("delete-images")
+        })
     }
   },
   getters: {

@@ -79,7 +79,7 @@ const isDark = computed(() => auth.settings.colorTheme === "dark-normal")
         >
           <span class="material-icons">&#xe413;</span>
         </router-link>
-        <router-link class="hover-bubble" data-title-bottom="Your Images" :to="{ name: 'UserImages' }">
+        <router-link class="hover-bubble" data-title-bottom="Your photos" :to="{ name: 'UserImages' }">
           <span class="material-icons">&#xe5c3;</span>
         </router-link>
         <router-link class="hover-bubble" data-title-bottom="Settings" :to="{ name: 'UserSettings' }">
