@@ -39,7 +39,7 @@ pub(super) struct PutImageMetadataRequest {
 pub(super) async fn put(
     request: Result<Json<PutImageMetadataRequest>, JsonRejection>,
     Path(image_key): Path<String>,
-    Authorize(_): Authorize,
+    Authorize(user): Authorize,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<&'static str>, Error> {
     let Json(request) = request?;
@@ -55,6 +55,19 @@ pub(super) async fn put(
         request.description.as_deref(),
         super::MAXIMUM_DESCRIPTION_LENGTH,
     )?;
+
+    let cimage_key = image_key.clone();
+    let is_owner = state
+        .db
+        .call(move |conn| {
+            super::is_owner(&cimage_key, &user, conn)
+        })
+        .await
+        .context("Failed to update image metadata")?;
+
+    if !is_owner {
+        return Err(Error::Unathorized);
+    }
 
     if let Some(new_name) = &request.file_name {
         let mut image_path = state.data_path.clone();
