@@ -153,7 +153,7 @@ dependencies = [
 [[package]]
 name = "axum-test-helper"
 version = "0.1.0"
-source = "git+https://github.com/jokler/axum-test-helper?branch=remove-post-content-type#722a04d71e3c0d283f139a03be81910ff08e9b79"
+source = "git+https://github.com/jokler/axum-test-helper?branch=hivefriends-fixes#f43616208c39e965b8cf2c7bf665b6a9dde95ab8"
 dependencies = [
  "axum",
  "bytes",
