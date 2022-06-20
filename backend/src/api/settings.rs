@@ -195,7 +195,7 @@ async fn put_password(
     }
 }
 
-fn set_password(username: &str, password: &str, conn: &Connection) -> Result<(), Error> {
+pub fn set_password(username: &str, password: &str, conn: &Connection) -> Result<(), Error> {
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
     let phc_string = argon2
