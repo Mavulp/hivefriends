@@ -51,7 +51,7 @@ onBeforeUnmount(() => {
   window.removeEventListener("scroll", () => {})
 })
 
-const strength = computed(() => (isPhone.value ? -2 : -3))
+const strength = computed(() => (isPhone.value ? -4 : -2.5))
 
 onMounted(() => {
   window.addEventListener("scroll", () => {

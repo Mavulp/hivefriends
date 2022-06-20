@@ -6,6 +6,7 @@ import { isValidImage } from "../../js/utils"
 
 import Search from "../form/Search.vue"
 import LoadingSpin from "../loading/LoadingSpin.vue"
+import { useMagicKeys, whenever } from "@vueuse/core"
 
 const emit = defineEmits<{
   (e: "close"): void
@@ -40,6 +41,11 @@ function emitInsert(name: string) {
   emit("insert", name)
   // emit("close")
 }
+
+const keys = useMagicKeys()
+whenever(keys["Escape"], () => {
+  emit("close")
+})
 </script>
 
 <template>

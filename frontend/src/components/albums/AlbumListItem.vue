@@ -49,7 +49,7 @@ function goto() {
             @error="(e: any) => e.target.classList.add('image-error')"
           />
 
-          <span>{{ props.data.author }}</span>
+          <span>{{ user.getUsername(props.data.author) }}</span>
         </router-link>
       </div>
     </div>
