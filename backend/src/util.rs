@@ -52,7 +52,14 @@ pub mod test {
 
         let migrations = Migrations::new(crate::MIGRATIONS.to_vec());
 
-        db.call(move |conn| migrations.to_latest(conn)).await?;
+        db.call(move |conn| {
+            conn.pragma_update(None, "foreign_keys", &"OFF")?;
+            migrations.to_latest(conn)?;
+            conn.pragma_update(None, "foreign_keys", &"ON")?;
+
+            Ok::<_, anyhow::Error>(())
+        })
+        .await?;
 
         Ok(db)
     }

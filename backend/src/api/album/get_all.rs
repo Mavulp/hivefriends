@@ -55,7 +55,8 @@ pub(super) async fn get(
                 let mut stmt = conn
                     .prepare(
                         "SELECT username FROM user_album_associations \
-                    WHERE album_key = ?1",
+                        WHERE album_key = ?1 \
+                        GROUP BY username",
                     )
                     .context("Failed to prepare statement for album query")?;
                 let tagged_users = stmt

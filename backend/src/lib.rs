@@ -73,13 +73,27 @@ async fn handle_error(_err: std::io::Error) -> impl IntoResponse {
     (StatusCode::INTERNAL_SERVER_ERROR, "Something went wrong...")
 }
 
-pub(crate) const MIGRATIONS: [M; 1] = [M::up(include_str!("../migrations/001_initial.sql"))];
+pub(crate) const MIGRATIONS: [M; 2] = [
+    M::up(include_str!("../migrations/001_initial.sql")),
+    M::up(include_str!(
+        "../migrations/002_username_collate_nocase.sql"
+    ))
+    .foreign_key_check(),
+];
 
 pub async fn setup_database(path: &Path) -> anyhow::Result<tokio_rusqlite::Connection> {
     let db = tokio_rusqlite::Connection::open(path).await?;
 
     let migrations = Migrations::new(MIGRATIONS.to_vec());
-    db.call(move |conn| migrations.to_latest(conn)).await?;
+
+    db.call(move |conn| {
+        conn.pragma_update(None, "foreign_keys", &"OFF")?;
+        migrations.to_latest(conn)?;
+        conn.pragma_update(None, "foreign_keys", &"ON")?;
+
+        Ok::<_, anyhow::Error>(())
+    })
+    .await?;
 
     info!("Clearing old auth sessions");
     let now = SystemTime::UNIX_EPOCH.elapsed().unwrap();

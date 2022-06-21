@@ -41,21 +41,21 @@ async fn post_login(
     let Json(req) = req?;
 
     let username = req.username.clone();
-    let result = state
+    let result: Option<(String, String)> = state
         .db
         .call(move |conn| {
             conn.query_row(
-                "SELECT password_hash \
+                "SELECT username, password_hash \
                 FROM users WHERE username=?1",
                 params![username],
-                |row| row.get::<_, String>(0),
+                |row| Ok((row.get(0)?, row.get(1)?)),
             )
             .optional()
         })
         .await
         .context("Failed to query username")?;
 
-    if let Some(password_hash) = result {
+    if let Some((username, password_hash)) = result {
         let argon2 = Argon2::default();
         let parsed_hash = PasswordHash::new(&password_hash).context("Failed creating hash")?;
 
@@ -67,7 +67,7 @@ async fn post_login(
             let bearer_token = generate_token();
             let token = bearer_token.clone();
 
-            let cusername = req.username.clone();
+            let cusername = username.clone();
             state
                 .db
                 .call(move |conn| {
@@ -82,7 +82,7 @@ async fn post_login(
 
             Ok(Json(LoginResponse {
                 bearer_token,
-                username: req.username,
+                username,
             }))
         } else {
             Err(Error::InvalidLogin)
