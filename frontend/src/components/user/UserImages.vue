@@ -12,7 +12,7 @@ import { useUser } from "../../store/user"
 import UserImageItem from "../image/UserImageItem.vue"
 import LoadingSpin from "../loading/LoadingSpin.vue"
 import router from "../../router"
-import { useMediaQuery } from "@vueuse/core"
+import { onClickOutside, useMediaQuery } from "@vueuse/core"
 
 const bread = useBread()
 const toast = useToast()
@@ -84,6 +84,12 @@ function createSelect() {
     }
   })
 }
+
+const open = ref(false)
+const wrap = ref(null)
+
+onClickOutside(wrap, () => (open.value = false))
+
 async function deleteSelect() {
   album.deleteImages([...selected.value.keys()]).finally(async () => {
     const raw = await album.fetchUserImages()
@@ -132,10 +138,28 @@ async function deleteSelect() {
 
       <div>
         <template v-if="selected.size > 0 && selectMode">
-          <button class="hover-bubble bubble-red" @click="deleteSelect">
-            <span class="material-icons">&#xe872;</span>
-            {{ isPhone ? "Delete" : "Delete selected" }}
-          </button>
+          <div ref="wrap" style="position: relative">
+            <button class="hover-bubble bubble-red" @click="open = !open" :class="{ active: open }">
+              <span class="material-icons">&#xe872;</span>
+              {{ isPhone ? "Delete" : "Delete selected" }}
+            </button>
+
+            <div class="dropdown-list" :class="{ active: open }">
+              <button
+                class="hover-bubble bubble-red"
+                :class="{ 'btn-disabled': getLoading('delete-album') }"
+                @click="deleteSelect"
+              >
+                <span class="material-icons"> &#xe872; </span>
+                Delete
+                <span class="material-icons rotate" v-if="getLoading('delete-album')">&#xe863;</span>
+              </button>
+
+              <button class="hover-bubble bubble-info" @click="open = false">
+                <span class="material-icons">&#xe5cd;</span> Cancel
+              </button>
+            </div>
+          </div>
 
           <button class="hover-bubble bubble-orange" @click="createSelect">
             <span class="material-icons">&#xe2cc;</span>

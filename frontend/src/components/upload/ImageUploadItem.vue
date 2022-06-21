@@ -91,6 +91,10 @@ async function submit() {
         <span class="material-icons">&#xe945;</span>
       </button>
 
+      <button class="hover-bubble bubble-orange" @click="open = !open" :class="{ active: open }">
+        <span class="material-icons">&#xe745;</span>
+      </button>
+
       <strong>{{ form.fileName.length > 0 ? form.fileName : data.name }}</strong>
 
       <span class="file-size">{{ isPhone ? "" : "Size:" }} {{ size() }}</span>
@@ -102,7 +106,7 @@ async function submit() {
 
       <LoadingBar :class="[{ 'loading-done': !data.loading }, data.error ? 'loading-error' : 'loading-success']" />
 
-      <button data-title-top="Remove Image" @click="emit('remove', index)">
+      <button data-title-top="Delete" @click="emit('remove', index)">
         <span class="material-icons">&#xe5cd;</span>
       </button>
     </div>
