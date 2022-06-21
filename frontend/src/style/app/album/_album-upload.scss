@@ -1,9 +1,19 @@
 .hi-album-upload {
   display: block;
-  max-width: 1920px;
+  // max-width: 1920px;
   width: 100%;
-  margin: 0 auto;
+  // margin: 0 auto;
   // padding: 64px 128px;
+
+  &.has-drafts {
+    .album-upload-layout .album-upload-items .album-drag-input.empty {
+      height: calc(100vh - 241px);
+    }
+
+    .album-upload-layout .album-upload-metadata {
+      min-height: calc(100vh - 241px);
+    }
+  }
 
   .upload-looading-bar {
     display: block;
@@ -89,44 +99,6 @@
         &.hover-bubble:after {
           top: -3px;
           bottom: -3px;
-        }
-      }
-
-      .draft-dropdown {
-        @include radius(4px);
-        @include t(0.15s);
-        display: block;
-        padding: 20px;
-        box-shadow: var(--shadow);
-        position: absolute;
-        top: calc(100% + 8px);
-        right: 0;
-        background-color: rgb(var(--color-white));
-        width: 164px;
-
-        transform: scale(0.9) translateY(-4px);
-        opacity: 0;
-        z-index: -1;
-        visibility: hidden;
-        transform-origin: right top;
-
-        &.active {
-          z-index: 50;
-          opacity: 1;
-          visibility: visible;
-          transform: scale(1) translateY(0);
-        }
-
-        a,
-        button {
-          @include flex($gap: 12px, $justify: flex-start);
-          width: 100%;
-          margin-bottom: 24px;
-          color: rgb(var(--color-text));
-
-          &:last-child {
-            margin-bottom: 0;
-          }
         }
       }
     }
@@ -327,6 +299,23 @@
               @include grid(32px, 2);
             }
           }
+
+          .map-title {
+            @include flex($gap: 16px, $align: center);
+            margin-bottom: 24px;
+
+            h6,
+            P {
+              margin: 0;
+            }
+          }
+
+          .map-wrapper {
+            display: block;
+            width: 100%;
+            height: 256px;
+            margin-bottom: 16px;
+          }
         }
       }
     }
@@ -346,8 +335,12 @@
           margin-bottom: 0;
         }
 
-        .hover-bubble {
+        .text-red {
           color: rgb(var(--color-error));
+        }
+
+        .delete-wrap {
+          position: relative;
         }
       }
 

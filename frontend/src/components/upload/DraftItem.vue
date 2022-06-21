@@ -46,7 +46,7 @@ async function deleteDraft() {
         <span class="material-icons"> &#xe5d4; </span>
       </button>
 
-      <div class="draft-dropdown" :class="{ active: open }">
+      <div class="dropdown-list" :class="{ active: open }">
         <router-link :to="{ name: 'AlbumDetail', params: { id: props.data.key } }" class="hover-bubble">
           <span class="material-icons">&#xe3b6;</span>
           View

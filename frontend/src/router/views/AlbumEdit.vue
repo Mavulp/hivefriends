@@ -16,6 +16,7 @@ import { useFormValidation, required } from "../../js/validation"
 import { clone } from "lodash"
 import { upload } from "../../js/fetch"
 import { useBread } from "../../store/bread"
+import { onClickOutside } from "@vueuse/core"
 
 /**
  * Setup
@@ -242,6 +243,17 @@ async function deleteAlbum() {
   await albums.deleteAlbum(_id.value)
   router.push({ name: "UserAlbums", params: { user: user.user.username } })
 }
+
+/**
+ * Delete warning
+ */
+
+const deletewrap = ref(null)
+const deleteopen = ref(false)
+
+onClickOutside(deletewrap, () => {
+  deleteopen.value = false
+})
 </script>
 
 <template>
@@ -288,10 +300,33 @@ async function deleteAlbum() {
       <div class="album-upload-metadata" v-if="!getLoading('edit')">
         <div class="title-wrap">
           <h3>Edit album</h3>
-          <button @click="deleteAlbum" class="hover-bubble bubble-red">
-            Delete album
-            <span class="material-icons rotate" v-if="getLoading('delete-albums')">&#xe863;</span>
-          </button>
+
+          <div class="delete-wrap" ref="deletewrap">
+            <button
+              @click="deleteopen = !deleteopen"
+              class="hover-bubble bubble-red text-red"
+              :class="{ active: deleteopen }"
+            >
+              Delete album
+              <span class="material-icons rotate" v-if="getLoading('delete-albums')">&#xe863;</span>
+            </button>
+
+            <div class="dropdown-list" :class="{ active: deleteopen }">
+              <button
+                class="hover-bubble bubble-red"
+                :class="{ 'btn-disabled': getLoading('delete-album') }"
+                @click="deleteAlbum"
+              >
+                <span class="material-icons"> &#xe872; </span>
+                Delete
+                <span class="material-icons rotate" v-if="getLoading('delete-album')">&#xe863;</span>
+              </button>
+
+              <button class="hover-bubble bubble-info" @click="deleteopen = false">
+                <span class="material-icons">&#xe5cd;</span> Cancel
+              </button>
+            </div>
+          </div>
         </div>
 
         <InputText v-model:value="album.title" placeholder="Album name" label="Title" required :error="errors.title" />
