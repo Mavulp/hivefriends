@@ -299,6 +299,23 @@
               @include grid(32px, 2);
             }
           }
+
+          .map-title {
+            @include flex($gap: 16px, $align: center);
+            margin-bottom: 24px;
+
+            h6,
+            P {
+              margin: 0;
+            }
+          }
+
+          .map-wrapper {
+            display: block;
+            width: 100%;
+            height: 256px;
+            margin-bottom: 16px;
+          }
         }
       }
     }

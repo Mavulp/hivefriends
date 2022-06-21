@@ -4,12 +4,20 @@ import Button from "../Button.vue"
 import InputText from "../form/InputText.vue"
 import InputTextarea from "../form/InputTextarea.vue"
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
+import InputCheckbox from "../form/InputCheckbox.vue"
+
+import { MapboxMap, MapboxMarker } from "vue-mapbox-ts"
+import { map_access, map_dark, map_light } from "../../js/map"
+import { Map, MapboxEvent, MapDataEvent } from "mapbox-gl"
 
 import { computed, reactive, ref, watch } from "vue"
-import { useAlbums, imageUrl } from "../../store/album"
+import { useAlbums, imageUrl, Image } from "../../store/album"
 import { minLength, useFormValidation, required, maxLength } from "../../js/validation"
 import { useLoading } from "../../store/loading"
-import { useMediaQuery } from "@vueuse/core"
+import { useMediaQuery, whenever } from "@vueuse/core"
+import { useUser } from "../../store/user"
+import { usePreferredDark } from "@vueuse/core"
+import { isEmpty } from "lodash"
 
 interface Props {
   data: any
@@ -23,9 +31,12 @@ const emit = defineEmits<{
   (e: "setAsCover", key: string): void
 }>()
 
+const user = useUser()
 const albums = useAlbums()
 const { getLoading } = useLoading()
 const isPhone = useMediaQuery("(max-width: 512px)")
+
+const originalCoords = reactive({} as { latitude: string; longitude: string })
 
 const open = ref(false)
 const size = () => {
@@ -40,6 +51,12 @@ watch(
   async (val) => {
     if (val) {
       const image = await albums.fetchImageMetadata(data.key)
+
+      Object.assign(originalCoords, image.location)
+
+      if (isEmpty(originalCoords)) {
+        usemap.value = false
+      }
 
       if (image) {
         form.fileName = image.fileName
@@ -82,10 +99,42 @@ async function submit() {
     albums.saveImageMetadata(data.key, form)
   })
 }
+
+/**
+ * LOcation setting
+ */
+const map = ref<Map>()
+const usemap = ref(true)
+
+watch(usemap, (val) => {
+  if (!val) {
+    form.location.latitude = ""
+    form.location.longitude = ""
+  } else if (!isEmpty(originalCoords)) {
+    form.location.latitude = originalCoords.latitude
+    form.location.longitude = originalCoords.longitude
+  }
+})
+
+const MapLoaded = (mapObject: Map) => {
+  map.value = mapObject
+
+  map.value.on("click", (event: any) => {
+    const { lng, lat } = event.lngLat
+
+    form.location.latitude = String(lat)
+    form.location.longitude = String(lng)
+  })
+}
+
+const mapStyle = computed(() => {
+  if (user.public_token) return usePreferredDark() ? map_dark : map_light
+  return user.settings?.colorTheme?.startsWith("dark") ? map_dark : map_light
+})
 </script>
 
 <template>
-  <div class="album-upload-item" :class="{ open: open, 'has-error': data.error }" draggable="true">
+  <div class="album-upload-item" :class="{ open: open, 'has-error': data.error }" :draggable="open ? false : true">
     <div class="album-upload-item-header" @click.self="open = !open">
       <button class="hover-bubble bubble-info">
         <span class="material-icons">&#xe945;</span>
@@ -126,10 +175,20 @@ async function submit() {
           />
           <InputTextarea label="Description" placeholder="Add image description" v-model:value="form.description" />
 
-          <h6>Location</h6>
-          <div class="double-input">
-            <InputText label="Latitude" v-model:value="form.location.latitude" placeholder="Set photo latitude" />
-            <InputText label="Latitude" v-model:value="form.location.longitude" placeholder="Set photo longitude" />
+          <div class="map-title">
+            <InputCheckbox v-model:check="usemap" />
+            <h6>Location</h6>
+          </div>
+
+          <div class="map-wrapper" v-if="usemap">
+            <mapbox-map
+              :accessToken="map_access"
+              :mapStyle="mapStyle"
+              @loaded="MapLoaded"
+              :center="[form.location.longitude, form.location.latitude]"
+            >
+              <mapbox-marker :lngLat="[form.location.longitude, form.location.latitude]" />
+            </mapbox-map>
           </div>
 
           <div class="buttons">

@@ -248,7 +248,7 @@ function dragCompare() {
 </script>
 
 <template>
-  <div class="hi-album-upload" :class="{ 'has-drafts': drafts }">
+  <div class="hi-album-upload" :class="{ 'has-drafts': drafts && !isEmpty(drafts) }">
     <LoadingSpin v-if="getLoading('album-upload')" class="dark center-page" />
 
     <div class="album-drafts" v-if="drafts && !isEmpty(drafts)">
