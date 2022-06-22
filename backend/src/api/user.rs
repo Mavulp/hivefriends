@@ -102,13 +102,14 @@ async fn get_users(
                 let mut stmt = conn
                     .prepare(
                         "SELECT u2.username FROM users u1 \
-                    INNER JOIN user_album_associations uaa ON uaa.username = u1.username \
-                    INNER JOIN albums a ON a.key = uaa.album_key \
-                    INNER JOIN user_album_associations uaa2 ON uaa2.album_key = a.key \
-                    INNER JOIN users u2 ON uaa2.username = u2.username \
-                    WHERE u1.username = ?1 \
-                    AND u2.username != ?1 \
-                    AND a.draft == false",
+                        INNER JOIN user_album_associations uaa ON uaa.username = u1.username \
+                        INNER JOIN albums a ON a.key = uaa.album_key \
+                        INNER JOIN user_album_associations uaa2 ON uaa2.album_key = a.key \
+                        INNER JOIN users u2 ON uaa2.username = u2.username \
+                        WHERE u1.username = ?1 \
+                        AND u2.username != ?1 \
+                        AND a.draft == false
+                        GROUP BY u2.username",
                     )
                     .context("Failed to prepare met users query")?;
                 let met_iter = stmt
@@ -199,7 +200,8 @@ async fn get_user_by_username(
                     INNER JOIN users u2 ON uaa2.username = u2.username \
                     WHERE u1.username = ?1 \
                     AND u2.username != ?1 \
-                    AND a.draft == false",
+                    AND a.draft == false
+                    GROUP BY u2.username",
                 )?;
                 let album_iter = stmt.query_map(params![cusername], |row| {
                     Ok(from_row::<String>(row).unwrap())
@@ -263,5 +265,128 @@ pub fn user_exists(username: &str, conn: &Connection) -> anyhow::Result<bool> {
         result?;
 
         Ok(true)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::api::album::InsertAlbum;
+    use crate::util::test::{insert_album, insert_image, insert_user};
+    use assert_matches::assert_matches;
+
+    #[tokio::test]
+    async fn get_by_username() {
+        let state = AppState::in_memory_db().await;
+
+        let users = state
+            .db
+            .call(move |conn| {
+                let users = vec![
+                    insert_user("test", conn).unwrap(),
+                    insert_user("test2", conn).unwrap(),
+                ];
+                let user = users[0].clone();
+                let image = insert_image(&user, conn).unwrap();
+
+                // Insert 2 albums to ensure we have a working GROUP BY on the met users list
+                let _ = insert_album(
+                    InsertAlbum {
+                        cover_key: &image,
+                        image_keys: &[image.clone()],
+                        tagged_users: &users,
+                        author: &user,
+                        ..Default::default()
+                    },
+                    conn,
+                )
+                .unwrap();
+                let _ = insert_album(
+                    InsertAlbum {
+                        cover_key: &image,
+                        image_keys: &[image.clone()],
+                        tagged_users: &users,
+                        author: &user,
+                        ..Default::default()
+                    },
+                    conn,
+                )
+                .unwrap();
+
+                users
+            })
+            .await;
+
+        let result = get_user_by_username(
+            Path(users[0].clone()),
+            Authorize("".into()),
+            Extension(state),
+        )
+        .await;
+
+        assert_matches!(result, Ok(Json(user)) => {
+            assert_matches!(&user.met[..], [met] => {
+                assert_eq!(met, &users[1]);
+            })
+        });
+    }
+
+    #[tokio::test]
+    async fn get_all() {
+        let state = AppState::in_memory_db().await;
+
+        let _ = state
+            .db
+            .call(move |conn| {
+                let users = vec![
+                    insert_user("test", conn).unwrap(),
+                    insert_user("test2", conn).unwrap(),
+                ];
+                let user = users[0].clone();
+                let image = insert_image(&user, conn).unwrap();
+
+                // Insert 2 albums to ensure we have a working GROUP BY on the met users list
+                let _ = insert_album(
+                    InsertAlbum {
+                        cover_key: &image,
+                        image_keys: &[image.clone()],
+                        tagged_users: &users,
+                        author: &user,
+                        ..Default::default()
+                    },
+                    conn,
+                )
+                .unwrap();
+                let _ = insert_album(
+                    InsertAlbum {
+                        cover_key: &image,
+                        image_keys: &[image.clone()],
+                        tagged_users: &users,
+                        author: &user,
+                        ..Default::default()
+                    },
+                    conn,
+                )
+                .unwrap();
+
+                users
+            })
+            .await;
+
+        let result = get_users(
+            Authorize("".into()),
+            Extension(state),
+        ).await;
+
+        assert_matches!(result, Ok(Json(users)) => {
+            assert_matches!(&users[..], [user1, user2] => {
+                assert_matches!(&user1.met[..], [met] => {
+                    assert_eq!(met, &user2.username);
+                });
+                assert_matches!(&user2.met[..], [met] => {
+                    assert_eq!(met, &user1.username);
+                });
+            });
+        });
     }
 }
