@@ -59,9 +59,7 @@ pub(super) async fn put(
     let cimage_key = image_key.clone();
     let is_owner = state
         .db
-        .call(move |conn| {
-            super::is_owner(&cimage_key, &user, conn)
-        })
+        .call(move |conn| super::is_owner(&cimage_key, &user, conn))
         .await
         .context("Failed to update image metadata")?;
 

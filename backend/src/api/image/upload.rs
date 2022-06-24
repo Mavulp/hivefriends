@@ -6,8 +6,8 @@ use axum::{
     },
     Extension, Json,
 };
-use chrono::NaiveDateTime;
 use image::DynamicImage;
+use time::{format_description, PrimitiveDateTime};
 use tokio::fs;
 use tracing::warn;
 
@@ -148,11 +148,14 @@ fn populate_metadata_from_exif(metadata: &mut DbImageMetadata, exif: &exif::Exif
         }
     };
 
+    let format =
+        format_description::parse("[year]-[month]-[day] [hour]:[minute]:[second]").unwrap();
     metadata.taken_at = exif
         .get_field(Tag::DateTimeOriginal, In::PRIMARY)
         .map(|f| f.display_value().with_unit(exif).to_string())
-        .and_then(|s| NaiveDateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S").ok())
-        .map(|t| t.timestamp() as i64);
+        .and_then(|s| PrimitiveDateTime::parse(&s, &format).ok())
+        .map(|t| t.assume_utc())
+        .map(|t| t.unix_timestamp());
 
     metadata.camera_brand = exif.get_field(Tag::Make, In::PRIMARY).and_then(|f| {
         if let exif::Value::Ascii(v) = &f.value {
