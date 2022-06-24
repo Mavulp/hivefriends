@@ -1,6 +1,6 @@
+use anyhow::bail;
 use argh::FromArgs;
 use rusqlite::Connection;
-use anyhow::bail;
 
 #[derive(FromArgs, PartialEq, Debug)]
 /// Top-level command.

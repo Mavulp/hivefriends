@@ -373,10 +373,7 @@ mod test {
             })
             .await;
 
-        let result = get_users(
-            Authorize("".into()),
-            Extension(state),
-        ).await;
+        let result = get_users(Authorize("".into()), Extension(state)).await;
 
         assert_matches!(result, Ok(Json(users)) => {
             assert_matches!(&users[..], [user1, user2] => {
