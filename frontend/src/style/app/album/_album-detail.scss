@@ -193,6 +193,32 @@
     .hi-album-image {
       display: block;
       width: 100%;
+      position: relative;
+
+      .image-comment-count {
+        @include flex($justify: flex-start, $gap: 8px);
+
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        left: 12px;
+        pointer-events: none;
+
+        p {
+          margin: 0;
+          font-size: 1.6rem;
+        }
+
+        .material-icons {
+          font-size: 1.8rem;
+        }
+
+        .material-icons,
+        p {
+          color: rgb(var(--color-text-white));
+          text-shadow: 0 1px 3px rgb(#191716, 0.8);
+        }
+      }
 
       .image-wrap {
         display: block;
