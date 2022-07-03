@@ -138,7 +138,7 @@ async function deleteSelect() {
 
       <div>
         <template v-if="selected.size > 0 && selectMode">
-          <div ref="wrap" style="position: relative">
+          <!-- <div ref="wrap" style="position: relative">
             <button class="hover-bubble bubble-red" @click="open = !open" :class="{ active: open }">
               <span class="material-icons">&#xe872;</span>
               {{ isPhone ? "Delete" : "Delete selected" }}
@@ -159,16 +159,47 @@ async function deleteSelect() {
                 <span class="material-icons">&#xe5cd;</span> Cancel
               </button>
             </div>
-          </div>
+          </div> -->
 
-          <button class="hover-bubble bubble-orange" @click="createSelect">
+          <!-- <button class="hover-bubble bubble-orange" @click="createSelect">
             <span class="material-icons">&#xe2cc;</span>
             {{ isPhone ? "Create" + `(${selected.size})` : "Create album" }}
-          </button>
+          </button> -->
+
+          <div ref="wrap" style="position: relative">
+            <button class="hover-bubble" @click="open = !open" :class="{ active: open }">
+              <span class="material-icons">&#xe5d2;</span>
+              Actions
+            </button>
+
+            <div class="dropdown-list" :class="{ active: open }">
+              <button class="hover-bubble bubble-info">
+                <span class="material-icons">&#xe2cc;</span> Create album
+              </button>
+              <button class="hover-bubble bubble-info">
+                <span class="material-icons">&#xe9a3;</span> Add to album
+              </button>
+              <button class="hover-bubble bubble-red"><span class="material-icons">&#xe5cd;</span> Delete</button>
+
+              <!-- <button
+                class="hover-bubble bubble-red"
+                :class="{ 'btn-disabled': getLoading('delete-album') }"
+                @click="deleteSelect"
+              >
+                <span class="material-icons"> &#xe872; </span>
+                Delete
+                <span class="material-icons rotate" v-if="getLoading('delete-album')">&#xe863;</span>
+              </button>
+
+              <button class="hover-bubble bubble-info" @click="open = false">
+                <span class="material-icons">&#xe5cd;</span> Cancel
+              </button> -->
+            </div>
+          </div>
 
           <button class="hover-bubble bubble-highlight" @click="clearSelect">
             <span class="material-icons">&#xe5cd;</span>
-            {{ isPhone ? "Clear" : "Clear selection" }}
+            Deselect
           </button>
         </template>
 
