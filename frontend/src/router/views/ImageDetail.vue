@@ -84,7 +84,11 @@ const index = computed<number>(() => album.value?.images.findIndex((item) => ite
 const prevIndex = computed(() => album.value.images[index.value - 1])
 const nextIndex = computed(() => album.value.images[index.value + 1])
 
-const metadata = computed(() => albums.getImageMetadata(imageKey.value))
+const metadata = computed(() => {
+  if (!user.public_token) {
+    return albums.getImageMetadata(imageKey.value)
+  }
+})
 
 function setIndex(where: string) {
   transDir.value = `image${where}`
@@ -128,7 +132,9 @@ watch(
         imageDetailUrl.value = img.src
       }
 
-      albums.fetchImageMetadata(key)
+      if (!user.public_token) {
+        albums.fetchImageMetadata(key)
+      }
 
       if (image.value) {
         bread.set(`${image.value.fileName} by ${user.getUsername(image.value.uploader)}`)
