@@ -16,8 +16,6 @@ const isPhone = useMediaQuery("(max-width: 512px)")
 
 const { size, pad, to, color, center } = defineProps<Props>()
 
-console.log(size ? size : isPhone.value ? "36px" : "44px")
-
 const style = computed(() => ({
   height: size ? size : isPhone.value ? "36px" : "44px",
   lineHeight: size ? size : isPhone.value ? "36px" : "44px",

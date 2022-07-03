@@ -120,6 +120,7 @@ const router = createRouter({
       path: "/edit/album/:id",
       name: "AlbumEdit",
       component: AlbumEdit,
+      props: true,
       meta: {
         title: "Edit",
         requiresAuth: true

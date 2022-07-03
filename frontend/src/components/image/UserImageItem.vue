@@ -122,7 +122,7 @@ function goto(key: string) {}
     <Teleport to="body" v-if="selectingAlbum">
       <Modal @click="selectingAlbum = false">
         <div class="modal-wrap modal-select-album">
-          <button data-title-left="Close" @click="open = false">
+          <button class="btn-close" data-title-left="Close" @click="open = false">
             <span class="material-icons">&#xe5cd;</span>
           </button>
 

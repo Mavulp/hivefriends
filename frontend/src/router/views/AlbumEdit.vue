@@ -32,6 +32,10 @@ const bread = useBread()
 const _id = computed(() => route?.params?.id.toString() ?? null)
 const IS_OK = ref(false)
 
+const props = defineProps<{
+  images: Image[]
+}>()
+
 onBeforeMount(async () => {
   addLoading("edit")
   bread.set("Edit an album")
