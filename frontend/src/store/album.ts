@@ -24,6 +24,7 @@ export interface Image {
   description?: string
   uploader: string
   uploadedAt: number
+  commentCount?: number
 }
 
 export interface AllImageItem extends Image {
