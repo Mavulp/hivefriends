@@ -13,8 +13,8 @@ import { formatDate } from "../../js/utils"
 import UserImageItem from "../image/UserImageItem.vue"
 import LoadingSpin from "../loading/LoadingSpin.vue"
 import Modal from "../Modal.vue"
-import router from "../../router"
 import { onClickOutside, useMediaQuery } from "@vueuse/core"
+import { useRouter } from "vue-router"
 
 const bread = useBread()
 const toast = useToast()
@@ -23,6 +23,7 @@ const album = useAlbums()
 const { getLoading, addLoading, delLoading } = useLoading()
 const data = ref<Array<AllImageItem>>([])
 const isPhone = useMediaQuery("(max-width: 512px)")
+const router = useRouter()
 
 const chunks = computed<Array<Array<AllImageItem>>>(() =>
   getImageChunks(
@@ -117,6 +118,7 @@ const modal = ref(false)
 const selectingLoading = ref(false)
 const albums = ref<Array<Album>>()
 
+// Open modal to select an album to add selected images to
 async function tryToAlbum() {
   modal.value = true
   selectingLoading.value = true
@@ -124,15 +126,7 @@ async function tryToAlbum() {
   selectingLoading.value = false
 }
 
-function addToExisting(key: string) {
-  router.push({
-    name: "AlbumEdit",
-    params: {
-      id: key,
-      images: JSON.stringify([...selected.value.values()])
-    }
-  })
-}
+// Open album edit page with selected images
 </script>
 
 <template>
@@ -221,35 +215,39 @@ function addToExisting(key: string) {
         />
       </div>
     </div>
-  </div>
-  <Teleport to="body" v-if="modal">
-    <Modal @click="modal = false">
-      <div class="modal-wrap modal-select-album">
-        <button class="btn-close" data-title-left="Close" @click="open = false">
-          <span class="material-icons">&#xe5cd;</span>
-        </button>
-
-        <h2>Select an album</h2>
-        <p>This image is part of multiple albums. Please choose which one you wish to view.</p>
-
-        <LoadingSpin v-if="selectingLoading" />
-
-        <template v-else>
-          <button v-for="album in albums" class="select-album-item" @click="addToExisting(album.key)">
-            <div class="album-item-image">
-              <img :src="imageUrl(album.coverKey, 'tiny')" alt="" />
-            </div>
-
-            <div class="album-item-meta">
-              <strong>{{ album.title }}</strong>
-              <p>
-                Uploaded {{ formatDate(album.createdAt) }} by
-                {{ album.author }}
-              </p>
-            </div>
+    <Teleport to="body" v-if="modal">
+      <Modal @click="modal = false">
+        <div class="modal-wrap modal-select-album">
+          <button class="btn-close" data-title-left="Close" @click="open = false">
+            <span class="material-icons">&#xe5cd;</span>
           </button>
-        </template>
-      </div>
-    </Modal>
-  </Teleport>
+
+          <h2>Select an album</h2>
+          <p>This image is part of multiple albums. Please choose which one you wish to view.</p>
+
+          <LoadingSpin v-if="selectingLoading" />
+
+          <template v-else>
+            <router-link
+              v-for="album in albums"
+              class="select-album-item"
+              :to="{
+                name: 'AlbumEdit',
+                params: { id: album.key, images: JSON.stringify([...selected.values()]) }
+              }"
+            >
+              <div class="album-item-image">
+                <img :src="imageUrl(album.coverKey, 'tiny')" alt="" />
+              </div>
+
+              <div class="album-item-meta">
+                <strong>{{ album.title }}</strong>
+                <p>Uploaded {{ formatDate(album.createdAt) }}</p>
+              </div>
+            </router-link>
+          </template>
+        </div>
+      </Modal>
+    </Teleport>
+  </div>
 </template>
