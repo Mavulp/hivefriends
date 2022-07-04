@@ -7,6 +7,8 @@ use rusqlite::{params, Connection, OptionalExtension, ToSql};
 use serde::{Deserialize, Serialize};
 use serde_rusqlite::{from_row, to_params_named};
 
+use std::fmt::Write;
+
 use crate::api::error::Error;
 use crate::util::comma_string;
 
@@ -358,7 +360,7 @@ fn apply_filters(
     filter_queries.push(draft_filter_query(parameters, filters.draft, username));
 
     if !filter_queries.is_empty() {
-        query.push_str(&format!(" WHERE {}", filter_queries.join(" AND ")));
+        write!(query, " WHERE {}", filter_queries.join(" AND ")).unwrap();
     }
 }
 
