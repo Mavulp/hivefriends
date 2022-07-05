@@ -215,6 +215,12 @@
     border-color: rgb(var(--color-border-light));
   }
 
+  p {
+    a {
+      color: rgb(var(--color-info));
+    }
+  }
+
   .album-list-item .album-meta p {
     color: rgba(var(--color-text), 0.75);
   }
