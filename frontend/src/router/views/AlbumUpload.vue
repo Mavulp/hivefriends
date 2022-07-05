@@ -78,7 +78,7 @@ onMounted(() => {
     el.addEventListener("input", (e) => onSubmitHandler(e, true), false)
   }
 
-  taggedUsers.value.push(user.getUsername())
+  taggedUsers.value.push(user.user.username)
 })
 
 onBeforeMount(async () => {
@@ -215,10 +215,12 @@ const userOptions = computed(() => {
   if (!user.users || user.users.length === 0) return null
 
   // Make sure you can't select yourself
-  return user.users.map((item: User) => ({
-    label: item.displayName ?? item.username,
-    value: item.username
-  }))
+  return user.users
+    .map((item: User) => ({
+      label: item.displayName ?? item.username,
+      value: item.username
+    }))
+    .filter((item: any) => item.value !== user.user.username)
 })
 
 /**

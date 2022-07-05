@@ -211,7 +211,7 @@
     max-width: 628px;
     width: 100%;
 
-    & > button {
+    .btn-close {
       position: absolute;
       right: 24px;
       top: 24px;
@@ -235,6 +235,7 @@
       padding: 8px 12px;
       padding-left: 8px;
       margin: 0 -8px 4px;
+      width: 100%;
 
       &:hover {
         background-color: rgba(var(--color-highlight), 0.1);
@@ -273,6 +274,8 @@
 
       .album-item-meta {
         padding-top: 8px;
+        // width: 100%;
+        text-align: left;
 
         strong {
           @include t(0.1s);

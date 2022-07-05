@@ -12,12 +12,6 @@
 
 - [ ] Split Album Editing & Uploading into reusable components & composable logic
 
-- [ ] Page which lists every single picture uploaded user
-
-  - [ ] Click for full screen view in a modal
-  - [ ] button to delete
-  - [ ] button to share (only hotlinks)
-
 - [ ] range filtering for timeframes (a slider?)
 
 - [ ] Complete responsiveness on all devices

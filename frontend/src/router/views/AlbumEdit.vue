@@ -32,6 +32,10 @@ const bread = useBread()
 const _id = computed(() => route?.params?.id.toString() ?? null)
 const IS_OK = ref(false)
 
+const props = defineProps<{
+  images?: string
+}>()
+
 onBeforeMount(async () => {
   addLoading("edit")
   bread.set("Edit an album")
@@ -141,6 +145,12 @@ function setupForm(_album: any) {
 
   if (_album.timeframe.from && _album.timeframe.to) {
     singleDate.value = _album.timeframe.from === _album.timeframe.to
+  }
+
+  console.log(props.images)
+
+  if (props.images) {
+    _album.images.push(...JSON.parse(props.images))
   }
 
   // Assign image files into an array

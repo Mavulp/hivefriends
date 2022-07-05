@@ -62,8 +62,7 @@ const sortedAlbums = computed(() => {
         </h1>
 
         <div class="album-subtitle">
-          <p>{{ data?.length ?? 0 }} total</p>
-          <p>{{ sortedAlbums?.length ?? 0 }} filtered</p>
+          <p>Showing {{ sortedAlbums.length ?? 0 }} {{ sortedAlbums.length === 1 ? "album" : "albums" }}</p>
         </div>
 
         <Search placeholder="Search for albums..." v-model:value="search" />

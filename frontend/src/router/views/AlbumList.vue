@@ -50,15 +50,12 @@ const sortedAlbums = computed(() => {
       <div class="layout-item album-list-controls">
         <h1>Albums</h1>
 
-        <!-- <div class="album-subtitle">
-          <p>{{ data?.length ?? 0 }} total</p>
-          <p>{{ sortedAlbums?.length ?? 0 }} filtered</p>
-        </div> -->
+        <div class="album-subtitle">
+          <p>Showing {{ sortedAlbums?.length ?? 0 }} {{ sortedAlbums?.length === 1 ? "album" : "albums" }}</p>
+        </div>
 
-        <Filters @call="fetchUpdate" :loading="getLoading('albums') && init">
-          <Search placeholder="Search for albums..." v-model:value="search" />
-          <hr style="margin: 48px 0" />
-        </Filters>
+        <Search placeholder="Search for albums..." v-model:value="search" />
+        <Filters @call="fetchUpdate" :loading="getLoading('albums') && init" />
       </div>
 
       <div class="layout-item">
