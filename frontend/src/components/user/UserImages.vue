@@ -9,6 +9,7 @@ import { useToast } from "../../store/toast"
 import { FetchError } from "../../js/global-types"
 import { useUser } from "../../store/user"
 import { formatDate } from "../../js/utils"
+import { isEmpty } from "lodash"
 
 import UserImageItem from "../image/UserImageItem.vue"
 import LoadingSpin from "../loading/LoadingSpin.vue"
@@ -115,15 +116,22 @@ function createSelect() {
 
 const modal = ref(false)
 
-const selectingLoading = ref(false)
+const selectingLoading = ref(true)
 const albums = ref<Array<Album>>()
 
 // Open modal to select an album to add selected images to
 async function tryToAlbum() {
   modal.value = true
-  selectingLoading.value = true
-  albums.value = await album.fetchUserAlbums(user.user.username)
-  selectingLoading.value = false
+
+  // albums.value = await album.fetchUserAlbums(user.user.username, true)
+  albums.value = (await Promise.all([
+    album.fetchUserAlbums(user.user.username),
+    album.fetchUserAlbums(user.user.username, true)
+  ]).then((res: Album[]) => res.flat())) as Album[]
+
+  setTimeout(() => {
+    selectingLoading.value = false
+  }, 25)
 }
 
 // Open album edit page with selected images
@@ -223,11 +231,11 @@ async function tryToAlbum() {
           </button>
 
           <h2>Select an album</h2>
-          <p>This image is part of multiple albums. Please choose which one you wish to view.</p>
+          <p>Please choose an album to add the selected {{ selected.size === 1 ? "image" : "images" }} to.</p>
 
-          <LoadingSpin v-if="selectingLoading" />
+          <LoadingSpin v-if="selectingLoading" class="dark small" />
 
-          <template v-else>
+          <template v-else-if="albums && !isEmpty(albums)" class="dark small">
             <router-link
               v-for="album in albums"
               class="select-album-item"
@@ -246,6 +254,8 @@ async function tryToAlbum() {
               </div>
             </router-link>
           </template>
+
+          <p v-else>You have no albums. <router-link :to="{ name: 'Upload' }">Uplaod one.</router-link></p>
         </div>
       </Modal>
     </Teleport>
