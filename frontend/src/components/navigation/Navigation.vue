@@ -5,7 +5,11 @@ import { useUser } from "../../store/user"
 import { useBread } from "../../store/bread"
 import { imageUrl } from "../../store/album"
 import { onClickOutside, useMediaQuery } from "@vueuse/core"
+import { isEmpty } from "lodash"
+import { useNotifications } from "../../store/notification"
+
 import Modal from "../Modal.vue"
+import Notifications from "../notifications/Notifications.vue"
 
 const router = useRouter()
 const route = useRoute()
@@ -32,6 +36,12 @@ watch(
 )
 
 const isDark = computed(() => auth.settings.colorTheme === "dark-normal")
+
+/**
+ * Notifications
+ */
+const notifOpen = ref(false)
+const notifications = useNotifications()
 </script>
 
 <template>
@@ -67,6 +77,23 @@ const isDark = computed(() => auth.settings.colorTheme === "dark-normal")
           />
           <span class="user"> {{ auth.getUsername() }} </span>
         </router-link>
+
+        <button
+          :data-title-bottom="`Your notifications (${notifications.unreadCount})`"
+          class="hover-bubble p-rel"
+          :class="{ active: notifOpen }"
+          @click="notifOpen = !notifOpen"
+        >
+          <div
+            class="notification-alert has-notification"
+            :class="{ 'has-notification': !isEmpty(notifications.unreadCount) }"
+          ></div>
+          <span class="material-icons"> &#xe7f4; </span>
+        </button>
+
+        <Teleport to="body">
+          <Notifications @close="notifOpen = false" :class="{ active: notifOpen }" />
+        </Teleport>
 
         <router-link class="hover-bubble" data-title-bottom="Upload album" :to="{ name: 'Upload' }">
           <span class="material-icons">&#xe2cc;</span>

@@ -1,0 +1,79 @@
+.notifications {
+  @include t();
+  @include radius(10px);
+  @include flex($direction: column, $align: flex-start);
+  position: fixed;
+  top: calc($header + 16px);
+  bottom: 16px;
+  right: 16px;
+  box-shadow: var(--shadow);
+  background-color: rgb(var(--color-background));
+  border: 1px solid rgb(var(--color-border-light));
+
+  opacity: 0;
+  visibility: hidden;
+  width: 156px;
+  z-index: -1;
+  pointer-events: none;
+  padding: 16px;
+
+  &.active {
+    width: 512px;
+    opacity: 1;
+    visibility: visible;
+    z-index: 500;
+    pointer-events: all;
+  }
+
+  .close {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+  }
+
+  .title-wrap {
+    @include flex($gap: 24px);
+    margin-bottom: 24px;
+
+    h4 {
+      margin-bottom: 0;
+    }
+  }
+
+  .notification-list-wrap {
+    flex: 1;
+    width: 100%;
+    position: relative;
+
+    .no-notifs {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.2rem;
+
+      b {
+        display: inline;
+        font-size: 2.6rem;
+      }
+    }
+  }
+}
+
+.notification-alert {
+  @include radius(50%);
+  @include t(0.1s);
+  content: "";
+  display: block;
+  position: absolute;
+  pointer-events: none;
+  width: 8px;
+  height: 8px;
+  top: 5px;
+  right: 2px;
+  background-color: rgb(var(--color-error));
+
+  &.has-notification {
+    opacity: 1;
+  }
+}

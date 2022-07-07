@@ -456,8 +456,10 @@ onBeforeUnmount(() => {
                 <p v-html="sanitize(formatTextUsernames(metadata.description, user))"></p>
               </template>
 
-              <span>Name</span>
-              <strong class="file-name">{{ image.fileName }}</strong>
+              <template v-if="metadata?.fileName">
+                <span>Name</span>
+                <strong class="file-name">{{ metadata.fileName }}</strong>
+              </template>
 
               <template v-if="image.takenAt">
                 <span>Taken</span>

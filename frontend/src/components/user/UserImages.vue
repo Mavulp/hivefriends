@@ -157,7 +157,9 @@ async function tryToAlbum() {
       </label>
     </div>
 
-    <div class="hi-image-list-info" :class="{ 'is-selecting': selected.size > 0 }">
+    <LoadingSpin class="dark center-page" v-if="getLoading('images')" />
+
+    <div v-else class="hi-image-list-info" :class="{ 'is-selecting': selected.size > 0 }">
       <div>
         <p>Sorting by upload date</p>
       </div>
