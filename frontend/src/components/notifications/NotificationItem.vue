@@ -52,7 +52,6 @@ function go() {
         >
           {{ user.getUsername(tagged.username) }}
         </router-link>
-        &nbsp;
         <span>
           {{ tagline }}
         </span>

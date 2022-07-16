@@ -6,7 +6,7 @@ import InputText from "../form/InputText.vue"
 import InputTextarea from "../form/InputTextarea.vue"
 import UploadSettingsImage from "./modules/UploadSettingsImage.vue"
 
-import { computed, onBeforeMount, reactive } from "vue"
+import { computed, onBeforeMount, onMounted, reactive, ref } from "vue"
 import { useLoading } from "../../store/loading"
 import { useUser } from "../../store/user"
 import { useFormValidation, minLength, required, sameAs } from "../../js/validation"
@@ -167,6 +167,28 @@ function scrollTo(selector: string) {
     })
   }
 }
+
+const active = ref<string>("info")
+onMounted(() => {
+  const el = document.querySelectorAll<HTMLElement>("h5[id]")
+
+  if (el) {
+    window.addEventListener("scroll", () => {
+      el.forEach((section) => {
+        const sectionTop = section.parentElement?.offsetTop ?? 0
+        const sectionHeight = section.parentElement?.clientHeight ?? 0
+
+        if (window.scrollY >= sectionTop - sectionHeight / 2) {
+          const id = section.getAttribute("id")
+
+          if (id) {
+            active.value = id
+          }
+        }
+      })
+    })
+  }
+})
 </script>
 
 <template>
@@ -174,10 +196,18 @@ function scrollTo(selector: string) {
     <LoadingSpin class="center-page" v-if="getLoading('settings')" />
 
     <div class="settings-nav">
-      <button class="hover-bubble" @click="scrollTo('#info')">Information</button>
-      <button class="hover-bubble" @click="scrollTo('#avatars')">Avatar & Banner</button>
-      <button class="hover-bubble" @click="scrollTo('#visuals')">Visuals</button>
-      <button class="hover-bubble" @click="scrollTo('#passwords')">Password</button>
+      <button :class="{ active: active === 'info' }" class="nav-item hover-bubble" @click="scrollTo('#info')">
+        User Information
+      </button>
+      <button :class="{ active: active === 'avatars' }" class="nav-item hover-bubble" @click="scrollTo('#avatars')">
+        Avatar & Banner
+      </button>
+      <button :class="{ active: active === 'visuals' }" class="nav-item hover-bubble" @click="scrollTo('#visuals')">
+        Visuals
+      </button>
+      <button :class="{ active: active === 'passwords' }" class="nav-item hover-bubble" @click="scrollTo('#passwords')">
+        Password
+      </button>
     </div>
 
     <div class="hi-user-settings-items">

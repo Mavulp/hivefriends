@@ -1,4 +1,8 @@
 import { defineStore } from "pinia"
+import { get } from "../js/fetch"
+import { useLoading } from "./loading"
+import { useToast } from "./toast"
+import { FetchError } from "../js/global-types"
 
 export type AlertTypes = "comment-mention" | "album-tag" | "user-new" | "album-comment" | "album-update"
 
@@ -25,7 +29,7 @@ const exampleAlerts: Alert[] = [
     user: "tmtu",
     url: "/album/X47n8YsPT-q-NyO6-1Ap0A/image/JTk3wz1HQVe2zZNNbwPpOA",
     read: false,
-    createdAt: (Date.now() - 60 * 60 * 24) / 1000,
+    createdAt: (Date.now() - 60 * 200 * 24) / 1000,
     type: "comment-mention"
   },
   {
@@ -35,16 +39,15 @@ const exampleAlerts: Alert[] = [
     text: "How we went to hospital",
     url: "/album/9PSaVN92T5mU39Ze06fOdw",
     read: false,
-    createdAt: (Date.now() - 60 * 60 * 24 * 2) / 1000,
+    createdAt: (Date.now() - 60 * 600 * 24 * 2) / 1000,
     type: "album-tag"
   },
   {
     id: 2,
-    // title: "northcode joined!",
     user: "kilmanio",
     url: "/user/kilmanio",
     read: false,
-    createdAt: (Date.now() - 60 * 60 * 24 * 4) / 1000,
+    createdAt: (Date.now() - 60 * 1200 * 24 * 4) / 1000,
     type: "user-new"
   }
   // {
@@ -75,7 +78,25 @@ export const useNotifications = defineStore("notifications", {
       items: exampleAlerts,
       open: false
     } as State),
-  actions: {},
+  actions: {
+    async fetchNotification() {
+      const { addLoading, delLoading } = useLoading()
+
+      addLoading("notifications")
+      return get("")
+        .then((response) => {
+          this.items = response
+          return response
+        })
+        .catch((error: FetchError) => {
+          const toast = useToast()
+          toast.add(error.message, "error")
+        })
+        .finally(() => {
+          delLoading("notifications")
+        })
+    }
+  },
   getters: {
     unreadCount: (state: State) => state.items.filter((alert) => !alert.read).length
   }
