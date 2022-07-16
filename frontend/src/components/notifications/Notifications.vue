@@ -10,14 +10,16 @@ const emit = defineEmits<{
   (e: "close"): void
 }>()
 
-onClickOutside(wrap, () => emit("close"))
+onClickOutside(wrap, () => {
+  emit("close")
+})
 
 /**
  * List
  */
 
 const notifications = useNotifications()
-const items = computed(() => notifications.items)
+const items = computed(() => notifications.items.sort((a, b) => b.createdAt - a.createdAt))
 
 /**
  * Manage
@@ -35,7 +37,6 @@ function markRead() {}
     <div class="title-wrap">
       <h4>Notifications</h4>
       <button class="hover-bubble bubble-highlight">Mark as read</button>
-      <!-- <Button class="btn-blue" @click="markRead()">Mark as read</Button> -->
     </div>
 
     <div class="notification-list-wrap">

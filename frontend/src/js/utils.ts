@@ -94,3 +94,14 @@ export const formats = [".jpeg", ".gif", ".png", ".apng", ".svg", ".bmp", ".bmp"
 export function isValidImage(text: string) {
   return formats.some((format) => text.endsWith(format))
 }
+
+export function formatTimestamp(date: number) {
+  date *= 1000
+  const d = new Date(date)
+
+  return `${d.getUTCHours()}:${d.getUTCMinutes()}, ${d.toLocaleDateString("en-GB", {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  })}`
+}

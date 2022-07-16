@@ -152,18 +152,40 @@ async function savePassword() {
       delLoading("password")
     })
 }
+
+/**
+ * Scrolling
+ */
+
+function scrollTo(selector: string) {
+  const el = document.querySelector<HTMLElement>(selector)
+
+  if (el && el.parentElement) {
+    window.scrollTo({
+      top: el.parentElement.offsetTop - 64,
+      behavior: "smooth"
+    })
+  }
+}
 </script>
 
 <template>
   <div class="hi-user-page" style="max-width: unset">
     <LoadingSpin class="center-page" v-if="getLoading('settings')" />
 
+    <div class="settings-nav">
+      <button class="hover-bubble" @click="scrollTo('#info')">Information</button>
+      <button class="hover-bubble" @click="scrollTo('#avatars')">Avatar & Banner</button>
+      <button class="hover-bubble" @click="scrollTo('#visuals')">Visuals</button>
+      <button class="hover-bubble" @click="scrollTo('#passwords')">Password</button>
+    </div>
+
     <div class="hi-user-settings-items">
       <h1>Settings</h1>
 
       <ul class="user-settings-list">
         <li>
-          <h5>Your info</h5>
+          <h5 id="info">Your info</h5>
           <!-- <form @submit.prevent="submitUserInfo"> -->
           <input id="username" style="display: none" type="text" name="fakeusernameremembered" />
           <input id="password" style="display: none" type="password" name="fakepasswordremembered" />
@@ -199,7 +221,7 @@ async function savePassword() {
           <!-- </form> -->
         </li>
         <li>
-          <h5>Avatar image</h5>
+          <h5 id="avatars">Avatar image</h5>
           <p>Will be used on your profile or if someone tags you in an album / photo</p>
           <UploadSettingsImage field="avatarKey" key="one" />
         </li>
@@ -209,7 +231,7 @@ async function savePassword() {
           <UploadSettingsImage field="bannerKey" key="two" />
         </li>
         <li>
-          <h5>Color theme</h5>
+          <h5 id="visuals">Color theme</h5>
           <InputSelect
             v-model:selected="_theme"
             :options="themeOptions"
@@ -242,7 +264,7 @@ async function savePassword() {
           </div>
         </li>
         <li>
-          <h5>Password</h5>
+          <h5 id="passwords">Password</h5>
 
           <form @submit.prevent="savePassword">
             <input id="username" style="display: none" type="text" name="fakeusernameremembered" />

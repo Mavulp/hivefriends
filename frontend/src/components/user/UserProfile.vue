@@ -164,7 +164,7 @@ watchEffect(() => {
               />
               <span>{{ users.getUsername(item) }}</span>
               <div class="tag tag-orange" v-if="item === user.username">Author</div>
-              <div class="background"></div>
+              <!-- <div class="background"></div> -->
               <div class="background" :style="[`backgroundColor: rgb(${users.getUser(item, 'accentColor')})`]"></div>
             </router-link>
           </div>

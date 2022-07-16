@@ -66,9 +66,9 @@ const bread = useBread()
 const { getLoading, addLoading, delLoading } = useLoading()
 
 const transDir = ref("imagenext")
-const showComments = ref(isPhone.value ? false : Boolean(localStorage.getItem("show-comments")) ?? false)
+const showComments = ref(isPhone.value ? false : localStorage.getItem("show-comments") === "true" ? true : false)
 
-watch(showComments, (val: boolean) => localStorage.setItem("show-comments", String(val)))
+watch(showComments, (val: boolean) => localStorage.setItem("show-comments", val ? "true" : "false"))
 
 // Shut the fuck up typescript
 const albumKey = computed(() => route.params?.album?.toString() ?? null)

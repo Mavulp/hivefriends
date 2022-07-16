@@ -4,10 +4,11 @@ export type AlertTypes = "comment-mention" | "album-tag" | "user-new" | "album-c
 
 export type Alert = {
   id: string | number
-  title: string
-  text: string
+  title?: string
+  text?: string
   url: string
   read: boolean
+  user: string
   createdAt: number
   type: AlertTypes
 }
@@ -21,51 +22,52 @@ const exampleAlerts: Alert[] = [
   {
     id: 0,
     title: "New mention",
-    text: "@tmtu mentioned you in a comment on @jokler's post",
+    user: "tmtu",
     url: "/album/X47n8YsPT-q-NyO6-1Ap0A/image/JTk3wz1HQVe2zZNNbwPpOA",
     read: false,
-    createdAt: Date.now() - 60 * 60 * 24,
+    createdAt: (Date.now() - 60 * 60 * 24) / 1000,
     type: "comment-mention"
   },
   {
     id: 1,
     title: "Tagged in an album",
-    text: "@jokler tagged you in an album 'How we went to hospital'",
+    user: "Jokler",
+    text: "How we went to hospital",
     url: "/album/9PSaVN92T5mU39Ze06fOdw",
     read: false,
-    createdAt: Date.now() - 60 * 60 * 24 * 2,
+    createdAt: (Date.now() - 60 * 60 * 24 * 2) / 1000,
     type: "album-tag"
   },
   {
     id: 2,
-    title: "@northcode joined!",
-    text: "Check out @northcode's profile",
-    url: "/user/northcode",
+    // title: "northcode joined!",
+    user: "kilmanio",
+    url: "/user/kilmanio",
     read: false,
-    createdAt: Date.now() - 60 * 60 * 24 * 4,
+    createdAt: (Date.now() - 60 * 60 * 24 * 4) / 1000,
     type: "user-new"
-  },
-  {
-    id: 3,
-    title: "New comments in 'Amom'",
-    text: "You have 3 new comments in your album 'Amom'",
-    url: "/album/X47n8YsPT-q-NyO6-1Ap0A",
-    read: false,
-    createdAt: Date.now() - 60 * 60 * 24 * 4 - 2500,
-    type: "album-comment"
-  },
-  {
-    id: 3,
-    title: "'Amom' has been updated",
-    text: "The album 'Amom' has 17 new images, check it out",
-    url: "/album/X47n8YsPT-q-NyO6-1Ap0A",
-    read: false,
-    createdAt: Date.now() - 60 * 60 * 24 * 4 - 2500,
-    type: "album-update"
   }
+  // {
+  //   id: 3,
+  //   title: "New comments in 'Amom'",
+  //   text: "You have 3 new comments in your album 'Amom'",
+  //   url: "/album/X47n8YsPT-q-NyO6-1Ap0A",
+  //   read: false,
+  //   createdAt: Date.now() - 60 * 60 * 24 * 4 - 2500,
+  //   type: "album-comment"
+  // },
+  // {
+  //   id: 3,
+  //   title: "'Amom' has been updated",
+  //   text: "The album 'Amom' has 17 new images, check it out",
+  //   url: "/album/X47n8YsPT-q-NyO6-1Ap0A",
+  //   read: false,
+  //   createdAt: Date.now() - 60 * 60 * 24 * 4 - 2500,
+  //   type: "album-update"
+  // }
 ]
 
-export const icons: { [key: AlertTypes]: string } = {}
+export const icons: { [key: string]: string } = {}
 
 export const useNotifications = defineStore("notifications", {
   state: () =>
