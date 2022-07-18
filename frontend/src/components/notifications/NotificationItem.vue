@@ -18,7 +18,7 @@ const tagline = computed(() => {
     case 'comment-mention': return 'has mentioned you in a comment.'
     case 'album-tag': return `has tagged you in an album '${props.data.title}'`
     case 'user-new': return 'has joined hi!friends!'
-    case 'album-comment': return `as commented on your album '${props.data.title}'`
+    case 'album-comment': return `has commented on your album '${props.data.title}'`
   }
 })
 
@@ -66,6 +66,10 @@ function go() {
         {{ formatTimestamp(props.data.createdAt) }}
       </p>
     </div>
+
+    <button class="mark-read">
+      <span class="material-icons" data-title-left="Mark as read">&#xe5c9;</span>
+    </button>
 
     <div class="background" :style="[`backgroundColor: rgb(${tagged.accentColor})`]"></div>
   </div>

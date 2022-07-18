@@ -25,40 +25,41 @@ interface State {
 const exampleAlerts: Alert[] = [
   {
     id: 0,
-    title: "New mention",
+    text: "'Have you seen this little fella?'",
     user: "tmtu",
     url: "/album/X47n8YsPT-q-NyO6-1Ap0A/image/JTk3wz1HQVe2zZNNbwPpOA",
     read: false,
-    createdAt: (Date.now() - 60 * 200 * 24) / 1000,
+    createdAt: (Date.now() - 60 * 60 * 24) / 1000,
     type: "comment-mention"
   },
   {
     id: 1,
-    title: "Tagged in an album",
     user: "Jokler",
     text: "How we went to hospital",
     url: "/album/9PSaVN92T5mU39Ze06fOdw",
     read: false,
-    createdAt: (Date.now() - 60 * 600 * 24 * 2) / 1000,
+    createdAt: (Date.now() - 60 * 60 * 24 * 3) / 1000,
     type: "album-tag"
   },
   {
     id: 2,
-    user: "kilmanio",
-    url: "/user/kilmanio",
+    user: "jlazar",
+    text: "Check out their profile!",
+    url: "/user/jlazar",
     read: false,
-    createdAt: (Date.now() - 60 * 1200 * 24 * 4) / 1000,
+    createdAt: (Date.now() - 60 * 60 * 24 * 4) / 1000,
     type: "user-new"
+  },
+  {
+    id: 3,
+    title: "Amon",
+    user: "apiratehat",
+    text: "'What an ugly dog' & 'what a little shit'",
+    url: "/album/X47n8YsPT-q-NyO6-1Ap0A",
+    read: false,
+    createdAt: Date.now() - 60 * 60 * 24 * 4 - 2500,
+    type: "album-comment"
   }
-  // {
-  //   id: 3,
-  //   title: "New comments in 'Amom'",
-  //   text: "You have 3 new comments in your album 'Amom'",
-  //   url: "/album/X47n8YsPT-q-NyO6-1Ap0A",
-  //   read: false,
-  //   createdAt: Date.now() - 60 * 60 * 24 * 4 - 2500,
-  //   type: "album-comment"
-  // },
   // {
   //   id: 3,
   //   title: "'Amom' has been updated",

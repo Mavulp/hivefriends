@@ -36,7 +36,7 @@ function markRead() {}
 
     <div class="title-wrap">
       <h4>Notifications</h4>
-      <button class="hover-bubble bubble-highlight">Mark as read</button>
+      <button class="hover-bubble bubble-highlight">Mark as read ({{ items.length }})</button>
     </div>
 
     <div class="notification-list-wrap">

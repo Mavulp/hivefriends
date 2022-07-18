@@ -42,6 +42,14 @@ const isDark = computed(() => auth.settings.colorTheme === "dark-normal")
  */
 const notifOpen = ref(false)
 const notifications = useNotifications()
+
+watch(notifOpen, (val) => {
+  if (val) {
+    document.getElementsByTagName("html")[0].style.overflowY = "hidden"
+  } else {
+    document.getElementsByTagName("html")[0]?.style.removeProperty("overflow-y")
+  }
+})
 </script>
 
 <template>

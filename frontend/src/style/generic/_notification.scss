@@ -1,24 +1,27 @@
 .notifications {
   @include t();
-  @include radius(10px);
+  // @include radius(10px);
   @include flex($direction: column, $align: flex-start);
   position: fixed;
-  top: calc($header + 16px);
-  bottom: 16px;
-  right: 16px;
+  // top: calc($header + 16px);
+  // bottom: 16px;
+  top: $header;
+  bottom: 0;
+  right: 0;
   box-shadow: var(--shadow);
   background-color: rgb(var(--color-background));
-  border: 1px solid rgb(var(--color-border-light));
+  // border: 1px solid rgb(var(--color-border-light));
+  border-left: 1px solid rgb(var(--color-border-light));
 
   opacity: 0;
   visibility: hidden;
   width: 156px;
   z-index: -1;
   pointer-events: none;
-  padding: 16px;
+  padding: 24px;
 
   &.active {
-    width: 512px;
+    width: 528px;
     opacity: 1;
     visibility: visible;
     z-index: 500;
@@ -63,15 +66,41 @@
 
     .notification-item {
       padding: 8px;
-      margin-bottom: 16px;
+      margin-bottom: 24px;
       cursor: pointer;
       z-index: 5;
       position: relative;
-      // padding-right: 24px;
 
       &:hover {
         .background {
           opacity: 0.1;
+        }
+
+        .mark-read {
+          opacity: 1;
+          visibility: visible;
+          opacity: 1;
+          right: 0;
+        }
+      }
+
+      .mark-read {
+        @include t(0.16s);
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: -16px;
+        opacity: 0;
+        visibility: hidden;
+        width: 40px;
+        text-align: center;
+
+        .material-icons {
+          color: rgb(var(--color-text-light));
+
+          &:hover {
+            color: rgb(var(--color-text));
+          }
         }
       }
 
