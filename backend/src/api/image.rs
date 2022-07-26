@@ -3,7 +3,7 @@ use axum::{
     Router,
 };
 use rusqlite::{params, Connection, OptionalExtension};
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use serde_rusqlite::{from_row, to_params_named};
 
 mod delete_image;
@@ -33,12 +33,20 @@ pub(super) struct ImageMetadata {
     file_name: String,
     size_bytes: u64,
     taken_at: Option<i64>,
+    #[serde(default, deserialize_with = "non_empty_location")]
     location: Option<Location>,
     camera_brand: Option<String>,
     camera_model: Option<String>,
     exposure_time: Option<String>,
     f_number: Option<String>,
     focal_length: Option<String>,
+}
+
+pub(super) fn non_empty_location<'de, D: Deserializer<'de>>(
+    d: D,
+) -> Result<Option<Location>, D::Error> {
+    let o: Option<Location> = Option::deserialize(d)?;
+    Ok(o.filter(|l| !l.latitude.is_empty() && !l.longitude.is_empty()))
 }
 
 #[derive(Debug, Serialize, Deserialize)]

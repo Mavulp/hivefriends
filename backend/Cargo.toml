@@ -32,8 +32,7 @@ itertools = "0.10.3"
 time = { version = "0.3.11", features = ["parsing"] }
 
 [dependencies.rusqlite_migration]
-git = "https://github.com/Jokler/rusqlite_migration"
-branch = "add-foreign-key-check"
+git = "https://github.com/cljoly/rusqlite_migration"
 
 [dev-dependencies]
 reqwest = "0.11.11"
@@ -42,5 +41,4 @@ test-case = "2.1.0"
 assert_matches = "1.5.0"
 
 [dev-dependencies.axum-test-helper]
-git = "https://github.com/jokler/axum-test-helper"
-branch = "hivefriends-fixes"
+git = "https://github.com/cloudwalk/axum-test-helper"
