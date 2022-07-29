@@ -1,17 +1,11 @@
 # Bugs
 
-## Post Launch TODO
+## TO DO
 
-- [ ] Image detail
+- [] Responsive layout
+- [] Remember scroll position in album-detail
 
-  - [ ] Slideshow mode (set delay in details)
-    - [ ] padding is removed from image detail
-    - [ ] controls fade, appear only if mouse has moved (disappear after like 5 seconds)
+  - Should only remember it if the previous route was image detail
+  - Should be able to do this in a watch(() => route.name, () => {})
 
-- [ ] Dark mode feedback (ask)
-
-- [ ] Split Album Editing & Uploading into reusable components & composable logic
-
-- [ ] range filtering for timeframes (a slider?)
-
-- [ ] Complete responsiveness on all devices
+- [] Spotlight 2 newest albums on the homepage below the hero section

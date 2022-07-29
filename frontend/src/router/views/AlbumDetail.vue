@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onBeforeMount, computed, reactive, ref, watchEffect, onMounted } from "vue"
-import { useRoute, useRouter } from "vue-router"
+import { onBeforeMount, computed, reactive, ref, watchEffect, onMounted, watch } from "vue"
+import { onBeforeRouteLeave, useRoute, useRouter } from "vue-router"
 import { useAlbums, Album, imageUrl, Image } from "../../store/album"
 import { useLoading } from "../../store/loading"
 import { isEmpty } from "lodash"
@@ -114,6 +114,31 @@ function copyPublic() {
 const map = ref(false)
 const enableMap = computed(() =>
   album.images.some((image) => image.location && image.location.latitude && image.location.longitude)
+)
+
+/**
+ * Remember scroll position
+ */
+
+onBeforeRouteLeave((to) => {
+  if (to.name === "ImageDetail") {
+    sessionStorage.setItem("album-scroll", window.scrollY.toString())
+  } else {
+    sessionStorage.removeItem("album-scroll")
+  }
+})
+
+watch(
+  () => getLoading("get-album"),
+  () => {
+    const scroll = sessionStorage.getItem("album-scroll")
+
+    if (scroll) {
+      setTimeout(() => {
+        window.scrollTo(0, parseInt(scroll))
+      }, 50)
+    }
+  }
 )
 </script>
 

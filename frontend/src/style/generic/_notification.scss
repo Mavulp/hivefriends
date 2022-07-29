@@ -36,7 +36,7 @@
   }
 
   .title-wrap {
-    @include flex($gap: 24px);
+    @include flex($gap: 24px, $align: flex-start);
     margin-bottom: 24px;
 
     button,
