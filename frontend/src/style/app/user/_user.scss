@@ -271,10 +271,12 @@
 
         &.user-details {
           @include grid(32px, 1fr 1fr);
-          margin-bottom: 32px;
+          @include radius(6px);
+          margin-bottom: 40px;
+          padding: 16px;
+          background-color: rgba(var(--color-background-dimmed), 0.1);
 
           span {
-            // @include font(400);
             display: block;
             font-size: 1.2rem;
             text-transform: uppercase;
@@ -282,14 +284,13 @@
             margin-bottom: 8px;
           }
 
+          p {
+            margin: 0;
+            font-size: 1.4rem;
+          }
+
           .nationality-wrap {
             @include flex(nowrap, 12px);
-            margin-bottom: 32px;
-
-            p {
-              margin: 0;
-              font-size: 1.6rem;
-            }
           }
         }
 
@@ -306,7 +307,7 @@
           p {
             @include font(400);
             margin: 0;
-            flex: 1;
+            // flex: 1;
             text-align: right;
             font-size: 1.6rem;
             color: rgb(var(--color-text-light));

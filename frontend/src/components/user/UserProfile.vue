@@ -155,7 +155,7 @@ watchEffect(() => {
             <h4>
               <span class="material-icons">&#xe7fb;</span>
               Met with
-              <p>{{ user.met.length }} people</p>
+              <!-- <p>{{ user.met.length }} people</p> -->
             </h4>
 
             <router-link

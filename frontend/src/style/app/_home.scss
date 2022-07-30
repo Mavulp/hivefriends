@@ -23,6 +23,8 @@
       -webkit-text-stroke-width: 1.5px;
       -webkit-text-stroke-color: rgb(var(--color-border));
 
+      filter: drop-shadow(1px 1px 0px #fff);
+
       b {
         display: inline;
         font-size: inherit;
