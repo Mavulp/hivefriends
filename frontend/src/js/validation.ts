@@ -53,6 +53,16 @@ export function useFormValidation(
     )
   }
 
+  if (proactive) {
+    watch(
+      form,
+      () => {
+        validate()
+      },
+      { deep: true }
+    )
+  }
+
   // Initial assignment
   reset()
 
