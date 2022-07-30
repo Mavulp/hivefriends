@@ -27,7 +27,6 @@ const { image, albumKey } = defineProps<Props>()
     <div class="image-wrap">
       <div class="image-comment-count" v-if="image.commentCount">
         <span class="material-icons">&#xe0b7;</span>
-
         <p>{{ image.commentCount }}</p>
       </div>
 

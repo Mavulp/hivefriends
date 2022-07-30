@@ -196,7 +196,13 @@
       position: relative;
 
       .image-comment-count {
-        @include flex($justify: flex-start, $gap: 8px);
+        @include radius(50%);
+        @include flex($justify: center, $gap: 2px);
+        background-color: rgba(var(--color-background-dark), 0.3);
+        width: 40px;
+        height: 40px;
+        text-align: center;
+        line-height: 40px;
 
         position: absolute;
         top: 12px;
@@ -206,17 +212,17 @@
 
         p {
           margin: 0;
-          font-size: 1.6rem;
+          font-size: 1.4rem;
         }
 
         .material-icons {
-          font-size: 1.8rem;
+          font-size: 1.4rem;
         }
 
         .material-icons,
         p {
           color: #fff;
-          text-shadow: 0 1px 3px rgb(#191716, 0.8);
+          text-shadow: 0 1px 3px rgb(#191716, 0.4);
         }
       }
 

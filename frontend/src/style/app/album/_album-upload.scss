@@ -204,6 +204,10 @@
           border-color: rgb(var(--color-border-light));
         }
 
+        &.open {
+          box-shadow: var(--shadow);
+        }
+
         &.is-cover {
           .tag {
             display: block;
@@ -311,9 +315,12 @@
           }
 
           .map-wrapper {
+            @include radius(6px);
+            box-shadow: var(--shadow);
             display: block;
             width: 100%;
             height: 256px;
+            overflow: hidden;
             margin-bottom: 16px;
           }
         }

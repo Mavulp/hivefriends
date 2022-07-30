@@ -54,7 +54,7 @@ watch(
 
       Object.assign(originalCoords, image.location)
 
-      if (isEmpty(originalCoords)) {
+      if (!originalCoords.latitude || !originalCoords.longitude) {
         usemap.value = false
       }
 
@@ -96,12 +96,14 @@ const { errors, validate } = useFormValidation(form, rules, { autoclear: true })
 
 async function submit() {
   validate().then(() => {
+    console.log(form)
+
     albums.saveImageMetadata(data.key, form)
   })
 }
 
 /**
- * LOcation setting
+ * Location setting
  */
 const map = ref<Map>()
 const usemap = ref(true)
@@ -156,7 +158,7 @@ const mapStyle = computed(() => {
       <LoadingBar :class="[{ 'loading-done': !data.loading }, data.error ? 'loading-error' : 'loading-success']" />
 
       <button data-title-top="Delete" @click="emit('remove', index)">
-        <span class="material-icons">&#xe5cd;</span>
+        <span class="material-icons">&#xe872;</span>
       </button>
     </div>
 

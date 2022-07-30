@@ -108,7 +108,7 @@ async function uploadImage() {
       @dragleave="dragging = false"
       @mouseleave="dragging = false"
     >
-      <input :id="field" :name="field" type="file" accept="image/*" />
+      <input :id="field" :name="field" type="file" accept=", .heic" />
       <label :for="field">
         <span class="material-icons">&#xe439;</span>
         <span>{{
