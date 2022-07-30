@@ -34,7 +34,7 @@ const chunks = computed<Array<Array<AllImageItem>>>(() =>
 )
 
 onBeforeMount(async () => {
-  bread.set("All your uploaded images")
+  bread.set("All your uploaded photos")
   const raw = await album.fetchUserImages()
   data.value = raw.filter(
     (item: AllImageItem) => item.key !== user.settings.avatarKey && item.key !== user.settings.bannerKey

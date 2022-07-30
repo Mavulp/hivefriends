@@ -1,5 +1,5 @@
 .album {
-  @include radius(32px);
+  @include radius(30px);
   display: block;
   background-color: rgba(var(--color-background-dimmed), 0.1);
   position: relative;

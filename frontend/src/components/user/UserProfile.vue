@@ -92,37 +92,42 @@ watchEffect(() => {
         </div>
 
         <div class="user-information-wrap">
-          <div class="user-information">
-            <div class="user-info-meta">
-              <span v-if="user.country" :data-title-top="countries[user.country].name">
-                <img class="flag" :src="flag(user.country, 'png')" alt="" />
-              </span>
-              <span>
-                Joined <b>{{ formatDate(user.createdAt, ["weekday"]) }}</b>
-              </span>
-              <span>
-                <b>{{ user.albumsUploaded.length }}</b> {{ user.albumsUploaded.length === 1 ? "album" : "albums" }}
-              </span>
-              <router-link
-                v-if="user.albumsUploaded.length > 0"
-                :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]"
-                :to="{ name: 'UserAlbums', params: { user: user.username } }"
-              >
-                View All
-              </router-link>
+          <div class="user-information-container">
+            <div class="user-information">
+              <h1>{{ user.displayName ?? user.username }}</h1>
+
+              <p v-html="sanitize(user.bio)"></p>
+
+              <div class="user-info-meta"></div>
+
+              <!-- <div class="user-info-meta">
+                <span v-if="user.country" :data-title-top="countries[user.country].name">
+                  <img class="flag" :src="flag(user.country, 'png')" alt="" />
+                </span>
+                <span>
+                  Joined <b>{{ formatDate(user.createdAt, ["weekday"]) }}</b>
+                </span>
+                <span>
+                  <b>{{ user.albumsUploaded.length }}</b> {{ user.albumsUploaded.length === 1 ? "album" : "albums" }}
+                </span>
+                <router-link
+                  v-if="user.albumsUploaded.length > 0"
+                  :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]"
+                  :to="{ name: 'UserAlbums', params: { user: user.username } }"
+                >
+                  View All
+                </router-link>
+              </div> -->
             </div>
-            <h1>{{ user.displayName ?? user.username }}</h1>
 
-            <p v-html="sanitize(user.bio)"></p>
-          </div>
-
-          <div class="avatar-wrap">
-            <img
-              class="avatar"
-              :src="imageUrl(user.avatarKey, 'large')"
-              alt=" "
-              @error="(e: any) => e.target.classList.add('image-error')"
-            />
+            <div class="avatar-wrap">
+              <img
+                class="avatar"
+                :src="imageUrl(user.avatarKey, 'large')"
+                alt=" "
+                @error="(e: any) => e.target.classList.add('image-error')"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -135,18 +140,44 @@ watchEffect(() => {
             </p>
           </template>
           <template v-else>
-            <h2>Latest albums</h2>
+            <h2>
+              Latest albums
+
+              <router-link
+                v-if="user.albumsUploaded.length > 0"
+                class="hover-bubble"
+                :to="{ name: 'UserAlbums', params: { user: user.username } }"
+              >
+                View All
+              </router-link>
+            </h2>
             <div class="user-albums-list">
               <AlbumListItem v-for="item in [...userAlbums].slice(0, 3)" :data="item" />
             </div>
           </template>
         </div>
         <div class="user-met-with-wrap">
+          <div class="user-met-with user-details">
+            <div v-if="user.country">
+              <span>Nationality</span>
+
+              <div class="nationality-wrap">
+                <img class="flag" :src="flag(user.country, 'png')" alt="" />
+                <p>{{ countries[user.country].name }}</p>
+              </div>
+            </div>
+
+            <div>
+              <span>Joined</span>
+              <p>{{ formatDate(user.createdAt) }}</p>
+            </div>
+          </div>
+
           <div class="user-met-with" v-if="user.met.length > 0">
             <h4>
               <span class="material-icons">&#xe7fb;</span>
               Met with
-              <!-- {{ user.displayName ?? user.username }} has met -->
+              <p>{{ user.met.length }} people</p>
             </h4>
 
             <router-link

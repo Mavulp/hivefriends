@@ -21,7 +21,7 @@
       & + label {
         @include t(0.1s);
         @include flex($gap: 12px);
-        @include radius(16px);
+        @include radius(12px);
         width: 100%;
         height: 56px;
         // margin: 0 auto;
@@ -227,7 +227,7 @@
     }
 
     .select-album-item {
-      @include radius(8px);
+      @include radius(6px);
       @include t(0.1s);
       @include flex($align: flex-start, $gap: 24px);
       position: relative;

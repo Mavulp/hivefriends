@@ -44,7 +44,7 @@
 
       .alias-item {
         display: block;
-        @include radius(8px);
+        @include radius(6px);
         position: relative;
         padding-bottom: 12px;
         min-width: 0;
