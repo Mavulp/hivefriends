@@ -182,6 +182,7 @@
           position: relative;
           object-position: center;
           z-index: 5;
+          margin-bottom: 16px;
           box-shadow: var(--shadow);
 
           &.image-error {
@@ -218,13 +219,13 @@
     .user-albums {
       h2 {
         @include flex($justify: space-between, $align: center);
-        padding-right: 32px;
+        font-size: 2.6rem;
 
         color: rgb(var(--color-highlight));
 
         a {
           @include font(400);
-          text-decoration: underline;
+          // text-decoration: underline;
           color: rgb(var(--color-text));
           font-size: 1.6rem;
 
