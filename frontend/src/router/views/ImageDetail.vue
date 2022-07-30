@@ -13,7 +13,6 @@ import { useToast } from "../../store/toast"
 import { useBread } from "../../store/bread"
 import { url } from "../../js/fetch"
 import { Map } from "mapbox-gl"
-import { formatTextUsernames } from "../../js/_composables"
 
 import { MapboxMap, MapboxMarker } from "vue-mapbox-ts"
 import LoadingSpin from "../../components/loading/LoadingSpin.vue"
@@ -26,6 +25,7 @@ import Modal from "../../components/Modal.vue"
 const wrap = ref(null)
 const color = useCssVar("--color-highlight", wrap)
 const isPhone = useMediaQuery("(max-width: 512px)")
+const scrollWrap = ref<HTMLElement>()
 
 /**
  * Lifecycle
@@ -83,12 +83,6 @@ const index = computed<number>(() => album.value?.images.findIndex((item) => ite
 
 const prevIndex = computed(() => album.value.images[index.value - 1])
 const nextIndex = computed(() => album.value.images[index.value + 1])
-
-const metadata = computed(() => {
-  if (!user.public_token) {
-    return albums.getImageMetadata(imageKey.value)
-  }
-})
 
 function setIndex(where: string) {
   transDir.value = `image${where}`
@@ -201,11 +195,15 @@ function openImageId(key: string) {
     }
   })
 
-  window.scrollTo({ top: 0, behavior: "smooth" })
+  if (scrollWrap.value) {
+    scrollWrap.value.scrollTo({ behavior: "smooth", top: 0 })
+  }
 }
 
 function scrollDown() {
-  window.scrollTo({ top: window.innerHeight / 1.25, behavior: "smooth" })
+  if (scrollWrap.value) {
+    scrollWrap.value.scrollTo({ top: window.innerHeight, behavior: "smooth" })
+  }
 }
 
 const comment = useComments()
@@ -301,7 +299,7 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <div class="content-wrap" v-else-if="imageKey && album && image">
+    <div class="content-wrap" v-else-if="imageKey && album && image" ref="scrollWrap">
       <Teleport to="body">
         <Modal @close="modal = false" v-if="modal">
           <div class="modal-wrap modal-copy">
@@ -425,95 +423,75 @@ onBeforeUnmount(() => {
               &#xe8fd;
             </span>
           </h4>
-          <div class="hi-map-wrap" v-if="image.location && image.location.latitude && image.location.longitude">
-            <mapbox-map
-              :accessToken="map_access"
-              :mapStyle="mapStyle"
-              :zoom="11"
-              :center="[image.location.longitude, image.location.latitude]"
-              @loaded="onMapLoaded"
-            >
-              <template v-for="item in sortedMarkers">
-                <mapbox-marker
-                  v-if="item.location"
-                  :color="
-                    item.location.longitude === image?.location?.longitude &&
-                    item.location.latitude === image.location.latitude
-                      ? RGB_TO_HEX(color)
-                      : '#a0a0a055'
-                  "
-                  @click="openImageId(item.key)"
-                  :lngLat="[item.location.longitude, item.location.latitude]"
-                />
-              </template>
-            </mapbox-map>
-          </div>
 
-          <div class="hi-image-metadata">
-            <div class="hi-image-properties">
-              <template v-if="metadata?.description">
-                <span>Description</span>
-                <p v-html="sanitize(formatTextUsernames(metadata.description, user))"></p>
-              </template>
-
-              <template v-if="metadata?.fileName">
-                <span>Name</span>
-                <strong class="file-name">{{ metadata.fileName }}</strong>
-              </template>
-
-              <template v-if="image.takenAt">
-                <span>Taken</span>
-                <p>{{ formatDate(image.takenAt) }}</p>
-              </template>
-
-              <span>Uploader</span>
-              <router-link class="hover-bubble" :to="{ name: 'UserProfile', params: { user: image.uploader } }">
-                <img
-                  class="user-image"
-                  :src="imageUrl(user.getUser(image.uploader, 'avatarKey'), 'tiny')"
-                  :style="[`backgroundColor: rgb(${user.getUser(image.uploader, 'accentColor')})`]"
-                  alt=" "
-                  @error="(e: any) => e.target.classList.add('image-error')"
-                />
-                {{ image.uploader }}
-              </router-link>
+          <div class="wrapper">
+            <div class="hi-map-wrap" v-if="image.location && image.location.latitude && image.location.longitude">
+              <mapbox-map
+                :accessToken="map_access"
+                :mapStyle="mapStyle"
+                :zoom="11"
+                :center="[image.location.longitude, image.location.latitude]"
+                @loaded="onMapLoaded"
+              >
+                <template v-for="item in sortedMarkers">
+                  <mapbox-marker
+                    v-if="item.location"
+                    :color="
+                      item.location.longitude === image?.location?.longitude &&
+                      item.location.latitude === image.location.latitude
+                        ? RGB_TO_HEX(color)
+                        : '#a0a0a055'
+                    "
+                    @click="openImageId(item.key)"
+                    :lngLat="[item.location.longitude, item.location.latitude]"
+                  />
+                </template>
+              </mapbox-map>
             </div>
 
-            <ul class="hi-image-metadata-list">
-              <li class="meta-item" v-if="image.cameraBrand || image.cameraModel">
-                <span class="material-icons"> &#xe412; </span>
-                <span>Device</span>
-                <p>{{ image.cameraBrand }}, {{ image.cameraModel }}</p>
-              </li>
-
-              <li class="meta-item" v-if="image.fNumber || image.focalLength || image.exposureTime">
-                <span class="material-icons"> &#xe3af; </span>
-                <span>Camera settings</span>
-                <p>
-                  {{ [image.fNumber, image.focalLength, image.exposureTime].join(", ") }}
-                </p>
-              </li>
-
-              <li v-if="image.sizeBytes">
-                <span class="material-icons"> &#xe161; </span>
-                <span>Size</span>
-                <p>{{ formatFileSize(image.sizeBytes, true) }}</p>
-              </li>
-
-              <template v-if="image.location">
-                <li>
-                  <span class="material-icons"> &#xe87a; </span>
-                  <span>Latitude</span>
-                  <p>{{ image.location.latitude }}</p>
+            <div class="hi-image-metadata">
+              <ul class="hi-image-metadata-list">
+                <li class="meta-item" v-if="image.cameraBrand || image.cameraModel">
+                  <span class="material-icons"> &#xe412; </span>
+                  <span>Device</span>
+                  <p>{{ image.cameraBrand }}, {{ image.cameraModel }}</p>
                 </li>
 
-                <li>
-                  <span class="material-icons"> &#xe87a; </span>
-                  <span>Longitude</span>
-                  <p>{{ image.location.longitude }}</p>
+                <li class="meta-item" v-if="image.fNumber || image.focalLength || image.exposureTime">
+                  <span class="material-icons"> &#xe3af; </span>
+                  <span>Camera settings</span>
+                  <p>
+                    {{ [image.fNumber, image.focalLength, image.exposureTime].join(", ") }}
+                  </p>
                 </li>
-              </template>
-            </ul>
+
+                <li v-if="image.sizeBytes">
+                  <span class="material-icons"> &#xe161; </span>
+                  <span>Size</span>
+                  <p>{{ formatFileSize(image.sizeBytes, true) }}</p>
+                </li>
+
+                <template v-if="image.location">
+                  <li v-if="image.location.latitude">
+                    <span class="material-icons"> &#xe87a; </span>
+                    <span>Latitude</span>
+                    <p>{{ image.location.latitude }}</p>
+                  </li>
+
+                  <li v-if="image.location.longitude">
+                    <span class="material-icons"> &#xe87a; </span>
+                    <span>Longitude</span>
+                    <p>{{ image.location.longitude }}</p>
+                  </li>
+                </template>
+
+                <li v-if="image.takenAt">
+                  <span class="material-icons"> &#xebcc; </span>
+                  <span>Taken</span>
+                  <p>{{ formatDate(image.takenAt) }}</p>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>

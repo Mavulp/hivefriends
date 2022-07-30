@@ -11,7 +11,7 @@ import { useBread } from "../../store/bread"
 const user = useUser()
 const album = useAlbums()
 const bread = useBread()
-const albums = ref([])
+const albums = ref([] as Album[])
 const latest = computed<Album>(() => albums?.value[0] ?? null)
 
 onBeforeMount(async () => {
@@ -50,6 +50,20 @@ const accent = computed(() => user.user.accentColor.split(",").map((item: string
         </router-link>
       </template>
     </div>
+
+    <!-- <div class="container" v-if="albums.length > 0">
+      <div class="home-albums">
+        <router-link
+          :to="{ name: 'AlbumDetail', params: { id: album.key } }"
+          class="home-album"
+          v-for="album in [...albums].slice(1, 3)"
+          :key="album.key"
+        >
+          <img :src="imageUrl(album.coverKey, 'medium')" alt=" " />
+          <h4>{{ album.title }}</h4>
+        </router-link>
+      </div>
+    </div> -->
 
     <div class="container" v-if="user.users && user.users.length > 0">
       <h4>Friends</h4>

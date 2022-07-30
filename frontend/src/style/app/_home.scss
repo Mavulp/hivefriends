@@ -146,6 +146,38 @@
       }
     }
   }
+
+  .container {
+    &:has(.home-albums) {
+      p {
+        letter-spacing: 0.5em;
+        color: rgb(var(--color-text));
+        font-style: italic;
+      }
+    }
+  }
+
+  .home-albums {
+    @include grid(40px, 2);
+    margin-bottom: 128px;
+
+    .home-album {
+      img {
+        // @include radius(16px);
+        display: block;
+        width: 100%;
+        height: 212px;
+        box-shadow: var(--shadow);
+        object-fit: cover;
+        object-position: center;
+        margin-bottom: 16px;
+      }
+
+      h4 {
+        color: rgb(var(--color-text));
+      }
+    }
+  }
 }
 
 $flag-h: 24px;

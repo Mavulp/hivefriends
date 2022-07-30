@@ -1,18 +1,62 @@
 .hi-comments {
   @include flex($gap: 0, $direction: column, $align: flex-start, $justify: flex-start);
   background-color: rgb(var(--color-background));
-  // display: block;
-  // padding: 32px 40px;
+
+  .hi-comments-info {
+    padding: 24px;
+    padding-left: 56px;
+    width: 100%;
+    position: relative;
+    border-bottom: 1px solid rgb(var(--color-border-light));
+
+    .icon {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+
+      .material-icons {
+        font-size: 1.8rem;
+        color: rgb(var(--color-highlight));
+      }
+    }
+
+    span {
+      // @include font(400);
+      display: block;
+      font-size: 1rem;
+      text-transform: uppercase;
+      color: rgb(var(--color-text-light));
+      margin-bottom: 4px;
+    }
+
+    strong {
+      @include font(600);
+      font-size: 1.4rem;
+    }
+
+    p {
+      margin-top: 8px;
+      font-size: 1.4rem;
+      margin-bottom: 0;
+      color: rgb(var(--color-text));
+    }
+  }
 
   .hi-comments-header {
     @include flex($justify: space-between);
     width: 100%;
-    padding: 32px 40px 32px;
+    padding: 16px 24px 32px;
 
-    h5 {
+    h6 {
       margin-bottom: 0;
     }
+
+    .control-button {
+      @include rotate(180deg);
+    }
   }
+
   .control-button {
     &:hover {
       .material-icons {
@@ -32,7 +76,7 @@
     width: 100%;
     flex: 1;
     position: relative;
-    padding: 0 40px 16px;
+    padding: 0 24px 16px;
 
     .hi-no-comments {
       position: absolute;
@@ -165,6 +209,7 @@
         border: 0;
         resize: none;
         min-height: 80px;
+        // background-color: #fff;
       }
 
       .input-error-list {

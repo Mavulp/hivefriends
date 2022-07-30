@@ -204,7 +204,12 @@
     max-width: 1280px;
     width: 100%;
     padding: 0 40px;
-    padding-bottom: 256px;
+    padding-bottom: 64px;
+
+    .wrapper {
+      @include grid(64px, 1fr 1.25fr);
+      align-items: center;
+    }
 
     h4 {
       @include flex($gap: 8px);
@@ -217,70 +222,23 @@
     }
 
     .hi-map-wrap {
-      height: 512px;
-      margin-bottom: 64px;
-    }
-
-    .hi-image-metadata {
-      @include grid(64px, 2);
-
-      .hi-image-properties {
-        span {
-          @include font(400);
-          display: block;
-          font-size: 1.2rem;
-          text-transform: uppercase;
-          color: rgb(var(--color-text-light));
-          margin-bottom: 8px;
-          margin-top: 32px;
-
-          &:first-of-type {
-            margin-top: 0;
-          }
-        }
-
-        .user-image {
-          @include radius(50%);
-          display: block;
-          object-fit: cover;
-          object-position: center;
-          width: 32px;
-          height: 32px;
-          position: relative;
-          background-color: rgb(var(--color-highlight));
-        }
-
-        a {
-          margin-left: 8px;
-          margin-top: 8px;
-          display: inline-flex !important;
-          @include flex($gap: 12px);
-          color: rgb(var(--color-text));
-        }
-
-        a,
-        p,
-        strong {
-          // margin-bottom: 32px;
-          font-size: 1.4rem;
-
-          &.file-name {
-            margin-bottom: 4px;
-          }
-        }
-      }
+      @include radius(6px);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      height: 468px;
     }
 
     .hi-image-metadata-list {
       list-style: none;
       padding: 0;
+      width: 100%;
+      // padding-left: 32px;
 
       li {
         @include grid(24px, 32px 1fr 1fr);
         align-items: center;
         padding-left: 0;
         margin-bottom: 32px;
-        // white-space: ;
         word-wrap: break-word;
         word-break: break-all;
         // overflow: x;
