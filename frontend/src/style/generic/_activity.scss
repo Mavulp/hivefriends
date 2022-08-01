@@ -1,4 +1,4 @@
-.notifications {
+.activity {
   @include t();
   // @include radius(10px);
   @include flex($direction: column, $align: flex-start);
@@ -21,7 +21,7 @@
   padding: 24px;
 
   &.active {
-    width: 528px;
+    width: 592px;
     opacity: 1;
     visibility: visible;
     z-index: 500;
@@ -46,7 +46,7 @@
     }
   }
 
-  .notification-list-wrap {
+  .activity-list-wrap {
     flex: 1;
     width: 100%;
     position: relative;
@@ -64,7 +64,7 @@
       }
     }
 
-    .notification-item {
+    .activity-item {
       padding: 8px;
       margin-bottom: 24px;
       cursor: pointer;
@@ -158,8 +158,8 @@
         }
       }
 
-      .notification-footer,
-      .notification-body {
+      .activity-footer,
+      .activity-body {
         padding-left: 56px;
         pointer-events: none;
 
@@ -168,7 +168,7 @@
         }
       }
 
-      .notification-body {
+      .activity-body {
         margin-bottom: 16px;
 
         p {
@@ -176,7 +176,7 @@
         }
       }
 
-      .notification-footer {
+      .activity-footer {
         p {
           font-size: 1.2rem;
           color: rgb(var(--color-text-light));
@@ -186,7 +186,7 @@
   }
 }
 
-.notification-alert {
+.activity-alert {
   @include radius(50%);
   @include t(0.1s);
   content: "";
@@ -199,7 +199,7 @@
   right: 2px;
   background-color: rgb(var(--color-error));
 
-  &.has-notification {
+  &.has-activity {
     opacity: 1;
   }
 }

@@ -5,11 +5,10 @@ import { useUser } from "../../store/user"
 import { useBread } from "../../store/bread"
 import { imageUrl } from "../../store/album"
 import { onClickOutside, useMediaQuery } from "@vueuse/core"
-import { isEmpty } from "lodash"
-import { useNotifications } from "../../store/notification"
+import { useActivity } from "../../store/activity"
 
 import Modal from "../Modal.vue"
-import Notifications from "../notifications/Notifications.vue"
+import ActivityWrap from "../activity/Activity.vue"
 
 const router = useRouter()
 const route = useRoute()
@@ -40,10 +39,10 @@ const isDark = computed(() => auth.settings.colorTheme === "dark-normal")
 /**
  * Notifications
  */
-const notifOpen = ref(false)
-const notifications = useNotifications()
+const activityOpen = ref(false)
+// const activity = useNotifications()
 
-watch(notifOpen, (val) => {
+watch(activityOpen, (val) => {
   if (val) {
     document.getElementsByTagName("html")[0].style.overflowY = "hidden"
   } else {
@@ -62,6 +61,7 @@ watch(notifOpen, (val) => {
       <div class="nav-links-wrap">
         <router-link class="nav-link" :to="{ name: 'Home' }">Home</router-link>
         <router-link class="nav-link" :to="{ name: 'Albums' }">Albums</router-link>
+        <!-- <router-link class="nav-link" :to="{ name: 'About' }">Activity Log</router-link> -->
         <router-link class="nav-link" :to="{ name: 'About' }">About</router-link>
       </div>
 
@@ -87,20 +87,17 @@ watch(notifOpen, (val) => {
         </router-link>
 
         <button
-          :data-title-bottom="`Your notifications (${notifications.unreadCount})`"
+          data-title-bottom="Activity Log"
           class="hover-bubble p-rel"
-          :class="{ active: notifOpen }"
-          @click="notifOpen = !notifOpen"
+          :class="{ active: activityOpen }"
+          @click="activityOpen = !activityOpen"
         >
-          <div
-            class="notification-alert has-notification"
-            :class="{ 'has-notification': !isEmpty(notifications.unreadCount) }"
-          ></div>
-          <span class="material-icons"> &#xe7f4; </span>
+          <div class="activity-alert has-activity" :class="{ 'has-activity': true }"></div>
+          <span class="material-icons"> &#xf009; </span>
         </button>
 
         <Teleport to="body">
-          <Notifications @close="notifOpen = false" :class="{ active: notifOpen }" />
+          <ActivityWrap @close="activityOpen = false" :class="{ active: activityOpen }" />
         </Teleport>
 
         <router-link class="hover-bubble" data-title-bottom="Upload album" :to="{ name: 'Upload' }">

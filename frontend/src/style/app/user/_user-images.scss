@@ -63,15 +63,25 @@
       gap: 10px;
 
       .hi-album-image {
+        @include radius(6px);
+        overflow: hidden;
+
         position: relative;
         cursor: pointer;
-        border: 3px solid transparent;
 
         &.is-selected {
-          border-color: rgb(var(--color-highlight));
+          border: 3px solid rgb(var(--color-highlight));
+        }
+
+        &:hover {
+          // box-shadow: var(--shadow2);
+          img {
+            transform: scale(1.025);
+          }
         }
 
         img {
+          @include t();
           min-height: 130px;
         }
       }
@@ -129,10 +139,10 @@
   z-index: 10;
 
   button {
-    @include radius(4px);
+    @include radius(50%);
     width: 32px;
     height: 32px;
-    background-color: rgb(var(--color-background-dark));
+    background-color: rgba(var(--color-background-dark), 0.75);
 
     &:after {
       content: "";
@@ -141,13 +151,17 @@
     }
 
     &:hover {
+      background-color: rgba(var(--color-background-dark), 1);
+
       .material-icons {
-        color: rgb(#fff, 1);
+        color: #fff;
+        text-shadow: 0 1px 3px rgb(#191716, 0.4);
       }
     }
 
     .material-icons {
-      color: rgba(#fff, 0.85);
+      color: #fff;
+      text-shadow: 0 1px 3px rgb(#191716, 0.4);
       font-size: 1.8rem;
       transform: translateY(2px);
     }

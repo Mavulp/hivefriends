@@ -29,12 +29,12 @@ const accent = computed(() => user.user.accentColor.split(",").map((item: string
       <h1>hi<b>!</b>friends</h1>
       <h3>
         Internet friends <br />
-        bringing the IRL <br />
-        to the URL.
+        bringing the <i>IRL</i> <br />
+        to the <i>URL</i>.
       </h3>
 
       <Button
-        size="48px"
+        size="56px"
         pad="48px"
         class="btn-highlight"
         :to="{ name: 'Albums' }"

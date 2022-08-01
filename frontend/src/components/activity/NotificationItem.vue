@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue"
-import { Alert } from "../../store/notification"
+import { Alert } from "../../store/activity"
 import { useUser } from "../../store/user"
 import { imageUrl } from "../../store/album"
 import { formatTimestamp } from "../../js/utils"
@@ -36,7 +36,7 @@ function go() {
 </script>
 
 <template>
-  <div class="notification-item" @click.self="go()" v-if="tagged">
+  <div class="activity-item" @click.self="go()" v-if="tagged">
     <div class="title-wrap">
       <img
         class="user-image"
@@ -57,11 +57,11 @@ function go() {
         </span>
       </p>
     </div>
-    <div class="notification-body" v-if="props.data.text">
+    <div class="activity-body" v-if="props.data.text">
       <p>{{ props.data.text }}</p>
     </div>
 
-    <div class="notification-footer">
+    <div class="activity-footer">
       <p>
         {{ formatTimestamp(props.data.createdAt) }}
       </p>

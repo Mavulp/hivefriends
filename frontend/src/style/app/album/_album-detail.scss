@@ -103,6 +103,7 @@
       position: relative;
       width: 55%;
       height: 100%;
+      margin-right: 16px;
 
       .detail-buttons {
         @include flex($gap: 64px, $justify: flex-start);
@@ -163,6 +164,8 @@
         }
 
         .cover-image {
+          @include radius(12px);
+          box-shadow: var(--shadow);
           width: 100%;
           height: 100%;
           object-fit: cover;
@@ -185,20 +188,32 @@
   min-height: 50vh;
   padding-bottom: 50vh;
 
-  @include grid(40px, 3);
+  $gap: 16px;
+
+  @include grid($gap, 3);
 
   .hi-album-image-col {
-    @include flex($direction: column, $gap: 40px);
+    @include flex($direction: column, $gap: $gap);
 
     .hi-album-image {
+      @include t();
+      @include radius(6px);
       display: block;
       width: 100%;
       position: relative;
+      overflow: hidden;
+
+      &:hover {
+        box-shadow: var(--shadow2);
+        img {
+          transform: scale(1.025);
+        }
+      }
 
       .image-comment-count {
         @include radius(50%);
         @include flex($justify: center, $gap: 2px);
-        background-color: rgba(var(--color-background-dark), 0.3);
+        background-color: rgba(var(--color-background-dark), 0.4);
         width: 40px;
         height: 40px;
         text-align: center;
@@ -209,6 +224,7 @@
         right: 12px;
         left: 12px;
         pointer-events: none;
+        z-index: 10;
 
         p {
           margin: 0;
@@ -231,6 +247,7 @@
         width: 100%;
 
         img {
+          @include t();
           display: block;
           width: 100%;
         }
