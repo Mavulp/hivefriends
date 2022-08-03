@@ -147,35 +147,6 @@
           }
         }
       }
-
-      .comment-body {
-        * {
-          vertical-align: middle;
-        }
-        p {
-          // margin: 0;
-          margin-bottom: 8px;
-
-          a {
-            color: rgb(var(--color-info));
-          }
-        }
-
-        span {
-          font-size: 1rem;
-          color: rgba(var(--color-text), 0.4);
-          @include font(400);
-          // font-style: italic;
-        }
-
-        img {
-          display: inline-block;
-          max-height: 512px;
-          max-width: 100%;
-          // margin: 0 1px;
-          vertical-align: middle;
-        }
-      }
     }
   }
 
@@ -236,5 +207,34 @@
 
   &:hover {
     background-color: rgba(var(--color-info), 0.25) !important;
+  }
+}
+
+.comment-body {
+  * {
+    vertical-align: middle;
+  }
+  p {
+    // margin: 0;
+    margin-bottom: 8px;
+
+    a {
+      color: rgb(var(--color-info));
+    }
+  }
+
+  span {
+    font-size: 1rem;
+    color: rgba(var(--color-text), 0.4);
+    @include font(400);
+    // font-style: italic;
+  }
+
+  img {
+    display: inline-block;
+    max-height: 512px;
+    max-width: 100%;
+    // margin: 0 1px;
+    vertical-align: middle;
   }
 }

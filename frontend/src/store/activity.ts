@@ -3,15 +3,23 @@ import { get, post } from "../js/fetch"
 import { useLoading } from "./loading"
 import { useToast } from "./toast"
 import { FetchError } from "../js/global-types"
+import { Comment } from "./comments"
+import { Album, Image } from "./album"
+import { User } from "./user"
 
-export type ActivityType = "comment" | "album" | "user"
-
-export type ActivityItem = {
-  type: ActivityType
-  timestamp: number
-  user: string
-  location: { [key: string]: any }
-}
+export type ActivityItem =
+  | {
+      comment: Comment
+    }
+  | {
+      image: Image
+    }
+  | {
+      album: Album
+    }
+  | {
+      user: User
+    }
 
 interface State {
   items: ActivityItem[]
@@ -34,7 +42,7 @@ export const useActivity = defineStore("activity", {
 
       return get("/api/activity")
         .then((response) => {
-          this.items = response.items
+          this.items = response
           this.hasNew = true
           return response
         })
@@ -50,5 +58,8 @@ export const useActivity = defineStore("activity", {
     async updateView() {
       return post("/api/activity", "")
     }
+  },
+  getters: {
+    getActivity: (state: State) => state.items
   }
 })

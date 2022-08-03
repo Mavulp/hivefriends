@@ -76,7 +76,7 @@ const imageKey = computed(() => route.params?.image?.toString() ?? null)
 
 // Get album data
 const album = computed<Album>(() => albums.getAlbum(albumKey.value) as Album)
-const image = computed(() => album.value?.images.find((item) => item.key === imageKey.value))
+const image = computed(() => album.value?.images.find((item) => item.key === imageKey.value) ?? null)
 
 // Get image's index from the current album's images
 const index = computed<number>(() => album.value?.images.findIndex((item) => item.key === imageKey.value))

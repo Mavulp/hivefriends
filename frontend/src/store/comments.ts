@@ -8,6 +8,7 @@ export type Comment = {
   id: number
   author: string
   imageKey: string
+  albumKey: string
   createdAt: number
   text: string
 }
@@ -33,6 +34,7 @@ export const useComments = defineStore("comments", {
 
       return get(query)
         .then((response) => {
+          //TODO: group activity by day?
           this.comments = response
           return response
         })

@@ -24,7 +24,7 @@
     width: 592px;
     opacity: 1;
     visibility: visible;
-    z-index: 500;
+    z-index: 100;
     pointer-events: all;
   }
 
@@ -37,7 +37,8 @@
 
   .title-wrap {
     @include flex($gap: 24px, $align: flex-start);
-    margin-bottom: 24px;
+    // margin-bottom: 24px;
+    width: 100%;
 
     button,
     h4 {
@@ -50,6 +51,7 @@
     flex: 1;
     width: 100%;
     position: relative;
+    overflow-y: auto;
 
     .no-notifs {
       position: absolute;
@@ -65,41 +67,99 @@
     }
 
     .activity-item {
+      display: block;
       padding: 8px;
-      margin-bottom: 24px;
-      cursor: pointer;
       z-index: 5;
       position: relative;
+      cursor: pointer;
+      margin-bottom: 12px;
 
       &:hover {
         .background {
+          transform: scale(1);
           opacity: 0.1;
-        }
-
-        .mark-read {
-          opacity: 1;
-          visibility: visible;
-          opacity: 1;
-          right: 0;
         }
       }
 
-      .mark-read {
-        @include t(0.16s);
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        right: -16px;
-        opacity: 0;
-        visibility: hidden;
-        width: 40px;
-        text-align: center;
+      &.activity-album {
+        .activity-body {
+          @include flex($gap: 12px, $align: flex-start);
+          @include radius(12px);
+          margin-top: 16px;
+          width: 100%;
+          padding: 16px;
+          box-shadow: var(--shadow2);
 
-        .material-icons {
-          color: rgb(var(--color-text-light));
+          img {
+            @include radius(6px);
+            width: 72px;
+            max-height: 96px;
+          }
 
-          &:hover {
-            color: rgb(var(--color-text));
+          .title {
+            strong {
+              font-size: 1.8rem;
+              margin-bottom: 8px;
+              color: rgb(var(--color-text));
+            }
+
+            p {
+              font-size: 1.4rem;
+              color: rgb(var(--color-text-light));
+              margin: 0;
+            }
+
+            .info {
+              padding-top: 4px;
+              @include flex($gap: 8px);
+              font-size: 1.4rem;
+            }
+          }
+        }
+      }
+
+      &.activity-user {
+        padding: 16px;
+
+        strong {
+          @include font(900);
+          font-style: italic;
+          font-size: 2.2rem;
+        }
+
+        .user {
+          @include radius(12px);
+          @include flex($gap: 32px);
+          margin-top: 16px;
+          width: 100%;
+          padding: 16px;
+          box-shadow: var(--shadow2);
+
+          .user-image {
+            position: relative;
+            inset: unset;
+
+            width: 80px;
+            height: 80px;
+          }
+
+          .info {
+            display: block;
+          }
+
+          p {
+            margin: 0;
+          }
+
+          .nationality-wrap {
+            @include flex(nowrap, 12px, $align: center);
+          }
+
+          span {
+            display: block;
+            @include font(700);
+            font-size: 1.8rem;
+            margin-bottom: 8px;
           }
         }
       }
@@ -113,72 +173,72 @@
         opacity: 0;
         z-index: -1;
         pointer-events: none;
+        transform: scale(0.95);
         background-color: rgb(var(--color-background));
       }
 
-      .title-wrap {
-        @include flex($gap: 0, $align: center);
-        margin-bottom: 4px;
+      .user-image {
+        @include radius(50%);
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        object-fit: cover;
+        object-position: center;
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        pointer-events: none;
+        background-color: rgb(var(--color-highlight));
+      }
 
-        .user-image {
-          @include radius(50%);
-          display: block;
-          object-fit: cover;
-          object-position: center;
-          position: relative;
-          width: 32px;
-          height: 32px;
-          background-color: rgb(var(--color-highlight));
-          margin-right: 24px;
-        }
+      .activity-title {
+        display: block;
+        width: 100%;
+        margin-bottom: 6px;
+        line-height: 1.6em;
+        padding-left: 36px;
+        position: relative;
 
         p {
-          // @include flex($align)
-          vertical-align: middle;
-          font-size: 1.4rem;
+          display: block;
+          font-size: 1.2rem;
           margin-bottom: 0;
+          word-wrap: break-word;
+          color: rgb(var(--color-text-light));
 
           a {
+            display: inline;
             font-size: inherit;
-            @include font(900);
+            @include font(700);
             margin: 0;
-            margin-right: 4px;
+            color: rgb(var(--color-info));
 
             &:hover {
               text-decoration: underline;
               text-decoration-thickness: 2px;
             }
           }
-
-          span {
-            @include font(400);
-            font-size: inherit;
-            color: rgb(var(--color-text-light));
-          }
         }
       }
 
       .activity-footer,
       .activity-body {
-        padding-left: 56px;
-        pointer-events: none;
+        padding-left: 36px;
+        pointer-events: none !important;
 
-        p {
-          margin: 0;
-        }
-      }
+        .comment-body {
+          margin-bottom: 4px;
 
-      .activity-body {
-        margin-bottom: 16px;
-
-        p {
-          font-size: 1.6rem;
+          img {
+            max-height: 192px;
+          }
         }
       }
 
       .activity-footer {
         p {
-          font-size: 1.2rem;
+          font-size: 1rem;
           color: rgb(var(--color-text-light));
         }
       }

@@ -155,7 +155,7 @@ window.addEventListener(
     } else {
       showFixedTitle.value = false
     }
-  }, 10)
+  }, 5)
 )
 
 function scrollUp() {

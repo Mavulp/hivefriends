@@ -5,7 +5,6 @@ import { useUser } from "../../store/user"
 import { useBread } from "../../store/bread"
 import { imageUrl } from "../../store/album"
 import { onClickOutside, useMediaQuery } from "@vueuse/core"
-import { useActivity } from "../../store/activity"
 
 import Modal from "../Modal.vue"
 import ActivityWrap from "../activity/Activity.vue"
@@ -31,6 +30,7 @@ watch(
   () => route.name,
   () => {
     open.value = false
+    activityOpen.value = false
   }
 )
 
