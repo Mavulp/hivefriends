@@ -18,6 +18,7 @@ import ImageListitem from "../../components/albums/ImageListitem.vue"
 import Modal from "../../components/Modal.vue"
 import AlbumMap from "../../components/albums/AlbumMap.vue"
 import Button from "../../components/Button.vue"
+import { isValidMarker } from "../../js/map"
 
 const albums = useAlbums()
 const route = useRoute()
@@ -112,9 +113,7 @@ function copyPublic() {
  *  Album map
  */
 const map = ref(false)
-const enableMap = computed(() =>
-  album.images.some((image) => image.location && image.location.latitude && image.location.longitude)
-)
+const enableMap = computed(() => album.images.some((image) => isValidMarker(image)))
 
 /**
  * Remember scroll position
@@ -280,7 +279,7 @@ whenever(showUsers, () => {
               </template>
               <p v-else>Nobody is here.</p>
             </div>
-            
+
             <img @click="openCoverImage" class="cover-image" :src="imageUrl(album.coverKey)" alt=" " />
           </div>
         </div>
