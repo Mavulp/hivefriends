@@ -59,6 +59,7 @@ export interface Album {
 
 interface State {
   albums: Array<Album>
+  albumList: Array<Album>
   drafts: Array<Album>
   userAlbums: {
     [key: string]: Album
@@ -84,6 +85,7 @@ export interface NewAlbum {
 export const useAlbums = defineStore("album", {
   state: () =>
     ({
+      albumList: [],
       albums: [],
       drafts: [],
       userAlbums: {},
@@ -133,7 +135,7 @@ export const useAlbums = defineStore("album", {
 
       return get(`/api/albums/${q}`)
         .then((albums) => {
-          this.albums = albums
+          this.albumList = albums
           return albums
         })
         .catch((error: FetchError) => {
@@ -297,6 +299,7 @@ export const useAlbums = defineStore("album", {
     getUserAlbums: (state) => (username: string) => state.userAlbums[username],
     getAlbums: (state) => state.albums,
     getAlbum: (state) => (key: string) => state.albums.find((album) => album.key === key),
+    getListAlbum: (state) => (key: string) => state.albumList.find((album) => album.key === key),
     getImageMetadata: (state) => (key: string) => state.imageMetadata[key] ?? null
   }
 })

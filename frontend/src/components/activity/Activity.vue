@@ -6,6 +6,7 @@ import { useActivity } from "../../store/activity"
 import { useAlbums } from "../../store/album"
 import { useLoading } from "../../store/loading"
 
+import LoadingSpin from "../loading/LoadingSpin.vue"
 import Button from "../Button.vue"
 import ActivityItem from "./ActivityItem.vue"
 
@@ -50,12 +51,6 @@ async function query() {
  */
 
 const data = computed(() => activity.items)
-
-/**
- * Manage
- */
-
-function markRead() {}
 </script>
 
 <template>
@@ -66,11 +61,10 @@ function markRead() {}
 
     <div class="title-wrap">
       <h4>Lastest Activity</h4>
-      <!-- <button class="hover-bubble bubble-highlight">Mark as read ({{ items.length }})</button> -->
     </div>
 
     <div class="activity-list-wrap">
-      <span v-if="getLoading('activity', 'albums')">LOADING</span>
+      <LoadingSpin class="dark center-parent" v-if="getLoading('activity', 'albums')" />
       <ActivityItem v-for="(item, index) in data" :data="item" :key="index" />
     </div>
   </div>
