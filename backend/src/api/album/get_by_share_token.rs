@@ -24,7 +24,7 @@ pub(super) struct AlbumResponse {
     author: String,
     draft: bool,
     timeframe: Timeframe,
-    created_at: u64,
+    published_at: u64,
     images: Vec<Image>,
     tagged_users: Vec<String>,
 }
@@ -47,7 +47,7 @@ pub(super) async fn get(
                     a.draft, \
                     a.timeframe_from, \
                     a.timeframe_to, \
-                    a.created_at \
+                    a.published_at \
                 FROM albums a \
                 WHERE a.key=?1",
                     params![album_key],
@@ -111,7 +111,7 @@ pub(super) async fn get(
                         from: db_album.timeframe_from,
                         to: db_album.timeframe_to,
                     },
-                    created_at: db_album.created_at,
+                    published_at: db_album.published_at,
                     images,
                     tagged_users,
                 }))
@@ -136,8 +136,8 @@ mod test {
         let expected_album_key = state
             .db
             .call(move |conn| {
-                let user = insert_user("test", conn).unwrap();
-                let image = insert_image(&user, conn).unwrap();
+                let user = insert_user("test", conn);
+                let image = insert_image(&user, conn);
                 let album_key = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -145,8 +145,7 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
+                );
 
                 insert_share_token(
                     InsertShareToken {
@@ -155,8 +154,7 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
+                );
 
                 album_key
             })

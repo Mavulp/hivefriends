@@ -31,7 +31,7 @@ pub struct User {
     pub country: Option<String>,
     pub met: Vec<String>,
     pub albums_uploaded: Vec<String>,
-    pub created_at: i64,
+    pub created_at: u64,
 }
 
 #[derive(Deserialize, Debug, PartialEq)]
@@ -44,17 +44,11 @@ struct DbUser {
     accent_color: Option<String>,
     featured_album_key: Option<String>,
     country: Option<String>,
-    created_at: i64,
+    created_at: u64,
 }
 
-async fn get_users(
-    Authorize(_): Authorize,
-    Extension(state): Extension<Arc<AppState>>,
-) -> Result<Json<Vec<User>>, Error> {
-    state
-        .db
-        .call(move |conn| {
-            let query = "SELECT \
+pub fn get_all(conn: &Connection) -> Result<Vec<User>, Error> {
+    let query = "SELECT \
                 username, \
                 display_name, \
                 bio, \
@@ -65,43 +59,43 @@ async fn get_users(
                 country, \
                 created_at \
                 FROM users"
-                .to_string();
+        .to_string();
 
-            let params: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
+    let params: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
 
-            let mut stmt = conn
-                .prepare(&query)
-                .context("Failed to prepare statement for album query")?;
-            let db_users = stmt
-                .query_map(rusqlite::params_from_iter(params.iter()), |row| {
-                    Ok(from_row::<DbUser>(row).unwrap())
-                })
-                .context("Failed to query images")?
-                .collect::<Result<Vec<_>, _>>()
-                .context("Failed to collect albums")?;
+    let mut stmt = conn
+        .prepare(&query)
+        .context("Failed to prepare statement for album query")?;
+    let db_users = stmt
+        .query_map(rusqlite::params_from_iter(params.iter()), |row| {
+            Ok(from_row::<DbUser>(row).unwrap())
+        })
+        .context("Failed to query images")?
+        .collect::<Result<Vec<_>, _>>()
+        .context("Failed to collect albums")?;
 
-            let mut users = Vec::new();
-            for db_user in db_users {
-                let mut stmt = conn
-                    .prepare(
-                        "SELECT a.\"key\" FROM albums a \
+    let mut users = Vec::new();
+    for db_user in db_users {
+        let mut stmt = conn
+            .prepare(
+                "SELECT a.\"key\" FROM albums a \
                     WHERE a.author = ?1 \
                     AND a.draft == false",
-                    )
-                    .context("Failed to prepare user albums query")?;
-                let album_key_iter = stmt
-                    .query_map(params![db_user.username], |row| {
-                        Ok(from_row::<String>(row).unwrap())
-                    })
-                    .context("Failed to query user albums")?;
+            )
+            .context("Failed to prepare user albums query")?;
+        let album_key_iter = stmt
+            .query_map(params![db_user.username], |row| {
+                Ok(from_row::<String>(row).unwrap())
+            })
+            .context("Failed to query user albums")?;
 
-                let albums_uploaded = album_key_iter
-                    .collect::<Result<Vec<_>, _>>()
-                    .context("Failed to collect albums uploaded")?;
+        let albums_uploaded = album_key_iter
+            .collect::<Result<Vec<_>, _>>()
+            .context("Failed to collect albums uploaded")?;
 
-                let mut stmt = conn
-                    .prepare(
-                        "SELECT u2.username FROM users u1 \
+        let mut stmt = conn
+            .prepare(
+                "SELECT u2.username FROM users u1 \
                         INNER JOIN user_album_associations uaa ON uaa.username = u1.username \
                         INNER JOIN albums a ON a.key = uaa.album_key \
                         INNER JOIN user_album_associations uaa2 ON uaa2.album_key = a.key \
@@ -110,35 +104,41 @@ async fn get_users(
                         AND u2.username != ?1 \
                         AND a.draft == false
                         GROUP BY u2.username",
-                    )
-                    .context("Failed to prepare met users query")?;
-                let met_iter = stmt
-                    .query_map(params![db_user.username], |row| {
-                        Ok(from_row::<String>(row).unwrap())
-                    })
-                    .context("Failed to query met users")?;
+            )
+            .context("Failed to prepare met users query")?;
+        let met_iter = stmt
+            .query_map(params![db_user.username], |row| {
+                Ok(from_row::<String>(row).unwrap())
+            })
+            .context("Failed to query met users")?;
 
-                let met = met_iter
-                    .collect::<Result<Vec<_>, _>>()
-                    .context("Failed to collect met users")?;
+        let met = met_iter
+            .collect::<Result<Vec<_>, _>>()
+            .context("Failed to collect met users")?;
 
-                users.push(User {
-                    username: db_user.username,
-                    display_name: db_user.display_name,
-                    avatar_key: db_user.avatar_key,
-                    banner_key: db_user.banner_key,
-                    accent_color: db_user.accent_color,
-                    featured_album_key: db_user.featured_album_key,
-                    country: db_user.country,
-                    bio: db_user.bio,
-                    met,
-                    albums_uploaded,
-                    created_at: db_user.created_at,
-                });
-            }
-            Ok(Json(users))
-        })
-        .await
+        users.push(User {
+            username: db_user.username,
+            display_name: db_user.display_name,
+            avatar_key: db_user.avatar_key,
+            banner_key: db_user.banner_key,
+            accent_color: db_user.accent_color,
+            featured_album_key: db_user.featured_album_key,
+            country: db_user.country,
+            bio: db_user.bio,
+            met,
+            albums_uploaded,
+            created_at: db_user.created_at,
+        });
+    }
+
+    Ok(users)
+}
+
+async fn get_users(
+    Authorize(_): Authorize,
+    Extension(state): Extension<Arc<AppState>>,
+) -> Result<Json<Vec<User>>, Error> {
+    state.db.call(move |conn| Ok(Json(get_all(conn)?))).await
 }
 
 async fn get_user_by_username(
@@ -282,12 +282,9 @@ mod test {
         let users = state
             .db
             .call(move |conn| {
-                let users = vec![
-                    insert_user("test", conn).unwrap(),
-                    insert_user("test2", conn).unwrap(),
-                ];
+                let users = vec![insert_user("test", conn), insert_user("test2", conn)];
                 let user = users[0].clone();
-                let image = insert_image(&user, conn).unwrap();
+                let image = insert_image(&user, conn);
 
                 // Insert 2 albums to ensure we have a working GROUP BY on the met users list
                 let _ = insert_album(
@@ -299,8 +296,7 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
+                );
                 let _ = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -310,8 +306,7 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
+                );
 
                 users
             })
@@ -338,12 +333,9 @@ mod test {
         let _ = state
             .db
             .call(move |conn| {
-                let users = vec![
-                    insert_user("test", conn).unwrap(),
-                    insert_user("test2", conn).unwrap(),
-                ];
+                let users = vec![insert_user("test", conn), insert_user("test2", conn)];
                 let user = users[0].clone();
-                let image = insert_image(&user, conn).unwrap();
+                let image = insert_image(&user, conn);
 
                 // Insert 2 albums to ensure we have a working GROUP BY on the met users list
                 let _ = insert_album(
@@ -355,8 +347,7 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
+                );
                 let _ = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -366,8 +357,7 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
+                );
 
                 users
             })

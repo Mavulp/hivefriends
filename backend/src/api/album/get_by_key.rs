@@ -42,11 +42,11 @@ mod test {
         let (album, images) = state
             .db
             .call(move |conn| {
-                let user = insert_user("test", conn).unwrap();
+                let user = insert_user("test", conn);
 
                 let mut images = Vec::new();
                 for _ in comment_count {
-                    images.push(insert_image(&user, conn).unwrap());
+                    images.push(insert_image(&user, conn));
                 }
 
                 let album = insert_album(
@@ -57,12 +57,11 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
+                );
 
                 for (count, img) in comment_count.iter().zip(images.iter()) {
                     for _ in 0..*count {
-                        insert_comment(&user, &img, &album, "text", conn).unwrap();
+                        insert_comment(&user, &img, &album, "text", conn);
                     }
                 }
 
@@ -86,12 +85,9 @@ mod test {
         let (album, users) = state
             .db
             .call(move |conn| {
-                let users = vec![
-                    insert_user("test", conn).unwrap(),
-                    insert_user("test2", conn).unwrap(),
-                ];
+                let users = vec![insert_user("test", conn), insert_user("test2", conn)];
                 let user = users[0].clone();
-                let image = insert_image(&user, conn).unwrap();
+                let image = insert_image(&user, conn);
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -101,8 +97,7 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
+                );
 
                 (album, users)
             })
