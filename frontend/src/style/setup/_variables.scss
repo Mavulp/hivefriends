@@ -19,7 +19,8 @@
   --color-success: 60, 218, 126;
   --color-info: 130, 132, 255;
 
-  --shadow: 0 2px 8px rgba(var(--color-background-dark), 0.05);
+  --shadow: 0 2px 8px rgba(var(--color-background-dark), 0.1);
+  --shadow2: 0 3px 12px rgba(var(--color-background-dark), 0.16);
 }
 
 :root.dark-normal {

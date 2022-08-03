@@ -133,6 +133,7 @@ export const useAlbums = defineStore("album", {
 
       return get(`/api/albums/${q}`)
         .then((albums) => {
+          this.albums = albums
           return albums
         })
         .catch((error: FetchError) => {

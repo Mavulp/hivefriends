@@ -12,20 +12,24 @@
   padding: 32px;
 
   .user-profile-upper {
-    background-color: rgb(var(--color-highlight));
+    @include radius(12px);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    margin-bottom: 32px;
+    // background-color: rgb(var(--color-highlight));
 
     &.black * {
       color: #191716;
     }
 
-    &.white {
+    &.white * {
       color: #fff;
     }
 
     .hi-user-banner {
       display: block;
       width: 100%;
-      height: 456px;
+      height: 512px;
       position: relative;
       overflow: hidden;
 
@@ -40,7 +44,6 @@
         background-position-y: 50%;
         background-repeat: no-repeat;
         background-size: cover;
-        // background-attachment: fixed;
         background-color: rgba(var(--color-background), 0.1);
 
         &.image-error {
@@ -50,13 +53,28 @@
     }
 
     .user-information-wrap {
-      // display: block;
-      @include grid(40px, 1fr 0.5fr);
       width: 100%;
-      margin: 0 auto;
-      max-width: 1480px;
-      padding: 0 32px;
-      margin-bottom: 32px;
+      position: relative;
+      z-index: 10;
+      // background-color: rgb(var(--color-highlight));
+
+      .user-information-container {
+        @include grid(40px, 1fr 0.5fr);
+        margin: 0 auto;
+        max-width: 1580px;
+        padding: 0 32px 16px;
+      }
+
+      &:after {
+        // @include radius(0 15% 0 0);
+        @include rotate(-3deg);
+        content: "";
+        display: block;
+        position: absolute;
+        inset: -56px -32px -128px;
+        z-index: -1;
+        background-color: rgb(var(--color-highlight));
+      }
 
       .user-information {
         padding: 32px 0;
@@ -88,11 +106,6 @@
             }
           }
 
-          b,
-          span {
-            color: rgba(var(--color-text), 0.75);
-          }
-
           a {
             @include radius(6px);
             @include t(0.1s);
@@ -112,13 +125,11 @@
 
             &.black {
               color: #191716 !important;
-
               background-color: rgba(#fff, 0.3);
             }
 
             &.white {
               color: #fff !important;
-
               background-color: rgba(#191716, 0.3);
             }
           }
@@ -126,7 +137,7 @@
 
         h1 {
           font-size: 8.6rem;
-          margin-bottom: 2px;
+          margin-bottom: 6px;
           text-shadow: 0 1px 3px rgba(var(--color-text), 0.25);
         }
 
@@ -134,6 +145,7 @@
           font-size: 1.8rem;
           line-height: 1.8em;
           margin: 0;
+          padding-left: 16px;
 
           &.black {
             color: #191716 !important;
@@ -152,7 +164,7 @@
         position: relative;
 
         &:before {
-          content: "";
+          // content: "";
           position: absolute;
           display: block;
           inset: -16px;
@@ -162,15 +174,16 @@
         }
 
         .avatar {
-          // @include radius(8px);
+          @include radius(12px);
           display: block;
           width: 512px;
           height: 512px;
           object-fit: cover;
           position: relative;
           object-position: center;
-          margin-bottom: 32px;
           z-index: 5;
+          margin-bottom: 16px;
+          box-shadow: var(--shadow);
 
           &.image-error {
             border-color: rgb(var(--color-background));
@@ -201,15 +214,29 @@
     margin: 0 auto;
     max-width: 1480px;
     padding: 32px;
-    padding-bottom: 256px;
+    padding-bottom: 64px;
 
     .user-albums {
       h2 {
+        @include flex($justify: space-between, $align: center);
+        font-size: 2.6rem;
+
         color: rgb(var(--color-highlight));
+
+        a {
+          @include font(400);
+          // text-decoration: underline;
+          color: rgb(var(--color-text));
+          font-size: 1.6rem;
+
+          &:hover {
+            text-decoration: none;
+          }
+        }
       }
 
       p {
-        font-size: 2rem;
+        font-size: 1.8rem;
 
         b {
           font-size: 2rem;
@@ -242,12 +269,48 @@
         width: 100%;
         margin: 0 auto;
 
+        &.user-details {
+          @include grid(32px, 1fr 1fr);
+          @include radius(6px);
+          margin-bottom: 40px;
+          padding: 16px;
+          background-color: rgba(var(--color-background-dimmed), 0.1);
+
+          span {
+            display: block;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            color: rgb(var(--color-text-light));
+            margin-bottom: 8px;
+          }
+
+          p {
+            margin: 0;
+            font-size: 1.4rem;
+          }
+
+          .nationality-wrap {
+            @include flex(nowrap, 12px);
+          }
+        }
+
         h4 {
           @include flex();
+          font-size: 2.6rem;
+
           span {
             font-size: 4rem;
             // transform: translateY(4px);
             color: rgb(Var(--color-highlight));
+          }
+
+          p {
+            @include font(400);
+            margin: 0;
+            // flex: 1;
+            text-align: right;
+            font-size: 1.6rem;
+            color: rgb(var(--color-text-light));
           }
         }
 

@@ -6,7 +6,7 @@
   .home-landing {
     display: block;
     height: calc(100vh - $header);
-    padding: 64px 128px;
+    padding: 64px 104px;
     position: relative;
     margin-bottom: 192px;
 
@@ -16,12 +16,12 @@
       display: block;
       position: relative;
       font-style: italic;
-      margin-bottom: 64px;
       font-size: 13vw;
-      // font-size: 100%;
       -webkit-text-fill-color: transparent;
       -webkit-text-stroke-width: 1.5px;
-      -webkit-text-stroke-color: rgb(var(--color-border));
+      -webkit-text-stroke-color: rgb(var(--color-text));
+
+      filter: drop-shadow(6px 6px 0px #fff);
 
       b {
         display: inline;
@@ -39,22 +39,32 @@
       position: relative;
       pointer-events: none;
 
-      line-height: 1.4em;
+      line-height: 1.2em;
       font-style: italic;
       z-index: 10;
+      margin-bottom: 56px;
+
+      i {
+        text-decoration: underline;
+        text-decoration-thickness: 8px;
+        text-decoration-color: rgb(var(--color-highlight));
+      }
     }
 
     .album-thumbnail {
+      @include radius(12px);
       display: block;
       cursor: pointer;
       position: absolute;
-      bottom: 0;
+      bottom: 32px;
       right: 0;
       width: 50%;
-      top: 22%;
+      top: 10%;
       overflow: hidden;
       z-index: 1;
+      right: 32px;
       color: rgb(var(--color-text-white));
+      box-shadow: var(--shadow);
 
       &:hover {
         img {
@@ -68,11 +78,11 @@
         line-height: 32px;
         display: block;
         position: absolute;
-        bottom: 40px;
-        right: 40px;
+        bottom: 32px;
+        right: 32px;
         z-index: 5;
         padding: 0 12px;
-        background-color: rgba(var(--color-background-dark), 0.5);
+        background-color: rgba(var(--color-background-dark), 0.6);
         color: rgb(var(--color-text-white));
         font-size: 1.5rem;
       }
@@ -90,7 +100,9 @@
     }
 
     .button {
+      @include font(700);
       display: inline-block;
+      font-size: 1.6rem;
     }
   }
 
@@ -112,10 +124,10 @@
 
     .home-user {
       @include t();
-      @include radius(4px);
+      @include radius(6px);
       @include flex($gap: 8px);
       padding: 16px 32px;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
       color: rgb(var(--color-text));
       border: 1px solid transparent;
       background-color: rgb(var(--color-white));
@@ -143,6 +155,38 @@
       h5 {
         margin-bottom: 0;
         font-size: 2.2rem;
+      }
+    }
+  }
+
+  .container {
+    &:has(.home-albums) {
+      p {
+        letter-spacing: 0.5em;
+        color: rgb(var(--color-text));
+        font-style: italic;
+      }
+    }
+  }
+
+  .home-albums {
+    @include grid(40px, 2);
+    margin-bottom: 128px;
+
+    .home-album {
+      img {
+        // @include radius(12px);
+        display: block;
+        width: 100%;
+        height: 212px;
+        box-shadow: var(--shadow);
+        object-fit: cover;
+        object-position: center;
+        margin-bottom: 16px;
+      }
+
+      h4 {
+        color: rgb(var(--color-text));
       }
     }
   }

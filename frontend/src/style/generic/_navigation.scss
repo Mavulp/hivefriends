@@ -3,7 +3,7 @@
   width: 100%;
   position: relative;
   height: $header;
-  z-index: 100;
+  z-index: 500;
   border-bottom: 1px solid rgb(var(--color-border-light));
   padding: 0 24px;
   background-color: rgb(var(--color-background));
@@ -124,7 +124,7 @@
     @include flex($align: center); // text-transform: uppercase;
     font-size: 2rem;
     color: rgb(var(--color-text));
-    margin-right: 16px;
+    margin-right: 32px;
 
     img {
       background-color: transparent;
@@ -133,7 +133,7 @@
   }
 
   .nav-links-wrap {
-    @include flex($gap: 8px);
+    @include flex($gap: 12px);
 
     .nav-link {
       @include font(600);

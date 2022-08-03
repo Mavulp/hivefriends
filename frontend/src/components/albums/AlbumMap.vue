@@ -3,7 +3,7 @@ import { ref, computed } from "vue"
 import { usePreferredDark } from "@vueuse/core"
 import { MapboxMap, MapboxMarker, MapboxPopup } from "vue-mapbox-ts"
 import { Map } from "mapbox-gl"
-import { map_access, map_dark, map_light } from "../../js/map"
+import { map_access, map_dark, map_light, isValidMarker } from "../../js/map"
 import { useUser } from "../../store/user"
 import { Album, Image, imageUrl } from "../../store/album"
 import { TEXT_CONTRAST, RGB_TO_HEX } from "../../js/utils"
@@ -38,7 +38,7 @@ const mapStyle = computed(() => {
   return user.settings?.colorTheme?.startsWith("dark") ? map_dark : map_light
 })
 
-const sortedMarkers = computed(() => props.album.images.filter((item) => item.location))
+const sortedMarkers = computed(() => props.album.images.filter((item) => isValidMarker(item)))
 const mapCenter = ref<Array<string | number>>([
   Number(sortedMarkers.value[0].location?.longitude ?? 0),
   Number(sortedMarkers.value[0].location?.latitude ?? 0)
@@ -117,16 +117,14 @@ function setZoom(by: number) {
       <div class="map-wrapper">
         <div class="active-image-data" :class="{ active: activeImage }">
           <template v-if="activeImage" :key="activeImage.key">
-            <div class="active-image-header">
-              <strong>{{ activeImage.fileName }}</strong>
-              <button class="hover-bubble bubble-black" @click="resetActiveImage()">
-                Hide<span class="material-icons">&#xe5dc;</span>
-              </button>
-            </div>
-
             <img :src="imageUrl(activeImage.key, 'medium')" alt="" />
 
-            <CommentsWrap :albumKey="props.album.key" :imageKey="activeImage.key" :uploader="props.album.author" />
+            <CommentsWrap
+              :albumKey="props.album.key"
+              :imageKey="activeImage.key"
+              :uploader="props.album.author"
+              @close="resetActiveImage()"
+            />
           </template>
         </div>
 

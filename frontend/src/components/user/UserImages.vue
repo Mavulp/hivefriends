@@ -34,7 +34,7 @@ const chunks = computed<Array<Array<AllImageItem>>>(() =>
 )
 
 onBeforeMount(async () => {
-  bread.set("All your uploaded images")
+  bread.set("All your uploaded photos")
   const raw = await album.fetchUserImages()
   data.value = raw.filter(
     (item: AllImageItem) => item.key !== user.settings.avatarKey && item.key !== user.settings.bannerKey
@@ -146,7 +146,7 @@ async function tryToAlbum() {
         a few photos which live outside of any albums. To store them or quickly share with someone.
       </p>
 
-      <input type="file" name="imgfile" id="imgfile" accept="image/*" @input="uploadImage" />
+      <input type="file" name="imgfile" id="imgfile" accept="image/*, .heic" @input="uploadImage" />
       <label for="imgfile">
         <span class="material-icons"> &#xe3f4; </span>
         <span>Upload a photo</span>
@@ -157,7 +157,9 @@ async function tryToAlbum() {
       </label>
     </div>
 
-    <div class="hi-image-list-info" :class="{ 'is-selecting': selected.size > 0 }">
+    <LoadingSpin class="dark center-page" v-if="getLoading('images')" />
+
+    <div v-else class="hi-image-list-info" :class="{ 'is-selecting': selected.size > 0 }">
       <div>
         <p>Sorting by upload date</p>
       </div>

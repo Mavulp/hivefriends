@@ -1,4 +1,5 @@
 // import { AllImageItem, Image } from "../store/album"
+import { isValidImage } from "./utils"
 
 /**
  * Composable for replacing @user with a link to user's profile
@@ -15,6 +16,10 @@ export function formatTextUsernames(text: string, userStore: any) {
     return /*html*/ `<button class="comment-user-link" data-comment-link="${user.username}" href="/${user.username}">${original}</button>`
   })
 }
+
+/**
+ * Takes in an array of images and splits them into chunks
+ */
 
 export function getImageChunks(images: Array<any>, columns = 3) {
   if (!images) return []
@@ -36,4 +41,36 @@ export function getImageChunks(images: Array<any>, columns = 3) {
   }
 
   return chunks
+}
+
+/**
+ *
+ */
+
+export function formatTextImages(text: string) {
+  const _regex = /\bhttps?:\/\/\S+/gi
+
+  const urls = [...new Set(text.match(_regex))]
+
+  const _img = (_url: string) => `<img src="${_url}" />`
+  const _a = (_url: string) => `<a href="${_url}" target="_blank">${_url}</a>`
+
+  if (urls && urls.length > 0) {
+    // Loop over each url
+    urls.map((url) => {
+      let chunk
+
+      if (isValidImage(url)) {
+        // Is an image
+        chunk = _img(url)
+      } else {
+        // is a link
+        chunk = _a(url)
+      }
+
+      text = text.replaceAll(url, chunk)
+    })
+  }
+
+  return text
 }

@@ -25,7 +25,7 @@
     padding: 0 24px;
     font-size: 1.4rem;
     width: 100%;
-    border: 1px solid rgb(var(--color-border-light));
+    border: 2px solid rgb(var(--color-border-light));
     color: rgb(var(--color-text));
     background-color: transparent;
   }
@@ -113,7 +113,7 @@ input:-webkit-autofill:active {
       line-height: 44px;
       font-size: 1.4rem;
       padding: 0 16px;
-      border: 1px solid rgb(var(--color-border-light));
+      border: 2px solid rgb(var(--color-border-light));
     }
   }
 }
@@ -264,7 +264,7 @@ input:-webkit-autofill:active {
     text-align: left;
 
     z-index: 1;
-    border: 1px solid rgb(var(--color-border-light));
+    border: 2px solid rgb(var(--color-border-light));
 
     input {
       color: rgb(var(--color-text));
@@ -298,7 +298,7 @@ input:-webkit-autofill:active {
     visibility: hidden;
     z-index: -1;
     background-color: rgb(var(--color-white));
-    border: 1px solid rgb(var(--color-border-light));
+    border: 2px solid rgb(var(--color-border-light));
     box-shadow: var(--shadow);
     transform: scale(0.9) translateY(-8px);
     transform-origin: center top;

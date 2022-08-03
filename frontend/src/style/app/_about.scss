@@ -4,7 +4,9 @@
 
   .container {
     display: block;
-    margin: 0 auto;
+    // margin: 0 auto;
+    // padding-left: ;
+    margin-left: 10%;
     max-width: 986px;
     padding: 64px 128px;
     width: 100%;
@@ -39,7 +41,7 @@
     }
 
     .link-out {
-      @include radius(16px);
+      @include radius(12px);
       @include t(0.15s);
       @include flex($gap: 32px, $justify: space-between);
       padding: 16px 32px;
@@ -52,7 +54,7 @@
       }
 
       img {
-        @include radius(8px);
+        @include radius(6px);
         display: block;
         object-fit: cover;
         object-position: center;

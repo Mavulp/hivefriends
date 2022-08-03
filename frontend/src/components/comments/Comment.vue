@@ -3,8 +3,8 @@ import { computed, ref } from "vue"
 import { Comment, useComments } from "../../store/comments"
 import { imageUrl } from "../../store/album"
 import { useUser } from "../../store/user"
-import { sanitize, isValidImage } from "../../js/utils"
-import { formatTextUsernames } from "../../js/_composables"
+import { sanitize, formatTimestamp } from "../../js/utils"
+import { formatTextUsernames, formatTextImages } from "../../js/_composables"
 const user = useUser()
 const comments = useComments()
 
@@ -15,45 +15,6 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-
-function formatTimestamp(date: number) {
-  date *= 1000
-  const d = new Date(date)
-
-  return `${d.getUTCHours()}:${d.getUTCMinutes()}, ${d.toLocaleDateString("en-GB", {
-    year: "numeric",
-    month: "short",
-    day: "numeric"
-  })}`
-}
-
-function formatTextImages(text: string) {
-  const _regex = /\bhttps?:\/\/\S+/gi
-
-  const urls = [...new Set(props.data.text.match(_regex))]
-
-  const _img = (_url: string) => `<img src="${_url}" />`
-  const _a = (_url: string) => `<a href="${_url}" target="_blank">${_url}</a>`
-
-  if (urls && urls.length > 0) {
-    // Loop over each url
-    urls.map((url) => {
-      let chunk
-
-      if (isValidImage(url)) {
-        // Is an image
-        chunk = _img(url)
-      } else {
-        // is a link
-        chunk = _a(url)
-      }
-
-      text = text.replaceAll(url, chunk)
-    })
-  }
-
-  return text
-}
 
 const text = computed(() => {
   if (!props.data.text) return ""

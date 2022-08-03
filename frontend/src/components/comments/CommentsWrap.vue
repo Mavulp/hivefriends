@@ -4,15 +4,19 @@ import { Comment, useComments } from "../../store/comments"
 import { useLoading } from "../../store/loading"
 import { useUser } from "../../store/user"
 import { minLength, required, useFormValidation } from "../../js/validation"
+import { sanitize } from "../../js/utils"
+import { formatTextUsernames } from "../../js/_composables"
 
 import LoadingSpin from "../loading/LoadingSpin.vue"
 import InputTextarea from "../form/InputTextarea.vue"
 import CommentVue from "./Comment.vue"
 import AliasModal from "./AliasModal.vue"
 import Modal from "../Modal.vue"
+import { useAlbums } from "../../store/album"
 
 const comments = useComments()
 const user = useUser()
+const album = useAlbums()
 const { getLoading } = useLoading()
 
 interface Props {
@@ -101,18 +105,33 @@ function handleKeys(e: any) {
 
   if (keys.length > 5) keys = []
 }
+
+const metadata = computed(() => {
+  if (!user.public_token) {
+    return album.getImageMetadata(props.imageKey)
+  }
+})
 </script>
 
 <template>
   <div class="hi-comments">
+    <div class="hi-comments-info" v-if="metadata?.fileName || metadata?.description">
+      <div class="icon">
+        <span class="material-icons">&#xe412;</span>
+      </div>
+
+      <strong v-if="metadata?.fileName" class="file-name">{{ metadata.fileName }}</strong>
+      <p v-if="metadata?.description" v-html="sanitize(formatTextUsernames(metadata.description, user))"></p>
+    </div>
     <div class="hi-comments-header">
-      <h5>Comments</h5>
+      <h6>Comments</h6>
       <span>({{ data.length }})</span>
 
       <div class="flex-1"></div>
 
       <button class="control-button" @click="emit('close')">
-        <span class="material-icons">&#xe5cd;</span>
+        Hide
+        <span class="material-icons">&#xe5dc;</span>
       </button>
     </div>
 

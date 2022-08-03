@@ -61,7 +61,7 @@
     }
 
     .draft {
-      @include radius(8px);
+      @include radius(6px);
       padding: 16px;
       display: block;
       position: relative;
@@ -149,7 +149,7 @@
 
           & + label {
             @include flex($align: center, $justify: center, $direction: column, $gap: 8px);
-            @include radius(32px);
+            @include radius(30px);
             width: 100%;
             height: 100%;
             border: 3px dashed rgb(var(--color-border));
@@ -202,6 +202,10 @@
         &.open,
         &:hover {
           border-color: rgb(var(--color-border-light));
+        }
+
+        &.open {
+          box-shadow: var(--shadow);
         }
 
         &.is-cover {
@@ -311,9 +315,12 @@
           }
 
           .map-wrapper {
+            @include radius(6px);
+            box-shadow: var(--shadow);
             display: block;
             width: 100%;
             height: 256px;
+            overflow: hidden;
             margin-bottom: 16px;
           }
         }

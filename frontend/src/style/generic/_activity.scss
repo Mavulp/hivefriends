@@ -1,0 +1,265 @@
+.activity {
+  @include t();
+  // @include radius(10px);
+  @include flex($direction: column, $align: flex-start);
+  position: fixed;
+  // top: calc($header + 16px);
+  // bottom: 16px;
+  top: $header;
+  bottom: 0;
+  right: 0;
+  box-shadow: var(--shadow);
+  background-color: rgb(var(--color-background));
+  // border: 1px solid rgb(var(--color-border-light));
+  border-left: 1px solid rgb(var(--color-border-light));
+
+  opacity: 0;
+  visibility: hidden;
+  width: 156px;
+  z-index: -1;
+  pointer-events: none;
+  padding: 24px;
+
+  &.active {
+    width: 592px;
+    opacity: 1;
+    visibility: visible;
+    z-index: 100;
+    pointer-events: all;
+  }
+
+  .close {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    color: rgb(var(--color-text));
+  }
+
+  .title-wrap {
+    @include flex($gap: 24px, $align: flex-start);
+    // margin-bottom: 24px;
+    width: 100%;
+
+    button,
+    h4 {
+      margin-bottom: 0;
+      color: rgb(var(--color-text));
+    }
+  }
+
+  .activity-list-wrap {
+    flex: 1;
+    width: 100%;
+    position: relative;
+    overflow-y: auto;
+
+    .no-notifs {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.2rem;
+
+      b {
+        display: inline;
+        font-size: 2.6rem;
+      }
+    }
+
+    .activity-item {
+      display: block;
+      padding: 8px;
+      z-index: 5;
+      position: relative;
+      cursor: pointer;
+      margin-bottom: 12px;
+
+      &:hover {
+        .background {
+          transform: scale(1);
+          opacity: 0.1;
+        }
+      }
+
+      &.activity-album {
+        .activity-body {
+          @include flex($gap: 12px, $align: flex-start);
+          @include radius(12px);
+          margin-top: 16px;
+          width: 100%;
+          padding: 16px;
+          box-shadow: var(--shadow2);
+
+          img {
+            @include radius(6px);
+            width: 72px;
+            max-height: 96px;
+          }
+
+          .title {
+            strong {
+              font-size: 1.8rem;
+              margin-bottom: 8px;
+              color: rgb(var(--color-text));
+            }
+
+            p {
+              font-size: 1.4rem;
+              color: rgb(var(--color-text-light));
+              margin: 0;
+            }
+
+            .info {
+              padding-top: 4px;
+              @include flex($gap: 8px);
+              font-size: 1.4rem;
+            }
+          }
+        }
+      }
+
+      &.activity-user {
+        padding: 16px;
+
+        strong {
+          @include font(900);
+          font-style: italic;
+          font-size: 2.2rem;
+        }
+
+        .user {
+          @include radius(12px);
+          @include flex($gap: 32px);
+          margin-top: 16px;
+          width: 100%;
+          padding: 16px;
+          box-shadow: var(--shadow2);
+
+          .user-image {
+            position: relative;
+            inset: unset;
+
+            width: 80px;
+            height: 80px;
+          }
+
+          .info {
+            display: block;
+          }
+
+          p {
+            margin: 0;
+          }
+
+          .nationality-wrap {
+            @include flex(nowrap, 12px, $align: center);
+          }
+
+          span {
+            display: block;
+            @include font(700);
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+          }
+        }
+      }
+
+      .background {
+        @include radius(6px);
+        @include t(0.16s);
+        display: block;
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        z-index: -1;
+        pointer-events: none;
+        transform: scale(0.95);
+        background-color: rgb(var(--color-background));
+      }
+
+      .user-image {
+        @include radius(50%);
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        object-fit: cover;
+        object-position: center;
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        pointer-events: none;
+        background-color: rgb(var(--color-highlight));
+      }
+
+      .activity-title {
+        display: block;
+        width: 100%;
+        margin-bottom: 6px;
+        line-height: 1.6em;
+        padding-left: 36px;
+        position: relative;
+
+        p {
+          display: block;
+          font-size: 1.2rem;
+          margin-bottom: 0;
+          word-wrap: break-word;
+          color: rgb(var(--color-text-light));
+
+          a {
+            display: inline;
+            font-size: inherit;
+            @include font(700);
+            margin: 0;
+            color: rgb(var(--color-info));
+
+            &:hover {
+              text-decoration: underline;
+              text-decoration-thickness: 2px;
+            }
+          }
+        }
+      }
+
+      .activity-footer,
+      .activity-body {
+        padding-left: 36px;
+        pointer-events: none !important;
+
+        .comment-body {
+          margin-bottom: 4px;
+
+          img {
+            max-height: 192px;
+          }
+        }
+      }
+
+      .activity-footer {
+        p {
+          font-size: 1rem;
+          color: rgb(var(--color-text-light));
+        }
+      }
+    }
+  }
+}
+
+.activity-alert {
+  @include radius(50%);
+  @include t(0.1s);
+  content: "";
+  display: block;
+  position: absolute;
+  pointer-events: none;
+  width: 8px;
+  height: 8px;
+  top: 5px;
+  right: 2px;
+  background-color: rgb(var(--color-error));
+
+  &.has-activity {
+    opacity: 1;
+  }
+}
