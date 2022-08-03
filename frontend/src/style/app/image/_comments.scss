@@ -12,7 +12,8 @@
     .icon {
       position: absolute;
       left: 20px;
-      top: 50%;
+      top: calc(50% + 2px);
+      // top: 44px;
       transform: translateY(-50%);
 
       .material-icons {
@@ -36,7 +37,7 @@
     }
 
     p {
-      margin-top: 8px;
+      margin-top: 4px;
       font-size: 1.4rem;
       margin-bottom: 0;
       color: rgb(var(--color-text));
@@ -53,7 +54,11 @@
     }
 
     .control-button {
-      @include rotate(180deg);
+      @include flex($align: center, $gap: 8px);
+
+      span {
+        @include rotate(180deg);
+      }
     }
   }
 

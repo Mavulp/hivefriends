@@ -5,7 +5,7 @@ import { imageUrl, useAlbums, Album, Image as ImageStruct } from "../../store/al
 import { isEmpty, isNil } from "lodash"
 import { useLoading } from "../../store/loading"
 import { onKeyStroke, useClipboard, useCssVar, useMediaQuery, usePreferredDark, whenever } from "@vueuse/core"
-import { map_access, map_dark, map_light, getBounds } from "../../js/map"
+import { map_access, map_dark, map_light, getBounds, isValidMarker } from "../../js/map"
 import { useUser } from "../../store/user"
 import { RGB_TO_HEX, formatDate, formatFileSize, sanitize } from "../../js/utils"
 import { useComments } from "../../store/comments"
@@ -357,7 +357,7 @@ onBeforeUnmount(() => {
                 <span class="material-icons"> &#xe5cd; </span>
               </template>
               <template v-else>
-                <span class="material-icons"> &#xe2ea; </span>
+                <span class="material-icons" style="font-size: 2rem"> &#xf1e6; </span>
                 Go back
               </template>
             </router-link>

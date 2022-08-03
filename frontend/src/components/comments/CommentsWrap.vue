@@ -130,6 +130,7 @@ const metadata = computed(() => {
       <div class="flex-1"></div>
 
       <button class="control-button" @click="emit('close')">
+        Hide
         <span class="material-icons">&#xe5dc;</span>
       </button>
     </div>

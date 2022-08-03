@@ -220,7 +220,7 @@ whenever(showUsers, () => {
 
             <span class="material-icons">&#xe8df;</span>
             <p>Uploaded</p>
-            <p>{{ formatDate(album.createdAt) }}</p>
+            <p>{{ formatDate(album.publishedAt) }}</p>
           </div>
         </div>
 
@@ -288,7 +288,7 @@ whenever(showUsers, () => {
 
       <div class="hi-album-title-fixed" v-if="showFixedTitle && !map && !modal">
         <div>
-          <p class="uploaded">Uploaded {{ formatDate(album.createdAt) }}</p>
+          <p class="uploaded">Uploaded {{ formatDate(album.publishedAt) }}</p>
           <h5>{{ album.title }}</h5>
         </div>
 
