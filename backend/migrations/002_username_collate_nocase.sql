@@ -46,7 +46,7 @@ SELECT
     i.f_number,
     i.focal_length,
     i.description,
-    (SELECT u.username FROM users u where u.username = i.uploader) as uploader,
+    (SELECT u.username FROM users u WHERE u.username = i.uploader) AS uploader,
     i.uploaded_at
 FROM images i;
 
@@ -84,7 +84,7 @@ CREATE TABLE comments_new (
 INSERT OR REPLACE INTO comments_new
 SELECT
     c.id,
-    (SELECT u.username FROM users u where u.username = c.author) as author,
+    (SELECT u.username FROM users u WHERE u.username = c.author) AS author,
     c.album_key,
     c.image_key,
     c.created_at,
@@ -127,7 +127,7 @@ SELECT
     a.title,
     a.description,
     a.cover_key,
-    (SELECT u.username FROM users u where u.username = a.author) as author,
+    (SELECT u.username FROM users u WHERE u.username = a.author) AS author,
     a.draft,
     a.timeframe_from,
     a.timeframe_to,
@@ -155,7 +155,7 @@ CREATE TABLE auth_sessions_new (
 INSERT OR REPLACE INTO auth_sessions_new
 SELECT
     s.id,
-    (SELECT u.username FROM users u where u.username = s.username),
+    (SELECT u.username FROM users u WHERE u.username = s.username),
     s.token,
     s.created_at
 FROM auth_sessions s;
@@ -186,7 +186,7 @@ CREATE TABLE user_album_associations_new (
 
 INSERT OR REPLACE INTO user_album_associations_new
 SELECT
-    (SELECT u.username FROM users u where u.username = uaa.username),
+    (SELECT u.username FROM users u WHERE u.username = uaa.username),
     uaa.album_key
 FROM user_album_associations uaa;
 
@@ -217,7 +217,7 @@ INSERT OR REPLACE INTO album_share_tokens_new
 SELECT
     ast.share_token,
     ast.album_key,
-    (SELECT u.username FROM users u where u.username = ast.created_by),
+    (SELECT u.username FROM users u WHERE u.username = ast.created_by),
     ast.created_at
 FROM album_share_tokens ast;
 

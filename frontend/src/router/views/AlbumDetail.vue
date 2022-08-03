@@ -280,7 +280,7 @@ whenever(showUsers, () => {
               </template>
               <p v-else>Nobody is here.</p>
             </div>
-
+            
             <img @click="openCoverImage" class="cover-image" :src="imageUrl(album.coverKey)" alt=" " />
           </div>
         </div>

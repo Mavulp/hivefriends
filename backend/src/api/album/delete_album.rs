@@ -44,8 +44,8 @@ mod test {
         let user = state
             .db
             .call(move |conn| {
-                let user = insert_user("test", conn).unwrap();
-                let image = insert_image(&user, conn).unwrap();
+                let user = insert_user("test", conn);
+                let image = insert_image(&user, conn);
                 let _ = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -54,8 +54,7 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
+                );
 
                 user
             })
@@ -73,8 +72,8 @@ mod test {
         let (user2, album) = state
             .db
             .call(move |conn| {
-                let user = insert_user("test", conn).unwrap();
-                let image = insert_image(&user, conn).unwrap();
+                let user = insert_user("test", conn);
+                let image = insert_image(&user, conn);
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -83,9 +82,8 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
-                let user2 = insert_user("test2", conn).unwrap();
+                );
+                let user2 = insert_user("test2", conn);
 
                 (user2, album)
             })
@@ -103,8 +101,8 @@ mod test {
         let (user, album) = state
             .db
             .call(move |conn| {
-                let user = insert_user("test", conn).unwrap();
-                let image = insert_image(&user, conn).unwrap();
+                let user = insert_user("test", conn);
+                let image = insert_image(&user, conn);
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -113,8 +111,7 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
+                );
 
                 (user, album)
             })

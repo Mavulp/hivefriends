@@ -3,7 +3,7 @@ use axum::{
     Router,
 };
 use rusqlite::{params, Connection, OptionalExtension};
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use serde_rusqlite::{from_row, to_params_named};
 
 mod delete_image;
@@ -29,10 +29,11 @@ pub fn api_route() -> Router {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub(super) struct ImageMetadata {
+pub struct ImageMetadata {
     file_name: String,
     size_bytes: u64,
     taken_at: Option<i64>,
+    #[serde(default, deserialize_with = "non_empty_location")]
     location: Option<Location>,
     camera_brand: Option<String>,
     camera_model: Option<String>,
@@ -41,13 +42,21 @@ pub(super) struct ImageMetadata {
     focal_length: Option<String>,
 }
 
+pub(super) fn non_empty_location<'de, D: Deserializer<'de>>(
+    d: D,
+) -> Result<Option<Location>, D::Error> {
+    let o: Option<Location> = Option::deserialize(d)?;
+    Ok(o.filter(|l| !l.latitude.is_empty() && !l.longitude.is_empty()))
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub(super) struct Image {
+pub struct Image {
     pub key: String,
     pub description: Option<String>,
     pub uploader: String,
     pub uploaded_at: u64,
+    pub published_at: Option<u64>,
 
     #[serde(flatten)]
     pub metadata: ImageMetadata,
@@ -67,6 +76,7 @@ impl Image {
             description: db_metadata.description,
             uploader: db_metadata.uploader,
             uploaded_at: db_metadata.uploaded_at,
+            published_at: db_metadata.published_at,
             metadata: db_metadata.metadata.into(),
         }
     }
@@ -117,6 +127,8 @@ pub struct DbImage {
     pub description: Option<String>,
     pub uploader: String,
     pub uploaded_at: u64,
+    #[serde(skip_serializing)]
+    pub published_at: Option<u64>,
 
     #[serde(flatten)]
     pub metadata: DbImageMetadata,
