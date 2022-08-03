@@ -89,8 +89,8 @@ mod test {
         let (album, image) = state
             .db
             .call(move |conn| {
-                let user = insert_user("test", conn).unwrap();
-                let image = insert_image(&user, conn).unwrap();
+                let user = insert_user("test", conn);
+                let image = insert_image(&user, conn);
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -99,10 +99,9 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
-                insert_comment(&user, &image, &album, "foo", conn).unwrap();
-                insert_comment(&user, &image, &album, "bar", conn).unwrap();
+                );
+                insert_comment(&user, &image, &album, "foo", conn);
+                insert_comment(&user, &image, &album, "bar", conn);
 
                 (album, image)
             })
@@ -123,8 +122,8 @@ mod test {
         let (album, image) = state
             .db
             .call(move |conn| {
-                let user = insert_user("test", conn).unwrap();
-                let key = insert_image(&user, conn).unwrap();
+                let user = insert_user("test", conn);
+                let key = insert_image(&user, conn);
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &key,
@@ -133,11 +132,10 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
-                insert_comment(&user, &key, &album, "foo", conn).unwrap();
-                insert_comment(&user, &key, &album, "bar", conn).unwrap();
-                let key2 = insert_image(&user, conn).unwrap();
+                );
+                insert_comment(&user, &key, &album, "foo", conn);
+                insert_comment(&user, &key, &album, "bar", conn);
+                let key2 = insert_image(&user, conn);
                 let album2 = insert_album(
                     InsertAlbum {
                         cover_key: &key2,
@@ -146,9 +144,8 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
-                insert_comment(&user, &key2, &album2, "quux", conn).unwrap();
+                );
+                insert_comment(&user, &key2, &album2, "quux", conn);
 
                 (album, key)
             })

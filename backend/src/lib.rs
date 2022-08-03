@@ -25,7 +25,7 @@ impl AppState {
             .unwrap()
             .path()
             .to_path_buf();
-        let db = util::test::setup_database().await.unwrap();
+        let db = util::test::setup_database().await;
 
         Arc::new(AppState { db, data_path })
     }
@@ -35,6 +35,7 @@ pub mod cli;
 pub mod util;
 
 pub mod api {
+    pub mod activity;
     pub mod album;
     pub mod alias;
     pub mod auth;
@@ -53,6 +54,7 @@ pub fn api_route(db: tokio_rusqlite::Connection, data_path: PathBuf) -> Router {
     Router::new()
         .nest("/api/auth", api::auth::api_route())
         .nest("/api/login", api::login::api_route())
+        .nest("/api/activity/", api::activity::api_route())
         .nest("/api/comments/", api::comment::api_route())
         .nest("/api/public/comments/", api::comment::public_api_route())
         .nest("/api/images/", api::image::api_route())
@@ -73,12 +75,13 @@ async fn handle_error(_err: std::io::Error) -> impl IntoResponse {
     (StatusCode::INTERNAL_SERVER_ERROR, "Something went wrong...")
 }
 
-pub(crate) const MIGRATIONS: [M; 2] = [
+pub(crate) const MIGRATIONS: [M; 3] = [
     M::up(include_str!("../migrations/001_initial.sql")),
     M::up(include_str!(
         "../migrations/002_username_collate_nocase.sql"
     ))
     .foreign_key_check(),
+    M::up(include_str!("../migrations/003_activity_changes.sql")).foreign_key_check(),
 ];
 
 pub async fn setup_database(path: &Path) -> anyhow::Result<tokio_rusqlite::Connection> {

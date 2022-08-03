@@ -220,8 +220,8 @@ mod test {
         let (user, image) = state
             .db
             .call(move |conn| {
-                let user = insert_user("test", conn).unwrap();
-                let image = insert_image(&user, conn).unwrap();
+                let user = insert_user("test", conn);
+                let image = insert_image(&user, conn);
 
                 (user, image)
             })

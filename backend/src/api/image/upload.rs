@@ -60,6 +60,7 @@ pub(super) async fn post(
         description: None,
         uploader,
         uploaded_at,
+        published_at: None,
         metadata: DbImageMetadata {
             file_name,
             size_bytes,
