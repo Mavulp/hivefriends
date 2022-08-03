@@ -29,7 +29,7 @@ pub fn api_route() -> Router {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub(super) struct ImageMetadata {
+pub struct ImageMetadata {
     file_name: String,
     size_bytes: u64,
     taken_at: Option<i64>,
@@ -51,11 +51,12 @@ pub(super) fn non_empty_location<'de, D: Deserializer<'de>>(
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub(super) struct Image {
+pub struct Image {
     pub key: String,
     pub description: Option<String>,
     pub uploader: String,
     pub uploaded_at: u64,
+    pub published_at: Option<u64>,
 
     #[serde(flatten)]
     pub metadata: ImageMetadata,
@@ -75,6 +76,7 @@ impl Image {
             description: db_metadata.description,
             uploader: db_metadata.uploader,
             uploaded_at: db_metadata.uploaded_at,
+            published_at: db_metadata.published_at,
             metadata: db_metadata.metadata.into(),
         }
     }
@@ -125,6 +127,8 @@ pub struct DbImage {
     pub description: Option<String>,
     pub uploader: String,
     pub uploaded_at: u64,
+    #[serde(skip_serializing)]
+    pub published_at: Option<u64>,
 
     #[serde(flatten)]
     pub metadata: DbImageMetadata,

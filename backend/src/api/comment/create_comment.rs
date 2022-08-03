@@ -92,8 +92,8 @@ mod test {
         let (user, album) = state
             .db
             .call(move |conn| {
-                let user = insert_user("test", conn).unwrap();
-                let image = insert_image(&user, conn).unwrap();
+                let user = insert_user("test", conn);
+                let image = insert_image(&user, conn);
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -102,8 +102,7 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
+                );
 
                 (user, album)
             })
@@ -130,8 +129,8 @@ mod test {
         let (user, image, album) = state
             .db
             .call(move |conn| {
-                let user = insert_user("test", conn).unwrap();
-                let image = insert_image(&user, conn).unwrap();
+                let user = insert_user("test", conn);
+                let image = insert_image(&user, conn);
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -140,8 +139,7 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
+                );
 
                 (user, image, album)
             })
@@ -177,11 +175,11 @@ mod test {
             .db
             .call(move |conn| {
                 for (name, content) in aliases {
-                    insert_alias(name, content, conn).unwrap();
+                    insert_alias(name, content, conn);
                 }
 
-                let user = insert_user("test", conn).unwrap();
-                let image = insert_image(&user, conn).unwrap();
+                let user = insert_user("test", conn);
+                let image = insert_image(&user, conn);
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -190,8 +188,7 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
+                );
 
                 (user, image, album)
             })
