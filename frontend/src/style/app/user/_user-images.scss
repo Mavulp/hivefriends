@@ -65,12 +65,29 @@
       .hi-album-image {
         @include radius(6px);
         overflow: hidden;
+        position: relative;
 
         position: relative;
         cursor: pointer;
 
         &.is-selected {
-          border: 3px solid rgb(var(--color-highlight));
+          &:after {
+            opacity: 1;
+            border-width: 4px;
+          }
+        }
+
+        &:after {
+          @include t(0.1s, linear);
+          @include radius(6px);
+          pointer-events: none;
+          border: 0px solid rgb(var(--color-highlight));
+          content: "";
+          display: block;
+          position: absolute;
+          inset: 0;
+          z-index: 10;
+          opacity: 0;
         }
 
         &:hover {
@@ -170,14 +187,15 @@
 
 .all-image-checkbox {
   position: absolute;
-  left: 8px;
-  top: 8px;
+  left: 12px;
+  top: 12px;
+  z-index: 10;
 
   .form-checkbox input[type="checkbox"] + label {
-    @include radius(4px);
+    @include radius(50%);
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     text-align: center;
     background-color: rgba(var(--color-background-dark), 0.5);
 
