@@ -4,6 +4,7 @@ use rusqlite::{params, ToSql};
 use serde::Deserialize;
 
 use std::sync::Arc;
+use std::time::SystemTime;
 
 use crate::api::{auth::Authorize, error::Error, image::image_exists, user::user_exists};
 use crate::util::{check_length, non_empty_str};
@@ -11,7 +12,7 @@ use crate::AppState;
 
 use super::Timeframe;
 
-#[derive(Debug, Deserialize)]
+#[derive(Default, Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PutAlbumRequest {
     #[serde(default, deserialize_with = "non_empty_str")]
@@ -29,7 +30,7 @@ pub struct PutAlbumRequest {
     pub tagged_users: Option<Vec<String>>,
 }
 
-pub(super) async fn put(
+pub async fn put(
     request: Result<Json<PutAlbumRequest>, JsonRejection>,
     Path(album_key): Path<String>,
     Authorize(username): Authorize,
@@ -75,10 +76,20 @@ pub(super) async fn put(
                         return Err(Error::InvalidKey);
                     }
 
+                    let now = SystemTime::UNIX_EPOCH
+                        .elapsed()
+                        .context("Failed to get current time")?
+                        .as_secs();
+
                     tx.execute(
-                        "INSERT INTO album_image_associations (album_key, idx, image_key) \
-                    SELECT ?1, ?2, key FROM images WHERE key = ?3",
-                        params![album_key, idx, image_key],
+                        "INSERT INTO album_image_associations (
+                            album_key, \
+                             idx, \
+                             image_key, \
+                             created_at \
+                        ) \
+                        SELECT ?1, ?2, key, ?4 FROM images WHERE key = ?3",
+                        params![album_key, idx, image_key, now],
                     )
                     .context("Failed to insert album image associations")?;
                 }
@@ -106,7 +117,7 @@ pub(super) async fn put(
 
             let update_str = request.album_update_str();
             if !update_str.is_empty() {
-                let mut params = request.update_params();
+                let mut params = request.update_params()?;
                 params.push(Box::new(album_key));
                 if let Err(rusqlite::Error::SqliteFailure(e, _)) = tx.query_row(
                     &format!("UPDATE albums SET {update_str} WHERE key = ?"),
@@ -149,6 +160,7 @@ impl PutAlbumRequest {
 
         if self.draft.is_some() {
             result.push("draft = ?");
+            result.push("published_at = ?");
         }
 
         if self.timeframe.is_some() {
@@ -159,7 +171,7 @@ impl PutAlbumRequest {
         result.join(", ")
     }
 
-    fn update_params(mut self) -> Vec<Box<dyn ToSql>> {
+    fn update_params(mut self) -> Result<Vec<Box<dyn ToSql>>, Error> {
         let mut params: Vec<Box<dyn ToSql>> = Vec::new();
 
         if let Some(title) = self.title.take() {
@@ -176,6 +188,12 @@ impl PutAlbumRequest {
 
         if let Some(draft) = self.draft.take() {
             params.push(Box::new(draft));
+
+            let now = SystemTime::UNIX_EPOCH
+                .elapsed()
+                .context("Failed to get current time")?
+                .as_secs();
+            params.push(Box::new(now));
         }
 
         if let Some(timeframe) = self.timeframe.take() {
@@ -183,6 +201,6 @@ impl PutAlbumRequest {
             params.push(Box::new(timeframe.to));
         }
 
-        params
+        Ok(params)
     }
 }

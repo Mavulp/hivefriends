@@ -79,7 +79,7 @@ pub(super) async fn post(
                     draft: request.draft,
                     timeframe_from: request.timeframe.from,
                     timeframe_to: request.timeframe.to,
-                    created_at: now,
+                    published_at: now,
                     image_keys: &request.image_keys,
                     tagged_users: &request.tagged_users,
                 },
@@ -108,12 +108,12 @@ mod test {
         let (user_a, user_b, images) = state
             .db
             .call(move |conn| {
-                let user_a = insert_user("test", conn).unwrap();
-                let user_b = insert_user("test2", conn).unwrap();
+                let user_a = insert_user("test", conn);
+                let user_b = insert_user("test2", conn);
                 let images = vec![
-                    insert_image(&user_a, conn).unwrap(),
-                    insert_image(&user_a, conn).unwrap(),
-                    insert_image(&user_a, conn).unwrap(),
+                    insert_image(&user_a, conn),
+                    insert_image(&user_a, conn),
+                    insert_image(&user_a, conn),
                 ];
 
                 (user_a, user_b, images)
@@ -142,10 +142,7 @@ mod test {
     async fn create_album_cover_key_not_in_image_keys() {
         let state = AppState::in_memory_db().await;
 
-        let user = state
-            .db
-            .call(move |conn| insert_user("test", conn).unwrap())
-            .await;
+        let user = state.db.call(move |conn| insert_user("test", conn)).await;
 
         let request = CreateAlbumRequest {
             title: "album".into(),
@@ -165,8 +162,8 @@ mod test {
         let (user, image) = state
             .db
             .call(move |conn| {
-                let user = insert_user("test", conn).unwrap();
-                let image = insert_image(&user, conn).unwrap();
+                let user = insert_user("test", conn);
+                let image = insert_image(&user, conn);
 
                 (user, image)
             })
@@ -192,8 +189,8 @@ mod test {
         let (user, image) = state
             .db
             .call(move |conn| {
-                let user = insert_user("test", conn).unwrap();
-                let image = insert_image(&user, conn).unwrap();
+                let user = insert_user("test", conn);
+                let image = insert_image(&user, conn);
 
                 (user, image)
             })
