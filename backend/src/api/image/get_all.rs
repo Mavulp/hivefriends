@@ -86,12 +86,12 @@ mod test {
         let (bob, alice, expected_bob_images) = state
             .db
             .call(move |conn| {
-                let bob = insert_user("bob", conn).unwrap();
-                let alice = insert_user("alice", conn).unwrap();
+                let bob = insert_user("bob", conn);
+                let alice = insert_user("alice", conn);
                 let images = vec![
-                    insert_image(&bob, conn).unwrap(),
-                    insert_image(&bob, conn).unwrap(),
-                    insert_image(&bob, conn).unwrap(),
+                    insert_image(&bob, conn),
+                    insert_image(&bob, conn),
+                    insert_image(&bob, conn),
                 ];
 
                 (bob, alice, images)
@@ -118,12 +118,12 @@ mod test {
         let (user, expected_images) = state
             .db
             .call(move |conn| {
-                let user = insert_user("test", conn).unwrap();
+                let user = insert_user("test", conn);
                 let images = vec![
-                    insert_image(&user, conn).unwrap(),
-                    insert_image(&user, conn).unwrap(),
-                    insert_image(&user, conn).unwrap(),
-                    insert_image(&user, conn).unwrap(),
+                    insert_image(&user, conn),
+                    insert_image(&user, conn),
+                    insert_image(&user, conn),
+                    insert_image(&user, conn),
                 ];
 
                 (user, images)
@@ -146,12 +146,12 @@ mod test {
         let (user, expected_images, expected_album) = state
             .db
             .call(move |conn| {
-                let user = insert_user("test", conn).unwrap();
+                let user = insert_user("test", conn);
                 let images = vec![
-                    insert_image(&user, conn).unwrap(),
-                    insert_image(&user, conn).unwrap(),
-                    insert_image(&user, conn).unwrap(),
-                    insert_image(&user, conn).unwrap(),
+                    insert_image(&user, conn),
+                    insert_image(&user, conn),
+                    insert_image(&user, conn),
+                    insert_image(&user, conn),
                 ];
                 let album = insert_album(
                     InsertAlbum {
@@ -161,8 +161,7 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
+                );
 
                 (user, images, album)
             })

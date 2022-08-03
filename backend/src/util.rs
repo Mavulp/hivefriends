@@ -47,8 +47,8 @@ pub mod test {
     };
     use rusqlite_migration::Migrations;
 
-    pub async fn setup_database() -> anyhow::Result<tokio_rusqlite::Connection> {
-        let db = tokio_rusqlite::Connection::open_in_memory().await?;
+    pub async fn setup_database() -> tokio_rusqlite::Connection {
+        let db = tokio_rusqlite::Connection::open_in_memory().await.unwrap();
 
         let migrations = Migrations::new(crate::MIGRATIONS.to_vec());
 
@@ -59,31 +59,27 @@ pub mod test {
 
             Ok::<_, anyhow::Error>(())
         })
-        .await?;
+        .await
+        .unwrap();
 
-        Ok(db)
+        db
     }
 
-    pub fn insert_user(name: &str, conn: &rusqlite::Connection) -> anyhow::Result<String> {
-        user::insert(name, "", 0, conn)?;
+    pub fn insert_user(name: &str, conn: &rusqlite::Connection) -> String {
+        user::insert(name, "", 0, conn).unwrap();
 
-        Ok(name.to_string())
+        name.to_string()
     }
 
-    pub fn insert_alias(
-        name: &str,
-        content: &str,
-        conn: &rusqlite::Connection,
-    ) -> anyhow::Result<()> {
+    pub fn insert_alias(name: &str, content: &str, conn: &rusqlite::Connection) {
         conn.execute(
             "INSERT INTO aliases (name, content) VALUES (?1, ?2)",
             rusqlite::params![name, content],
-        )?;
-
-        Ok(())
+        )
+        .unwrap();
     }
 
-    pub fn insert_image(uploader: &str, conn: &rusqlite::Connection) -> anyhow::Result<String> {
+    pub fn insert_image(uploader: &str, conn: &rusqlite::Connection) -> String {
         let key = blob_uuid::random_blob();
 
         let i = image::DbImage {
@@ -94,9 +90,9 @@ pub mod test {
             ..Default::default()
         };
 
-        image::insert(&i, conn)?;
+        image::insert(&i, conn).unwrap();
 
-        Ok(key)
+        key
     }
 
     pub fn insert_comment(
@@ -105,7 +101,7 @@ pub mod test {
         album_key: &str,
         text: &str,
         conn: &rusqlite::Connection,
-    ) -> anyhow::Result<comment::Comment> {
+    ) -> comment::Comment {
         comment::insert_comment(
             author.into(),
             text.into(),
@@ -114,44 +110,34 @@ pub mod test {
             0,
             conn,
         )
+        .unwrap()
     }
 
-    pub fn insert_album(album: InsertAlbum, conn: &rusqlite::Connection) -> anyhow::Result<String> {
-        fn insert_album<'a>(
-            key: &'a str,
-            mut album: InsertAlbum<'a>,
-            conn: &rusqlite::Connection,
-        ) -> anyhow::Result<()> {
+    pub fn insert_album(album: InsertAlbum, conn: &rusqlite::Connection) -> String {
+        fn insert_album<'a>(key: &'a str, mut album: InsertAlbum<'a>, conn: &rusqlite::Connection) {
             album.key = &key;
-            album::insert_album(album, conn)?;
-
-            Ok(())
+            album::insert_album(album, conn).unwrap();
         }
 
         let key = blob_uuid::random_blob();
-        insert_album(&key, album, conn)?;
+        insert_album(&key, album, conn);
 
-        Ok(key)
+        key
     }
 
-    pub fn insert_share_token(
-        rows: InsertShareToken,
-        conn: &rusqlite::Connection,
-    ) -> anyhow::Result<String> {
+    pub fn insert_share_token(rows: InsertShareToken, conn: &rusqlite::Connection) -> String {
         fn insert_token<'a>(
             token: &'a str,
             mut rows: InsertShareToken<'a>,
             conn: &rusqlite::Connection,
-        ) -> anyhow::Result<()> {
+        ) {
             rows.share_token = &token;
-            album::insert_share_token(rows, conn)?;
-
-            Ok(())
+            album::insert_share_token(rows, conn).unwrap();
         }
 
         let token = blob_uuid::random_blob();
-        insert_token(&token, rows, conn)?;
+        insert_token(&token, rows, conn);
 
-        Ok(token)
+        token
     }
 }

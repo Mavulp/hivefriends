@@ -18,11 +18,11 @@ use crate::api::image::{DbImage, Image};
 mod create;
 mod create_share_token;
 mod delete_album;
-mod get_all;
+pub(super) mod get_all;
 mod get_by_key;
 mod get_by_share_token;
 mod get_filters;
-mod update;
+pub(super) mod update;
 
 const MAXIMUM_TITLE_LENGTH: u64 = 96;
 const MAXIMUM_DESCRIPTION_LENGTH: u64 = 600;
@@ -88,23 +88,23 @@ pub(super) struct Album {
     author: String,
     draft: bool,
     timeframe: Timeframe,
-    created_at: u64,
+    published_at: u64,
     images: Vec<AlbumImage>,
     tagged_users: Vec<String>,
 }
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub(super) struct AlbumMetadata {
-    key: String,
-    title: String,
-    description: Option<String>,
-    cover_key: String,
-    author: String,
-    draft: bool,
-    timeframe: Timeframe,
-    created_at: u64,
-    tagged_users: Vec<String>,
+pub struct AlbumMetadata {
+    pub key: String,
+    pub title: String,
+    pub description: Option<String>,
+    pub cover_key: String,
+    pub author: String,
+    pub draft: bool,
+    pub timeframe: Timeframe,
+    pub published_at: u64,
+    pub tagged_users: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -117,7 +117,7 @@ struct DbAlbum {
     draft: bool,
     timeframe_from: Option<i64>,
     timeframe_to: Option<i64>,
-    created_at: u64,
+    published_at: u64,
 }
 
 #[derive(Default)]
@@ -130,7 +130,7 @@ pub struct InsertAlbum<'a> {
     pub draft: bool,
     pub timeframe_from: Option<i64>,
     pub timeframe_to: Option<i64>,
-    pub created_at: u64,
+    pub published_at: u64,
     pub image_keys: &'a [String],
     pub tagged_users: &'a [String],
 }
@@ -171,7 +171,7 @@ pub(super) fn get_album(album_key: &str, conn: &Connection) -> anyhow::Result<Op
                 draft, \
                 timeframe_from, \
                 timeframe_to, \
-                created_at \
+                published_at \
             FROM albums \
             WHERE key=?1",
             params![album_key],
@@ -240,7 +240,7 @@ pub(super) fn get_album(album_key: &str, conn: &Connection) -> anyhow::Result<Op
                 from: db_album.timeframe_from,
                 to: db_album.timeframe_to,
             },
-            created_at: db_album.created_at,
+            published_at: db_album.published_at,
             images,
             tagged_users,
         }))
@@ -260,7 +260,7 @@ pub fn insert_album(album: InsertAlbum, conn: &Connection) -> Result<(), Error> 
                 draft, \
                 timeframe_from, \
                 timeframe_to, \
-                created_at \
+                published_at \
             ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)",
         params![
             album.key,
@@ -271,7 +271,7 @@ pub fn insert_album(album: InsertAlbum, conn: &Connection) -> Result<(), Error> 
             album.draft as i64,
             album.timeframe_from,
             album.timeframe_to,
-            album.created_at
+            album.published_at
         ],
     )
     .context("Failed to insert album")?;
@@ -282,9 +282,9 @@ pub fn insert_album(album: InsertAlbum, conn: &Connection) -> Result<(), Error> 
         }
 
         conn.execute(
-            "INSERT INTO album_image_associations (album_key, idx, image_key) \
-            SELECT ?1, ?2, key FROM images WHERE key = ?3",
-            params![album.key, idx, image_key],
+            "INSERT INTO album_image_associations (album_key, idx, image_key, created_at) \
+            SELECT ?1, ?2, key, ?4 FROM images WHERE key = ?3",
+            params![album.key, idx, image_key, album.published_at],
         )
         .context("Failed to insert album image associations")?;
     }
@@ -326,15 +326,15 @@ pub fn insert_share_token(rows: InsertShareToken, conn: &Connection) -> Result<(
 }
 
 #[derive(Clone, Default, Deserialize)]
-pub(super) struct AlbumFilters {
+pub struct AlbumFilters {
     #[serde(default, deserialize_with = "comma_string")]
-    authors: Option<Vec<String>>,
+    pub authors: Option<Vec<String>>,
 
-    from: Option<i64>,
-    to: Option<i64>,
+    pub from: Option<i64>,
+    pub to: Option<i64>,
 
     #[serde(default)]
-    draft: bool,
+    pub draft: bool,
 }
 
 fn apply_filters(

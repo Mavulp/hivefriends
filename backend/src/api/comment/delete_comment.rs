@@ -56,8 +56,8 @@ mod test {
         let user = state
             .db
             .call(move |conn| {
-                let user = insert_user("test", conn).unwrap();
-                let image = insert_image(&user, conn).unwrap();
+                let user = insert_user("test", conn);
+                let image = insert_image(&user, conn);
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -66,9 +66,8 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
-                let _ = insert_comment(&user, &image, &album, "text", conn).unwrap();
+                );
+                let _ = insert_comment(&user, &image, &album, "text", conn);
 
                 user
             })
@@ -86,8 +85,8 @@ mod test {
         let (user, comment) = state
             .db
             .call(move |conn| {
-                let user = insert_user("test", conn).unwrap();
-                let image = insert_image(&user, conn).unwrap();
+                let user = insert_user("test", conn);
+                let image = insert_image(&user, conn);
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -96,11 +95,9 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
-                let Comment { id, .. } =
-                    insert_comment(&user, &image, &album, "text", conn).unwrap();
-                let user2 = insert_user("test2", conn).unwrap();
+                );
+                let Comment { id, .. } = insert_comment(&user, &image, &album, "text", conn);
+                let user2 = insert_user("test2", conn);
 
                 (user2, id)
             })
@@ -118,8 +115,8 @@ mod test {
         let (user, comment) = state
             .db
             .call(move |conn| {
-                let user = insert_user("test", conn).unwrap();
-                let image = insert_image(&user, conn).unwrap();
+                let user = insert_user("test", conn);
+                let image = insert_image(&user, conn);
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -128,9 +125,8 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
-                let comment = insert_comment(&user, &image, &album, "text", conn).unwrap();
+                );
+                let comment = insert_comment(&user, &image, &album, "text", conn);
 
                 (user, comment)
             })
@@ -150,8 +146,8 @@ mod test {
         let (user, comment) = state
             .db
             .call(move |conn| {
-                let user = insert_user("test", conn).unwrap();
-                let image = insert_image(&user, conn).unwrap();
+                let user = insert_user("test", conn);
+                let image = insert_image(&user, conn);
                 let album = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -160,10 +156,9 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
-                let user2 = insert_user("test2", conn).unwrap();
-                let comment = insert_comment(&user2, &image, &album, "text", conn).unwrap();
+                );
+                let user2 = insert_user("test2", conn);
+                let comment = insert_comment(&user2, &image, &album, "text", conn);
 
                 (user, comment)
             })

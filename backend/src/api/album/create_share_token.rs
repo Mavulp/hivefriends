@@ -64,8 +64,8 @@ mod test {
         let (user, album_key) = state
             .db
             .call(move |conn| {
-                let user = insert_user("test", conn).unwrap();
-                let image = insert_image(&user, conn).unwrap();
+                let user = insert_user("test", conn);
+                let image = insert_image(&user, conn);
                 let album_key = insert_album(
                     InsertAlbum {
                         cover_key: &image,
@@ -73,8 +73,7 @@ mod test {
                         ..Default::default()
                     },
                     conn,
-                )
-                .unwrap();
+                );
 
                 (user, album_key)
             })
