@@ -45,7 +45,7 @@ export interface Album {
   key: string
   title: string
   description: string
-  createdAt: number
+  publishedAt: number
   draft?: boolean
   images: Array<Image>
   timeframe: {

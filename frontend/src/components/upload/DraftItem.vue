@@ -20,7 +20,7 @@ onClickOutside(wrap, () => {
 })
 
 const timestamp = computed(() => {
-  const d = new Date(props.data.createdAt * 1000)
+  const d = new Date(props.data.publishedAt * 1000)
   return d.toLocaleDateString("en-GB", {
     year: "numeric",
     month: "numeric",

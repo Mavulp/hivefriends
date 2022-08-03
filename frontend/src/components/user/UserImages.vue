@@ -250,7 +250,7 @@ async function tryToAlbum() {
 
               <div class="album-item-meta">
                 <strong>{{ album.title }}</strong>
-                <p>Uploaded {{ formatDate(album.createdAt) }}</p>
+                <p>Uploaded {{ formatDate(album.publishedAt) }}</p>
               </div>
             </router-link>
           </template>

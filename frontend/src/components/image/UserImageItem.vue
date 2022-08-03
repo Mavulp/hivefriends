@@ -144,7 +144,7 @@ function goto(key: string) {}
               <div class="album-item-meta">
                 <strong>{{ album.title }}</strong>
                 <p>
-                  Uploaded {{ formatDate(album.createdAt) }} by
+                  Uploaded {{ formatDate(album.publishedAt) }} by
                   {{ album.author }}
                 </p>
               </div>
