@@ -72,7 +72,7 @@
       z-index: 5;
       position: relative;
       cursor: pointer;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
 
       &:hover {
         .background {
@@ -186,8 +186,8 @@
         object-fit: cover;
         object-position: center;
         position: absolute;
-        width: 22px;
-        height: 22px;
+        width: 24px;
+        height: 24px;
         pointer-events: none;
         background-color: rgb(var(--color-highlight));
       }

@@ -99,7 +99,12 @@ export function formatTimestamp(date: number) {
   date *= 1000
   const d = new Date(date)
 
-  return `${d.getUTCHours()}:${d.getUTCMinutes()}, ${d.toLocaleDateString("en-GB", {
+  const hours = `0${d.getUTCHours()}`.slice(-2)
+  const minutes = `0${d.getUTCMinutes()}`.slice(-2)
+
+  console.log(hours, minutes)
+
+  return `${hours}:${minutes}, ${d.toLocaleDateString("en-GB", {
     year: "numeric",
     month: "short",
     day: "numeric"
