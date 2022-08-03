@@ -77,6 +77,19 @@
           }
         }
 
+        &:after {
+          @include t(0.1s, linear);
+          @include radius(6px);
+          pointer-events: none;
+          border: 0px solid rgb(var(--color-highlight));
+          content: "";
+          display: block;
+          position: absolute;
+          inset: 0;
+          z-index: 10;
+          opacity: 0;
+        }
+
         &:hover {
           // box-shadow: var(--shadow2);
           img {
@@ -174,7 +187,6 @@
 
 .all-image-checkbox {
   position: absolute;
-  left: 8px;
   left: 12px;
   top: 12px;
   z-index: 10;
