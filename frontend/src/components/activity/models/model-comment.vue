@@ -19,7 +19,7 @@ const props = defineProps<{ data: PropComment }>()
 // Getting right values
 const data = computed(() => props.data)
 const author = computed<User>(() => user.getUser(data.value.author))
-const album = computed(() => albums.getAlbum(data.value.albumKey))
+const album = computed(() => albums.getListAlbum(data.value.albumKey))
 
 const comment = computed(() => {
   if (!data.value.text) return ""

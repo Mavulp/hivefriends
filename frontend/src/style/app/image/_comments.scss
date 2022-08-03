@@ -55,6 +55,7 @@
 
     .control-button {
       @include flex($align: center, $gap: 8px);
+      color: rgb(var(--color-text));
 
       span {
         @include rotate(180deg);
