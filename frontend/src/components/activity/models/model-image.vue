@@ -9,13 +9,11 @@ const albums = useAlbums()
 const props = defineProps<{ data: Image }>()
 
 const data = computed(() => props.data)
-const author = computed<User>(() => user.getUser(data.value.author))
-const album = computed(() => albums.getAlbum(data.value.albumKey))
 </script>
 
 <template>
   <div class="activity-item activity-image" v-if="false">
-    <div class="activity-title">
+    <!-- <div class="activity-title">
       <img
         class="user-image"
         :src="imageUrl(author.avatarKey, 'medium')"
@@ -36,8 +34,8 @@ const album = computed(() => albums.getAlbum(data.value.albumKey))
         }}</router-link>
         on <i>{{ formatDate(data.createdAt, ["weekday", "year"]) }}</i>
       </p>
-    </div>
+    </div> -->
 
-    <div class="background" :style="{ backgroundColor: RGB_TO_HEX(author.accentColor) }"></div>
+    <!-- <div class="background" :style="{ backgroundColor: RGB_TO_HEX(author.accentColor) }"></div> -->
   </div>
 </template>
