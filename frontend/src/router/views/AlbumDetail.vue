@@ -167,7 +167,7 @@ const enableMap = computed(() =>
 
           <span class="material-icons">&#xe8df;</span>
           <p>Uploaded</p>
-          <p>{{ formatDate(album.createdAt) }}</p>
+          <p>{{ formatDate(album.publishedAt) }}</p>
         </div>
       </div>
 
