@@ -42,6 +42,9 @@ export const useActivity = defineStore("activity", {
 
       return get("/api/activity")
         .then((response) => {
+          response = response.slice(0, 200)
+
+          // TODO: group activity by days
           this.items = response
           this.hasNew = true
           return response
