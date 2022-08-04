@@ -62,7 +62,6 @@ function go() {
         <router-link :to="{ name: 'AlbumDetail', params: { id: album.author } }">{{
           user.getUsername(album.author)
         }}</router-link>
-        on <i>{{ formatDate(data.createdAt, ["weekday", "year"]) }}</i>
       </p>
     </div>
 

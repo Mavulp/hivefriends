@@ -5,6 +5,7 @@ import { ref, computed, watch, useAttrs } from "vue"
 import { useActivity } from "../../store/activity"
 import { useAlbums } from "../../store/album"
 import { useLoading } from "../../store/loading"
+import { formatDate } from "../../js/utils"
 
 import LoadingSpin from "../loading/LoadingSpin.vue"
 import Button from "../Button.vue"
@@ -51,6 +52,7 @@ async function query() {
  */
 
 const data = computed(() => activity.items)
+const sorted = computed(() => activity.sortedItems)
 </script>
 
 <template>
@@ -60,12 +62,23 @@ const data = computed(() => activity.items)
     </button>
 
     <div class="title-wrap">
-      <h4>Lastest Activity</h4>
+      <h5>Lastest activity</h5>
     </div>
 
     <div class="activity-list-wrap">
       <LoadingSpin class="dark center-parent" v-if="getLoading('activity', 'albums')" />
-      <ActivityItem v-for="(item, index) in data" :data="item" :key="index" />
+      <template v-else>
+        <div class="activity-group" v-for="(items, day) in sorted">
+          <div class="activity-group-title">
+            <strong>
+              {{ formatDate(new Date(day).getTime() / 1000) }}
+            </strong>
+          </div>
+          <ActivityItem v-for="(item, index) in items" :data="item" :key="index" />
+
+          <!-- <hr /> -->
+        </div>
+      </template>
     </div>
   </div>
 </template>

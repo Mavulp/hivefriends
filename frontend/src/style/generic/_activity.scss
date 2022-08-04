@@ -41,9 +41,9 @@
     width: 100%;
 
     button,
-    h4 {
+    h5 {
       margin-bottom: 0;
-      color: rgb(var(--color-text));
+      color: rgb(var(--color-text-light));
     }
   }
 
@@ -66,13 +66,45 @@
       }
     }
 
+    .activity-group {
+      // display: block;
+      margin-bottom: 40px;
+      position: relative;
+
+      .activity-group-title {
+        @include flex($gap: 24px, $align: center);
+        margin-bottom: 16px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        padding: 6px 0;
+        background-color: rgb(var(--color-background));
+
+        strong {
+          font-size: 1.4rem;
+          opacity: 0.9;
+        }
+
+        &:after {
+          content: "";
+          flex: 1;
+          border-bottom: 1px solid rgb(var(--color-border-light));
+        }
+      }
+    }
+
     .activity-item {
       display: block;
       padding: 8px;
       z-index: 5;
       position: relative;
       cursor: pointer;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
+      padding-left: 8px;
+
+      &:last-of-type {
+        margin-bottom: 0;
+      }
 
       &:hover {
         .background {

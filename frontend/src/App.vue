@@ -84,6 +84,7 @@ watch(
 <template>
   <div class="hi-layout">
     <Navigation v-if="!route.meta.disableNav" />
+    <!-- <Navigation /> -->
 
     <Toasts />
 

@@ -35,10 +35,8 @@ function go() {
         <router-link :to="{ name: 'UserProfile', params: { user: author.username } }">
           {{ author.displayName }}
         </router-link>
-        uploaded an album "<router-link :to="{ name: 'AlbumDetail', params: { id: data.key } }">{{
-          data.title
-        }}</router-link
-        >" on <i>{{ formatDate(data.publishedAt, ["weekday", "year"]) }}</i>
+        uploaded an album
+        <router-link :to="{ name: 'AlbumDetail', params: { id: data.key } }">{{ data.title }}</router-link>
       </p>
     </div>
 
