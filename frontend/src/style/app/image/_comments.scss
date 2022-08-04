@@ -34,12 +34,16 @@
     strong {
       @include font(600);
       font-size: 1.4rem;
+      word-wrap: break-word;
+      word-break: break-word;
     }
 
     p {
       margin-top: 4px;
       font-size: 1.4rem;
       margin-bottom: 0;
+      word-wrap: break-word;
+      word-break: break-word;
       color: rgb(var(--color-text));
     }
   }
