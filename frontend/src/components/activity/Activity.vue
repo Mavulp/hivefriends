@@ -62,7 +62,7 @@ const sorted = computed(() => activity.sortedItems)
     </button>
 
     <div class="title-wrap">
-      <h5>Lastest activity</h5>
+      <h5>Latest activity</h5>
     </div>
 
     <div class="activity-list-wrap">
@@ -73,6 +73,10 @@ const sorted = computed(() => activity.sortedItems)
             <strong>
               {{ formatDate(new Date(day).getTime() / 1000) }}
             </strong>
+
+            <div class="line"></div>
+
+            <span>{{ items.length }}</span>
           </div>
           <ActivityItem v-for="(item, index) in items" :data="item" :key="index" />
 
