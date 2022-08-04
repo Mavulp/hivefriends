@@ -41,9 +41,10 @@
     width: 100%;
 
     button,
-    h4 {
+    h5 {
       margin-bottom: 0;
-      color: rgb(var(--color-text));
+      letter-spacing: 0.05em;
+      color: rgb(var(--color-text-light));
     }
   }
 
@@ -52,6 +53,12 @@
     width: 100%;
     position: relative;
     overflow-y: auto;
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
 
     .no-notifs {
       position: absolute;
@@ -66,13 +73,50 @@
       }
     }
 
+    .activity-group {
+      // display: block;
+      margin-bottom: 32px;
+      position: relative;
+
+      .activity-group-title {
+        @include flex($gap: 24px, $align: center);
+        margin-bottom: 16px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        padding: 6px 0 8px;
+        background-color: rgb(var(--color-background));
+
+        strong {
+          font-size: 1.4rem;
+          opacity: 0.9;
+        }
+
+        .line {
+          flex: 1;
+          border-bottom: 1px solid rgb(var(--color-border-light));
+        }
+
+        span {
+          @include font(200);
+          font-size: 1.2rem;
+          color: rgb(var(--color-text-light));
+        }
+      }
+    }
+
     .activity-item {
       display: block;
       padding: 8px;
       z-index: 5;
       position: relative;
       cursor: pointer;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
+      padding-left: 8px;
+
+      &:last-of-type {
+        margin-bottom: 0;
+      }
 
       &:hover {
         .background {
@@ -213,6 +257,10 @@
             @include font(700);
             margin: 0;
             color: rgb(var(--color-info));
+
+            &:first-child {
+              font-size: 1.4rem;
+            }
 
             &:hover {
               text-decoration: underline;

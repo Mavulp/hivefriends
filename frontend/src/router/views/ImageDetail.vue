@@ -142,9 +142,9 @@ watch(
 // Arrow keys
 onKeyStroke("ArrowLeft", () => setIndex("prev"))
 onKeyStroke("ArrowRight", () => setIndex("next"))
-// onKeyStroke("Escape", () => {
-//   router.push({ name: "AlbumDetail", params: { id: albumKey.value } })
-// })
+onKeyStroke("Escape", () => {
+  router.push({ name: "AlbumDetail", params: { id: albumKey.value } })
+})
 
 whenever(album, () => {
   const accent = user.getUser(album.value.author, "accentColor")
@@ -182,7 +182,7 @@ const sortedMarkers = computed(() => {
   // Make sure the current marker is always the last one to render
 
   return album.value.images
-    .filter((item) => item.location)
+    .filter((item) => isValidMarker(item))
     .sort((a: ImageStruct, b: ImageStruct) => (a.key === image.value?.key ? 1 : -1))
 })
 

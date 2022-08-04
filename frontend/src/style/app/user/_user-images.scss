@@ -299,6 +299,8 @@
           height: $image-width;
           // object-fit: cover !important;
           position: absolute;
+          object-fit: cover;
+          object-position: center;
           top: 0;
           left: 0;
         }

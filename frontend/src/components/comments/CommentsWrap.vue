@@ -96,6 +96,8 @@ function insert(text: string) {
 let keys: Array<string> = []
 
 function handleKeys(e: any) {
+  e.stopPropagation()
+
   keys.push(e.key)
 
   if (e.key === "Enter" && !keys.includes("Shift")) {

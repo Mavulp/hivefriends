@@ -57,14 +57,11 @@ function go() {
         <router-link :to="{ name: 'UserProfile', params: { user: author.username } }">
           {{ author.displayName }}
         </router-link>
-        commented on "<router-link :to="{ name: 'AlbumDetail', params: { id: data.albumKey } }">{{
-          album.title
-        }}</router-link
-        >" by
+        commented in
+        <router-link :to="{ name: 'AlbumDetail', params: { id: data.albumKey } }">{{ album.title }}</router-link> by
         <router-link :to="{ name: 'AlbumDetail', params: { id: album.author } }">{{
           user.getUsername(album.author)
         }}</router-link>
-        on <i>{{ formatDate(data.createdAt, ["weekday", "year"]) }}</i>
       </p>
     </div>
 

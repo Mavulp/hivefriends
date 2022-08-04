@@ -99,14 +99,13 @@ export function formatTimestamp(date: number) {
   date *= 1000
   const d = new Date(date)
 
-  const hours = `0${d.getUTCHours()}`.slice(-2)
-  const minutes = `0${d.getUTCMinutes()}`.slice(-2)
-
-  console.log(hours, minutes)
-
-  return `${hours}:${minutes}, ${d.toLocaleDateString("en-GB", {
+  return `${padTo2Digits(d.getUTCHours())}:${padTo2Digits(d.getUTCMinutes())}, ${d.toLocaleDateString("en-GB", {
     year: "numeric",
     month: "short",
     day: "numeric"
   })}`
+}
+
+export function padTo2Digits(num: number) {
+  return num.toString().padStart(2, "0")
 }
