@@ -44,11 +44,7 @@
         background-position-y: 50%;
         background-repeat: no-repeat;
         background-size: cover;
-        background-color: rgba(var(--color-background), 0.1);
-
-        &.image-error {
-          opacity: 0.25;
-        }
+        background-color: rgba(var(--color-border-light), 0.5);
       }
     }
 
@@ -56,7 +52,6 @@
       width: 100%;
       position: relative;
       z-index: 10;
-      // background-color: rgb(var(--color-highlight));
 
       .user-information-container {
         @include grid(40px, 1fr 0.5fr);
@@ -186,8 +181,7 @@
           box-shadow: var(--shadow);
 
           &.image-error {
-            border-color: rgb(var(--color-background));
-            background-color: rgba(var(--color-background), 0.25) !important;
+            background-color: rgb(var(--color-border-light));
 
             &:before {
               display: block;
