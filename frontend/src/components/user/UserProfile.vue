@@ -137,7 +137,7 @@ watchEffect(() => {
         <div class="user-met-with-wrap">
           <div class="user-met-with user-details">
             <div v-if="user.country">
-              <span>Nationality</span>
+              <span>Country</span>
 
               <div class="nationality-wrap">
                 <img class="flag" :src="flag(user.country, 'png')" alt="" />

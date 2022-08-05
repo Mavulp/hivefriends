@@ -241,7 +241,32 @@
     }
   }
 
-  .hi-user-profile .user-expand .user-met-with-wrap .user-met-with.user-details {
-    background-color: rgb(var(--color-border-light));
+  .hi-user-profile {
+    .user-profile-upper {
+      background-color: rgb(var(--color-border-light));
+
+      .user-information-wrap .avatar-wrap .avatar.image-error {
+        background-color: rgb(34, 32, 31) !important;
+
+        &:before {
+          filter: invert(1);
+        }
+      }
+    }
+
+    .user-expand .user-met-with-wrap .user-met-with.user-details {
+      background-color: rgb(var(--color-border-light));
+    }
+  }
+
+  .activity {
+    .activity-list-wrap {
+      .activity-item {
+        &.activity-album .activity-body,
+        &.activity-user .user {
+          background-color: rgb(var(--color-border-light));
+        }
+      }
+    }
   }
 }
