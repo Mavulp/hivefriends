@@ -46,6 +46,9 @@ pub enum Error {
     #[error("One of the album or image keys is not valid")]
     InvalidKey,
 
+    #[error("Album was already published, can't set back to draft")]
+    AlreadyPublished,
+
     #[error("{field} should not be longer than {maximum_length} characters")]
     TooManyCharacters {
         field: &'static str,
@@ -83,6 +86,7 @@ impl IntoResponse for Error {
             }
             Error::InvalidCoverKey
             | Error::InvalidKey
+            | Error::AlreadyPublished
             | Error::NoImage
             | Error::ImageError(_)
             | Error::InvalidTimeframe
