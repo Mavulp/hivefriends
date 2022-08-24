@@ -2,21 +2,21 @@ use anyhow::bail;
 use argh::FromArgs;
 use rusqlite::Connection;
 
-#[derive(FromArgs, PartialEq, Debug)]
+#[derive(FromArgs, PartialEq, Eq, Debug)]
 /// Top-level command.
 pub struct Args {
     #[argh(subcommand)]
     pub subcommand: Option<SubCommands>,
 }
 
-#[derive(FromArgs, PartialEq, Debug)]
+#[derive(FromArgs, PartialEq, Eq, Debug)]
 #[argh(subcommand)]
 pub enum SubCommands {
     AddUser(AddUserArgs),
     EditUser(EditUserArgs),
 }
 
-#[derive(FromArgs, PartialEq, Debug)]
+#[derive(FromArgs, PartialEq, Eq, Debug)]
 /// create account.
 #[argh(subcommand, name = "add")]
 pub struct AddUserArgs {
@@ -29,7 +29,7 @@ pub struct AddUserArgs {
     pub password: Option<String>,
 }
 
-#[derive(FromArgs, PartialEq, Debug)]
+#[derive(FromArgs, PartialEq, Eq, Debug)]
 /// edit account.
 #[argh(subcommand, name = "edit")]
 pub struct EditUserArgs {
