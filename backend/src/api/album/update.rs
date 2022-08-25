@@ -2,6 +2,7 @@ use anyhow::Context;
 use axum::{extract::rejection::JsonRejection, extract::Path, Extension, Json};
 use rusqlite::{params, ToSql};
 use serde::Deserialize;
+use serde_rusqlite::from_row;
 
 use std::sync::Arc;
 use std::time::SystemTime;
@@ -36,7 +37,7 @@ pub async fn put(
     Authorize(username): Authorize,
     Extension(state): Extension<Arc<AppState>>,
 ) -> Result<Json<&'static str>, Error> {
-    let Json(request) = request?;
+    let Json(mut request) = request?;
 
     check_length(
         "title",
@@ -61,6 +62,24 @@ pub async fn put(
             if let Some(cover_key) = &request.cover_key {
                 if !image_exists(cover_key, &tx)? {
                     return Err(Error::InvalidKey);
+                }
+            }
+
+            if let Some(want_draft) = request.draft {
+                let is_draft = tx.query_row(
+                    "SELECT draft FROM albums WHERE key = ?",
+                    params![album_key],
+                    |row| Ok(from_row::<bool>(row).unwrap()),
+                )
+                .context("Failed to remove album image associations")?;
+
+                if !is_draft {
+                    if want_draft {
+                        return Err(Error::AlreadyPublished);
+                    } else {
+                        // Ignore this request to not publish again
+                        request.draft = None;
+                    }
                 }
             }
 
@@ -202,5 +221,103 @@ impl PutAlbumRequest {
         }
 
         Ok(params)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::util::test::{insert_image, insert_user, insert_album};
+    use crate::api::album::{get_album, InsertAlbum};
+    use assert_matches::assert_matches;
+
+    #[tokio::test]
+    async fn published_to_draft() {
+        let state = AppState::in_memory_db().await;
+
+        let (key, user) = state
+            .db
+            .call(move |conn| {
+                let user = insert_user("test", conn);
+                let image = insert_image(&user, conn);
+
+                let album = insert_album(
+                    InsertAlbum {
+                        draft: false,
+                        cover_key: &image,
+                        image_keys: &[image.clone()],
+                        author: &user,
+                        ..Default::default()
+                    },
+                    conn,
+                );
+
+                (album, user)
+            })
+            .await;
+
+        let request = PutAlbumRequest {
+            draft: Some(true),
+            ..Default::default()
+        };
+
+        let result = put(
+            Ok(Json(request)),
+            Path(key),
+            Authorize(user),
+            Extension(state),
+        )
+        .await;
+
+        assert_matches!(result, Err(Error::AlreadyPublished));
+    }
+
+    #[tokio::test]
+    async fn published_to_published() {
+        let state = AppState::in_memory_db().await;
+
+        let (key, user) = state
+            .db
+            .call(move |conn| {
+                let user = insert_user("test", conn);
+                let image = insert_image(&user, conn);
+
+                let album = insert_album(
+                    InsertAlbum {
+                        draft: false,
+                        published_at: 42,
+                        cover_key: &image,
+                        image_keys: &[image.clone()],
+                        author: &user,
+                        ..Default::default()
+                    },
+                    conn,
+                );
+
+                (album, user)
+            })
+            .await;
+
+        let request = PutAlbumRequest {
+            draft: Some(false),
+            ..Default::default()
+        };
+
+        put(
+            Ok(Json(request)),
+            Path(key.clone()),
+            Authorize(user),
+            Extension(state.clone()),
+        )
+        .await.unwrap();
+
+
+        let album = state
+            .db
+            .call(move |conn| {
+            get_album(&key, conn)
+        }).await.unwrap().unwrap();
+
+        assert_eq!(album.published_at, 42);
     }
 }
