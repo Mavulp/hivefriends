@@ -231,7 +231,6 @@ onMounted(() => {
             label="Bio"
             v-model:value="userForm.bio"
             placeholder="Something about you. It can be anything"
-            :value="user.user.bio"
           />
 
           <InputSelect
