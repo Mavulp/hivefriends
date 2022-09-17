@@ -33,15 +33,15 @@ should get you started.
 
 ![Screenshot of the album list](/screenshots/frontpage.png "Homepage")
 
-### Upload albums
+### Album creation
 
 ![Screenshot of the album list](/screenshots/create.png "Upload album")
 
-### Albums
+### Album list
 
 ![Screenshot of the album list](/screenshots/albums.png "Album list")
 
-### Album Detail
+### Album detail
 
 ![Screenshot of the album list](/screenshots/album.png "Album detail")
 
