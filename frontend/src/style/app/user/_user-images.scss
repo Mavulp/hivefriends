@@ -115,7 +115,8 @@
   top: 0;
   margin: 0 auto;
   z-index: 16;
-  background-color: rgb(var(--color-background));
+  background-color: rgba(var(--color-background), 0.85);
+  backdrop-filter: blur(7px);
 
   & > div {
     @include flex(nowrap, 32px, $align: center);

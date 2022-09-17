@@ -181,47 +181,53 @@
 
   .hi-album-title-fixed {
     // display: block;
-    @include flex($justify: space-between);
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    padding: 16px 64px;
-    background-color: rgb(var(--color-background));
-    // box-shadow: var(--shadow);
+    background-color: rgba(var(--color-background), 0.85);
+    backdrop-filter: blur(7px);
     z-index: 1000;
 
-    h5 {
-      margin: 0;
-    }
+    .title-container {
+      @include flex($justify: space-between);
+      max-width: 1920px;
+      padding: 16px 64px;
+      margin: 0 auto;
+      width: 100%;
 
-    .uploaded {
-      color: rgb(var(--color-text-light));
-      margin-bottom: 4px;
-      font-size: 1.2rem;
-    }
-
-    .go-up {
-      @include t();
-      @include radius(50%);
-      width: 48px;
-      height: 48px;
-      color: rgb(var(--color-text));
-      background-color: rgba(var(--color-highlight), 0.1);
-
-      &:hover {
-        background-color: rgba(var(--color-highlight), 0.3);
+      h5 {
+        margin: 0;
       }
-    }
 
-    & > div {
-      &:last-of-type {
-        @include flex($align: center, $gap: 64px);
+      .uploaded {
+        color: rgb(var(--color-text-light));
+        margin-bottom: 4px;
+        font-size: 1.2rem;
+      }
 
-        a,
-        button:not(.go-up) {
-          @include flex($gap: 12px);
-          color: rgb(var(--color-text));
+      .go-up {
+        @include t();
+        @include radius(50%);
+        width: 48px;
+        height: 48px;
+        color: rgb(var(--color-text));
+        background-color: rgba(var(--color-highlight), 0.1);
+
+        &:hover {
+          background-color: rgba(var(--color-highlight), 0.3);
+        }
+      }
+
+      & > div {
+        &:last-of-type {
+          @include flex($align: center, $gap: 64px);
+
+          a,
+          button:not(.go-up) {
+            @include flex($gap: 12px);
+            color: rgb(var(--color-text));
+          }
         }
       }
     }

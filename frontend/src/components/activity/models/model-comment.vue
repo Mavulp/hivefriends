@@ -4,7 +4,7 @@ import { Comment } from "../../../store/comments.js"
 import { User, useUser } from "../../../store/user.js"
 import { imageUrl, useAlbums } from "../../../store/album.js"
 import { formatTextUsernames, formatTextImages } from "../../../js/_composables"
-import { sanitize, formatDate, RGB_TO_HEX } from "../../../js/utils"
+import { sanitize, RGB_TO_HEX } from "../../../js/utils"
 import { useRouter } from "vue-router"
 
 interface PropComment extends Comment {
@@ -16,7 +16,6 @@ const albums = useAlbums()
 const user = useUser()
 const props = defineProps<{ data: PropComment }>()
 
-// Getting right values
 const data = computed(() => props.data)
 const author = computed<User>(() => user.getUser(data.value.author))
 const album = computed(() => albums.getListAlbum(data.value.albumKey))

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue"
-import { Album, AllImageItem, imageUrl } from "../../store/album"
+import { Album, ImageItemInAlbum, imageUrl } from "../../store/album"
 import { useClipboard, useMagicKeys, whenever } from "@vueuse/core"
 import { get } from "../../js/fetch"
 import { useToast } from "../../store/toast"
@@ -13,7 +13,7 @@ import InputCheckbox from "../form/InputCheckbox.vue"
 import Modal from "../../components/Modal.vue"
 
 interface Props {
-  image: AllImageItem
+  image: ImageItemInAlbum
   mode: boolean
   isSelect: boolean
 }
@@ -23,7 +23,7 @@ const user = useUser()
 const router = useRouter()
 const props = defineProps<Props>()
 const emit = defineEmits<{
-  (e: "select", value: AllImageItem): void
+  (e: "select", value: ImageItemInAlbum): void
 }>()
 const open = ref(false)
 const hover = ref(false)

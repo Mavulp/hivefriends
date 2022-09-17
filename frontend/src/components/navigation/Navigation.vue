@@ -92,7 +92,7 @@ watch(activityOpen, (val) => {
           :class="{ active: activityOpen }"
           @click="activityOpen = !activityOpen"
         >
-          <div class="activity-alert has-activity" :class="{ 'has-activity': true }"></div>
+          <!-- <div class="activity-alert has-activity" :class="{ 'has-activity': true }"></div> -->
           <span class="material-icons"> &#xf009; </span>
         </button>
 

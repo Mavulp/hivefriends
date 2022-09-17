@@ -1,8 +1,7 @@
 .settings-nav {
   position: fixed;
   top: 128px;
-  left: 96px;
-  // left: calc();
+  left: clamp(96px, calc(50% - calc(880px / 2) - 256px), 100%);
 
   width: 128px;
 

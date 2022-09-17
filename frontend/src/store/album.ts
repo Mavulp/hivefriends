@@ -27,7 +27,7 @@ export interface Image {
   commentCount?: number
 }
 
-export interface AllImageItem extends Image {
+export interface ImageItemInAlbum extends Image {
   albumKeys: Array<string>
 }
 

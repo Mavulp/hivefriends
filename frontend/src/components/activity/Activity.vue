@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onClickOutside, useMagicKeys, whenever } from "@vueuse/core"
-import { isEmpty } from "lodash"
 import { ref, computed, watch, useAttrs } from "vue"
 import { useActivity } from "../../store/activity"
 import { useAlbums } from "../../store/album"
@@ -51,7 +50,6 @@ async function query() {
  * List
  */
 
-const data = computed(() => activity.items)
 const sorted = computed(() => activity.sortedItems)
 </script>
 

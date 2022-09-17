@@ -7,13 +7,19 @@ import { Comment } from "./comments"
 import { Album, Image } from "./album"
 import { User } from "./user"
 import { padTo2Digits } from "../js/utils"
+import { partition } from "lodash"
+
+export type ReducedImage = {
+  user: string
+  images: Image[]
+}
 
 export type ActivityItem =
   | {
       comment: Comment
     }
   | {
-      image: Image
+      image: ReducedImage
     }
   | {
       album: Album
@@ -68,7 +74,31 @@ export const useActivity = defineStore("activity", {
           const sorted = Object.keys(grouped)
             .sort((a, b) => (new Date(a).getTime() > new Date(b).getTime() ? -1 : 1))
             .reduce((a, b: any) => {
-              a[b] = grouped[b]
+              const day = grouped[b]
+              const [images, rest] = partition(day, (item) => Reflect.has(item, "image"))
+
+              // Consolidate images into objects by the user
+              const reduced: { [key: string]: ReducedImage } = images.reduce((user: any, item) => {
+                //@ts-ignore (We know this will only be an image you fucking idiot)
+                const img: Image = item.image
+
+                if (!user[img.uploader]) {
+                  user[img.uploader] = {
+                    user: img.uploader,
+                    images: []
+                  }
+                }
+
+                user[img.uploader].images.push(img)
+
+                return user
+              }, {})
+
+              for (const item of Object.values(reduced)) {
+                rest.push({ image: item })
+              }
+
+              a[b] = rest
               return a
             }, {} as any)
 

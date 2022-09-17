@@ -1,4 +1,4 @@
-// import { AllImageItem, Image } from "../store/album"
+// import { ImageItemInAlbum, Image } from "../store/album"
 import { isValidImage } from "./utils"
 
 /**

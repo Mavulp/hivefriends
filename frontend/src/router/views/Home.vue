@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Button from "../../components/Button.vue"
 import HomeUser from "../../components/user/HomeUser.vue"
+import Activity from "../../components/activity/Activity.vue"
 
 import { ref, onBeforeMount, computed } from "vue"
 import { Album, useAlbums, imageUrl } from "../../store/album"
@@ -51,19 +52,10 @@ const accent = computed(() => user.user.accentColor.split(",").map((item: string
       </template>
     </div>
 
-    <!-- <div class="container" v-if="albums.length > 0">
-      <div class="home-albums">
-        <router-link
-          :to="{ name: 'AlbumDetail', params: { id: album.key } }"
-          class="home-album"
-          v-for="album in [...albums].slice(1, 3)"
-          :key="album.key"
-        >
-          <img :src="imageUrl(album.coverKey, 'medium')" alt=" " />
-          <h4>{{ album.title }}</h4>
-        </router-link>
-      </div>
-    </div> -->
+    <div class="container">
+      <h4>Latest happenings</h4>
+      <Activity class="activity-home active" />
+    </div>
 
     <div class="container" v-if="user.users && user.users.length > 0">
       <h4>Friends</h4>
