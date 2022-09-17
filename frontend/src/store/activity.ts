@@ -4,14 +4,14 @@ import { useLoading } from "./loading"
 import { useToast } from "./toast"
 import { FetchError } from "../js/global-types"
 import { Comment } from "./comments"
-import { Album, Image } from "./album"
+import { Album, Image, ImageItemInAlbum } from "./album"
 import { User } from "./user"
 import { padTo2Digits } from "../js/utils"
 import { partition } from "lodash"
 
 export type ReducedImage = {
   user: string
-  images: Image[]
+  images: ImageItemInAlbum[]
 }
 
 export type ActivityItem =

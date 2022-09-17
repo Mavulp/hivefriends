@@ -229,23 +229,22 @@
         cursor: default;
 
         .photo-list {
-          @include flex($gap: 4px);
+          @include flex($gap: 4px, $wrap: wrap);
           margin-top: 4px;
           // display: grid;
           // grid-template-columns: repeat(7, 1fr);
 
           img {
-            @include t(0.1s, linear);
+            @include t(0.1s);
             @include radius(3px);
             display: block;
             max-width: 64px;
             height: 64px;
             object-fit: cover;
             object-position: center;
-            cursor: pointer;
 
-            &:hover {
-              outline: 2px solid rgb(var(--color-highlight)) !important;
+            &.can-click {
+              cursor: pointer;
             }
           }
 
