@@ -48,7 +48,7 @@ pub mod api {
     pub mod user;
 }
 
-const AUTH_TIME_SECONDS: u64 = 3600 * 24 * 7;
+const AUTH_TIME_SECONDS: u64 = 3600 * 24 * 30;
 
 pub fn api_route(db: tokio_rusqlite::Connection, data_path: PathBuf) -> Router {
     Router::new()
