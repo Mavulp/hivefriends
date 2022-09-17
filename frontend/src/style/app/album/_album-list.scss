@@ -65,7 +65,7 @@
   cursor: pointer;
   display: block;
   width: 100%;
-  max-width: 996px;
+  max-width: 620px;
   position: relative;
   margin-bottom: 64px;
 
@@ -130,6 +130,7 @@
   .album-meta {
     display: block;
     padding-top: 20px;
+    padding-right: 32px;
 
     span,
     p,
@@ -140,7 +141,7 @@
     h2 {
       margin-bottom: 8px;
       margin-top: 16px;
-      font-size: 4.6rem;
+      font-size: 4.4rem;
     }
 
     span {
@@ -155,6 +156,7 @@
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
+      color: rgba(Var(--color-text-light));
     }
 
     .album-author {
@@ -191,22 +193,22 @@
   }
 
   .hi-album-list-layout {
-    @include grid(0, 498px 1fr);
+    @include grid(0, 420px 1fr);
     position: relative;
 
     .layout-item {
       display: block;
-      padding: 40px;
       position: relative;
 
       &:first-of-type {
         position: sticky;
+        padding: 32px;
         top: 0;
         height: calc(100vh - $header) !important;
       }
 
       &:last-of-type {
-        padding: 16px;
+        padding: 32px;
 
         min-height: calc(100vh - $header);
         border-left: 1px solid rgb(var(--color-border-light));
@@ -215,8 +217,8 @@
       .album-list-wrap {
         display: grid;
         width: 100%;
-        gap: 32px;
-        grid-template-columns: repeat(auto-fit, minmax(496px, 1fr));
+        gap: 24px;
+        grid-template-columns: repeat(auto-fit, 620px);
 
         .album-list-item {
           display: block;
@@ -225,7 +227,7 @@
           // width: 100%;
 
           h2 {
-            font-size: 3.6rem;
+            font-size: 3.2rem;
             margin-top: 16px;
           }
         }

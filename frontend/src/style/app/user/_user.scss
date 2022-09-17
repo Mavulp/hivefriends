@@ -241,6 +241,7 @@
       .user-albums-list {
         .album-list-item {
           margin-bottom: 48px;
+          max-width: unset;
 
           .album-image {
             height: 316px;

@@ -12,8 +12,20 @@ const props = defineProps<{ data: User }>()
 
 const data = computed(() => props.data)
 
-const messages = ["Welcome!", "Say Hello!", "New person!", "Someone just joined!!"]
-const message = ref(messages[getRanMinMax(0, 3)])
+const messages = [
+  "Welcome!",
+  "Say Hello!",
+  "New person!",
+  "Someone just joined!!",
+  "Bruh look who's that",
+  "OMG LOOK WHO ARRIVED",
+  "NO WAY IT'S",
+  "'tis a day of greatest arrival of",
+  "Oh my days what's up",
+  "Super rare arrival message not really related to the person who's arriving",
+  "There's a slight cha"
+]
+const message = ref(messages[getRanMinMax(0, messages.length - 1)])
 
 function go() {
   router.push({

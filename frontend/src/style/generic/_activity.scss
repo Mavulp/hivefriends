@@ -1,16 +1,12 @@
 .activity {
   @include t();
-  // @include radius(10px);
   @include flex($direction: column, $align: flex-start);
   position: fixed;
-  // top: calc($header + 16px);
-  // bottom: 16px;
   top: $header;
   bottom: 0;
   right: 0;
   box-shadow: var(--shadow);
   background-color: rgb(var(--color-background));
-  // border: 1px solid rgb(var(--color-border-light));
   border-left: 1px solid rgb(var(--color-border-light));
 
   opacity: 0;
@@ -26,6 +22,26 @@
     visibility: visible;
     z-index: 100;
     pointer-events: all;
+  }
+
+  &.activity-home {
+    @include radius(6px);
+    // Sub-class for showing some activity items in the homepage
+    position: relative;
+    inset: unset;
+    width: 100%;
+    // border: 1px solid rgb(var(--color-border-light));
+    border: none;
+    margin-bottom: 64px;
+
+    .title-wrap,
+    .close {
+      display: none;
+    }
+
+    .activity-list-wrap {
+      max-height: 512px;
+    }
   }
 
   .close {
@@ -44,7 +60,7 @@
     h5 {
       margin-bottom: 0;
       letter-spacing: 0.05em;
-      color: rgb(var(--color-text-light));
+      color: rgb(var(--color-text));
     }
   }
 
@@ -80,7 +96,7 @@
 
       .activity-group-title {
         @include flex($gap: 24px, $align: center);
-        margin-bottom: 16px;
+        margin-bottom: 12px;
         position: sticky;
         top: 0;
         z-index: 10;
@@ -88,8 +104,9 @@
         background-color: rgb(var(--color-background));
 
         strong {
+          @include font(400);
           font-size: 1.4rem;
-          opacity: 0.9;
+          color: rgb(var(--color-text-light));
         }
 
         .line {
@@ -100,7 +117,7 @@
         span {
           @include font(200);
           font-size: 1.2rem;
-          color: rgb(var(--color-text-light));
+          color: rgb(var(--color-text-lighter));
         }
       }
     }
@@ -204,6 +221,37 @@
             @include font(700);
             font-size: 1.8rem;
             margin-bottom: 8px;
+          }
+        }
+      }
+
+      &.activity-image {
+        cursor: default;
+
+        .photo-list {
+          @include flex($gap: 4px);
+          margin-top: 4px;
+          // display: grid;
+          // grid-template-columns: repeat(7, 1fr);
+
+          img {
+            @include t(0.1s, linear);
+            @include radius(3px);
+            display: block;
+            max-width: 64px;
+            height: 64px;
+            object-fit: cover;
+            object-position: center;
+            cursor: pointer;
+
+            &:hover {
+              outline: 2px solid rgb(var(--color-highlight)) !important;
+            }
+          }
+
+          .img-additional {
+            font-size: 1.4rem;
+            padding-left: 8px;
           }
         }
       }

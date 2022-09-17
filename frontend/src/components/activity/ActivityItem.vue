@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { defineAsyncComponent } from "vue"
+import { computed, defineAsyncComponent } from "vue"
 import { ActivityItem } from "../../store/activity"
 
 const props = defineProps<{ data: ActivityItem }>()
-const component = defineAsyncComponent(() => import(`./models/model-${Object.keys(props.data)[0]}.vue`))
+
+const type = computed(() => Object.keys(props.data)[0])
+
+const component = defineAsyncComponent(() => import(`./models/model-${type.value}.vue`))
 </script>
 
 <template>

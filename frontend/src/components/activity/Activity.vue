@@ -50,7 +50,6 @@ async function query() {
  * List
  */
 
-const data = computed(() => activity.items)
 const sorted = computed(() => activity.sortedItems)
 </script>
 

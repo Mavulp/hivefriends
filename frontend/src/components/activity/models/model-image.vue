@@ -1,19 +1,22 @@
 <script setup lang="ts">
 import { computed } from "vue"
-import { Image, useAlbums } from "../../../store/album.js"
+import { Image, useAlbums, imageUrl } from "../../../store/album.js"
 import { sanitize, formatDate, RGB_TO_HEX } from "../../../js/utils"
 import { User, useUser } from "../../../store/user.js"
+import { ReducedImage } from "../../../store/activity"
+import { take } from "lodash"
 
 const user = useUser()
-const albums = useAlbums()
-const props = defineProps<{ data: Image }>()
-
+const props = defineProps<{ data: ReducedImage }>()
 const data = computed(() => props.data)
+const author = computed<User>(() => user.getUser(data.value.user))
+
+const PHOTO_LIMIT = 6
 </script>
 
 <template>
-  <div class="activity-item activity-image" v-if="false">
-    <!-- <div class="activity-title">
+  <div class="activity-item activity-image">
+    <div class="activity-title">
       <img
         class="user-image"
         :src="imageUrl(author.avatarKey, 'medium')"
@@ -21,21 +24,21 @@ const data = computed(() => props.data)
         @error="(e: any) => e.target.classList.add('image-error')"
       />
 
-      <p @click.self="go">
+      <p>
         <router-link :to="{ name: 'UserProfile', params: { user: author.username } }">
           {{ author.displayName }}
         </router-link>
-        commented on "<router-link :to="{ name: 'AlbumDetail', params: { id: data.albumKey } }">{{
-          album.title
-        }}</router-link
-        >" by
-        <router-link :to="{ name: 'AlbumDetail', params: { id: album.author } }">{{
-          user.getUsername(album.author)
-        }}</router-link>
-        on <i>{{ formatDate(data.createdAt, ["weekday", "year"]) }}</i>
-      </p>
-    </div> -->
 
-    <!-- <div class="background" :style="{ backgroundColor: RGB_TO_HEX(author.accentColor) }"></div> -->
+        uploaded {{ data.images.length }} {{ data.images.length > 1 ? "photos" : "photo" }}
+      </p>
+
+      <div class="photo-list">
+        <img v-for="photo in take(data.images, PHOTO_LIMIT)" :key="photo.key" :src="imageUrl(photo.key)" alt=" " />
+
+        <div class="img-additional" v-if="data.images.length > PHOTO_LIMIT">
+          + {{ data.images.length - PHOTO_LIMIT }}
+        </div>
+      </div>
+    </div>
   </div>
 </template>
