@@ -16,7 +16,7 @@ use rusqlite::params;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub(super) struct AllImagesImage {
+pub struct AllImagesImage {
     pub album_keys: Vec<String>,
 
     #[serde(flatten)]
@@ -55,7 +55,7 @@ pub(super) async fn get(
         .await
 }
 
-fn get_albums_containing_image(
+pub fn get_albums_containing_image(
     key: &str,
     conn: &rusqlite::Connection,
 ) -> anyhow::Result<Vec<String>> {
