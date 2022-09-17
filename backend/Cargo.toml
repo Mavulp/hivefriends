@@ -8,24 +8,24 @@ license = "AGPL-3.0-only"
 dotenv = "0.15.0"
 anyhow = "1.0.58"
 thiserror = "1.0.31"
-axum = { version = "0.5.9", features = ["multipart", "query", "headers"] }
+axum = { version = "0.5.16", features = ["multipart", "query", "headers"] }
 tokio = { version = "1.19.2", features = ["fs", "rt", "macros", "rt-multi-thread"] }
 tracing = "0.1.35"
 tower-http = { version = "0.3.4", features = ["trace", "fs"] }
 serde = { version = "1.0.137", features = ["derive"] }
 serde_json = "1.0.81"
-serde_rusqlite = "0.30.1"
+serde_rusqlite = "0.31.0"
 tokio-rusqlite = { git = "https://github.com/programatik29/tokio-rusqlite" }
-rusqlite = { version = "0.27.0", features = ["bundled"] }
+rusqlite = { version = "0.28.0", features = ["bundled"] }
 lazy_static = "1.4.0"
-tracing-subscriber = { version = "0.3.11", features = ["env-filter"] }
+tracing-subscriber = { version = "0.3.15", features = ["env-filter"] }
 rand = "0.8.5"
 image = { version = "0.24.2", features = ["jpeg", "png"] }
 blob-uuid = "0.5.0"
 headers = "0.3.7"
 argh = "0.1.7"
 argon2 = { version = "0.4.0", features = ["std"] }
-rpassword = "6.0.1"
+rpassword = "7.0.0"
 kamadak-exif = "0.5.4"
 async-trait = "0.1.56"
 itertools = "0.10.3"
