@@ -7,7 +7,7 @@ use serde::{Deserialize, Deserializer, Serialize};
 use serde_rusqlite::{from_row, to_params_named};
 
 mod delete_image;
-mod get_all;
+pub mod get_all;
 mod get_by_key;
 mod orientation;
 mod update_metadata;

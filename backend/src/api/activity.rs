@@ -9,7 +9,10 @@ use crate::api::error::Error;
 use crate::api::{
     album::AlbumMetadata,
     comment::Comment,
-    image::{DbImage, Image},
+    image::{
+        get_all::{get_albums_containing_image, AllImagesImage},
+        DbImage, Image,
+    },
     user::{self, User},
 };
 use crate::AppState;
@@ -32,10 +35,10 @@ enum Activity {
     Album(AlbumMetadata),
     Comment(Comment),
     User(User),
-    Image(Image),
+    Image(AllImagesImage),
 }
 
-pub fn get_new_images(conn: &Connection) -> Result<Vec<Image>, Error> {
+pub fn get_new_images(conn: &Connection) -> Result<Vec<AllImagesImage>, Error> {
     let mut query = conn
         .prepare(
             "SELECT i.*, aia.created_at as published_at FROM images i \
@@ -53,7 +56,15 @@ pub fn get_new_images(conn: &Connection) -> Result<Vec<Image>, Error> {
         .collect::<Result<Vec<_>, _>>()
         .context("Failed to collect user images")?;
 
-    Ok(images)
+    let mut all_images = Vec::new();
+    for image in images {
+        let album_keys = get_albums_containing_image(&image.key, conn)
+            .context("Failed to get albums for image")?;
+
+        all_images.push(AllImagesImage { image, album_keys });
+    }
+
+    Ok(all_images)
 }
 
 async fn get_activities(
@@ -71,17 +82,11 @@ async fn get_activities(
                 .into_iter()
                 .map(Activity::Album);
 
-            let users = user::get_all(conn)?
-                .into_iter()
-                .map(Activity::User);
+            let users = user::get_all(conn)?.into_iter().map(Activity::User);
 
-            let comments = comment::get_all(conn)?
-                .into_iter()
-                .map(Activity::Comment);
+            let comments = comment::get_all(conn)?.into_iter().map(Activity::Comment);
 
-            let images = get_new_images(conn)?
-                .into_iter()
-                .map(Activity::Image);
+            let images = get_new_images(conn)?.into_iter().map(Activity::Image);
 
             let mut activities: Vec<Activity> =
                 albums.chain(users).chain(comments).chain(images).collect();
@@ -102,14 +107,14 @@ impl PartialEq for Activity {
             Album(a) => a.published_at,
             Comment(c) => c.created_at,
             User(u) => u.created_at,
-            Image(i) => i.published_at.unwrap(),
+            Image(i) => i.image.published_at.unwrap(),
         };
 
         let other_time = match other {
             Album(a) => a.published_at,
             Comment(c) => c.created_at,
             User(u) => u.created_at,
-            Image(i) => i.published_at.unwrap(),
+            Image(i) => i.image.published_at.unwrap(),
         };
 
         this_time == other_time
@@ -124,14 +129,14 @@ impl PartialOrd for Activity {
             Album(a) => a.published_at,
             Comment(c) => c.created_at,
             User(u) => u.created_at,
-            Image(i) => i.published_at.unwrap(),
+            Image(i) => i.image.published_at.unwrap(),
         };
 
         let other_time = match other {
             Album(a) => a.published_at,
             Comment(c) => c.created_at,
             User(u) => u.created_at,
-            Image(i) => i.published_at.unwrap(),
+            Image(i) => i.image.published_at.unwrap(),
         };
 
         this_time.partial_cmp(&other_time)
@@ -189,6 +194,19 @@ mod test {
                 )
                 .unwrap();
 
+                // Insert an image that is not part of an album
+                image::insert(
+                    &DbImage {
+                        key: blob_uuid::random_blob(),
+                        uploader: user.clone(),
+                        uploaded_at: 3,
+
+                        ..Default::default()
+                    },
+                    conn,
+                )
+                .unwrap();
+
                 let comment = comment::insert_comment(
                     user.clone(),
                     String::from("foo"),
@@ -212,14 +230,17 @@ mod test {
             Path(expected_album.clone()),
             Authorize(expected_user.clone()),
             Extension(state.clone()),
-        ).await.unwrap();
+        )
+        .await
+        .unwrap();
 
         let result = get_activities(Authorize("".into()), Extension(state)).await;
 
         dbg!(&result);
         assert_matches!(result, Ok(Json(activities)) => {
             assert_matches!(&activities[0], Activity::Image(image) => {
-                assert_eq!(expected_image, image.key);
+                assert_eq!(expected_image, image.image.key);
+                assert_eq!(expected_album, image.album_keys[0]);
             });
 
             assert_matches!(&activities[1], Activity::Comment(comment) => {
@@ -233,6 +254,13 @@ mod test {
             assert_matches!(&activities[3], Activity::User(user) => {
                 assert_eq!(expected_user, user.username);
             });
+
+            // Ensure that non album images stay private
+            for activity in activities {
+                if let Activity::Image(image) = activity {
+                    assert!(!image.album_keys.is_empty());
+                }
+            }
 
         });
     }
