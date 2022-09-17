@@ -107,13 +107,16 @@
   }
 
   .container {
-    width: 1280px;
+    max-width: 1280px;
+    width: 100%;
     margin: 0 auto;
     padding: 0 40px;
 
     h4 {
       color: rgb(var(--color-highlight));
-      margin-bottom: 40px;
+      margin-bottom: 24px;
+      padding-left: 16px;
+      font-size: 2.8rem;
     }
   }
 
@@ -124,10 +127,10 @@
 
     .home-user {
       @include t();
-      @include radius(6px);
+      @include radius(3px);
       @include flex($gap: 8px);
-      padding: 16px 32px;
-      margin-bottom: 16px;
+      padding: 12px 24px;
+      margin-bottom: 12px;
       color: rgb(var(--color-text));
       border: 1px solid transparent;
       background-color: rgb(var(--color-white));
@@ -144,8 +147,8 @@
       .user-image {
         @include radius(50%);
         display: block;
-        width: 56px;
-        height: 56px;
+        width: 48px;
+        height: 48px;
         object-fit: cover;
         object-position: center;
         position: relative;
@@ -154,7 +157,7 @@
 
       h5 {
         margin-bottom: 0;
-        font-size: 2.2rem;
+        font-size: 2rem;
       }
     }
   }

@@ -1,3 +1,4 @@
+
 # hivefriends
 
 A bunch of friends all around the world cherishing moments spent together.
@@ -13,6 +14,7 @@ Upload and share albums of your events and meetings!
 - List all of your images to delete them or quickly create albums
 - Choose between dark and light Mode
 - Customize user profile with avatar, banner and accent color
+- Explore what's been happening in the activity log
 
 ## Notes
 
@@ -27,18 +29,38 @@ should get you started.
 
 ## Screenshots
 
-Light Theme                            | Dark Theme
-:-------------------------------------:|:------------------------------------:
-![Light Theme](/screenshots/light.png) | ![Dark Theme](/screenshots/dark.png)
+### Homepage
+
+![Screenshot of the album list](/screenshots/frontpage.png "Homepage")
+
+### Upload albums
+
+![Screenshot of the album list](/screenshots/create.png "Upload album")
 
 ### Albums
 
 ![Screenshot of the album list](/screenshots/albums.png "Album list")
 
+### Album Detail
+
+![Screenshot of the album list](/screenshots/album.png "Album detail")
+
 ### Image
 
-![Screenshot of an image in detail](/screenshots/image.png "Image")
+![Screenshot of an image in detail](/screenshots/photo.png "Photo detail")
+
+### Image info / metadata
+
+![Screenshot of an image in detail](/screenshots/photo_details.png "Photo Information")
 
 ### Profile
 
 ![Screenshot of a user profile](/screenshots/profile.png "User Profile")
+
+### Manage your uploads
+
+![Screenshot of a user profile](/screenshots/manage.png "User Settings")
+
+### Settings
+
+![Screenshot of a user profile](/screenshots/settings.png "User Settings")

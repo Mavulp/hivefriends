@@ -35,9 +35,12 @@ const placeholders = [
   "horselinman",
   "cheessyman",
   "_your_name_ (intense)",
-  "Slifblinger"
+  "Slifblinger",
+  "gaming bed",
+  "sergeiy",
+  "checkmate"
 ]
-const placeholder = ref(placeholders[getRanMinMax(0, 11)])
+const placeholder = ref(placeholders[getRanMinMax(0, placeholders.length - 1)])
 
 async function submit() {
   validate()

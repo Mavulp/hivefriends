@@ -8,14 +8,17 @@ import { Album, useAlbums, imageUrl } from "../../store/album"
 import { useUser } from "../../store/user"
 import { TEXT_CONTRAST } from "../../js/utils"
 import { useBread } from "../../store/bread"
+import { useActivity } from "../../store/activity"
 
 const user = useUser()
 const album = useAlbums()
 const bread = useBread()
 const albums = ref([] as Album[])
 const latest = computed<Album>(() => albums?.value[0] ?? null)
+const activity = useActivity()
 
 onBeforeMount(async () => {
+  activity.fetchActivity()
   albums.value = await album.fetchAlbums()
 
   bread.set("Homepage | url to irl")
@@ -58,7 +61,7 @@ const accent = computed(() => user.user.accentColor.split(",").map((item: string
     </div>
 
     <div class="container" v-if="user.users && user.users.length > 0">
-      <h4>Friends</h4>
+      <h4>The squad</h4>
 
       <div class="home-users">
         <HomeUser v-for="item in user.users" :key="item.username" :data="item" />

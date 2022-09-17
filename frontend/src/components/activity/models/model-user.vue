@@ -13,17 +13,22 @@ const props = defineProps<{ data: User }>()
 const data = computed(() => props.data)
 
 const messages = [
-  "Welcome!",
-  "Say Hello!",
-  "New person!",
-  "Someone just joined!!",
+  "Welcome! 🎉 🎉",
+  "Say Hello!👋",
+  "New person! 🥳🥳",
+  "Someone just joined!!  🎉 🎉",
   "Bruh look who's that",
-  "OMG LOOK WHO ARRIVED",
-  "NO WAY IT'S",
+  "OMG LOOK WHO ARRIVED 🚍",
+  "NO WAY IT'S THEM",
   "'tis a day of greatest arrival of",
   "Oh my days what's up",
   "Super rare arrival message not really related to the person who's arriving",
-  "There's a slight cha"
+  "The chances of them joining were so slim.. yet here they are",
+  "cha ching new boss baby 🤵🏻👶 dropped, the baby's name:",
+  "*joins*",
+  "B RU H N NOWAWAY TEHY JOIEND 😳😳😳",
+  "toast to you! (the bread one) 🍞🍞",
+  "someonw whos so mid frfr ☠️☠️☠️☠️"
 ]
 const message = ref(messages[getRanMinMax(0, messages.length - 1)])
 
@@ -40,7 +45,7 @@ function go() {
 <template>
   <div class="activity-item activity-user" @click="go">
     <div class="title">
-      <strong>{{ message }} 🎉 🎉</strong>
+      <strong>{{ message }}</strong>
     </div>
 
     <div class="user">
