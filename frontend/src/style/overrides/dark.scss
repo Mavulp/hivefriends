@@ -261,6 +261,14 @@
   }
 
   .activity {
+    &.activity-home {
+      background-color: rgb(var(--color-background-dark));
+
+      .activity-group-title {
+        background-color: rgb(var(--color-background-dark));
+      }
+    }
+
     .activity-list-wrap {
       .activity-item {
         &.activity-album .activity-body,

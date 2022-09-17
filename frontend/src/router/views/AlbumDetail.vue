@@ -286,42 +286,44 @@ whenever(showUsers, () => {
       </div>
 
       <div class="hi-album-title-fixed" v-if="showFixedTitle && !map && !modal">
-        <div>
-          <p class="uploaded">Uploaded {{ formatDate(album.publishedAt) }}</p>
-          <h5>{{ album.title }}</h5>
-        </div>
+        <div class="title-container">
+          <div>
+            <p class="uploaded">Uploaded {{ formatDate(album.publishedAt) }}</p>
+            <h5>{{ album.title }}</h5>
+          </div>
 
-        <div>
-          <!-- <div class="detail-buttons"> -->
-          <router-link
-            :to="{ name: 'AlbumEdit', params: { id: album.key } }"
-            class="hover-bubble bubble-orange"
-            v-if="user.user.username === album.author"
-          >
-            <span class="material-icons">&#xe3c9;</span>
-            Edit
-          </router-link>
+          <div>
+            <!-- <div class="detail-buttons"> -->
+            <router-link
+              :to="{ name: 'AlbumEdit', params: { id: album.key } }"
+              class="hover-bubble bubble-orange"
+              v-if="user.user.username === album.author"
+            >
+              <span class="material-icons">&#xe3c9;</span>
+              Edit
+            </router-link>
 
-          <button class="hover-bubble" @click="map = true" v-if="enableMap">
-            <span class="material-icons">&#xe55b;</span>
-            Map
-          </button>
+            <button class="hover-bubble" @click="map = true" v-if="enableMap">
+              <span class="material-icons">&#xe55b;</span>
+              Map
+            </button>
 
-          <button class="hover-bubble" @click="showUsers = !showUsers" :class="{ active: showUsers }">
-            <span class="material-icons">&#xe7fb;</span>
-            People {{ album.taggedUsers.length ?? 0 }}
-          </button>
+            <button class="hover-bubble" @click="showUsers = !showUsers" :class="{ active: showUsers }">
+              <span class="material-icons">&#xe7fb;</span>
+              People {{ album.taggedUsers.length ?? 0 }}
+            </button>
 
-          <button class="hover-bubble data-title-width-156" @click="getPublicLink" v-if="!user.public_token">
-            <span class="material-icons">&#xe80d;</span>
-            Share
-            <span class="material-icons rotate" v-if="getLoading('share-link')">&#xe863;</span>
-          </button>
+            <button class="hover-bubble data-title-width-156" @click="getPublicLink" v-if="!user.public_token">
+              <span class="material-icons">&#xe80d;</span>
+              Share
+              <span class="material-icons rotate" v-if="getLoading('share-link')">&#xe863;</span>
+            </button>
 
-          <!-- </div> -->
-          <button class="go-up" @click="scrollUp" data-title-bottom="Scroll Up">
-            <span class="material-icons"> &#xe5d8; </span>
-          </button>
+            <!-- </div> -->
+            <button class="go-up" @click="scrollUp" data-title-bottom="Scroll Up">
+              <span class="material-icons"> &#xe5d8; </span>
+            </button>
+          </div>
         </div>
       </div>
     </template>

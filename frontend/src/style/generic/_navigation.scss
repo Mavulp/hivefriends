@@ -133,7 +133,7 @@
   }
 
   .nav-links-wrap {
-    @include flex($gap: 12px);
+    @include flex($gap: 16px);
 
     .nav-link {
       @include font(600);
