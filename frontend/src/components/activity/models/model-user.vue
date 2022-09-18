@@ -28,7 +28,7 @@ const messages = [
   "*joins*",
   "B RU H N NOWAWAY TEHY JOIEND 😳😳😳",
   "toast to you! (the bread one) 🍞🍞",
-  "someonw whos so mid frfr ☠️☠️☠️☠️"
+  "woah that's so 💀💀💀 mid frfr deadass yo 💀 yo"
 ]
 const message = ref(messages[getRanMinMax(0, messages.length - 1)])
 

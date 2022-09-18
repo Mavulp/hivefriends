@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue"
+import { computed, inject } from "vue"
 import { imageUrl } from "../../../store/album.js"
 import { User, useUser } from "../../../store/user.js"
 import { ReducedImage } from "../../../store/activity"
@@ -15,17 +15,19 @@ const data = computed(() => props.data)
 const author = computed<User>(() => user.getUser(data.value.user))
 const accent = computed(() => RGB_TO_HEX(author.value.accentColor))
 
+const inheader = inject("is-in-header") as boolean
+
 const PHOTO_LIMIT = computed(() => {
-  if (route.name === "Home") return 18
-  return 8
+  if (inheader) return 7
+  return 18
 })
 
-function go(id: string) {
-  if (!id) return
+function go(image: string, album: string) {
+  if (!image || !album) return
 
   router.push({
-    name: "AlbumDetail",
-    params: { id }
+    name: "ImageDetail",
+    params: { album, image }
   })
 }
 </script>
@@ -55,7 +57,7 @@ function go(id: string) {
           :src="imageUrl(photo.key, 'tiny')"
           :class="{ 'can-click': photo.albumKeys }"
           alt=" "
-          @click="photo.albumKeys ? go(photo.albumKeys[0]) : null"
+          @click="photo.albumKeys ? go(photo.key, photo.albumKeys[0]) : null"
         />
 
         <div class="img-additional" v-if="data.images.length > PHOTO_LIMIT">

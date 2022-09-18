@@ -60,9 +60,9 @@ watch(activityOpen, (val) => {
     <template v-if="!isPhone">
       <div class="nav-links-wrap">
         <router-link class="nav-link" :to="{ name: 'Home' }">Home</router-link>
-        <router-link class="nav-link" :to="{ name: 'Albums' }">Albums</router-link>
+        <router-link class="nav-link" :to="{ name: 'Albums' }">Album List</router-link>
         <!-- <router-link class="nav-link" :to="{ name: 'About' }">Activity Log</router-link> -->
-        <router-link class="nav-link" :to="{ name: 'About' }">About</router-link>
+        <router-link class="nav-link" :to="{ name: 'About' }">The Project</router-link>
       </div>
 
       <transition name="fade" appear mode="out-in">

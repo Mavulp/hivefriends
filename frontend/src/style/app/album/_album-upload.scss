@@ -111,6 +111,7 @@
       @include flex($gap: 64px, $direction: column);
       padding: 40px;
       position: relative;
+      background-color: rgba(var(--color-background-dimmed), 0.025);
 
       .album-drag-input {
         @include t(0.1s);

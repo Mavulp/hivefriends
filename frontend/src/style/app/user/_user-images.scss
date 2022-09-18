@@ -229,12 +229,14 @@
       }
 
       img {
+        @include radius(6px);
         display: block;
         height: 100%;
         max-width: 100%;
         // margin: 0 auto;
         object-fit: contain;
         object-position: center;
+        box-shadow: var(--shadow);
       }
     }
   }
