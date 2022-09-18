@@ -65,7 +65,7 @@
   cursor: pointer;
   display: block;
   width: 100%;
-  max-width: 620px;
+  max-width: 596px;
   position: relative;
   margin-bottom: 64px;
 
@@ -205,26 +205,22 @@
         padding: 32px;
         top: 0;
         height: calc(100vh - $header) !important;
+        background-color: rgba(var(--color-background-dimmed), 0.025);
       }
 
       &:last-of-type {
         padding: 32px;
-
         min-height: calc(100vh - $header);
         border-left: 1px solid rgb(var(--color-border-light));
       }
 
       .album-list-wrap {
-        display: grid;
-        width: 100%;
-        gap: 24px;
-        grid-template-columns: repeat(auto-fit, 620px);
+        @include flex(wrap, 24px, center, flex-start); // display: grid;
 
         .album-list-item {
           display: block;
           margin-bottom: 0;
-          // min-width: 33%;
-          // width: 100%;
+          width: 100%;
 
           h2 {
             font-size: 3.2rem;

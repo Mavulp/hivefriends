@@ -16,6 +16,7 @@
       display: block;
       position: relative;
       font-style: italic;
+      margin-top: 48px;
       font-size: 13vw;
       -webkit-text-fill-color: transparent;
       -webkit-text-stroke-width: 1.5px;
@@ -59,7 +60,8 @@
       bottom: 32px;
       right: 0;
       width: 50%;
-      top: 10%;
+      // top: 10%;
+      top: 32px;
       overflow: hidden;
       z-index: 1;
       right: 32px;

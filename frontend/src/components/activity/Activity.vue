@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onClickOutside, useMagicKeys, whenever } from "@vueuse/core"
-import { ref, computed, watch, useAttrs } from "vue"
+import { ref, computed, watch, useAttrs, provide } from "vue"
 import { useActivity } from "../../store/activity"
 import { useAlbums } from "../../store/album"
 import { useLoading } from "../../store/loading"
@@ -51,6 +51,9 @@ async function query() {
  */
 
 const sorted = computed(() => activity.sortedItems)
+
+//@ts-ignore
+provide("is-in-header", !attrs?.class?.includes("activity-home") ?? false)
 </script>
 
 <template>

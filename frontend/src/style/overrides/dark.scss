@@ -18,6 +18,11 @@
     }
   }
 
+  .hi-album-upload .album-upload-layout .album-upload-items,
+  .hi-album-list .hi-album-list-layout .layout-item:first-of-type {
+    background-color: rgba(var(--color-background-dimmed));
+  }
+
   .form-search {
     border: 1px solid rgb(var(--color-border-light));
     background-color: rgb(var(--color-background-dark));
