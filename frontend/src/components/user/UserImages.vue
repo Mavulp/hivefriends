@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onBeforeMount, watch, computed } from "vue"
+import { ref, onBeforeMount, watch, computed, provide } from "vue"
 import { getImageChunks } from "../../js/_composables"
 import { ImageItemInAlbum, Image, useAlbums, imageUrl, Album } from "../../store/album"
 import { useBread } from "../../store/bread"
@@ -135,6 +135,20 @@ async function tryToAlbum() {
 }
 
 // Open album edit page with selected images
+
+/**
+ * Browsing images
+ */
+const imgIndex = ref(0)
+const setIndex = (val: number) => {
+  imgIndex.value = val
+}
+
+provide("image-index", { imgIndex, setIndex })
+provide(
+  "image-total",
+  computed(() => data.value.length)
+)
 </script>
 
 <template>
@@ -216,12 +230,13 @@ async function tryToAlbum() {
     <div class="hi-album-images">
       <div class="hi-album-image-col" v-for="(chunk, index) in chunks" :key="index">
         <UserImageItem
-          v-for="image in chunk"
+          v-for="(image, i) in chunk"
           :image="image"
           :key="image.key"
           @select="selectItem"
           :isSelect="selected.has(image.key)"
           :mode="selectMode"
+          :index="data.findIndex((item) => item.key === image.key)"
         />
       </div>
     </div>

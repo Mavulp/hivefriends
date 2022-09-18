@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, ref } from "vue"
+import { computed, inject, onMounted, ref, watch, watchEffect } from "vue"
 import { Album, ImageItemInAlbum, imageUrl } from "../../store/album"
-import { useClipboard, useMagicKeys, whenever } from "@vueuse/core"
+import { onClickOutside, useClipboard, useMagicKeys, whenever } from "@vueuse/core"
 import { get } from "../../js/fetch"
 import { useToast } from "../../store/toast"
 import { useUser } from "../../store/user"
@@ -16,6 +16,7 @@ interface Props {
   image: ImageItemInAlbum
   mode: boolean
   isSelect: boolean
+  index: number
 }
 
 const toast = useToast()
@@ -28,8 +29,13 @@ const emit = defineEmits<{
 const open = ref(false)
 const hover = ref(false)
 const { copy } = useClipboard()
+const wrap = ref()
 
 const inAlbum = computed(() => props.image.albumKeys.length > 0)
+
+onMounted(() => {
+  onClickOutside(wrap, () => (open.value = false))
+})
 
 function imageClick() {
   if (props.mode) {
@@ -37,6 +43,7 @@ function imageClick() {
     emit("select", props.image)
   } else {
     open.value = true
+    setIndex(props.index)
   }
 }
 
@@ -86,7 +93,20 @@ async function tryToAlbum() {
   }
 }
 
-function goto(key: string) {}
+//@ts-ignore
+const { imgIndex, setIndex } = inject<{ imgIndex: number; setIndex: (num: number) => void }>("image-index")
+//@ts-ignore
+const total = inject<number>("image-total")
+
+watch(imgIndex, (value) => {
+  console.log(value, props.index)
+
+  if (value !== props.index) {
+    open.value = false
+  } else {
+    open.value = true
+  }
+})
 </script>
 
 <template>
@@ -155,9 +175,9 @@ function goto(key: string) {}
     </Teleport>
 
     <Teleport to="body" v-if="open">
-      <Modal @click="open = false">
+      <Modal>
         <div class="modal-wrap modal-image">
-          <div>
+          <div ref="wrap">
             <div class="all-image-controls">
               <button data-title-left="Close" @click="open = false">
                 <span class="material-icons">&#xe5cd;</span>
@@ -177,6 +197,16 @@ function goto(key: string) {}
             </div>
             <img :src="imageUrl(props.image.key)" alt="" />
           </div>
+          <button :disabled="imgIndex <= 0" class="nav-btn btn-prev" @click="setIndex(props.index - 1)">
+            <span class="material-icons"> &#xe5c4; </span>
+          </button>
+          <button :disabled="imgIndex + 1 === total" class="nav-btn btn-next" @click="setIndex(props.index + 1)">
+            <span class="material-icons"> &#xe5c8; </span>
+          </button>
+
+          <p class="img-index">
+            <b>{{ props.index + 1 }}</b> of {{ total }}
+          </p>
         </div>
       </Modal>
     </Teleport>
