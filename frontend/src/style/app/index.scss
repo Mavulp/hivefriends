@@ -15,7 +15,7 @@
 
     object-fit: cover;
     object-position: top right;
-    filter: blur(50px);
+    filter: blur(50px) saturate(5);
     opacity: 0.25;
   }
 }
