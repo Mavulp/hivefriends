@@ -96,8 +96,6 @@ const { errors, validate } = useFormValidation(form, rules, { autoclear: true })
 
 async function submit() {
   validate().then(() => {
-    console.log(form)
-
     albums.saveImageMetadata(data.key, form)
   })
 }

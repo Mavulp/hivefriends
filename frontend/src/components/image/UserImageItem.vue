@@ -99,8 +99,6 @@ const { imgIndex, setIndex } = inject<{ imgIndex: number; setIndex: (num: number
 const total = inject<number>("image-total")
 
 watch(imgIndex, (value) => {
-  console.log(value, props.index)
-
   if (value !== props.index) {
     open.value = false
   } else {
@@ -136,7 +134,7 @@ watch(imgIndex, (value) => {
     </div>
 
     <div class="image-wrap" @click="imageClick">
-      <img :src="imageUrl(props.image.key, 'medium')" alt="" />
+      <img :src="imageUrl(props.image.key, 'tiny')" alt="" />
     </div>
 
     <Teleport to="body" v-if="selectingAlbum">
@@ -195,7 +193,7 @@ watch(imgIndex, (value) => {
                 <span class="material-icons"> &#xe40b; </span>
               </button>
             </div>
-            <img :src="imageUrl(props.image.key)" alt="" />
+            <img :src="imageUrl(props.image.key, 'large')" alt="" />
           </div>
           <button :disabled="imgIndex <= 0" class="nav-btn btn-prev" @click="setIndex(props.index - 1)">
             <span class="material-icons"> &#xe5c4; </span>

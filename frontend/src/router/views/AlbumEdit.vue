@@ -147,8 +147,6 @@ function setupForm(_album: any) {
     singleDate.value = _album.timeframe.from === _album.timeframe.to
   }
 
-  console.log(props.images)
-
   if (props.images) {
     _album.images.push(...JSON.parse(props.images))
   }
@@ -301,7 +299,7 @@ onClickOutside(deletewrap, () => {
             @remove="delImage"
             @setAsCover="(key: string) => album.coverKey = key"
             @drag="dragStart(index)"
-            @dragover="(e) => dragOver(e, index)"
+            @dragover="(e: any) => dragOver(e, index)"
             @drop="dragCompare()"
           />
         </div>

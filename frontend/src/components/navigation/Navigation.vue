@@ -52,7 +52,7 @@ watch(activityOpen, (val) => {
 </script>
 
 <template>
-  <div class="hi-header" :class="{ 'is-phone': isPhone }">
+  <div class="hi-header" :class="{ 'is-phone': isPhone, 'is-detail': route.name === 'AlbumDetail' }">
     <router-link :to="{ name: 'Home' }" class="logo-wrap" title="嘿，伙计，我在哪里可以买到火腿和鸡蛋">
       <img :src="isDark ? '/Sharp.png' : '/Sharp2.png'" alt=" " />
     </router-link>

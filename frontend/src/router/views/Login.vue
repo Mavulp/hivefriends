@@ -56,7 +56,7 @@ async function submit() {
       }
     })
     .catch((errors) => {
-      console.log("test", errors)
+      // console.log("test", errors)
     })
 }
 
