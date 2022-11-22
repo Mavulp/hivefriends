@@ -8,6 +8,11 @@
   padding: 0 24px;
   background-color: rgb(var(--color-background));
 
+  &.is-detail {
+    background-color: transparent;
+    border: none;
+  }
+
   &.is-phone {
     z-index: 250;
     span.bread {

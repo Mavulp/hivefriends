@@ -122,7 +122,7 @@ watch(
       imageDetailUrl.value = null
 
       let img = new Image()
-      img.src = imageUrl(key)
+      img.src = imageUrl(key, 'large')
       img.onload = () => {
         imageDetailUrl.value = img.src
       }
@@ -306,7 +306,7 @@ onBeforeUnmount(() => {
           <div class="modal-wrap modal-copy">
             <div class="modal-title">
               <h4>Get sharing links</h4>
-              <button class="modal-close" @click="modal = false">
+              <button class="modal-close hover-bubble bubble-black" @click="modal = false">
                 <span class="material-icons">&#xe5cd;</span>
               </button>
             </div>
@@ -338,7 +338,7 @@ onBeforeUnmount(() => {
       <div class="hi-image-container">
         <div class="hi-image-wrapper">
           <transition :name="transDir" mode="out-in">
-            <img v-if="imageDetailUrl" :src="imageDetailUrl" ref="imageel" />
+              <img v-if="imageDetailUrl" :src="imageDetailUrl" ref="imageel" />
             <div v-else class="image-loading">
               <LoadingSpin dark />
             </div>
@@ -409,6 +409,11 @@ onBeforeUnmount(() => {
             </button>
           </div>
         </div>
+        <transition name="fade" mode="out-in">
+          <div class="blur-bg" v-if="imageDetailUrl">
+            <img :src="imageDetailUrl">
+          </div>
+        </transition>
       </div>
       <div class="divider"></div>
       <div class="hi-image-container">
@@ -495,7 +500,10 @@ onBeforeUnmount(() => {
             </div>
           </div>
         </div>
+
+      
       </div>
+
     </div>
 
     <div class="comment-wrap" v-if="album && image" :class="{ active: showComments }">

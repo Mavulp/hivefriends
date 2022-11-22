@@ -250,7 +250,6 @@ export const useAlbums = defineStore("album", {
 
       return put(`/api/albums/${key}`, album)
         .then((res) => {
-          console.log(res)
           toast.add("Successfully updated album", "success")
         })
         .catch((error: FetchError) => {

@@ -56,6 +56,19 @@
     max-width: 1920px;
     margin: auto;
     position: relative;
+    overflow: hidden;
+
+    .blur-bg {
+      top: -50px;
+      left: -50px;
+      right: -50px;
+
+      img {
+        height: 100%;
+        filter: blur(125px);
+        opacity: 0.16;
+      }
+    }
   }
 
   .divider {
@@ -63,7 +76,7 @@
     height: 1px;
     width: 100%;
     margin-bottom: 64px;
-    border-bottom: 1px solid rgb(var(--color-border-light));
+    // border-bottom: 1px solid rgb(var(--color-border-light));
   }
 
   .centered,
@@ -118,7 +131,7 @@
   .hi-image-context {
     @include grid(40px, 1fr 2fr 1fr);
     width: 100%;
-    padding: 32px 64px;
+    padding: 32px;
 
     .context-col {
       @include flex($gap: 32px);

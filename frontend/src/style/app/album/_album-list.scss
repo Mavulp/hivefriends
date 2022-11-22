@@ -2,14 +2,17 @@
   h1 {
     @include font(600);
     word-wrap: break-word;
-    font-size: 4rem;
+    font-size: 2rem;
     margin-bottom: 32px;
+    color: rgb(var(--color-text-light));
 
     a {
       @include font(900);
       word-wrap: break-word;
       font-size: 5rem;
+      display: block;
       color: inherit;
+      color: rgb(var(--color-text));
 
       &:hover {
         text-decoration: underline;

@@ -333,5 +333,10 @@ whenever(showUsers, () => {
         <ImageListitem v-for="image in chunk" :key="image.key" :image="image" :album-key="album.key" />
       </div>
     </div>
+
+    <div class="blur-bg" v-if="album.coverKey">
+      <img :src="imageUrl(album.coverKey, 'medium')">
+    </div>
   </div>
+
 </template>

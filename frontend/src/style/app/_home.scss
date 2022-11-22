@@ -3,6 +3,14 @@
   width: 100%;
   padding-bottom: 128px;
 
+  .blur-bg {
+    bottom: -256px;
+    img {
+      height: 175vh;
+      opacity: 0.075 !important;
+    }
+  }
+
   .home-landing {
     display: block;
     height: calc(100vh - $header);

@@ -36,7 +36,7 @@
       @include flex($align: flex-start, $direction: column, $justify: center);
       height: calc(95vh - $header);
       width: 47%;
-      padding: 128px 64px;
+      padding: 128px;
       padding-top: 64px;
 
       .is-draft {
@@ -48,11 +48,12 @@
 
       h1 {
         font-size: 6rem;
-        margin-bottom: 32px;
+        margin-bottom: 16px;
       }
 
       p {
-        font-size: 2.2rem;
+        font-size: 2rem;
+        line-height: 1.4em;
         margin-bottom: 4px;
       }
 
@@ -63,7 +64,8 @@
         a {
           @include font(300);
           display: block;
-          color: rgb(var(--color-text-light));
+          color: rgb(var(--color-text));
+          opacity: 0.8;
           font-size: 1.4rem;
           margin: 0;
         }
@@ -121,7 +123,7 @@
       .thumbnail-image-wrap {
         position: absolute;
         inset: 128px 0;
-        top: 64px;
+        top: 15px;
         overflow: hidden;
         z-index: 5;
 
@@ -238,7 +240,7 @@
   display: block;
   width: 100%;
   max-width: 1920px;
-  padding: 0 64px;
+  padding: 0 16px;
   min-height: 50vh;
   padding-bottom: 50vh;
 

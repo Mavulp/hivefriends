@@ -56,7 +56,7 @@ const accent = computed(() => user.user.accentColor.split(",").map((item: string
     </div>
 
     <div class="container">
-      <h4>Latest happenings</h4>
+      <h4>What's happening</h4>
       <Activity class="activity-home active" />
     </div>
 
@@ -72,5 +72,10 @@ const accent = computed(() => user.user.accentColor.split(",").map((item: string
       <span class="material-icons"> &#xe86f; </span>
       Made by <a target="_blank" href="https://github.com/mavulp">Mavulp</a> in {{ new Date().getFullYear() }}
     </p>
+
+    <div class="blur-bg" v-if="latest">
+      <img :src="imageUrl(latest.coverKey, 'tiny')" alt="" />
+
+    </div>
   </div>
 </template>

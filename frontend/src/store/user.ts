@@ -169,7 +169,6 @@ export const useUser = defineStore("user", {
           toast.add("Succesfully updated password. Make sure you remember it", "success")
         })
         .catch((error: FetchError) => {
-          console.log(error)
           toast.add(error.message, "error")
         })
     }
