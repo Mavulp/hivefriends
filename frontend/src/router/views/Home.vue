@@ -50,7 +50,7 @@ const accent = computed(() => user.user.accentColor.split(",").map((item: string
       <template v-if="latest">
         <router-link :to="{ name: 'AlbumDetail', params: { id: latest.key } }" class="album-thumbnail">
           <span>Latest album</span>
-          <img :src="imageUrl(latest.coverKey)" alt="" />
+          <img :src="imageUrl(latest.coverKey, 'large')" alt="" />
         </router-link>
       </template>
     </div>
