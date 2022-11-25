@@ -28,11 +28,9 @@ pub async fn setup_test_client() -> (TestClient, TempDir) {
         password: Some(String::from("password")),
     };
     let sub = SubCommands::AddUser(args);
-    db.call(move |conn| run_subcommand(sub, conn))
-        .await
-        .unwrap();
+    run_subcommand(sub, &db).await.unwrap();
 
-    (TestClient::new(api_route(db, data_path)), temp_dir)
+    (TestClient::new(api_route(db, data_path, 75)), temp_dir)
 }
 
 pub async fn authenticate(client: &TestClient) -> (String, String) {

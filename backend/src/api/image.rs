@@ -9,9 +9,9 @@ use serde_rusqlite::{from_row, to_params_named};
 mod delete_image;
 pub mod get_all;
 mod get_by_key;
-mod orientation;
+pub mod orientation;
 mod update_metadata;
-mod upload;
+pub mod upload;
 
 use crate::api::error::Error;
 
@@ -195,7 +195,7 @@ pub fn insert(metadata: &DbImage, conn: &Connection) -> anyhow::Result<()> {
             :description, \
             :uploaded_at \
         )",
-        to_params_named(&metadata).unwrap().to_slice().as_slice(),
+        to_params_named(metadata).unwrap().to_slice().as_slice(),
     )?;
 
     Ok(())

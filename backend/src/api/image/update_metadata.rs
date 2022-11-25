@@ -94,7 +94,7 @@ pub(super) async fn put(
             let mut old_path = image_path.clone();
             old_path.push(old_file.file_name());
             let mut new_path = image_path.clone();
-            new_path.push(&new_name);
+            new_path.push(new_name);
 
             fs::rename(old_path, new_path)
                 .await
