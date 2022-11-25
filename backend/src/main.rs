@@ -5,6 +5,7 @@ use hivefriends::{api_route, cli, setup_database};
 
 use std::net::SocketAddr;
 use std::path::PathBuf;
+use std::str::FromStr;
 
 #[tokio::main]
 async fn main() {
@@ -32,12 +33,18 @@ async fn run() -> anyhow::Result<()> {
     let db = setup_database(&db_path).await?;
 
     if let Some(sub) = args.subcommand {
-        return db.call(move |conn| cli::run_subcommand(sub, conn)).await;
+        return cli::run_subcommand(sub, &db).await;
     }
 
     let data_path = std::env::var("DATA_PATH")
         .context("DATA_PATH not set")?
         .into();
+
+    let image_quality = std::env::var("IMAGE_QUALITY")
+        .as_deref()
+        .map(u8::from_str)
+        .unwrap_or(Ok(75))
+        .context("Failed to parse IMAGE_QUALITY")?;
 
     let bind_addr: SocketAddr = std::env::var("BIND_ADDRESS")
         .context("BIND_ADDRESS not set")?
@@ -46,7 +53,7 @@ async fn run() -> anyhow::Result<()> {
 
     info!("listening on {}", bind_addr);
     axum::Server::try_bind(&bind_addr)?
-        .serve(api_route(db, data_path).into_make_service())
+        .serve(api_route(db, data_path, image_quality).into_make_service())
         .await
         .unwrap();
 

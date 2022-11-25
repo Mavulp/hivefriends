@@ -66,12 +66,13 @@ pub async fn put(
             }
 
             if let Some(want_draft) = request.draft {
-                let is_draft = tx.query_row(
-                    "SELECT draft FROM albums WHERE key = ?",
-                    params![album_key],
-                    |row| Ok(from_row::<bool>(row).unwrap()),
-                )
-                .context("Failed to remove album image associations")?;
+                let is_draft = tx
+                    .query_row(
+                        "SELECT draft FROM albums WHERE key = ?",
+                        params![album_key],
+                        |row| Ok(from_row::<bool>(row).unwrap()),
+                    )
+                    .context("Failed to remove album image associations")?;
 
                 if !is_draft {
                     if want_draft {
@@ -227,8 +228,8 @@ impl PutAlbumRequest {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::util::test::{insert_image, insert_user, insert_album};
     use crate::api::album::{get_album, InsertAlbum};
+    use crate::util::test::{insert_album, insert_image, insert_user};
     use assert_matches::assert_matches;
 
     #[tokio::test]
@@ -309,14 +310,15 @@ mod test {
             Authorize(user),
             Extension(state.clone()),
         )
-        .await.unwrap();
-
+        .await
+        .unwrap();
 
         let album = state
             .db
-            .call(move |conn| {
-            get_album(&key, conn)
-        }).await.unwrap().unwrap();
+            .call(move |conn| get_album(&key, conn))
+            .await
+            .unwrap()
+            .unwrap();
 
         assert_eq!(album.published_at, 42);
     }

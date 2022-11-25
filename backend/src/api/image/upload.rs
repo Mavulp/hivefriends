@@ -82,16 +82,7 @@ pub(super) async fn post(
     match exifreader.read_from_container(&mut bufreader) {
         Ok(exif) => {
             populate_metadata_from_exif(&mut metadata.metadata, &exif);
-            orientation = exif
-                .get_field(exif::Tag::Orientation, exif::In::PRIMARY)
-                .and_then(|f| {
-                    if let exif::Value::Short(v) = &f.value {
-                        ExifOrientation::try_from(v[0]).ok()
-                    } else {
-                        warn!("Unexpected format of camera model exif field");
-                        None
-                    }
-                });
+            orientation = orientation_from_exif(&exif);
         }
         Err(e) => {
             warn!("Failed to read EXIF metadata: {}", e);
@@ -104,6 +95,7 @@ pub(super) async fn post(
         &metadata.metadata.file_name,
         &data,
         &orientation.unwrap_or(ExifOrientation::Normal),
+        state.image_quality,
     )
     .await?;
 
@@ -114,6 +106,18 @@ pub(super) async fn post(
         .await?;
 
     Ok(Json(Image::from_db(metadata)))
+}
+
+pub fn orientation_from_exif(exif: &exif::Exif) -> Option<ExifOrientation> {
+    exif.get_field(exif::Tag::Orientation, exif::In::PRIMARY)
+        .and_then(|f| {
+            if let exif::Value::Short(v) = &f.value {
+                ExifOrientation::try_from(v[0]).ok()
+            } else {
+                warn!("Unexpected format of orientation exif field");
+                None
+            }
+        })
 }
 
 fn populate_metadata_from_exif(metadata: &mut DbImageMetadata, exif: &exif::Exif) {
@@ -224,12 +228,13 @@ fn generate_or_symlink_image(
     }
 }
 
-async fn store_image(
+pub async fn store_image(
     directory: PathBuf,
     key: &str,
     file_name: &str,
     data: &[u8],
     orientation: &ExifOrientation,
+    quality: u8,
 ) -> Result<(), Error> {
     let image = image::load_from_memory(data).map_err(Error::ImageError)?;
     let image = orientation.apply_to_image(image);
@@ -270,7 +275,7 @@ async fn store_image(
             ImageKind::Generated(image) => {
                 buffer.clear();
                 let mut cursor = Cursor::new(&mut buffer);
-                image.write_to(&mut cursor, image::ImageOutputFormat::Jpeg(100))?;
+                image.write_to(&mut cursor, image::ImageOutputFormat::Jpeg(quality))?;
                 fs::write(path, &buffer)
                     .await
                     .context("Failed to write jpg")?;

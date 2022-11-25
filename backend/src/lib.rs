@@ -6,7 +6,8 @@ use axum::{
 };
 use rusqlite::params;
 use rusqlite_migration::{Migrations, M};
-use tower_http::{services::ServeDir, trace::TraceLayer};
+use tower_http::{cors::CorsLayer, services::ServeDir, trace::TraceLayer};
+
 use tracing::*;
 
 use std::path::{Path, PathBuf};
@@ -16,6 +17,7 @@ use std::time::{Duration, SystemTime};
 pub struct AppState {
     db: tokio_rusqlite::Connection,
     data_path: PathBuf,
+    image_quality: u8,
 }
 
 #[cfg(test)]
@@ -27,7 +29,11 @@ impl AppState {
             .to_path_buf();
         let db = util::test::setup_database().await;
 
-        Arc::new(AppState { db, data_path })
+        Arc::new(AppState {
+            db,
+            data_path,
+            image_quality: 0,
+        })
     }
 }
 
@@ -50,7 +56,9 @@ pub mod api {
 
 const AUTH_TIME_SECONDS: u64 = 3600 * 24 * 30;
 
-pub fn api_route(db: tokio_rusqlite::Connection, data_path: PathBuf) -> Router {
+pub fn api_route(db: tokio_rusqlite::Connection, data_path: PathBuf, image_quality: u8) -> Router {
+    let cors = CorsLayer::permissive();
+
     Router::new()
         .nest("/api/auth", api::auth::api_route())
         .nest("/api/login", api::login::api_route())
@@ -67,8 +75,13 @@ pub fn api_route(db: tokio_rusqlite::Connection, data_path: PathBuf) -> Router {
             "/data/image/",
             get_service(ServeDir::new(data_path.clone())).handle_error(handle_error),
         )
+        .layer(cors)
         .layer(TraceLayer::new_for_http())
-        .layer(Extension(Arc::new(AppState { db, data_path })))
+        .layer(Extension(Arc::new(AppState {
+            db,
+            data_path,
+            image_quality,
+        })))
 }
 
 async fn handle_error(_err: std::io::Error) -> impl IntoResponse {
@@ -90,9 +103,9 @@ pub async fn setup_database(path: &Path) -> anyhow::Result<tokio_rusqlite::Conne
     let migrations = Migrations::new(MIGRATIONS.to_vec());
 
     db.call(move |conn| {
-        conn.pragma_update(None, "foreign_keys", &"OFF")?;
+        conn.pragma_update(None, "foreign_keys", "OFF")?;
         migrations.to_latest(conn)?;
-        conn.pragma_update(None, "foreign_keys", &"ON")?;
+        conn.pragma_update(None, "foreign_keys", "ON")?;
 
         Ok::<_, anyhow::Error>(())
     })
