@@ -33,8 +33,8 @@ const accent = computed(() => user.user.accentColor.split(",").map((item: string
       <h1>hi<b>!</b>friends</h1>
       <h3>
         Internet friends <br />
-        bringing the <i>IRL</i> <br />
-        to the <i>URL</i>.
+        bringing the <i>URL</i> <br />
+        to the <i>IRL</i>.
       </h3>
 
       <Button
