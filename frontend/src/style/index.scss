@@ -26,6 +26,10 @@ html {
     //   text-decoration: underline;
     // }
   }
+
+  body {
+    overflow-x: hidden;
+  }
 }
 
 @import "./app/";

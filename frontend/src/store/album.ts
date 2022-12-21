@@ -93,7 +93,7 @@ export const useAlbums = defineStore("album", {
     } as State),
   actions: {
     async genPublicAlbumToken(albumKey: string) {
-      return post(`/api/public/albums/${albumKey}/`, {})
+      return post(`/api/public/albums/${albumKey}`, {})
         .then((response) => response.token)
         .catch((error: FetchError) => {
           const toast = useToast()
@@ -105,7 +105,7 @@ export const useAlbums = defineStore("album", {
 
       addLoading("get-album")
 
-      const query = token ? `/api/public/albums/${id}/${token}/` : `/api/albums/${id}/`
+      const query = token ? `/api/public/albums/${id}/${token}` : `/api/albums/${id}`
 
       return get(query)
         .then((data) => {

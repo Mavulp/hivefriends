@@ -55,7 +55,7 @@ export const useUser = defineStore("user", {
 
       addLoading("login")
 
-      return post("/api/login/", credentials)
+      return post("/api/login", credentials)
         .then(async (res) => {
           localStorage.setItem("bearer_token", res.bearerToken)
 

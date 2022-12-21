@@ -1,4 +1,4 @@
-<script setup lang="ts">
+\<script setup lang="ts">
 import Button from "../../components/Button.vue"
 import HomeUser from "../../components/user/HomeUser.vue"
 import Activity from "../../components/activity/Activity.vue"

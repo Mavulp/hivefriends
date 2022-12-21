@@ -49,7 +49,7 @@ export const useActivity = defineStore("activity", {
 
       addLoading("activity")
 
-      return get("/api/activity")
+      return get("/api/activity/")
         .then((response) => {
           this.items = response.slice(0, 128)
           this.hasNew = true
