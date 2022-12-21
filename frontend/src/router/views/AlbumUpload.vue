@@ -275,7 +275,7 @@ function dragCompare() {
           @mouseleave="draggingOver = false"
           :class="{ hovering: draggingOver, empty: files.values.length === 0 }"
         >
-          <input id="draginput" name="draginput" type="file" multiple accept="image/*, .heic" />
+          <input id="draginput" name="draginput" type="file" multiple accept="image/*" />
           <label for="draginput">
             <span class="material-icons">&#xe439;</span>
             <span>{{ draggingOver ? "Drop the files!" : "Cllick me / Drag files over here" }}</span>
