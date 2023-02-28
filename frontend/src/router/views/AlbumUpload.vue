@@ -238,6 +238,9 @@ function dragOver(e: DragEvent, index: number) {
   drag_over.value = index
 }
 function dragCompare() {
+  console.log(drag_now.value,drag_over.value);
+  
+
   let _temp = files.values[drag_now.value]
   files.values[drag_now.value] = files.values[drag_over.value]
   files.values[drag_over.value] = _temp
@@ -294,7 +297,7 @@ function dragCompare() {
             @remove="delImage"
             @setAsCover="(key: string) => album.coverKey = key"
             @drag="dragStart(index)"
-            @dragover="(e) => dragOver(e, index)"
+            @dragover="(e: any) => dragOver(e, index)"
             @drop="dragCompare()"
           />
         </div>

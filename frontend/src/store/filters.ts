@@ -41,7 +41,7 @@ export const useFilters = defineStore("filters", {
 
       // /api/albums/filters?draft=true&from=10&to=100
       // Also can use filters to narrow down possible filtering
-      return get(`/api/albums/filters/${q}`)
+      return get(`/api/albums/filters${q}`)
         .then((response: Options) => {
           if (response.timeframes) {
             const all = response.timeframes
