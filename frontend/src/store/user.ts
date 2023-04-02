@@ -42,13 +42,13 @@ export interface State {
 
 export const useUser = defineStore("user", {
   state: () =>
-    ({
-      user: {},
-      users: [],
-      logged: false,
-      settings: {},
-      public_token: undefined
-    } as State),
+  ({
+    user: {},
+    users: [],
+    logged: false,
+    settings: {},
+    public_token: undefined
+  } as State),
   actions: {
     async signIn(credentials: { username: string; password: string }) {
       const { addLoading, delLoading } = useLoading()
@@ -99,7 +99,7 @@ export const useUser = defineStore("user", {
     },
 
     async fetchUsers() {
-      return get("/api/users/")
+      return get("/api/users")
         .then((response) => {
           this.users = response
           this.logged = true
@@ -123,7 +123,7 @@ export const useUser = defineStore("user", {
 
       addLoading("settings")
 
-      return get("/api/settings/")
+      return get("/api/settings")
         .then((response) => {
           this.settings = response
 
@@ -146,7 +146,7 @@ export const useUser = defineStore("user", {
         })
     },
     async setSetting(key: string, value: any) {
-      return put("/api/settings/", {
+      return put("/api/settings", {
         [key]: value
       })
         .then(() => {
@@ -188,16 +188,16 @@ export const useUser = defineStore("user", {
     },
     getUsername:
       (state) =>
-      (username?: string | string[] | undefined): string => {
-        if (Array.isArray(username)) username = username[0]
+        (username?: string | string[] | undefined): string => {
+          if (Array.isArray(username)) username = username[0]
 
-        if (!username) return state.user.displayName ?? state.user.username
+          if (!username) return state.user.displayName ?? state.user.username
 
-        const userFromList = state.users.find((item) => item.username === username)
-        if (userFromList) return userFromList.displayName ?? userFromList.username
+          const userFromList = state.users.find((item) => item.username === username)
+          if (userFromList) return userFromList.displayName ?? userFromList.username
 
-        return state.user.username === username ? state.user.displayName ?? state.user.username : username
-      }
+          return state.user.username === username ? state.user.displayName ?? state.user.username : username
+        }
     // getUsers: (state) => {
     //   if (state.users)
     // },

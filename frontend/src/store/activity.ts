@@ -16,17 +16,17 @@ export type ReducedImage = {
 
 export type ActivityItem =
   | {
-      comment: Comment
-    }
+    comment: Comment
+  }
   | {
-      image: ReducedImage
-    }
+    image: ReducedImage
+  }
   | {
-      album: Album
-    }
+    album: Album
+  }
   | {
-      user: User
-    }
+    user: User
+  }
 
 interface State {
   items: ActivityItem[]
@@ -37,19 +37,19 @@ interface State {
 
 export const useActivity = defineStore("activity", {
   state: () =>
-    ({
-      items: [],
-      sortedItems: {},
-      hasNew: false,
-      open: false
-    } as State),
+  ({
+    items: [],
+    sortedItems: {},
+    hasNew: false,
+    open: false
+  } as State),
   actions: {
     async fetchActivity() {
       const { addLoading, delLoading } = useLoading()
 
       addLoading("activity")
 
-      return get("/api/activity/")
+      return get("/api/activity")
         .then((response) => {
           this.items = response.slice(0, 128)
           this.hasNew = true

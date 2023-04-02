@@ -14,7 +14,7 @@
   .user-profile-upper {
     @include radius(12px);
     overflow: hidden;
-    box-shadow: var(--shadow);
+    // box-shadow: var(--shadow);
     margin-bottom: 32px;
     // background-color: rgb(var(--color-highlight));
 
@@ -29,7 +29,7 @@
     .hi-user-banner {
       display: block;
       width: 100%;
-      height: 512px;
+      height: 57vh;
       position: relative;
       overflow: hidden;
 
@@ -269,7 +269,9 @@
           @include radius(6px);
           margin-bottom: 40px;
           padding: 16px;
-          background-color: rgba(var(--color-background-dimmed), 0.1);
+          // background-color: rgba(var(--color-background-dimmed), 0.1);
+          border: 1px solid rgb(var(--color-border-light));
+          // box-shadow: var(--shadow);
 
           span {
             display: block;

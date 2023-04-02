@@ -140,7 +140,7 @@ watchEffect(() => {
               <span>Country</span>
 
               <div class="nationality-wrap">
-                <img class="flag" :src="flag(user.country, 'png')" alt="" />
+                <img class="flag" :src="flag(user.country)" :alt="user.country" />
                 <p>{{ countries[user.country].name }}</p>
               </div>
             </div>

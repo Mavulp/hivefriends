@@ -60,7 +60,7 @@ function go() {
         <span>{{ user.getUsername(data.username) }}</span>
 
         <div class="nationality-wrap" v-if="data.country">
-          <img class="flag" :src="flag(data.country, 'png')" alt="" />
+          <img class="flag" :src="flag(data.country)" :alt="data.country" />
           <p>{{ countries[data.country].name }}</p>
         </div>
       </div>

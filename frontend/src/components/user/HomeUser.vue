@@ -24,12 +24,10 @@ const props = defineProps<Props>()
     />
 
     <h5>{{ user.getUsername(props.data.username) }}</h5>
-
-    <div v-if="props.data.country" :data-title-top="countries[props.data.country].name">
-      <img class="flag" :src="flag(props.data.country, 'png')" alt="" />
-    </div>
     <div class="flex-1"></div>
 
-    <button class="hover-bubble">View Profile</button>
+    <div v-if="props.data.country" :data-title-top="countries[props.data.country].name">
+      <img class="flag" :src="flag(props.data.country)" :alt="props.data.country" />
+    </div>
   </router-link>
 </template>

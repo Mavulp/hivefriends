@@ -84,13 +84,13 @@ export interface NewAlbum {
 
 export const useAlbums = defineStore("album", {
   state: () =>
-    ({
-      albumList: [],
-      albums: [],
-      drafts: [],
-      userAlbums: {},
-      imageMetadata: {}
-    } as State),
+  ({
+    albumList: [],
+    albums: [],
+    drafts: [],
+    userAlbums: {},
+    imageMetadata: {}
+  } as State),
   actions: {
     async genPublicAlbumToken(albumKey: string) {
       return post(`/api/public/albums/${albumKey}`, {})
@@ -133,7 +133,7 @@ export const useAlbums = defineStore("album", {
         draft
       })
 
-      return get(`/api/albums/${q}`)
+      return get(`/api/albums${q}`)
         .then((albums) => {
           this.albumList = albums
           return albums
@@ -159,7 +159,7 @@ export const useAlbums = defineStore("album", {
         draft
       })
 
-      return get(`/api/albums/${q}`)
+      return get(`/api/albums${q}`)
         .then((albums) => {
           this.userAlbums[user] = albums
 
@@ -212,7 +212,7 @@ export const useAlbums = defineStore("album", {
 
       addLoading("add-album")
 
-      return post("/api/albums/", album)
+      return post("/api/albums", album)
         .then((key) => {
           // Redirect to page with data.key
           return key
