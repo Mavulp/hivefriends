@@ -61,7 +61,7 @@ mod test {
 
                 for (count, img) in comment_count.iter().zip(images.iter()) {
                     for _ in 0..*count {
-                        insert_comment(&user, &img, &album, "text", conn);
+                        insert_comment(&user, img, &album, "text", conn);
                     }
                 }
 

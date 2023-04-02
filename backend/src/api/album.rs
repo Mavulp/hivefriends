@@ -318,7 +318,7 @@ pub fn insert_share_token(rows: InsertShareToken, conn: &Connection) -> Result<(
                 :created_by,
                 :created_at
             )",
-        to_params_named(&rows).unwrap().to_slice().as_slice(),
+        to_params_named(rows).unwrap().to_slice().as_slice(),
     )
     .context("Failed to insert share token")?;
 

@@ -119,8 +119,7 @@ mod test {
 
         let result = delete(Path(album.clone()), Authorize(user), Extension(state)).await;
 
-        assert_matches!(result, Ok(Json(result)) => {
-            assert_eq!((), result);
+        assert_matches!(result, Ok(Json(_)) => {
         })
     }
 }

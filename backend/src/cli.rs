@@ -71,7 +71,7 @@ pub async fn run_subcommand(
             let password = if let Some(password) = args.password {
                 password
             } else {
-                rpassword::prompt_password(&format!("Password for {}: ", args.username))?
+                rpassword::prompt_password(format!("Password for {}: ", args.username))?
             };
 
             db.call(move |conn| crate::api::user::create_account(&args.username, &password, conn))
@@ -88,7 +88,7 @@ pub async fn run_subcommand(
             let password = if let Some(password) = args.password {
                 password
             } else {
-                rpassword::prompt_password(&format!("Password for {}: ", args.username))?
+                rpassword::prompt_password(format!("Password for {}: ", args.username))?
             };
 
             db.call(move |conn| {
