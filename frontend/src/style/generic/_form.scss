@@ -21,8 +21,8 @@
     @include radius(5px);
     @include font(400);
     display: block;
-    height: 56px;
-    line-height: 56px;
+    height: 48px;
+    line-height: 48px;
     padding: 0 24px;
     font-size: 1.4rem;
     width: 100%;
@@ -111,11 +111,11 @@ input:-webkit-autofill:active {
     }
 
     input[type="date"] {
-      height: 44px;
-      line-height: 44px;
+      height: 48px;
+      line-height: 48px;
       font-size: 1.4rem;
       padding: 0 16px;
-      border: 2px solid rgb(var(--color-border-light));
+      border: 1px solid rgb(var(--color-border));
     }
   }
 }
@@ -165,9 +165,9 @@ input:-webkit-autofill:active {
   }
 
   input {
-    height: 56px;
+    height: 48px;
     width: 100%;
-    line-height: 56px;
+    line-height: 48px;
     border: none;
     flex: 1;
     font-size: 1.6rem;
@@ -190,7 +190,7 @@ input:-webkit-autofill:active {
         .material-icons {
           &:before {
             opacity: 1;
-            inset: -4px;
+            // inset: -4px;
           }
         }
       }
@@ -202,7 +202,7 @@ input:-webkit-autofill:active {
 
       .material-icons {
         color: rgb(var(--color-border));
-        font-size: 2.6rem;
+        font-size: 2.4rem;
         position: relative;
         z-index: 5;
 
@@ -211,7 +211,12 @@ input:-webkit-autofill:active {
           @include radius(50%);
           content: "";
           display: block;
-          inset: -2px;
+          width: 33px;
+          height: 33px;
+          // inset: -2px;
+          top: -2px;
+          left: -4px;
+          // top: 2px;
           position: absolute;
           background-color: rgba(var(--color-background-dimmed), 0.12);
           z-index: -1;
@@ -278,8 +283,8 @@ input:-webkit-autofill:active {
       display: block;
       padding: 0 20px;
       width: 100%;
-      height: 56px;
-      line-height: 56px;
+      height: 48px;
+      line-height: 48px;
       background-color: transparent;
       font-size: 1.4rem;
       border: none;
@@ -289,9 +294,22 @@ input:-webkit-autofill:active {
     .select-placeholder {
       color: rgb(var(--color-text-light));
     }
+
+    .select-icon {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+
+      .material-icons {
+        color: rgb(var(--color-text-light));
+        font-size: 2.2rem;
+      }
+    }
   }
 
   .select-dropdown {
+    @include radius(5px);
     @include t(0.1s);
     position: absolute;
     top: 100%;
@@ -305,8 +323,8 @@ input:-webkit-autofill:active {
     visibility: hidden;
     z-index: -1;
     background-color: rgb(var(--color-white));
-    border: 2px solid rgb(var(--color-border-light));
-    box-shadow: var(--shadow);
+    border: 1px solid rgb(var(--color-border));
+    box-shadow: var(--shadow2);
     transform: scale(0.9) translateY(-8px);
     transform-origin: center top;
 
@@ -314,16 +332,22 @@ input:-webkit-autofill:active {
     .select-no-options {
       display: block;
       width: 100%;
-      height: 56px;
+      height: 40px;
       padding: 0 20px;
-      line-height: 56px;
+      line-height: 40px;
       color: rgb(var(--color-text));
     }
 
     button {
       text-align: left;
       position: relative;
-      border-bottom: 1px solid rgb(var(--color-border-light));
+      font-size: 1.4rem;
+      border-bottom: 1px solid rgb(var(--color-border));
+
+      div {
+        @include font(400);
+        font-size: 1.4rem;
+      }
 
       .material-icons {
         display: block;

@@ -149,49 +149,17 @@
   }
 }
 
-.all-image-controls {
-  @include flex($gap: 9px, $justify: flex-start, $direction: column);
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  bottom: 8px;
-  z-index: 10;
-
-  button {
-    @include radius(50%);
-    width: 32px;
-    height: 32px;
-    background-color: rgba(var(--color-background-dark), 0.75);
-
-    &:after {
-      content: "";
-      opacity: 1 !important;
-      z-index: 1;
-    }
-
-    &:hover {
-      background-color: rgba(var(--color-background-dark), 1);
-
-      .material-icons {
-        color: #fff;
-        text-shadow: 0 1px 3px rgb(#191716, 0.4);
-      }
-    }
-
-    .material-icons {
-      color: #fff;
-      text-shadow: 0 1px 3px rgb(#191716, 0.4);
-      font-size: 1.8rem;
-      transform: translateY(2px);
-    }
-  }
-}
-
 .all-image-checkbox {
   position: absolute;
-  left: 12px;
-  top: 12px;
+  left: 5px;
+  top: 5px;
   z-index: 10;
+
+  .form-checkbox.is-checked {
+    & + label .span.material-icons {
+      color: rgb(var(--color-highlight)) !important;
+    }
+  }
 
   .form-checkbox input[type="checkbox"] + label {
     @include radius(50%);
@@ -199,44 +167,29 @@
     width: 36px;
     height: 36px;
     text-align: center;
-    background-color: rgba(var(--color-background-dark), 0.5);
 
     span.material-icons {
-      color: #fff;
-      font-size: 2.2rem;
+      color: #000;
+      filter: drop-shadow(1px 1px 2px#fff);
       transform: translateY(1px);
     }
   }
 }
 
-.modal .modal-wrap {
-  &.modal-image {
-    transform: unset !important;
-    inset: 32px;
-    background-color: transparent;
-    text-align: center;
+.modal {
+  &.modal-images {
+    background-color: rgb(var(--color-background)) !important;
+    height: 100vh;
 
     .nav-btn {
       @include t();
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
       width: 64px;
       height: 64px;
       z-index: 10;
 
-      &.btn-prev {
-        left: 80px;
-      }
-
-      &.btn-next {
-        right: 80px;
-      }
-
       &:disabled {
         opacity: 0.5;
         cursor: default;
-        // pointer-events: none !important;
       }
 
       &:hover:not(:disabled) {
@@ -250,133 +203,217 @@
       }
     }
 
-    .img-index {
-      @include flex($gap: 4px);
-      font-size: 1.4rem;
-      color: #fff;
-
-      position: absolute;
-      bottom: 8px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 100;
-      text-shadow: 0 1px 1px rgba(var(--color-background-dark), 0.5);
-    }
-
-    & > div {
-      display: inline-block;
-      width: auto;
-      margin: 0 auto;
-      position: relative;
-      z-index: 10;
-      height: calc(100vh - 64px);
-      // max-width: 80wv;
-      max-width: 80%;
-
-      .all-image-controls {
-        top: 16px;
-        right: 16px;
-      }
-
-      img {
-        @include radius(6px);
-        display: block;
-        height: 100%;
-        max-width: 100%;
-        object-fit: cover;
-        object-position: center;
-        box-shadow: var(--shadow);
-      }
-    }
-  }
-
-  &.modal-select-album {
-    padding: 32px;
-    max-width: 628px;
-    width: 100%;
-
     .btn-close {
-      position: absolute;
-      right: 24px;
-      top: 24px;
-
       .material-icons {
-        font-size: 1.6rem;
         color: rgb(var(--color-text));
       }
     }
 
-    & > p {
-      margin-bottom: 32px;
-    }
+    .all-image-controls {
+      @include flex($gap: 30px, $justify: center);
+      z-index: 10;
 
-    .select-album-item {
-      @include radius(6px);
-      @include t(0.1s);
-      @include flex($align: flex-start, $gap: 24px);
-      position: relative;
-      color: rgb(var(--color-text));
-      padding: 8px 12px;
-      padding-left: 8px;
-      margin: 0 -8px 4px;
-      width: 100%;
-
-      &:hover {
-        background-color: rgba(var(--color-highlight), 0.1);
+      p {
+        @include flex($gap: 5px, $justify: center);
+        margin: 0;
+        min-width: 88px;
       }
 
-      &:last-child {
-        margin-bottom: 0;
-        border-bottom: none;
+      button {
+        @include radius(50%);
+        width: 32px;
+        height: 32px;
+        // background-color: rgba(var(--color-background-dark), 0.75);
 
         &:after {
-          display: none;
+          content: "";
+          opacity: 1 !important;
+          z-index: 1;
+        }
+
+        &:hover {
+          .material-icons {
+            color: rgb(var(--color-text));
+            // text-shadow: 0 1px 3px rgb(#191716, 0.4);
+          }
+        }
+
+        .material-icons {
+          color: rgb(var(--color-text));
+
+          text-shadow: 0 1px 3px rgb(#191716, 0.4);
+          font-size: 2.2rem;
+          transform: translateY(2px);
+        }
+      }
+    }
+
+    .modal-top {
+      @include grid(20px, 3);
+      height: 56px;
+      border-bottom: 1px solid rgb(var(--color-border));
+      padding: 0 20px;
+
+      .left {
+        @include flex($gap: 30px, $justify: flex-start, $align: center);
+
+        button {
+          @include flex($gap: 8px);
+          color: rgb(var(--color-text));
+
+          .material-icons {
+            font-size: 1.4rem;
+            color: rgb(var(--color-text-light));
+          }
         }
       }
 
-      $image-width: 56px;
+      .right {
+        @include flex($justify: flex-end, $align: center);
+      }
+    }
 
-      .album-item-image {
-        @include radius(4px);
-        display: block;
-        width: $image-width;
-        height: $image-width;
-        min-width: $image-width;
+    img {
+      display: block;
+      margin: 0 auto;
+      object-position: center;
+      object-fit: contain;
+    }
+  }
+
+  .modal-wrap {
+    &.modal-image {
+      transform: unset !important;
+      inset: 32px;
+      background-color: transparent;
+      text-align: center;
+
+      .img-index {
+        @include flex($gap: 4px);
+        font-size: 1.4rem;
+        color: #fff;
+
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 100;
+        text-shadow: 0 1px 1px rgba(var(--color-background-dark), 0.5);
+      }
+
+      & > div {
+        display: inline-block;
+        width: auto;
+        margin: 0 auto;
         position: relative;
-        overflow: hidden;
+        z-index: 10;
+        height: calc(100vh - 64px);
+        // max-width: 80wv;
+        max-width: 80%;
 
         img {
-          // display: block;
-          width: $image-width;
-          height: $image-width;
-          // object-fit: cover !important;
-          position: absolute;
+          @include radius(6px);
+          display: block;
+          height: 100%;
+          max-width: 100%;
           object-fit: cover;
           object-position: center;
-          top: 0;
-          left: 0;
+          box-shadow: var(--shadow);
+        }
+      }
+    }
+
+    &.modal-select-album {
+      padding: 32px;
+      max-width: 628px;
+      width: 100%;
+      transform: translate(-50%, 0);
+      top: 80px;
+      bottom: 80px;
+
+      .btn-close {
+        position: absolute;
+        right: 24px;
+        top: 24px;
+
+        .material-icons {
+          font-size: 1.6rem;
+          color: rgb(var(--color-text));
         }
       }
 
-      .album-item-meta {
-        padding-top: 8px;
-        // width: 100%;
-        text-align: left;
+      & > p {
+        margin-bottom: 32px;
+      }
 
-        strong {
-          @include t(0.1s);
-          font-size: 2rem;
-          margin-bottom: 4px;
-          word-wrap: break-word;
-          word-break: break-all;
+      .select-album-item {
+        @include radius(6px);
+        @include t(0.1s);
+        @include flex($align: flex-start, $gap: 24px);
+        position: relative;
+        color: rgb(var(--color-text));
+        padding: 8px 12px;
+        padding-left: 8px;
+        margin: 0 -8px 4px;
+        width: 100%;
+
+        &:hover {
+          background-color: rgba(var(--color-highlight), 0.1);
         }
 
-        p {
-          @include t(0.1s);
-          font-size: 1.2rem;
-          margin: 0;
-          font-style: italic;
-          color: rgb(var(--color-text-light));
+        &:last-child {
+          margin-bottom: 0;
+          border-bottom: none;
+
+          &:after {
+            display: none;
+          }
+        }
+
+        $image-width: 56px;
+
+        .album-item-image {
+          @include radius(4px);
+          display: block;
+          width: $image-width;
+          height: $image-width;
+          min-width: $image-width;
+          position: relative;
+          overflow: hidden;
+
+          img {
+            // display: block;
+            width: $image-width;
+            height: $image-width;
+            // object-fit: cover !important;
+            position: absolute;
+            object-fit: cover;
+            object-position: center;
+            top: 0;
+            left: 0;
+          }
+        }
+
+        .album-item-meta {
+          padding-top: 8px;
+          // width: 100%;
+          text-align: left;
+
+          strong {
+            @include t(0.1s);
+            font-size: 2rem;
+            margin-bottom: 4px;
+            word-wrap: break-word;
+            word-break: break-all;
+          }
+
+          p {
+            @include t(0.1s);
+            font-size: 1.2rem;
+            margin: 0;
+            font-style: italic;
+            color: rgb(var(--color-text-light));
+          }
         }
       }
     }

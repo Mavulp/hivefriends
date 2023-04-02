@@ -109,7 +109,7 @@
 
     .album-upload-items {
       @include flex($gap: 64px, $direction: column);
-      padding: 40px;
+      padding: 16px;
       position: relative;
       background-color: rgba(var(--color-background-dimmed), 0.025);
 
@@ -127,7 +127,7 @@
         }
 
         &.empty {
-          height: calc(100vh - $header - 80px);
+          height: calc(100vh - $header - 32px);
         }
 
         &:hover,
@@ -284,6 +284,7 @@
           }
 
           img {
+            @include radius(5px);
             max-height: 480px;
             max-width: 100%;
             object-fit: contain;

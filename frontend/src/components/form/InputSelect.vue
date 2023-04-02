@@ -113,6 +113,12 @@ function setValue(item: Option) {
         :placeholder="selected && selected.length > 0 ? `${selectedLabels}` : `${placeholder}`"
         v-model="search"
       />
+
+      <div class="select-icon">
+        <span class="material-icons">
+          &#xe5cf;
+        </span>
+      </div>
     </button>
 
     <div class="select-dropdown">

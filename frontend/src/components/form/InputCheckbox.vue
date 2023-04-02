@@ -25,7 +25,7 @@ const d = computed(() => "id" + Math.random().toString(16).slice(2))
 </script>
 
 <template>
-  <div class="form-checkbox">
+  <div class="form-checkbox" :class="{'is-checked': check}">
     <input type="checkbox" :name="d" :id="d" v-model="data" />
     <label :for="d">
       <div class="icon">

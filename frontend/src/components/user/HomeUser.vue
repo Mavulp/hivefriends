@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { User, useUser } from "../../store/user"
-import { flag } from "../../js/utils"
+import { flag, formatDate } from "../../js/utils"
 import { imageUrl } from "../../store/album"
 import countries from "../../js/countries"
 
@@ -23,8 +23,10 @@ const props = defineProps<Props>()
       @error="(e: any) => e.target.classList.add('image-error')"
     />
 
-    <h5>{{ user.getUsername(props.data.username) }}</h5>
-    <div class="flex-1"></div>
+    <div class="info">
+      <h5>{{ user.getUsername(props.data.username) }}</h5>
+      <p>Joined: {{ formatDate(props.data.createdAt, ['weekday'])  }}</p>
+    </div>
 
     <div v-if="props.data.country" :data-title-top="countries[props.data.country].name">
       <img class="flag" :src="flag(props.data.country)" :alt="props.data.country" />
