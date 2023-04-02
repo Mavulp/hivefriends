@@ -42,7 +42,7 @@ async fn set_country() {
     let expected_country = "DE";
 
     let res = client
-        .put(&format!("/api/settings/"))
+        .put("/api/settings/")
         .header(AUTHORIZATION, format!("Bearer {token}"))
         .json(&json!({ "country": expected_country }))
         .send()

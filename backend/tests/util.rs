@@ -21,7 +21,7 @@ pub async fn setup_test_client() -> (TestClient, TempDir) {
     let db_path = temp_dir.path().join("test.db");
     let db = setup_database(&db_path).await.unwrap();
 
-    let data_path = temp_dir.path().join("data").into();
+    let data_path = temp_dir.path().join("data");
 
     let args = AddUserArgs {
         username: String::from("username"),
@@ -80,10 +80,10 @@ pub async fn upload_test_image(path: &str, client: &TestClient, token: &str) -> 
 }
 
 pub async fn create_test_album(client: &TestClient, token: &str) -> String {
-    let image_key = upload_test_image("./tests/testimage.png", &client, &token).await;
+    let image_key = upload_test_image("./tests/testimage.png", client, token).await;
 
     let res = client
-        .post(&format!("/api/albums/"))
+        .post("/api/albums/")
         .header(AUTHORIZATION, format!("Bearer {token}"))
         .json(&json!({
             "title": "Test Title",

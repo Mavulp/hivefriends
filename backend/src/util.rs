@@ -53,9 +53,9 @@ pub mod test {
         let migrations = Migrations::new(crate::MIGRATIONS.to_vec());
 
         db.call(move |conn| {
-            conn.pragma_update(None, "foreign_keys", &"OFF")?;
+            conn.pragma_update(None, "foreign_keys", "OFF")?;
             migrations.to_latest(conn)?;
-            conn.pragma_update(None, "foreign_keys", &"ON")?;
+            conn.pragma_update(None, "foreign_keys", "ON")?;
 
             Ok::<_, anyhow::Error>(())
         })
@@ -115,7 +115,7 @@ pub mod test {
 
     pub fn insert_album(album: InsertAlbum, conn: &rusqlite::Connection) -> String {
         fn insert_album<'a>(key: &'a str, mut album: InsertAlbum<'a>, conn: &rusqlite::Connection) {
-            album.key = &key;
+            album.key = key;
             album::insert_album(album, conn).unwrap();
         }
 
@@ -131,7 +131,7 @@ pub mod test {
             mut rows: InsertShareToken<'a>,
             conn: &rusqlite::Connection,
         ) {
-            rows.share_token = &token;
+            rows.share_token = token;
             album::insert_share_token(rows, conn).unwrap();
         }
 

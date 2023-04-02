@@ -168,7 +168,7 @@ mod test {
                 });
             });
 
-            assert_eq!(filters.has_drafts, true);
+            assert!(filters.has_drafts);
         });
     }
 
@@ -228,7 +228,7 @@ mod test {
                 });
             });
 
-            assert_eq!(filters.has_drafts, true);
+            assert!(filters.has_drafts);
         });
     }
 }

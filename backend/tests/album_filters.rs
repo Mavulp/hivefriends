@@ -12,7 +12,7 @@ async fn get_all() {
     let _ = create_test_album(&client, &token).await;
 
     let res = client
-        .get(&format!("/api/albums/filters"))
+        .get("/api/albums/filters")
         .header(AUTHORIZATION, format!("Bearer {token}"))
         .send()
         .await;
@@ -32,5 +32,5 @@ async fn get_all() {
     assert_eq!(timeframe["from"].as_i64().unwrap(), 123);
     assert_eq!(timeframe["to"].as_i64().unwrap(), 234);
 
-    assert_eq!(json["hasDrafts"].as_bool().unwrap(), false);
+    assert!(!json["hasDrafts"].as_bool().unwrap());
 }
