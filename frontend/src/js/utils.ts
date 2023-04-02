@@ -62,13 +62,9 @@ export function formatFileSize(bytes: string | number, round?: boolean) {
   return round ? Math.round(bytes / 1000) + "KB" : bytes / 1000 + "KB"
 }
 
-export async function fetchFlag(code: string, type: string = "svg"): Promise<string> {
-  const url = `https://countryflagsapi.com/${type}/${code}`
-  return fetch(url).then((r) => r.text())
-}
-
-export function flag(code: string, type: string = "svg") {
-  return `https://countryflagsapi.com/${type}/${code}`
+export function flag(code: string) {
+  return `https://flagsapi.com/${code}/flat/32.png`
+  // return `https://countryflagsapi.com/${type}/${code}`
 }
 
 export function median(numbers: Array<number>) {

@@ -118,7 +118,7 @@ watch(imgIndex, (value) => {
       <InputCheckbox :check="props.isSelect" @update:check="emit('select', props.image)" />
     </div>
 
-    <div class="all-image-controls" v-show="hover && !mode">
+    <!-- <div class="all-image-controls" v-show="hover && !mode">
       <button data-title-left="Go to album" @click="tryToAlbum" v-if="inAlbum">
         <span class="material-icons"> &#xe89e; </span>
       </button>
@@ -131,7 +131,7 @@ watch(imgIndex, (value) => {
       <button data-title-left="Use as banner" @click="setAs('bannerKey')" :class="{ 'btn-disabled': loading }">
         <span class="material-icons"> &#xe40b; </span>
       </button>
-    </div>
+    </div> -->
 
     <div class="image-wrap" @click="imageClick">
       <img :src="imageUrl(props.image.key, 'tiny')" alt="" />
@@ -173,39 +173,64 @@ watch(imgIndex, (value) => {
     </Teleport>
 
     <Teleport to="body" v-if="open">
-      <Modal>
-        <div class="modal-wrap modal-image">
-          <div ref="wrap">
-            <div class="all-image-controls">
-              <button data-title-left="Close" @click="open = false">
-                <span class="material-icons">&#xe5cd;</span>
-              </button>
-              <button data-title-left="Go to album" @click="tryToAlbum" v-if="inAlbum">
-                <span class="material-icons"> &#xe89e; </span>
-              </button>
-              <button data-title-left="Share link" @click="copyImage">
-                <span class="material-icons"> &#xe80d; </span>
-              </button>
-              <button data-title-left="Use as avatar" @click="setAs('avatarKey')" :class="{ 'btn-disabled': loading }">
-                <span class="material-icons"> &#xe853; </span>
-              </button>
-              <button data-title-left="Use as banner" @click="setAs('bannerKey')" :class="{ 'btn-disabled': loading }">
-                <span class="material-icons"> &#xe40b; </span>
-              </button>
-            </div>
-            <img :src="imageUrl(props.image.key, 'large')" alt="" />
+      <Modal class="modal-images">
+        <div class="modal-top">
+          <div class="left">
+            <button class="hover-bubble bubble-small" data-title-bottom-left="Go to album" @click="tryToAlbum" v-if="inAlbum">
+              <span class="material-icons"> &#xe89e; </span>
+              Album
+            </button>
+            <button class="hover-bubble bubble-small" data-title-bottom="Share link" @click="copyImage">
+              <span class="material-icons"> &#xe80d; </span>
+              Share
+            </button>
+            <button class="hover-bubble bubble-small" data-title-bottom="Use as avatar" @click="setAs('avatarKey')" :class="{ 'btn-disabled': loading }">
+              <span class="material-icons"> &#xe853; </span>
+              Use as Avatar
+            </button>
+            <button class="hover-bubble bubble-small" data-title-bottom="Use as banner" @click="setAs('bannerKey')" :class="{ 'btn-disabled': loading }">
+              <span class="material-icons"> &#xe40b; </span>
+              Use as Banner
+            </button>
           </div>
-          <button :disabled="imgIndex <= 0" class="nav-btn btn-prev" @click="setIndex(props.index - 1)">
-            <span class="material-icons"> &#xe5c4; </span>
-          </button>
-          <button :disabled="imgIndex + 1 === total" class="nav-btn btn-next" @click="setIndex(props.index + 1)">
-            <span class="material-icons"> &#xe5c8; </span>
-          </button>
+          <div class="all-image-controls">
+            <button :disabled="imgIndex <= 0" class="nav-btn btn-prev" @click="setIndex(props.index - 1)">
+              <span class="material-icons"> &#xe5c4; </span>
+            </button>
 
-          <p class="img-index">
-            <b>{{ props.index + 1 }}</b> of {{ total }}
-          </p>
+            <p class="img-index">
+              <b>{{ props.index + 1 }}</b> of {{ total }}
+            </p>
+
+            <button :disabled="imgIndex + 1 === total" class="nav-btn btn-next" @click="setIndex(props.index + 1)">
+              <span class="material-icons"> &#xe5c8; </span>
+            </button>
+          </div>
+
+          <div class="right">
+            <button class="btn-close hover-bubble" @click="open = false">
+              <span class="material-icons">&#xe5cd;</span>
+            </button>
+          </div>
         </div>
+
+        <img :src="imageUrl(props.image.key, 'large')" alt="" />
+
+        <!-- 
+          <div class="all-image-controls">
+            <button data-title-bottom="Go to album" @click="tryToAlbum" v-if="inAlbum">
+              <span class="material-icons"> &#xe89e; </span>
+            </button>
+            <button data-title-bottom="Share link" @click="copyImage">
+              <span class="material-icons"> &#xe80d; </span>
+            </button>
+            <button data-title-bottom="Use as avatar" @click="setAs('avatarKey')" :class="{ 'btn-disabled': loading }">
+              <span class="material-icons"> &#xe853; </span>
+            </button>
+            <button data-title-bottom="Use as banner" @click="setAs('bannerKey')" :class="{ 'btn-disabled': loading }">
+              <span class="material-icons"> &#xe40b; </span>
+            </button>
+          </div> -->
       </Modal>
     </Teleport>
   </div>

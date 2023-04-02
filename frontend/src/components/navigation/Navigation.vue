@@ -60,9 +60,9 @@ watch(activityOpen, (val) => {
     <template v-if="!isPhone">
       <div class="nav-links-wrap">
         <router-link class="nav-link" :to="{ name: 'Home' }">Home</router-link>
-        <router-link class="nav-link" :to="{ name: 'Albums' }">Album List</router-link>
+        <router-link class="nav-link" :to="{ name: 'Albums' }">Albums</router-link>
         <!-- <router-link class="nav-link" :to="{ name: 'About' }">Activity Log</router-link> -->
-        <router-link class="nav-link" :to="{ name: 'About' }">The Project</router-link>
+        <router-link class="nav-link" :to="{ name: 'About' }">About</router-link>
       </div>
 
       <transition name="fade" appear mode="out-in">
@@ -88,11 +88,10 @@ watch(activityOpen, (val) => {
 
         <button
           data-title-bottom="Activity Log"
-          class="hover-bubble p-rel"
+          class="hover-bubble p-rel btn-icon"
           :class="{ active: activityOpen }"
           @click="activityOpen = !activityOpen"
         >
-          <!-- <div class="activity-alert has-activity" :class="{ 'has-activity': true }"></div> -->
           <span class="material-icons"> &#xf009; </span>
         </button>
 
@@ -100,24 +99,24 @@ watch(activityOpen, (val) => {
           <ActivityWrap @close="activityOpen = false" :class="{ active: activityOpen }" />
         </Teleport>
 
-        <router-link class="hover-bubble" data-title-bottom="Upload album" :to="{ name: 'Upload' }">
+        <router-link class="hover-bubble btn-icon" data-title-bottom="Upload album" :to="{ name: 'Upload' }">
           <span class="material-icons">&#xe2cc;</span>
         </router-link>
 
         <router-link
-          class="hover-bubble"
+          class="hover-bubble btn-icon"
           data-title-bottom="Your albums"
           :to="{ name: 'UserAlbums', params: { user: auth.user.username } }"
         >
           <span class="material-icons">&#xe413;</span>
         </router-link>
-        <router-link class="hover-bubble" data-title-bottom="Your photos" :to="{ name: 'UserImages' }">
+        <router-link class="hover-bubble btn-icon" data-title-bottom="Your photos" :to="{ name: 'UserImages' }">
           <span class="material-icons">&#xe5c3;</span>
         </router-link>
-        <router-link class="hover-bubble" data-title-bottom="Settings" :to="{ name: 'UserSettings' }">
+        <router-link class="hover-bubble btn-icon"  data-title-bottom="Settings" :to="{ name: 'UserSettings' }">
           <span class="material-icons">&#xe8b8;</span>
         </router-link>
-        <button class="hover-bubble" data-title-bottom="Log out" @click="signOut()">
+        <button class="hover-bubble btn-icon" data-title-bottom="Log out" @click="signOut()">
           <span class="material-icons">&#xe9ba;</span>
         </button>
       </template>

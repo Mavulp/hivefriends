@@ -160,7 +160,7 @@ provide(
         a few photos which live outside of any albums. To store them or quickly share with someone.
       </p>
 
-      <input type="file" name="imgfile" id="imgfile" accept="image/*, .heic" @input="uploadImage" />
+      <input type="file" name="imgfile" id="imgfile" accept="image/*" @input="uploadImage" />
       <label for="imgfile">
         <span class="material-icons"> &#xe3f4; </span>
         <span>Upload a photo</span>

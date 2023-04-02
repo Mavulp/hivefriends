@@ -19,9 +19,9 @@ interface State {
 
 export const useComments = defineStore("comments", {
   state: () =>
-    ({
-      comments: []
-    } as State),
+  ({
+    comments: []
+  } as State),
   actions: {
     async fetchComments({ albumKey, imageKey }: { albumKey: string; imageKey: string }, token?: string | string[]) {
       const { addLoading, delLoading } = useLoading()
@@ -29,7 +29,7 @@ export const useComments = defineStore("comments", {
       addLoading("comments")
 
       const query = token
-        ? `/api/public/comments/${albumKey}/${imageKey}/${token}/`
+        ? `/api/public/comments/${albumKey}/${imageKey}/${token}`
         : `/api/comments/${albumKey}/${imageKey}`
 
       return get(query)
@@ -54,7 +54,7 @@ export const useComments = defineStore("comments", {
 
       addLoading("add-comment")
 
-      return post(`/api/comments/${albumKey}/${imageKey}/`, text)
+      return post(`/api/comments/${albumKey}/${imageKey}`, text)
         .then((response) => {
           this.comments.push(response)
           return response

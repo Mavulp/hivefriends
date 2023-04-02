@@ -144,16 +144,17 @@
     h2 {
       margin-bottom: 8px;
       margin-top: 16px;
-      font-size: 4.4rem;
+      font-size: 2.6rem;
     }
 
     span {
       display: block;
       margin-bottom: 20px;
+      font-size: 1.2rem;
     }
 
     p {
-      font-size: 1.6rem;
+      font-size: 1.4rem;
       margin-bottom: 0;
       display: -webkit-box;
       -webkit-line-clamp: 3;
@@ -196,7 +197,7 @@
   }
 
   .hi-album-list-layout {
-    @include grid(0, 420px 1fr);
+    @include grid(0, 388px 1fr);
     position: relative;
 
     .layout-item {
@@ -208,27 +209,30 @@
         padding: 32px;
         top: 0;
         height: calc(100vh - $header) !important;
-        background-color: rgba(var(--color-background-dimmed), 0.025);
+        // background-color: rgba(var(--color-background-dimmed), 0.025);
       }
 
       &:last-of-type {
-        padding: 32px;
+        padding: 16px;
         min-height: calc(100vh - $header);
         border-left: 1px solid rgb(var(--color-border-light));
+
+        // container: "list" / normal;
       }
 
       .album-list-wrap {
-        @include flex(wrap, 24px, center, flex-start); // display: grid;
+        // @include flex(wrap, 16px, center, flex-start);
+        @include grid(16px, 3);
 
         .album-list-item {
           display: block;
           margin-bottom: 0;
           width: 100%;
 
-          h2 {
-            font-size: 3.2rem;
-            margin-top: 16px;
-          }
+          // g {
+          //   font-size: 3.2rem;
+          //   margin-top: 16px;
+          // }
         }
       }
     }

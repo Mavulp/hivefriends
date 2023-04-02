@@ -20,7 +20,7 @@
 }
 
 // Adds transition to the element,
-@mixin t($time: 0.3s, $type: ease-in-out) {
+@mixin t($time: 0.15s, $type: ease-in-out) {
   -webkit-transition: all $time $type;
   -moz-transition: all $time $type;
   -o-transition: all $time $type;

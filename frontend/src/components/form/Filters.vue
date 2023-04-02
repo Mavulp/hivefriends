@@ -134,7 +134,7 @@ const years = computed<Array<string>>({
       <!-- Authors -->
 
       <InputSelect
-        v-if="authorOptions && !disable.includes('authors')"
+        v-if="authorOptions && !disable?.includes('authors')"
         label="Authors"
         placeholder="Filter by authors"
         :options="authorOptions"
@@ -143,7 +143,7 @@ const years = computed<Array<string>>({
       />
 
       <InputSelect
-        v-if="yearsOptions && !disable.includes('years')"
+        v-if="yearsOptions && !disable?.includes('years')"
         label="Years"
         placeholder="Filter albums by event years"
         :options="yearsOptions"

@@ -238,9 +238,23 @@ function dragOver(e: DragEvent, index: number) {
   drag_over.value = index
 }
 function dragCompare() {
+  if (drag_now.value === drag_over.value) {
+    drag_now.value = null
+    drag_over.value = null
+    return
+  }
+
   let _temp = files.values[drag_now.value]
   files.values[drag_now.value] = files.values[drag_over.value]
-  files.values[drag_over.value] = _temp
+
+  // Remove
+  files.values.splice(drag_now.value, 1)
+
+  if (drag_over.value === 0) {
+    files.values.unshift(_temp)
+  } else {
+    files.values.splice(drag_over.value, 0, _temp)
+  }
 
   nextTick(() => {
     drag_now.value = null
@@ -275,7 +289,7 @@ function dragCompare() {
           @mouseleave="draggingOver = false"
           :class="{ hovering: draggingOver, empty: files.values.length === 0 }"
         >
-          <input id="draginput" name="draginput" type="file" multiple accept="image/*, .heic" />
+          <input id="draginput" name="draginput" type="file" multiple accept="image/*" />
           <label for="draginput">
             <span class="material-icons">&#xe439;</span>
             <span>{{ draggingOver ? "Drop the files!" : "Cllick me / Drag files over here" }}</span>
@@ -294,7 +308,7 @@ function dragCompare() {
             @remove="delImage"
             @setAsCover="(key: string) => album.coverKey = key"
             @drag="dragStart(index)"
-            @dragover="(e) => dragOver(e, index)"
+            @dragover="(e: any) => dragOver(e, index)"
             @drop="dragCompare()"
           />
         </div>

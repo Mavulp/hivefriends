@@ -1,5 +1,5 @@
 .hi-header {
-  @include flex($align: center, $gap: 28px);
+  @include flex($align: center, $gap: 25px);
   width: 100%;
   position: relative;
   height: $header;
@@ -10,7 +10,8 @@
 
   &.is-detail {
     background-color: transparent;
-    border: none;
+    // border: none;
+    border-bottom-color: transparent;
   }
 
   &.is-phone {
@@ -124,6 +125,10 @@
     }
   }
 
+  .btn-icon {
+    padding: 0;
+  }
+
   .logo-wrap {
     @include font(500);
     @include flex($align: center); // text-transform: uppercase;
@@ -138,17 +143,18 @@
   }
 
   .nav-links-wrap {
-    @include flex($gap: 16px);
+    @include flex($gap: 15px);
 
     .nav-link {
       @include font(600);
       @include t(0.15s);
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       color: rgba(var(--color-text), 0.75);
-      padding: 0 20px;
+      padding: 0 10px;
       height: $header;
       line-height: $header;
       position: relative;
+      text-transform: uppercase;
 
       &:after {
         @include t(0.15s);
@@ -165,15 +171,13 @@
       &.router-link-active {
         &:after {
           opacity: 1;
-          border-width: 4px;
+          border-width: 2px;
         }
       }
 
       &.router-link-active,
       &:hover {
-        color: rgb(var(--color-highlight));
-
-        // background-color: rgba(var(--color-background-dimmed), 0.1);
+        color: rgb(var(--color-text));
       }
     }
   }
