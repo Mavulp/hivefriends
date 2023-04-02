@@ -64,7 +64,7 @@ pub async fn upload_test_image(path: &str, client: &TestClient, token: &str) -> 
     let form = Form::new().part("file", part);
 
     let res = client
-        .post("/api/images/")
+        .post("/api/images")
         .header(AUTHORIZATION, format!("Bearer {token}"))
         .multipart(form)
         .send()
@@ -83,7 +83,7 @@ pub async fn create_test_album(client: &TestClient, token: &str) -> String {
     let image_key = upload_test_image("./tests/testimage.png", client, token).await;
 
     let res = client
-        .post("/api/albums/")
+        .post("/api/albums")
         .header(AUTHORIZATION, format!("Bearer {token}"))
         .json(&json!({
             "title": "Test Title",

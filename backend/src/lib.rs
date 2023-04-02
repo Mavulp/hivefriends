@@ -62,17 +62,17 @@ pub fn api_route(db: tokio_rusqlite::Connection, data_path: PathBuf, image_quali
     Router::new()
         .nest("/api/auth", api::auth::api_route())
         .nest("/api/login", api::login::api_route())
-        .nest("/api/activity/", api::activity::api_route())
-        .nest("/api/comments/", api::comment::api_route())
-        .nest("/api/public/comments/", api::comment::public_api_route())
-        .nest("/api/images/", api::image::api_route())
-        .nest("/api/albums/", api::album::api_route())
-        .nest("/api/public/albums/", api::album::public_api_route())
-        .nest("/api/users/", api::user::api_route())
-        .nest("/api/aliases/", api::alias::api_route())
-        .nest("/api/settings/", api::settings::api_route())
+        .nest("/api/activity", api::activity::api_route())
+        .nest("/api/comments", api::comment::api_route())
+        .nest("/api/public/comments", api::comment::public_api_route())
+        .nest("/api/images", api::image::api_route())
+        .nest("/api/albums", api::album::api_route())
+        .nest("/api/public/albums", api::album::public_api_route())
+        .nest("/api/users", api::user::api_route())
+        .nest("/api/aliases", api::alias::api_route())
+        .nest("/api/settings", api::settings::api_route())
         .nest(
-            "/data/image/",
+            "/data/image",
             get_service(ServeDir::new(data_path.clone())).handle_error(handle_error),
         )
         .layer(cors)
