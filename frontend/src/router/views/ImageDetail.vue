@@ -122,7 +122,7 @@ watch(
       imageDetailUrl.value = null
 
       let img = new Image()
-      img.src = imageUrl(key, 'large')
+      img.src = imageUrl(key)
       img.onload = () => {
         imageDetailUrl.value = img.src
       }
@@ -152,7 +152,7 @@ whenever(album, () => {
 
   album.value.images.map((image) => {
     const img = new Image()
-    img.src = imageUrl(image.key, "large")
+    img.src = imageUrl(image.key)
   })
 })
 

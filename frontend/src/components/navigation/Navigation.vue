@@ -61,7 +61,7 @@ watch(activityOpen, (val) => {
       <div class="nav-links-wrap">
         <router-link class="nav-link" :to="{ name: 'Home' }">Home</router-link>
         <router-link class="nav-link" :to="{ name: 'Albums' }">Albums</router-link>
-        <!-- <router-link class="nav-link" :to="{ name: 'About' }">Activity Log</router-link> -->
+        <router-link class="nav-link" :to="{ name: 'RouteActivity' }">Activity</router-link>
         <router-link class="nav-link" :to="{ name: 'About' }">About</router-link>
       </div>
 
@@ -96,7 +96,11 @@ watch(activityOpen, (val) => {
         </button>
 
         <Teleport to="body">
-          <ActivityWrap @close="activityOpen = false" :class="{ active: activityOpen }" />
+          <ActivityWrap 
+            @close="activityOpen = false" 
+            :class="{ active: activityOpen }" 
+            limit 
+          />
         </Teleport>
 
         <router-link class="hover-bubble btn-icon" data-title-bottom="Upload album" :to="{ name: 'Upload' }">

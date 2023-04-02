@@ -145,7 +145,7 @@
       &.activity-album {
         .activity-body {
           @include flex($gap: 12px, $align: flex-start);
-          @include radius(12px);
+          @include radius(10px);
           margin-top: 16px;
           width: 100%;
           padding: 16px;
@@ -195,6 +195,7 @@
           width: 100%;
           padding: 16px;
           box-shadow: var(--shadow2);
+          border: 2px solid rgb(var(--color-highlight));
 
           .user-image {
             position: relative;

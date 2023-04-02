@@ -132,7 +132,7 @@
 
   .album-meta {
     display: block;
-    padding-top: 20px;
+    padding-top: 12px;
     padding-right: 32px;
 
     span,
@@ -142,8 +142,8 @@
     }
 
     h2 {
-      margin-bottom: 8px;
-      margin-top: 16px;
+      margin-bottom: 12px;
+      margin-top: 12px;
       font-size: 2.6rem;
     }
 
@@ -222,7 +222,7 @@
 
       .album-list-wrap {
         // @include flex(wrap, 16px, center, flex-start);
-        @include grid(16px, 3);
+        @include grid(32px 16px, 3);
 
         .album-list-item {
           display: block;

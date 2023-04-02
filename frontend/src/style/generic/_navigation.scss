@@ -5,7 +5,7 @@
   height: $header;
   z-index: 500;
   border-bottom: 1px solid rgb(var(--color-border-light));
-  padding: 0 24px;
+  padding: 0 32px;
   background-color: rgb(var(--color-background));
 
   &.is-detail {
@@ -138,7 +138,7 @@
 
     img {
       background-color: transparent;
-      max-height: 40px;
+      max-height: 32px;
     }
   }
 

@@ -118,21 +118,6 @@ watch(imgIndex, (value) => {
       <InputCheckbox :check="props.isSelect" @update:check="emit('select', props.image)" />
     </div>
 
-    <!-- <div class="all-image-controls" v-show="hover && !mode">
-      <button data-title-left="Go to album" @click="tryToAlbum" v-if="inAlbum">
-        <span class="material-icons"> &#xe89e; </span>
-      </button>
-      <button data-title-left="Share link" @click="copyImage">
-        <span class="material-icons"> &#xe80d; </span>
-      </button>
-      <button data-title-left="Use as avatar" @click="setAs('avatarKey')" :class="{ 'btn-disabled': loading }">
-        <span class="material-icons"> &#xe853; </span>
-      </button>
-      <button data-title-left="Use as banner" @click="setAs('bannerKey')" :class="{ 'btn-disabled': loading }">
-        <span class="material-icons"> &#xe40b; </span>
-      </button>
-    </div> -->
-
     <div class="image-wrap" @click="imageClick">
       <img :src="imageUrl(props.image.key, 'tiny')" alt="" />
     </div>
@@ -195,7 +180,7 @@ watch(imgIndex, (value) => {
           </div>
           <div class="all-image-controls">
             <button :disabled="imgIndex <= 0" class="nav-btn btn-prev" @click="setIndex(props.index - 1)">
-              <span class="material-icons"> &#xe5c4; </span>
+              <span class="material-icons"> &#xf1e6; </span>
             </button>
 
             <p class="img-index">
@@ -203,7 +188,7 @@ watch(imgIndex, (value) => {
             </p>
 
             <button :disabled="imgIndex + 1 === total" class="nav-btn btn-next" @click="setIndex(props.index + 1)">
-              <span class="material-icons"> &#xe5c8; </span>
+              <span class="material-icons"> &#xf1df; </span>
             </button>
           </div>
 
@@ -214,7 +199,7 @@ watch(imgIndex, (value) => {
           </div>
         </div>
 
-        <img :src="imageUrl(props.image.key, 'large')" alt="" />
+        <img :src="imageUrl(props.image.key)" alt="" />
 
         <!-- 
           <div class="all-image-controls">
