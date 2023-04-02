@@ -21,6 +21,10 @@ const emit = defineEmits<{
   (e: "close"): void
 }>()
 
+const props = defineProps<{
+  limit?: boolean
+}>()
+
 whenever(keys["Escape"], () => emit("close"))
 onClickOutside(wrap, () => {
   if (attrs.class === "active") {
@@ -50,7 +54,21 @@ async function query() {
  * List
  */
 
-const sorted = computed(() => activity.sortedItems)
+const sorted = computed(() => {
+  console.log(props.limit);
+  
+
+  if (props.limit) {
+    const spliced = Object.entries(activity.sortedItems).splice(0, 15)
+
+    return spliced.reduce((group, [key,value]) => {
+      group[key] = value
+      return group
+    }, {} as Record<string, any>)
+  }
+
+  return activity.sortedItems
+})
 
 //@ts-ignore
 provide("is-in-header", !attrs?.class?.includes("activity-home") ?? false)
@@ -74,14 +92,10 @@ provide("is-in-header", !attrs?.class?.includes("activity-home") ?? false)
             <strong>
               {{ formatDate(new Date(day).getTime() / 1000) }}
             </strong>
-
             <div class="line"></div>
-
             <span>{{ items.length }}</span>
           </div>
           <ActivityItem v-for="(item, index) in items" :data="item" :key="index" />
-
-          <!-- <hr /> -->
         </div>
       </template>
     </div>

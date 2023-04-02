@@ -274,8 +274,12 @@
     }
 
     img {
+      @include radius(10px);
+      box-shadow: var(--shadow2);
       display: block;
-      margin: 0 auto;
+      margin: 16px auto;
+      max-height: calc(100vh - 57px - 32px);
+      max-width: 100%;
       object-position: center;
       object-fit: contain;
     }

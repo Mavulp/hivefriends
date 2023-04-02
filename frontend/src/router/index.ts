@@ -9,6 +9,7 @@ import AlbumUpload from "./views/AlbumUpload.vue"
 import AlbumEdit from "./views/AlbumEdit.vue"
 
 import About from "./views/About.vue"
+import Activity from "./views/Activity.vue"
 
 // Subchildren for user pages
 import UserAlbums from "../components/user/UserAlbums.vue"
@@ -159,6 +160,15 @@ const router = createRouter({
       component: UserImages,
       meta: {
         title: "User Images",
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/activity',
+      name: "RouteActivity",
+      component: Activity,
+      meta: {
+        title: 'User Acitvity',
         requiresAuth: true
       }
     }
