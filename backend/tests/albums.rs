@@ -50,7 +50,7 @@ async fn get_all_drafts() {
     let _ = create_test_album(&client, &token).await;
 
     let res = client
-        .get("/api/albums/?draft=true")
+        .get("/api/albums?draft=true")
         .header(AUTHORIZATION, format!("Bearer {token}"))
         .send()
         .await;
@@ -73,7 +73,7 @@ async fn get_all_without_drafts() {
     let album_key = create_test_album(&client, &token).await;
 
     let res = client
-        .get("/api/albums/")
+        .get("/api/albums")
         .header(AUTHORIZATION, format!("Bearer {token}"))
         .send()
         .await;
