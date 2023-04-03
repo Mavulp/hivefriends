@@ -57,7 +57,7 @@ const accent = computed(() => user.user.accentColor.split(",").map((item: string
 
     <div class="container">
       <h4>What's happening</h4>
-      <Activity class="activity-home active" />
+      <Activity class="activity-home active" limit />
     </div>
 
     <div class="container" v-if="user.users && user.users.length > 0">
