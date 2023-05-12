@@ -55,9 +55,6 @@ async function query() {
  */
 
 const sorted = computed(() => {
-  console.log(props.limit);
-  
-
   if (props.limit) {
     const spliced = Object.entries(activity.sortedItems).splice(0, 15)
 

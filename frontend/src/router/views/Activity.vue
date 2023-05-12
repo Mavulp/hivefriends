@@ -1,7 +1,5 @@
 <script setup lang='ts'>
 import Activity from '../../components/activity/Activity.vue';
-
-
 </script>
 
 <template>

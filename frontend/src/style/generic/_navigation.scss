@@ -146,15 +146,15 @@
     @include flex($gap: 15px);
 
     .nav-link {
-      @include font(600);
+      @include font(500);
       @include t(0.15s);
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       color: rgba(var(--color-text), 0.75);
       padding: 0 10px;
       height: $header;
       line-height: $header;
       position: relative;
-      text-transform: uppercase;
+      // text-transform: uppercase;
 
       &:after {
         @include t(0.15s);
