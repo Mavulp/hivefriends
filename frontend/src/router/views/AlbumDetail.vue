@@ -63,8 +63,6 @@ watchEffect(() => {
   }
 })
 
-const chunks = computed(() => getImageChunks(album.images))
-
 function openCoverImage() {
   router.push({
     name: user.public_token ? "PublicImageDetail" : "ImageDetail",
@@ -161,11 +159,20 @@ function scrollUp() {
   window.scrollTo({ top: 0, behavior: "smooth" })
 }
 
+function scrollDown() {
+  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" })
+
+}
+
 whenever(showUsers, () => {
   if (showFixedTitle.value) {
     scrollUp()
   }
 })
+
+// Sort images
+
+const descending = ref(true)
 </script>
 
 <template>
@@ -249,6 +256,16 @@ whenever(showUsers, () => {
               Share
               <span class="material-icons rotate" v-if="getLoading('share-link')">&#xe863;</span>
             </button>
+
+            <div class="flex-1"></div>
+
+            <button class="hover-bubble" @click="descending = !descending" :data-title-left="descending ? 'Sort by oldest' : 'Sort by newest'">
+              <span class="material-icons" :style="{ transform: descending ? '' : 'roate(180deg) scaleX(-1);' }">&#xe164;</span>
+            </button>
+
+            <button class="hover-bubble" @click="scrollDown()" data-title-left="Scroll Down">
+              <span class="material-icons">&#xe5db;</span>
+            </button>
           </div>
           <div class="thumbnail-image-wrap">
             <div class="album-tagged-users" :class="{ active: showUsers }">
@@ -328,10 +345,10 @@ whenever(showUsers, () => {
       </div>
     </template>
 
-    <div class="hi-album-images">
-      <div class="hi-album-image-col" v-for="chunk in chunks" :key="chunk.length">
-        <ImageListitem v-for="image in chunk" :key="image.key" :image="image" :album-key="album.key" />
-      </div>
+    <div class="hi-album-images album-detail">
+      <ImageListitem v-for="image in album.images" :key="image.key" :image="image" :album-key="album.key" />
+      <!-- <div class="hi-album-image-col" v-for="chunk in chunks" :key="chunk.length"> -->
+      <!-- </div> -->
     </div>
 
     <div class="blur-bg" v-if="album.coverKey">
