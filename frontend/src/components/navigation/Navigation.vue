@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue"
+import { computed, ref } from "vue"
 import { useRouter, useRoute } from "vue-router"
 import { useUser } from "../../store/user"
 import { useBread } from "../../store/bread"
@@ -7,7 +7,6 @@ import { imageUrl } from "../../store/album"
 import { onClickOutside, useMediaQuery } from "@vueuse/core"
 
 import Modal from "../Modal.vue"
-import ActivityWrap from "../activity/Activity.vue"
 
 const router = useRouter()
 const route = useRoute()
@@ -26,29 +25,8 @@ const isPhone = useMediaQuery("(max-width: 512px)")
 
 onClickOutside(dropdown, () => (open.value = false))
 
-watch(
-  () => route.name,
-  () => {
-    open.value = false
-    activityOpen.value = false
-  }
-)
-
 const isDark = computed(() => auth.settings.colorTheme === "dark-normal")
 
-/**
- * Notifications
- */
-const activityOpen = ref(false)
-// const activity = useNotifications()
-
-watch(activityOpen, (val) => {
-  if (val) {
-    document.getElementsByTagName("html")[0].style.overflowY = "hidden"
-  } else {
-    document.getElementsByTagName("html")[0]?.style.removeProperty("overflow-y")
-  }
-})
 </script>
 
 <template>
@@ -86,23 +64,6 @@ watch(activityOpen, (val) => {
           />
           <span class="user"> {{ auth.getUsername() }} </span>
         </router-link>
-
-        <button
-          data-title-bottom="Activity Log"
-          class="hover-bubble p-rel btn-icon"
-          :class="{ active: activityOpen }"
-          @click="activityOpen = !activityOpen"
-        >
-          <span class="material-icons"> &#xf009; </span>
-        </button>
-
-        <Teleport to="body">
-          <ActivityWrap 
-            @close="activityOpen = false" 
-            :class="{ active: activityOpen }" 
-            limit 
-          />
-        </Teleport>
 
         <router-link class="hover-bubble btn-icon" data-title-bottom="Upload album" :to="{ name: 'Upload' }">
           <span class="material-icons">&#xe2cc;</span>
