@@ -172,7 +172,13 @@ whenever(showUsers, () => {
 
 // Sort images
 
-const descending = ref(true)
+const descending = ref(false)
+
+const sortedImages = computed(() => {
+  if (!descending.value)
+    return album.images
+  return [...album.images].sort((a,b) => a.uploadedAt > b.uploadedAt ? -1 : 1)
+})
 </script>
 
 <template>
@@ -259,8 +265,14 @@ const descending = ref(true)
 
             <div class="flex-1"></div>
 
-            <button class="hover-bubble" @click="descending = !descending" :data-title-left="descending ? 'Sort by oldest' : 'Sort by newest'">
-              <span class="material-icons" :style="{ transform: descending ? '' : 'roate(180deg) scaleX(-1);' }">&#xe164;</span>
+            <button 
+              class="hover-bubble" 
+              @click="descending = !descending" 
+              :data-title-left="descending ? 'Sorting by newest' : 'Sorting by oldest'"
+            >
+            <div :style="[descending ? 'transform: scaleY(-1);' : '']">
+              <span  class="material-icons" >&#xe164;</span>
+            </div>
             </button>
 
             <button class="hover-bubble" @click="scrollDown()" data-title-left="Scroll Down">
@@ -346,10 +358,12 @@ const descending = ref(true)
     </template>
 
     <div class="hi-album-images album-detail">
-      <ImageListitem v-for="image in album.images" :key="image.key" :image="image" :album-key="album.key" />
+      <ImageListitem v-for="image in sortedImages" :key="image.key" :image="image" :album-key="album.key" />
       <!-- <div class="hi-album-image-col" v-for="chunk in chunks" :key="chunk.length"> -->
       <!-- </div> -->
     </div>
+
+
 
     <div class="blur-bg" v-if="album.coverKey">
       <img :src="imageUrl(album.coverKey, 'medium')">

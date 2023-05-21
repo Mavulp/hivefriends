@@ -59,7 +59,7 @@
       }
 
       .album-meta-cells {
-        @include flex($gap: 8px);
+        @include flex($gap: 5px);
 
         p,
         a {
@@ -67,7 +67,7 @@
           display: block;
           color: rgb(var(--color-text));
           opacity: 0.8;
-          font-size: 1.4rem;
+          font-size: 1.3rem;
           margin: 0;
         }
 
@@ -80,10 +80,11 @@
         .material-icons {
           color: rgb(var(--color-text-light));
           pointer-events: none;
+          font-size: 1.6rem;
         }
 
         .mr-32 {
-          margin-right: 32px;
+          margin-right: 24px;
         }
       }
 
@@ -266,8 +267,8 @@
       @include flex($justify: center, $gap: 5px);
       background-color: rgba(var(--color-background), 0.85);
       backdrop-filter: blur(7px);
-      height: 25px;
-      padding: 0 5px;
+      height: 28px;
+      padding: 0 8px;
       text-align: center;
       line-height: 40px;
 
