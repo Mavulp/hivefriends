@@ -19,7 +19,7 @@ const inheader = inject("is-in-header") as boolean
 
 const PHOTO_LIMIT = computed(() => {
   if (inheader) return 7
-  return 18
+  return 20
 })
 
 function go(image: string, album: string) {

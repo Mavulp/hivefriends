@@ -56,9 +56,9 @@ async function query() {
 
 const sorted = computed(() => {
   if (props.limit) {
-    const spliced = Object.entries(activity.sortedItems).splice(0, 15)
+    const spliced = Object.entries(activity.sortedItems).splice(0, 2)
 
-    return spliced.reduce((group, [key,value]) => {
+    return spliced.reduce((group, [key, value]) => {
       group[key] = value
       return group
     }, {} as Record<string, any>)
@@ -95,6 +95,13 @@ provide("is-in-header", !attrs?.class?.includes("activity-home") ?? false)
           <ActivityItem v-for="(item, index) in items" :data="item" :key="index" />
         </div>
       </template>
+    </div>
+
+    <div v-if="props.limit" style="width:100%;">
+      <hr>
+      <router-link :to="{ name: 'RouteActivity' }" class="hover-bubble highlight">
+        View All
+      </router-link>
     </div>
   </div>
 </template>

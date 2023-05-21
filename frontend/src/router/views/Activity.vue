@@ -1,5 +1,10 @@
 <script setup lang='ts'>
+import { onBeforeMount } from 'vue';
 import Activity from '../../components/activity/Activity.vue';
+
+onBeforeMount(() => {
+   window.scrollTo({ top: 0, behavior: "smooth" })
+})
 </script>
 
 <template>

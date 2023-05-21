@@ -13,6 +13,12 @@ export function formatDate(date: Date | number, toOmit?: Array<any>) {
   return d.toLocaleDateString("en-GB", toOmit ? omit(options, toOmit) : options)
 }
 
+export function sameDate(date: string | number | Date, compare: string | number | Date) {
+  const d1 = new Date(date).setHours(0, 0, 0, 0)
+  const d2 = new Date(compare).setHours(0, 0, 0, 0)
+  return d1 === d2
+}
+
 export function delay(ms: number) {
   return new Promise((resolve) => setTimeout(() => resolve(true), ms))
 }

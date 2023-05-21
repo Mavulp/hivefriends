@@ -1,5 +1,4 @@
 \<script setup lang="ts">
-import Button from "../../components/Button.vue"
 import HomeUser from "../../components/user/HomeUser.vue"
 import Activity from "../../components/activity/Activity.vue"
 
@@ -9,6 +8,7 @@ import { useUser } from "../../store/user"
 import { TEXT_CONTRAST } from "../../js/utils"
 import { useBread } from "../../store/bread"
 import { useActivity } from "../../store/activity"
+import Button from "../../components/Button.vue"
 
 const user = useUser()
 const album = useAlbums()
@@ -56,7 +56,7 @@ const accent = computed(() => user.user.accentColor.split(",").map((item: string
     </div>
 
     <div class="container">
-      <h4>What's happening</h4>
+      <h4 class="flex-wrap">What's Happening</h4>
       <Activity class="activity-home active" limit />
     </div>
 
