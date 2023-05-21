@@ -116,10 +116,21 @@
         left: 8px;
         right: 8px;
 
+        .divider {
+          display: block;
+          height: 20px;
+          margin: 0 40px;
+          border-right: 1px solid rgb(var(--color-text));
+        }
+
         a,
         button {
           @include flex($gap: 10px);
           color: rgb(var(--color-text));
+        }
+
+        .material-icons {
+          font-size: 2rem;
         }
       }
 
@@ -133,6 +144,8 @@
         .album-tagged-users {
           @include t(0.5s, cubic-bezier(0.65, 0, 0.35, 1));
           width: 380px;
+          border-top-left-radius: 12px;
+          border-bottom-left-radius: 12px;
           position: absolute;
           display: block;
           top: 0;

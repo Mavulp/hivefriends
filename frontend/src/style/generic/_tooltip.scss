@@ -51,13 +51,14 @@
   &:before {
     @include t(0.15s);
     @include font(400);
+    border-radius: 6px;
     background-color: rgb(var(--color-background-dark));
     color: rgb(var(--color-text-white));
 
     font-size: 1.3rem;
     position: absolute;
-    padding: 2px 8px;
-    height: 22px;
+    padding: 4px 8px;
+    // height: 22px;
     line-height: 22px;
 
     white-space: nowrap;

@@ -263,19 +263,20 @@ const sortedImages = computed(() => {
               <span class="material-icons rotate" v-if="getLoading('share-link')">&#xe863;</span>
             </button>
 
-            <div class="flex-1"></div>
+            <!-- <div class="flex-1"></div> -->
+            <div class="divider"></div>
 
             <button 
               class="hover-bubble" 
               @click="descending = !descending" 
-              :data-title-left="descending ? 'Sorting by newest' : 'Sorting by oldest'"
+              :data-title-top="descending ? 'Sorting by newest' : 'Sorting by oldest'"
             >
             <div :style="[descending ? 'transform: scaleY(-1);' : '']">
               <span  class="material-icons" >&#xe164;</span>
             </div>
             </button>
 
-            <button class="hover-bubble" @click="scrollDown()" data-title-left="Scroll Down">
+            <button class="hover-bubble" @click="scrollDown()" data-title-top="Scroll Down">
               <span class="material-icons">&#xe5db;</span>
             </button>
           </div>

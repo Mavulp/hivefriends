@@ -4,7 +4,7 @@ import { useRoute, useRouter } from "vue-router"
 import { imageUrl, useAlbums, Album, Image as ImageStruct } from "../../store/album"
 import { isEmpty, isNil } from "lodash"
 import { useLoading } from "../../store/loading"
-import { onKeyStroke, useClipboard, useCssVar, useMediaQuery, usePreferredDark, whenever } from "@vueuse/core"
+import { onKeyStroke, useClipboard, useCssVar, useMediaQuery, usePreferredDark, useScroll, useWindowScroll, whenever } from "@vueuse/core"
 import { map_access, map_dark, map_light, getBounds, isValidMarker } from "../../js/map"
 import { useUser } from "../../store/user"
 import { RGB_TO_HEX, formatDate, formatFileSize, sanitize } from "../../js/utils"
@@ -287,6 +287,18 @@ onBeforeUnmount(() => {
   document.removeEventListener("touchstart", () => {})
   document.removeEventListener("touchend", () => {})
 })
+
+// Scroll back up
+
+function scrollUp() {
+  if (!scrollWrap.value)
+    return
+
+  scrollWrap.value.scrollTo({ top: 0, behavior: "smooth" })
+}
+
+// const container = ref(null)
+const { y } = useScroll(scrollWrap)
 </script>
 
 <template>
@@ -353,21 +365,28 @@ onBeforeUnmount(() => {
                 name: user.public_token ? 'PublicAlbumDetail' : 'AlbumDetail',
                 params: { id: albumKey, ...(user.public_token && { token: user.public_token }) }
               }"
+              data-title-right="Back to album"
             >
               <template v-if="isPhone">
                 <span class="material-icons"> &#xe5cd; </span>
               </template>
               <template v-else>
+
                 <span class="material-icons" style="font-size: 2rem"> &#xf1e6; </span>
-                Go back
+                <!-- Go back -->
               </template>
             </router-link>
           </div>
 
           <div class="context-col">
-            <button class="hover-bubble" @click="scrollDown()">
+            <button class="hover-bubble" @click="scrollDown()" v-if="y <= 50">
               <span class="material-icons">&#xe5cf;</span>
               Details
+            </button>
+
+            <button class="hover-bubble" @click="scrollUp()" v-else>
+              <span class="material-icons">&#xe316;</span>
+              Scroll Up
             </button>
 
             <button class="hover-bubble" @click="showComments = !showComments">
@@ -418,17 +437,17 @@ onBeforeUnmount(() => {
       <div class="divider"></div>
       <div class="hi-image-container">
         <div class="hi-image-meta">
-          <h4>
+          <!-- <h4>
             Photo details
 
             <span
               v-if="image.location"
               class="material-icons tooltip-width-200"
-              data-title-top="You can zoom / move within the map. Click other markers to switch pictures."
+              data-title-bottom="You can zoom / move within the map. Click other markers to switch pictures."
             >
               &#xe8fd;
             </span>
-          </h4>
+          </h4> -->
 
           <div class="wrapper">
             <div class="hi-map-wrap" v-if="image.location && image.location.latitude && image.location.longitude">
@@ -476,6 +495,12 @@ onBeforeUnmount(() => {
                   <span>Size</span>
                   <p>{{ formatFileSize(image.sizeBytes, true) }}</p>
                 </li>
+                
+                <li v-if="image.takenAt">
+                  <span class="material-icons"> &#xebcc; </span>
+                  <span>Taken</span>
+                  <p>{{ formatDate(image.takenAt) }}</p>
+                </li>
 
                 <template v-if="image.location">
                   <li v-if="image.location.latitude">
@@ -491,11 +516,6 @@ onBeforeUnmount(() => {
                   </li>
                 </template>
 
-                <li v-if="image.takenAt">
-                  <span class="material-icons"> &#xebcc; </span>
-                  <span>Taken</span>
-                  <p>{{ formatDate(image.takenAt) }}</p>
-                </li>
               </ul>
             </div>
           </div>
