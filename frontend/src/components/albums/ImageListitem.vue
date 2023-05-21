@@ -24,13 +24,13 @@ const { image, albumKey } = defineProps<Props>()
     }"
     class="hi-album-image"
   >
-    <div class="image-wrap">
+    <!-- <div class="image-wrap"> -->
       <div class="image-comment-count" v-if="image.commentCount">
-        <span class="material-icons">&#xe0b7;</span>
-        <p>{{ image.commentCount }}</p>
+        <!-- <span class="material-icons">&#xe0b7;</span> -->
+        <p>{{ image.commentCount }} {{ image.commentCount === 1 ? 'comment' : 'comments' }}</p>
       </div>
 
       <img :src="imageUrl(image.key, 'medium')" />
-    </div>
+    <!-- </div> -->
   </router-link>
 </template>

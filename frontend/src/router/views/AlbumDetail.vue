@@ -63,8 +63,6 @@ watchEffect(() => {
   }
 })
 
-const chunks = computed(() => getImageChunks(album.images))
-
 function openCoverImage() {
   router.push({
     name: user.public_token ? "PublicImageDetail" : "ImageDetail",
@@ -161,10 +159,25 @@ function scrollUp() {
   window.scrollTo({ top: 0, behavior: "smooth" })
 }
 
+function scrollDown() {
+  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" })
+
+}
+
 whenever(showUsers, () => {
   if (showFixedTitle.value) {
     scrollUp()
   }
+})
+
+// Sort images
+
+const descending = ref(false)
+
+const sortedImages = computed(() => {
+  if (!descending.value)
+    return album.images
+  return [...album.images].sort((a,b) => a.uploadedAt > b.uploadedAt ? -1 : 1)
 })
 </script>
 
@@ -249,6 +262,23 @@ whenever(showUsers, () => {
               Share
               <span class="material-icons rotate" v-if="getLoading('share-link')">&#xe863;</span>
             </button>
+
+            <!-- <div class="flex-1"></div> -->
+            <div class="divider"></div>
+
+            <button 
+              class="hover-bubble" 
+              @click="descending = !descending" 
+              :data-title-top="descending ? 'Sorting by newest' : 'Sorting by oldest'"
+            >
+            <div :style="[descending ? 'transform: scaleY(-1);' : '']">
+              <span  class="material-icons" >&#xe164;</span>
+            </div>
+            </button>
+
+            <button class="hover-bubble" @click="scrollDown()" data-title-top="Scroll Down">
+              <span class="material-icons">&#xe5db;</span>
+            </button>
           </div>
           <div class="thumbnail-image-wrap">
             <div class="album-tagged-users" :class="{ active: showUsers }">
@@ -328,11 +358,13 @@ whenever(showUsers, () => {
       </div>
     </template>
 
-    <div class="hi-album-images">
-      <div class="hi-album-image-col" v-for="chunk in chunks" :key="chunk.length">
-        <ImageListitem v-for="image in chunk" :key="image.key" :image="image" :album-key="album.key" />
-      </div>
+    <div class="hi-album-images album-detail">
+      <ImageListitem v-for="image in sortedImages" :key="image.key" :image="image" :album-key="album.key" />
+      <!-- <div class="hi-album-image-col" v-for="chunk in chunks" :key="chunk.length"> -->
+      <!-- </div> -->
     </div>
+
+
 
     <div class="blur-bg" v-if="album.coverKey">
       <img :src="imageUrl(album.coverKey, 'medium')">
