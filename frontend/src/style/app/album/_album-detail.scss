@@ -278,7 +278,7 @@
 
     .image-comment-count {
       @include flex($justify: center, $gap: 5px);
-      background-color: rgba(var(--color-background), 0.85);
+      background-color: rgba(#000000, 0.85);
       backdrop-filter: blur(7px);
       height: 28px;
       padding: 0 8px;
