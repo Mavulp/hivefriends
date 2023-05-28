@@ -10,14 +10,15 @@
   }
 }
 
-@media only screen and (max-width: 1650px) {
+@media only screen and (max-width: 1756px) {
   .hi-album-list .hi-album-list-layout .layout-item:last-of-type .album-list-wrap {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
   }
 }
 
-@media only screen and (max-width: 1124px) {
+@media only screen and (max-width: 1200px) {
   .hi-album-list .hi-album-list-layout .layout-item:last-of-type .album-list-wrap {
-    @include flex(wrap, 0, center);
+    // @include flex(wrap, 0, center);
+    grid-template-columns: 1fr 1fr;
   }
 }

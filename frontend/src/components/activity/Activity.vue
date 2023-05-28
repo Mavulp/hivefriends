@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onClickOutside, useMagicKeys, whenever } from '@vueuse/core'
-import { computed, provide, ref, useAttrs, watch } from 'vue'
+import { computed, ref, useAttrs, watch } from 'vue'
 import { useActivity } from '../../store/activity'
 import { useAlbums } from '../../store/album'
 import { useLoading } from '../../store/loading'
@@ -62,9 +62,6 @@ const sorted = computed(() => {
 
   return activity.sortedItems
 })
-
-// @ts-expect-error
-provide('is-in-header', !attrs?.class?.includes('activity-home') ?? false)
 </script>
 
 <template>
@@ -80,7 +77,7 @@ provide('is-in-header', !attrs?.class?.includes('activity-home') ?? false)
     <div class="activity-list-wrap">
       <LoadingSpin v-if="getLoading('activity', 'albums')" class="dark center-parent" />
       <template v-else>
-        <div v-for="(items, day) in sorted" class="activity-group">
+        <div v-for="(items, day) in sorted" :key="day" class="activity-group">
           <div class="activity-group-title">
             <strong>
               {{ formatDate(new Date(day).getTime() / 1000) }}
@@ -96,7 +93,7 @@ provide('is-in-header', !attrs?.class?.includes('activity-home') ?? false)
     <div v-if="props.limit" style="width:100%;">
       <hr>
       <router-link :to="{ name: 'RouteActivity' }" class="hover-bubble highlight">
-        View All
+        View older posts
       </router-link>
     </div>
   </div>

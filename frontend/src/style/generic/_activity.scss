@@ -5,9 +5,10 @@
   top: $header;
   bottom: 0;
   right: 0;
-  box-shadow: var(--shadow);
-  border-left: 1px solid rgb(var(--color-border-light));
+  // box-shadow: var(--shadow);
+  // border-left: 1px solid rgb(var(--color-border-light));
   background-color: rgb(var(--color-background));
+  border: 1px solid rgb(var(--color-border-light));
 
   opacity: 0;
   visibility: hidden;
@@ -24,14 +25,17 @@
     pointer-events: all;
   }
 
+  &.activity-page {
+    border: none;
+  }
+
   &.activity-home {
     @include radius(6px);
     // Sub-class for showing some activity items in the homepage
     position: relative;
     inset: unset;
     width: 100%;
-    // border: 1px solid rgb(var(--color-border-light));
-    border: none;
+    // border: none;
     margin-bottom: 64px;
 
     .title-wrap,

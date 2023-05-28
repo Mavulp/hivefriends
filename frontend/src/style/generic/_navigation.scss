@@ -150,7 +150,8 @@
       @include font(500);
       @include t(0.15s);
       font-size: 1.4rem;
-      color: rgba(var(--color-text), 0.75);
+      color: rgb(var(--color-text));
+
       padding: 0 10px;
       height: $header;
       line-height: $header;
@@ -172,14 +173,13 @@
       &.router-link-active {
         &:after {
           opacity: 1;
-          border-width: 2px;
+          border-width: 3px;
         }
       }
 
-      &.router-link-active,
-      &:hover {
-        color: rgb(var(--color-text));
-      }
+      // &.router-link-active,
+      // &:hover {
+      // }
     }
   }
 

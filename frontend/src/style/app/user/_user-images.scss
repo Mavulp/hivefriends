@@ -91,7 +91,7 @@
       }
 
       .image-group-items {
-        @include flex(wrap, 10px);
+        @include flex(wrap, 16px);
       }
     }
 
@@ -263,7 +263,7 @@
     }
 
     .all-image-controls {
-      @include flex($gap: 30px, $justify: center);
+      @include flex($gap: 30px, $justify: flex-end);
       z-index: 10;
 
       p {
@@ -304,11 +304,11 @@
     .modal-top {
       @include grid(20px, 3);
       height: 56px;
-      border-bottom: 1px solid rgb(var(--color-border));
+      border-top: 1px solid rgb(var(--color-border));
       padding: 0 20px;
 
-      .left {
-        @include flex($gap: 30px, $justify: flex-start, $align: center);
+      .center {
+        @include flex($gap: 30px, $justify: center, $align: center);
 
         button {
           @include flex($gap: 8px);
@@ -321,8 +321,8 @@
         }
       }
 
-      .right {
-        @include flex($justify: flex-end, $align: center);
+      .left {
+        @include flex($justify: flex-start, $align: center);
       }
     }
 

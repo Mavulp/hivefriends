@@ -1,5 +1,5 @@
-@media only screen and (min-width: 2240px) {
+@media only screen and (min-width: 2440px) {
   .hi-album-list .hi-album-list-layout .layout-item:last-of-type .album-list-wrap {
-    @include flex(wrap, $justify: center);
+    @include flex(wrap, $justify: center, $align: flex-start);
   }
 }

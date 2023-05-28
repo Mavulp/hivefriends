@@ -2,14 +2,14 @@
   h1 {
     @include font(600);
     word-wrap: break-word;
-    font-size: 2rem;
-    margin-bottom: 32px;
+    font-size: 1.6rem !important;
+    // margin-bottom: 32px;
     color: rgb(var(--color-text-light));
 
     a {
       @include font(900);
       word-wrap: break-word;
-      font-size: 5rem;
+      font-size: 2.2rem;
       display: block;
       color: inherit;
       color: rgb(var(--color-text));
@@ -142,9 +142,9 @@
     }
 
     h2 {
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       margin-top: 12px;
-      font-size: 2.6rem;
+      font-size: 2.2rem;
     }
 
     span {
@@ -155,7 +155,7 @@
 
     p {
       font-size: 1.4rem;
-      margin-bottom: 0;
+      margin-bottom: 16px;
       display: -webkit-box;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
@@ -165,8 +165,11 @@
 
     .album-author {
       @include flex($gap: 12px, $align: center);
-      margin-top: 16px;
       display: inline-flex;
+
+      // &:not(:only-child) {
+      //   margin-top: 16px;
+      // }
 
       span {
         margin: 0;
@@ -189,7 +192,8 @@
   width: 100%;
 
   h1 {
-    margin-bottom: 32px;
+    margin-bottom: 0;
+    font-size: 3rem;
 
     &.has-loading {
       @include flex();
@@ -197,20 +201,11 @@
   }
 
   .hi-album-list-layout {
-    @include grid(0, 388px 1fr);
     position: relative;
 
     .layout-item {
       display: block;
       position: relative;
-
-      &:first-of-type {
-        position: sticky;
-        padding: 32px;
-        top: 0;
-        height: calc(100vh - $header) !important;
-        // background-color: rgba(var(--color-background-dimmed), 0.025);
-      }
 
       &:last-of-type {
         padding: 16px;
@@ -222,33 +217,32 @@
 
       .album-list-wrap {
         // @include flex(wrap, 16px, center, flex-start);
-        @include grid(32px 16px, 3);
+        @include grid(32px 16px, 4);
 
         .album-list-item {
           display: block;
           margin-bottom: 0;
           width: 100%;
-
-          // g {
-          //   font-size: 3.2rem;
-          //   margin-top: 16px;
-          // }
         }
       }
     }
 
     .album-list-controls {
-      p {
-        // margin-bottom: 64px;
-        margin-bottom: 20px;
-      }
+      @include flex($gap: 40px, $justify: space-between);
+      align-content: center;
+      background-color: rgba(var(--color-white), 0.85);
+      backdrop-filter: blur(7px);
+
+      z-index: 100;
+      position: sticky;
+      top: 0;
+      padding: 16px;
 
       .form-search {
-        margin-bottom: 32px;
+        width: 100%;
+        max-width: 556px;
+        background-color: rgb(var(--color-white));
       }
-      // hr {
-      //   margin: 64px 0;
-      // }
     }
   }
 }

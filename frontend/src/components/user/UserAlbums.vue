@@ -1,17 +1,16 @@
 <script setup lang="ts">
-import { computed, onBeforeMount, onBeforeUnmount, ref } from "vue"
-import { useRoute } from "vue-router"
-import { useAlbums, Album } from "../../store/album"
-import { useLoading } from "../../store/loading"
+import { computed, onBeforeMount, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import type { Album } from '../../store/album'
+import { useAlbums } from '../../store/album'
+import { useLoading } from '../../store/loading'
 
-import Button from "../Button.vue"
-import Filters from "../form/Filters.vue"
-import LoadingSpin from "../loading/LoadingSpin.vue"
-import AlbumListItem from "../albums/AlbumListItem.vue"
+import LoadingSpin from '../loading/LoadingSpin.vue'
+import AlbumListItem from '../albums/AlbumListItem.vue'
 
-import Search from "../form/Search.vue"
-import { useUser } from "../../store/user"
-import { useBread } from "../../store/bread"
+import Search from '../form/Search.vue'
+import { useUser } from '../../store/user'
+import { useBread } from '../../store/bread'
 
 const { getLoading } = useLoading()
 const store = useAlbums()
@@ -20,7 +19,7 @@ const user = useUser()
 const bread = useBread()
 
 const data = ref<Array<Album>>([])
-const search = ref("")
+const search = ref('')
 const username = computed(() => String(route.params.user))
 
 const init = ref(false)
@@ -35,12 +34,13 @@ async function queryAlbums() {
   return Promise.all([store.fetchUserAlbums(username.value), store.fetchUserAlbums(username.value, true)]).then(
     (res) => {
       data.value = res.flat()
-    }
+    },
   )
 }
 
 const sortedAlbums = computed(() => {
-  if (!search.value || !data.value || data.value.length === 0) return data.value
+  if (!search.value || !data.value || data.value.length === 0)
+    return data.value
 
   return data.value.filter((album) => {
     const searchString = `${album.title}`.toLowerCase()
@@ -61,36 +61,28 @@ const sortedAlbums = computed(() => {
           </router-link>
         </h1>
 
+        <Search v-model:value="search" placeholder="Search for albums..." />
+
         <div class="album-subtitle">
           <p>Showing {{ sortedAlbums.length ?? 0 }} {{ sortedAlbums.length === 1 ? "album" : "albums" }}</p>
         </div>
-
-        <Search placeholder="Search for albums..." v-model:value="search" />
-        <!-- <hr /> -->
-        <Filters
-          class="active"
-          :disable="['authors']"
-          @call="queryAlbums()"
-          :filters="{ authors: [username] }"
-          :loading="getLoading('albums') && init"
-        />
       </div>
 
       <div class="layout-item">
-        <div class="album-list-status" v-if="getLoading('albums') && !init">
+        <div v-if="getLoading('albums') && !init" class="album-list-status">
           <div class="flex">
             <LoadingSpin class="dark" />
             <h3>Loading</h3>
           </div>
         </div>
-        <div class="album-list-status" v-else-if="data?.length === 0 || !data">
+        <div v-else-if="data?.length === 0 || !data" class="album-list-status">
           <div>
             <h3>Cringe</h3>
             <p>No albums found</p>
           </div>
         </div>
-        <div class="album-list-wrap" v-else>
-          <AlbumListItem v-for="album in sortedAlbums" :data="album" :key="album.key" />
+        <div v-else class="album-list-wrap">
+          <AlbumListItem v-for="album in sortedAlbums" :key="album.key" :data="album" />
         </div>
       </div>
     </div>

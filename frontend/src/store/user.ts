@@ -1,9 +1,8 @@
-import { isNil } from "lodash"
-import { defineStore } from "pinia"
-import { get, post, put } from "../js/fetch"
-import { useToast } from "./toast"
-import { FetchError } from "../js/global-types"
-import { useLoading } from "./loading"
+import { defineStore } from 'pinia'
+import { get, post, put } from '../js/fetch'
+import type { FetchError } from '../js/global-types'
+import { useToast } from './toast'
+import { useLoading } from './loading'
 
 export interface User {
   // key: string
@@ -29,7 +28,7 @@ export interface UserSettings {
   accentColor: string
   featredAlbumKey: string
   // private: boolean
-  colorTheme: "light-theme" | "dark-normal" | "dark-contrast"
+  colorTheme: 'light-theme' | 'dark-normal' | 'dark-contrast'
 }
 
 export interface State {
@@ -40,24 +39,23 @@ export interface State {
   public_token: string | undefined
 }
 
-export const useUser = defineStore("user", {
-  state: () =>
-  ({
+export const useUser = defineStore('user', {
+  state: () => ({
     user: {},
     users: [],
     logged: false,
     settings: {},
-    public_token: undefined
+    public_token: undefined,
   } as State),
   actions: {
     async signIn(credentials: { username: string; password: string }) {
       const { addLoading, delLoading } = useLoading()
 
-      addLoading("login")
+      addLoading('login')
 
-      return post("/api/login", credentials)
+      return post('/api/login', credentials)
         .then(async (res) => {
-          localStorage.setItem("bearer_token", res.bearerToken)
+          localStorage.setItem('bearer_token', res.bearerToken)
 
           await this.fetchUser(res.username)
 
@@ -65,41 +63,41 @@ export const useUser = defineStore("user", {
         })
         .catch((error: FetchError) => {
           const toast = useToast()
-          toast.add(error.message, "error")
+          toast.add(error.message, 'error')
         })
-        .finally(() => delLoading("login"))
+        .finally(() => delLoading('login'))
     },
     async fetchUser(username: string | number, notme?: boolean) {
       const { addLoading, delLoading } = useLoading()
 
-      addLoading("user")
+      addLoading('user')
 
       return get(`/api/users/${username}`)
         .then((response) => {
           if (notme) {
             const index = this.users.findIndex((item: User) => item.username === username)
-            if (index > -1) {
+            if (index > -1)
               this.users[index] = response
-            }
-          } else {
+          }
+          else {
             this.user = response
             this.logged = true
             // Set app accent
-            document.documentElement.style.setProperty("--color-highlight", response.accentColor)
-            localStorage.setItem("user", response.username)
+            document.documentElement.style.setProperty('--color-highlight', response.accentColor)
+            localStorage.setItem('user', response.username)
           }
         })
         .catch((error: FetchError) => {
           const toast = useToast()
-          toast.add(error.message, "error")
+          toast.add(error.message, 'error')
         })
         .finally(() => {
-          delLoading("user")
+          delLoading('user')
         })
     },
 
     async fetchUsers() {
-      return get("/api/users")
+      return get('/api/users')
         .then((response) => {
           this.users = response
           this.logged = true
@@ -109,27 +107,27 @@ export const useUser = defineStore("user", {
         .catch((error: FetchError) => {
           if (this.logged) {
             const toast = useToast()
-            toast.add(error.message, "error")
+            toast.add(error.message, 'error')
           }
         })
     },
     signOut() {
       this.logged = false
-      localStorage.removeItem("bearer_token")
+      localStorage.removeItem('bearer_token')
     },
 
     async fetchSettings() {
       const { addLoading, delLoading } = useLoading()
 
-      addLoading("settings")
+      addLoading('settings')
 
-      return get("/api/settings")
+      return get('/api/settings')
         .then((response) => {
           this.settings = response
 
-          const r = document.querySelector(":root")
+          const r = document.querySelector(':root')
           if (r) {
-            r.removeAttribute("class")
+            r.removeAttribute('class')
             r.classList.add(response.colorTheme)
           }
 
@@ -138,16 +136,16 @@ export const useUser = defineStore("user", {
         .catch((error: FetchError) => {
           if (this.logged) {
             const toast = useToast()
-            toast.add(error.message, "error")
+            toast.add(error.message, 'error')
           }
         })
         .finally(() => {
-          delLoading("settings")
+          delLoading('settings')
         })
     },
     async setSetting(key: string, value: any) {
-      return put("/api/settings", {
-        [key]: value
+      return put('/api/settings', {
+        [key]: value,
       })
         .then(() => {
           Reflect.set(this.settings, key, value)
@@ -157,49 +155,54 @@ export const useUser = defineStore("user", {
         })
         .catch((error: FetchError) => {
           const toast = useToast()
-          toast.add(error.message, "error")
+          toast.add(error.message, 'error')
         })
     },
 
     async changePassword(form: { old: string | number; new: string | number }) {
       const toast = useToast()
 
-      return put("/api/settings/password", form)
+      return put('/api/settings/password', form)
         .then(() => {
-          toast.add("Succesfully updated password. Make sure you remember it", "success")
+          toast.add('Succesfully updated password. Make sure you remember it', 'success')
         })
         .catch((error: FetchError) => {
-          toast.add(error.message, "error")
+          toast.add(error.message, 'error')
         })
-    }
+    },
   },
   getters: {
-    isLoggedIn: (state) => state.logged,
-    getKey: (state) => state.user.username,
-    getUser: (state) => (username: string, field?: string) => {
-      const u =
-        state.users.find((item) => item.username === username) ||
-        state.users.find((item) => item.displayName === username)
-      if (!u) return null
+    isLoggedIn: state => state.logged,
+    getKey: state => state.user.username,
+    getUser: state => (username: string, field?: string) => {
+      const u
+        = state.users.find(item => item.username === username)
+        || state.users.find(item => item.displayName === username)
+      if (!u)
+        return null
 
-      if (!field) return u
+      if (!field)
+        return u
 
       return Reflect.get(u, field)
     },
     getUsername:
-      (state) =>
+      state =>
         (username?: string | string[] | undefined): string => {
-          if (Array.isArray(username)) username = username[0]
+          if (Array.isArray(username))
+            username = username[0]
 
-          if (!username) return state.user.displayName ?? state.user.username
+          if (!username)
+            return state.user.displayName ?? state.user.username
 
-          const userFromList = state.users.find((item) => item.username === username)
-          if (userFromList) return userFromList.displayName ?? userFromList.username
+          const userFromList = state.users.find(item => item.username === username)
+          if (userFromList)
+            return userFromList.displayName ?? userFromList.username
 
           return state.user.username === username ? state.user.displayName ?? state.user.username : username
-        }
+        },
     // getUsers: (state) => {
     //   if (state.users)
     // },
-  }
+  },
 })
