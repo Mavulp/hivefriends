@@ -7,13 +7,13 @@
     width: 100%;
   }
 
-  h6 {
-    @include flex();
-    margin-bottom: 32px;
+  .form-filters {
+    width: 100%;
+    @include flex($gap: 16px, $justify: flex-end);
   }
 
   .form-select {
-    margin-bottom: 32px;
+    width: 256px;
   }
 
   .filter-timeframe {

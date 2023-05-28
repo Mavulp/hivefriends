@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue"
-import { useRouter, useRoute } from "vue-router"
-import { useUser } from "../../store/user"
-import { useBread } from "../../store/bread"
-import { imageUrl } from "../../store/album"
-import { onClickOutside, useMediaQuery } from "@vueuse/core"
+import { computed, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { onClickOutside, useMediaQuery } from '@vueuse/core'
+import { useUser } from '../../store/user'
+import { useBread } from '../../store/bread'
+import { imageUrl } from '../../store/album'
 
-import Modal from "../Modal.vue"
-import ActivityWrap from "../activity/Activity.vue"
+import Modal from '../Modal.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -16,60 +15,49 @@ const bread = useBread()
 
 function signOut() {
   auth.signOut()
-  router.push({ name: "Login" })
+  router.push({ name: 'Login' })
 }
 
 // Phone menu opener
 const open = ref(false)
 const dropdown = ref(null)
-const isPhone = useMediaQuery("(max-width: 512px)")
+const isPhone = useMediaQuery('(max-width: 512px)')
 
 onClickOutside(dropdown, () => (open.value = false))
 
-watch(
-  () => route.name,
-  () => {
-    open.value = false
-    activityOpen.value = false
-  }
-)
-
-const isDark = computed(() => auth.settings.colorTheme === "dark-normal")
-
-/**
- * Notifications
- */
-const activityOpen = ref(false)
-// const activity = useNotifications()
-
-watch(activityOpen, (val) => {
-  if (val) {
-    document.getElementsByTagName("html")[0].style.overflowY = "hidden"
-  } else {
-    document.getElementsByTagName("html")[0]?.style.removeProperty("overflow-y")
-  }
-})
+const isDark = computed(() => auth.settings.colorTheme === 'dark-normal')
 </script>
 
 <template>
-  <div class="hi-header" :class="{ 'is-phone': isPhone, 'is-detail': ['AlbumDetail', 'Home'].includes(String(route.name))  }">
+  <div class="hi-header" :class="{ 'is-phone': isPhone, 'is-detail': ['AlbumDetail', 'Home'].includes(String(route.name)) }">
     <router-link :to="{ name: 'Home' }" class="logo-wrap" title="嘿，伙计，我在哪里可以买到火腿和鸡蛋">
-      <img :src="isDark ? '/Sharp.png' : '/Sharp2.png'" alt=" " />
+      <img :src="isDark ? '/Sharp.png' : '/Sharp2.png'" alt=" ">
     </router-link>
 
     <template v-if="!isPhone">
       <div class="nav-links-wrap">
-        <router-link class="nav-link" :to="{ name: 'Home' }">Home</router-link>
-        <router-link class="nav-link" :to="{ name: 'Albums' }">Albums</router-link>
-        <router-link class="nav-link" :to="{ name: 'RouteActivity' }">Activity</router-link>
-        <router-link class="nav-link" :to="{ name: 'About' }">About</router-link>
+        <router-link class="nav-link" :to="{ name: 'Home' }">
+          Home
+        </router-link>
+        <!-- <router-link class="nav-link" :to="{ name: 'Feed' }">
+          Feed
+        </router-link> -->
+        <router-link class="nav-link" :to="{ name: 'Albums' }">
+          Albums
+        </router-link>
+        <router-link class="nav-link" :to="{ name: 'RouteActivity' }">
+          Activity
+        </router-link>
+        <router-link class="nav-link" :to="{ name: 'About' }">
+          The Project
+        </router-link>
       </div>
 
       <transition name="fade" appear mode="out-in">
-        <span class="bread" v-if="bread.title">{{ bread.title }}</span>
+        <span v-if="bread.title" class="bread">{{ bread.title }}</span>
       </transition>
 
-      <div class="flex-1"></div>
+      <div class="flex-1" />
 
       <template v-if="auth.isLoggedIn && auth.user.username">
         <router-link
@@ -82,26 +70,9 @@ watch(activityOpen, (val) => {
             :src="imageUrl(auth.user.avatarKey, 'tiny')"
             alt=" "
             @error="(e: any) => e.target.classList.add('image-error')"
-          />
+          >
           <span class="user"> {{ auth.getUsername() }} </span>
         </router-link>
-
-        <button
-          data-title-bottom="Activity Log"
-          class="hover-bubble p-rel btn-icon"
-          :class="{ active: activityOpen }"
-          @click="activityOpen = !activityOpen"
-        >
-          <span class="material-icons"> &#xf009; </span>
-        </button>
-
-        <Teleport to="body">
-          <ActivityWrap 
-            @close="activityOpen = false" 
-            :class="{ active: activityOpen }" 
-            limit 
-          />
-        </Teleport>
 
         <router-link class="hover-bubble btn-icon" data-title-bottom="Upload album" :to="{ name: 'Upload' }">
           <span class="material-icons">&#xe2cc;</span>
@@ -117,7 +88,7 @@ watch(activityOpen, (val) => {
         <router-link class="hover-bubble btn-icon" data-title-bottom="Your photos" :to="{ name: 'UserImages' }">
           <span class="material-icons">&#xe5c3;</span>
         </router-link>
-        <router-link class="hover-bubble btn-icon"  data-title-bottom="Settings" :to="{ name: 'UserSettings' }">
+        <router-link class="hover-bubble btn-icon" data-title-bottom="Settings" :to="{ name: 'UserSettings' }">
           <span class="material-icons">&#xe8b8;</span>
         </router-link>
         <button class="hover-bubble btn-icon" data-title-bottom="Log out" @click="signOut()">
@@ -127,12 +98,12 @@ watch(activityOpen, (val) => {
     </template>
 
     <template v-else>
-      <div class="flex-1"></div>
+      <div class="flex-1" />
 
       <transition name="fade" appear mode="out-in">
-        <span class="bread" v-if="bread.title">{{ bread.title }}</span>
+        <span v-if="bread.title" class="bread">{{ bread.title }}</span>
       </transition>
-      <div class="flex-1"></div>
+      <div class="flex-1" />
 
       <div ref="dropdown" class="hi-phone-header-wrapper">
         <button class="hover-bubble" :class="{ active: open }" @click="open = !open">
@@ -157,12 +128,12 @@ watch(activityOpen, (val) => {
                   :src="imageUrl(auth.user.avatarKey, 'tiny')"
                   alt=" "
                   @error="(e: any) => e.target.classList.add('image-error')"
-                />
+                >
                 <!-- <div class="user-stuff"> -->
                 <strong>{{ auth.getUsername() }}</strong>
               </router-link>
 
-              <hr />
+              <hr>
 
               <router-link class="nav-link-icon" :to="{ name: 'Upload' }">
                 <span class="material-icons">&#xe2cc;</span>
@@ -186,13 +157,19 @@ watch(activityOpen, (val) => {
                 Settings
               </router-link>
 
-              <hr />
+              <hr>
 
-              <router-link class="nav-link" :to="{ name: 'Home' }">Home</router-link>
-              <router-link class="nav-link" :to="{ name: 'Albums' }">Albums</router-link>
-              <router-link class="nav-link" :to="{ name: 'About' }">About</router-link>
+              <router-link class="nav-link" :to="{ name: 'Home' }">
+                Home
+              </router-link>
+              <router-link class="nav-link" :to="{ name: 'Albums' }">
+                Albums
+              </router-link>
+              <router-link class="nav-link" :to="{ name: 'About' }">
+                About
+              </router-link>
 
-              <hr />
+              <hr>
 
               <button class="nav-link-icon" @click="signOut()">
                 <span class="material-icons">&#xe9ba;</span>

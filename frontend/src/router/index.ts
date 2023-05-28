@@ -9,6 +9,7 @@ import AlbumUpload from "./views/AlbumUpload.vue"
 import AlbumEdit from "./views/AlbumEdit.vue"
 
 import About from "./views/About.vue"
+import Feed from "./views/Feed.vue"
 import Activity from "./views/Activity.vue"
 
 // Subchildren for user pages
@@ -39,6 +40,15 @@ const router = createRouter({
         redirectOnAuth: "/home",
         disableNav: true,
         requiresAuth: false
+      }
+    },
+    {
+      path: "/feed",
+      name: "Feed",
+      component: Feed,
+      meta: {
+        title: "Image Feed",
+        requiresAuth: true
       }
     },
     {

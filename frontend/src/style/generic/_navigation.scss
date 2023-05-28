@@ -127,6 +127,7 @@
 
   .btn-icon {
     padding: 0;
+    font-size: 1.8rem;
   }
 
   .logo-wrap {
@@ -146,15 +147,16 @@
     @include flex($gap: 15px);
 
     .nav-link {
-      @include font(600);
+      @include font(500);
       @include t(0.15s);
-      font-size: 1.3rem;
-      color: rgba(var(--color-text), 0.75);
+      font-size: 1.4rem;
+      color: rgb(var(--color-text));
+
       padding: 0 10px;
       height: $header;
       line-height: $header;
       position: relative;
-      text-transform: uppercase;
+      // text-transform: uppercase;
 
       &:after {
         @include t(0.15s);
@@ -171,14 +173,13 @@
       &.router-link-active {
         &:after {
           opacity: 1;
-          border-width: 2px;
+          border-width: 3px;
         }
       }
 
-      &.router-link-active,
-      &:hover {
-        color: rgb(var(--color-text));
-      }
+      // &.router-link-active,
+      // &:hover {
+      // }
     }
   }
 

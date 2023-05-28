@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { computed, inject, onMounted, ref, watch, watchEffect } from "vue"
-import { Album, ImageItemInAlbum, imageUrl } from "../../store/album"
-import { onClickOutside, useClipboard, useMagicKeys, whenever } from "@vueuse/core"
-import { get } from "../../js/fetch"
-import { useToast } from "../../store/toast"
-import { useUser } from "../../store/user"
-import { useRouter } from "vue-router"
-import { formatDate } from "../../js/utils"
+import { computed, inject, onMounted, ref, watch } from 'vue'
+import { onClickOutside, useClipboard, useMagicKeys, whenever } from '@vueuse/core'
+import { useRouter } from 'vue-router'
+import type { Album, ImageItemInAlbum } from '../../store/album'
+import { imageUrl } from '../../store/album'
+import { get } from '../../js/fetch'
+import { useToast } from '../../store/toast'
+import { useUser } from '../../store/user'
+import { formatDate } from '../../js/utils'
 
-import LoadingSpin from "../loading/LoadingSpin.vue"
-import InputCheckbox from "../form/InputCheckbox.vue"
-import Modal from "../../components/Modal.vue"
+import LoadingSpin from '../loading/LoadingSpin.vue'
+import InputCheckbox from '../form/InputCheckbox.vue'
+import Modal from '../../components/Modal.vue'
 
 interface Props {
   image: ImageItemInAlbum
@@ -19,17 +20,21 @@ interface Props {
   index: number
 }
 
+const props = defineProps<Props>()
+const emit = defineEmits<{
+  (e: 'select', value: ImageItemInAlbum): void
+}>()
 const toast = useToast()
 const user = useUser()
 const router = useRouter()
-const props = defineProps<Props>()
-const emit = defineEmits<{
-  (e: "select", value: ImageItemInAlbum): void
-}>()
 const open = ref(false)
 const hover = ref(false)
 const { copy } = useClipboard()
 const wrap = ref()
+
+const selectingAlbum = ref(false)
+const selectingLoading = ref(false)
+const albums = ref<Array<Album>>()
 
 const inAlbum = computed(() => props.image.albumKeys.length > 0)
 
@@ -37,11 +42,16 @@ onMounted(() => {
   onClickOutside(wrap, () => (open.value = false))
 })
 
+// @ts-expect-error idk
+const { imgIndex, setIndex } = inject<{ imgIndex: number; setIndex: (num: number) => void }>('image-index')
+const total = inject<number>('image-total')
+
 function imageClick() {
   if (props.mode) {
     // Select
-    emit("select", props.image)
-  } else {
+    emit('select', props.image)
+  }
+  else {
     open.value = true
     setIndex(props.index)
   }
@@ -49,7 +59,7 @@ function imageClick() {
 
 function copyImage() {
   copy(imageUrl(props.image.key))
-  toast.add("Image url copied to clipboard")
+  toast.add('Image url copied to clipboard')
 }
 
 /**
@@ -62,11 +72,11 @@ async function setAs(key: string) {
   await user.setSetting(key, props.image.key)
   loading.value = false
 
-  toast.add(`Updated ${key === "avatarKey" ? "avatar" : "banner"} image`)
+  toast.add(`Updated ${key === 'avatarKey' ? 'avatar' : 'banner'} image`)
 }
 
 const keys = useMagicKeys()
-whenever(keys["Escape"], () => {
+whenever(keys.Escape, () => {
   open.value = false
   selectingAlbum.value = false
 })
@@ -75,14 +85,11 @@ whenever(keys["Escape"], () => {
  * Go to image album
  */
 
-const selectingAlbum = ref(false)
-const selectingLoading = ref(false)
-const albums = ref<Array<Album>>()
-
 async function tryToAlbum() {
   if (props.image.albumKeys.length === 1) {
-    router.push({ name: "AlbumDetail", params: { id: props.image.albumKeys[0] } })
-  } else {
+    router.push({ name: 'AlbumDetail', params: { id: props.image.albumKeys[0] } })
+  }
+  else {
     selectingLoading.value = true
     selectingAlbum.value = true
 
@@ -93,36 +100,30 @@ async function tryToAlbum() {
   }
 }
 
-//@ts-ignore
-const { imgIndex, setIndex } = inject<{ imgIndex: number; setIndex: (num: number) => void }>("image-index")
-//@ts-ignore
-const total = inject<number>("image-total")
-
 watch(imgIndex, (value) => {
-  if (value !== props.index) {
+  if (value !== props.index)
     open.value = false
-  } else {
+  else
     open.value = true
-  }
 })
 </script>
 
 <template>
   <div
     class="hi-album-image"
+    :class="{ 'is-selected': props.isSelect }"
     @mouseenter="hover = true"
     @mouseleave="hover = false"
-    :class="{ 'is-selected': props.isSelect }"
   >
-    <div class="all-image-checkbox" v-if="mode">
+    <div v-if="mode" class="all-image-checkbox">
       <InputCheckbox :check="props.isSelect" @update:check="emit('select', props.image)" />
     </div>
 
     <div class="image-wrap" @click="imageClick">
-      <img :src="imageUrl(props.image.key, 'tiny')" alt="" />
+      <img :src="imageUrl(props.image.key, 'tiny')" alt="">
     </div>
 
-    <Teleport to="body" v-if="selectingAlbum">
+    <Teleport v-if="selectingAlbum" to="body">
       <Modal @click="selectingAlbum = false">
         <div class="modal-wrap modal-select-album">
           <button class="btn-close" data-title-left="Close" @click="open = false">
@@ -136,12 +137,13 @@ watch(imgIndex, (value) => {
 
           <template v-else>
             <router-link
+              v-for="album in albums"
+              :key="album.key"
               :to="{ name: 'AlbumDetail', params: { id: album.key } }"
               class="select-album-item"
-              v-for="album in albums"
             >
               <div class="album-item-image">
-                <img :src="imageUrl(album.coverKey, 'tiny')" alt="" />
+                <img :src="imageUrl(album.coverKey, 'tiny')" alt="">
               </div>
 
               <div class="album-item-meta">
@@ -157,23 +159,31 @@ watch(imgIndex, (value) => {
       </Modal>
     </Teleport>
 
-    <Teleport to="body" v-if="open">
+    <Teleport v-if="open" to="body">
       <Modal class="modal-images">
+        <img :src="imageUrl(props.image.key)" alt="">
+
         <div class="modal-top">
           <div class="left">
-            <button class="hover-bubble bubble-small" data-title-bottom-left="Go to album" @click="tryToAlbum" v-if="inAlbum">
+            <button class="btn-close hover-bubble" @click="open = false">
+              <span class="material-icons">&#xe5cd;</span>
+            </button>
+          </div>
+
+          <div class="center">
+            <button v-if="inAlbum" class="hover-bubble bubble-small" data-title-top-left="Go to album" @click="tryToAlbum">
               <span class="material-icons"> &#xe89e; </span>
               Album
             </button>
-            <button class="hover-bubble bubble-small" data-title-bottom="Share link" @click="copyImage">
+            <button class="hover-bubble bubble-small" data-title-top="Share link" @click="copyImage">
               <span class="material-icons"> &#xe80d; </span>
               Share
             </button>
-            <button class="hover-bubble bubble-small" data-title-bottom="Use as avatar" @click="setAs('avatarKey')" :class="{ 'btn-disabled': loading }">
+            <button class="hover-bubble bubble-small" data-title-top="Use as avatar" :class="{ 'btn-disabled': loading }" @click="setAs('avatarKey')">
               <span class="material-icons"> &#xe853; </span>
               Use as Avatar
             </button>
-            <button class="hover-bubble bubble-small" data-title-bottom="Use as banner" @click="setAs('bannerKey')" :class="{ 'btn-disabled': loading }">
+            <button class="hover-bubble bubble-small" data-title-top="Use as banner" :class="{ 'btn-disabled': loading }" @click="setAs('bannerKey')">
               <span class="material-icons"> &#xe40b; </span>
               Use as Banner
             </button>
@@ -181,6 +191,7 @@ watch(imgIndex, (value) => {
           <div class="all-image-controls">
             <button :disabled="imgIndex <= 0" class="nav-btn btn-prev" @click="setIndex(props.index - 1)">
               <span class="material-icons"> &#xf1e6; </span>
+              <!-- <img src="/icons/arrow-left-long.svg" alt=" "> -->
             </button>
 
             <p class="img-index">
@@ -189,19 +200,12 @@ watch(imgIndex, (value) => {
 
             <button :disabled="imgIndex + 1 === total" class="nav-btn btn-next" @click="setIndex(props.index + 1)">
               <span class="material-icons"> &#xf1df; </span>
-            </button>
-          </div>
-
-          <div class="right">
-            <button class="btn-close hover-bubble" @click="open = false">
-              <span class="material-icons">&#xe5cd;</span>
+              <!-- <img src="/icons/arrow-right-long.svg" alt=" "> -->
             </button>
           </div>
         </div>
 
-        <img :src="imageUrl(props.image.key)" alt="" />
-
-        <!-- 
+        <!--
           <div class="all-image-controls">
             <button data-title-bottom="Go to album" @click="tryToAlbum" v-if="inAlbum">
               <span class="material-icons"> &#xe89e; </span>

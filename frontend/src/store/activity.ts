@@ -120,7 +120,8 @@ export const useActivity = defineStore("activity", {
     }
   },
   getters: {
-    getActivity: (state: State) => state.items
+    getActivity: (state) => state.items,
+    // getImageActivity: (state)  => state.
   }
 })
 

@@ -1,21 +1,22 @@
 <script setup lang="ts">
-import AlbumListItem from "../../components/albums/AlbumListItem.vue"
-import LoadingSpin from "../../components/loading/LoadingSpin.vue"
-import Filters from "../../components/form/Filters.vue"
-// import Button from "../../components/Button.vue"
-import Search from "../../components/form/Search.vue"
+import { computed, onBeforeMount, ref } from 'vue'
+import AlbumListItem from '../../components/albums/AlbumListItem.vue'
+import LoadingSpin from '../../components/loading/LoadingSpin.vue'
 
-import { onBeforeMount, computed, ref } from "vue"
-import { useAlbums, Album } from "../../store/album"
-import { useLoading } from "../../store/loading"
-import { useBread } from "../../store/bread"
+// import Button from "../../components/Button.vue"
+import Search from '../../components/form/Search.vue'
+
+import type { Album } from '../../store/album'
+import { useAlbums } from '../../store/album'
+import { useLoading } from '../../store/loading'
+import { useBread } from '../../store/bread'
 
 const { getLoading } = useLoading()
 
 const album = useAlbums()
 const data = ref<Array<Album>>()
 const bread = useBread()
-const search = ref("")
+const search = ref('')
 
 // This is used to diasble loading after the initial load
 // When filtering, we will use a spinner somewhere else
@@ -23,18 +24,19 @@ const search = ref("")
 const init = ref(false)
 
 onBeforeMount(async () => {
-  bread.set("All public albums")
+  bread.set('All public albums')
 
   data.value = await album.fetchAlbums()
   init.value = true
 })
 
-async function fetchUpdate() {
-  data.value = await album.fetchAlbums()
-}
+// async function fetchUpdate() {
+//   data.value = await album.fetchAlbums()
+// }
 
 const sortedAlbums = computed(() => {
-  if (!search.value || !data.value || data.value.length === 0) return data.value
+  if (!search.value || !data.value || data.value.length === 0)
+    return data.value
 
   return data.value.filter((album) => {
     const searchString = `${album.title} ${album.author}`.toLowerCase()
@@ -48,31 +50,32 @@ const sortedAlbums = computed(() => {
   <div class="hi-album-list">
     <div class="hi-album-list-layout">
       <div class="layout-item album-list-controls">
-        <h1>Albums</h1>
+        <h1>Album List</h1>
+
+        <Search v-model:value="search" placeholder="Search for albums..." />
 
         <div class="album-subtitle">
           <p>Showing {{ sortedAlbums?.length ?? 0 }} {{ sortedAlbums?.length === 1 ? "album" : "albums" }}</p>
         </div>
 
-        <Search placeholder="Search for albums..." v-model:value="search" />
-        <Filters @call="fetchUpdate" :loading="getLoading('albums') && init" />
+        <!-- <Filters :loading="getLoading('albums') && init" @call="fetchUpdate" /> -->
       </div>
 
       <div class="layout-item">
-        <div class="album-list-status" v-if="getLoading('albums') && !init">
+        <div v-if="getLoading('albums') && !init" class="album-list-status">
           <div class="flex">
             <LoadingSpin class="dark" />
             <h3>Loading</h3>
           </div>
         </div>
-        <div class="album-list-status" v-else-if="data?.length === 0 || !data">
+        <div v-else-if="data?.length === 0 || !data" class="album-list-status">
           <div>
             <h3>Cringe</h3>
             <p>No albums found</p>
           </div>
         </div>
-        <div class="album-list-wrap" v-else>
-          <AlbumListItem v-for="album in sortedAlbums" :data="album" :key="album.key" />
+        <div v-else class="album-list-wrap">
+          <AlbumListItem v-for="item in sortedAlbums" :key="item.key" :data="item" />
         </div>
       </div>
     </div>

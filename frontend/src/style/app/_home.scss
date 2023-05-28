@@ -7,7 +7,7 @@
     bottom: -256px;
 
     img {
-      height: 175vh;
+      height: 125vh;
       opacity: 0.075 !important;
     }
   }
@@ -90,6 +90,10 @@
         display: block;
         position: absolute;
         bottom: 32px;
+        max-width: calc(100% - 64px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         right: 32px;
         z-index: 5;
         padding: 0 12px;
@@ -132,21 +136,33 @@
   }
 
   .home-users {
-    @include grid(20px, 2);
+    @include grid(0, 2);
+    @include radius(6px);
     margin-bottom: 128px;
+    overflow: hidden;
+    border: 1px solid rgb(var(--color-border-light));
+
     // @include grid(20px, 3);
 
     .home-user {
       // @include t();
-      @include radius(3px);
+      // @include radius(3px);
       @include flex($gap: 8px);
-      padding: 12px 24px;
+      padding: 20px 40px;
       color: rgb(var(--color-text));
-      background-color: rgb(var(--color-white));
-      box-shadow: var(--shadow);
-      outline: 0px solid rgb(var(--color-highlight));
+      border-bottom: 1px solid rgb(var(--color-border-light));
+
+      &:nth-child(odd) {
+        border-right: 1px solid rgb(var(--color-border-light));
+      }
+
+      &:nth-last-child(1),
+      &:nth-last-child(2) {
+        border-bottom: 0;
+      }
 
       &:hover {
+        background-color: rgb(var(--color-highlight), 0.1) !important;
         outline-width: 1px;
       }
 
@@ -227,6 +243,7 @@ $flag-w: 28px;
   max-height: $flag-h;
   object-fit: contain;
   object-position: center;
+  filter: drop-shadow(0, 1px, 2px #000);
   // box-shadow: 0 0px 2px rgba(var(--color-background-dark), 0.2);
 
   svg {

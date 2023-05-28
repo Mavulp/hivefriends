@@ -1,14 +1,15 @@
-\<script setup lang="ts">
-import Button from "../../components/Button.vue"
-import HomeUser from "../../components/user/HomeUser.vue"
-import Activity from "../../components/activity/Activity.vue"
+<script setup lang="ts">
+import { computed, onBeforeMount, ref } from 'vue'
+import HomeUser from '../../components/user/HomeUser.vue'
+import Activity from '../../components/activity/Activity.vue'
 
-import { ref, onBeforeMount, computed } from "vue"
-import { Album, useAlbums, imageUrl } from "../../store/album"
-import { useUser } from "../../store/user"
-import { TEXT_CONTRAST } from "../../js/utils"
-import { useBread } from "../../store/bread"
-import { useActivity } from "../../store/activity"
+import type { Album } from '../../store/album'
+import { imageUrl, useAlbums } from '../../store/album'
+import { useUser } from '../../store/user'
+import { TEXT_CONTRAST } from '../../js/utils'
+import { useBread } from '../../store/bread'
+import { useActivity } from '../../store/activity'
+import Button from '../../components/Button.vue'
 
 const user = useUser()
 const album = useAlbums()
@@ -21,10 +22,10 @@ onBeforeMount(async () => {
   activity.fetchActivity()
   albums.value = await album.fetchAlbums()
 
-  bread.set("Homepage | url to irl")
+  bread.set('Homepage | url to irl')
 })
 
-const accent = computed(() => user.user.accentColor.split(",").map((item: string) => Number(item)))
+const accent = computed(() => user.user.accentColor.split(',').map((item: string) => Number(item)))
 </script>
 
 <template>
@@ -32,8 +33,8 @@ const accent = computed(() => user.user.accentColor.split(",").map((item: string
     <div class="home-landing">
       <h1>hi<b>!</b>friends</h1>
       <h3>
-        Internet friends <br />
-        bringing the <i>URL</i> <br />
+        Internet friends <br>
+        bringing the <i>URL</i> <br>
         to the <i>IRL</i>.
       </h3>
 
@@ -49,18 +50,20 @@ const accent = computed(() => user.user.accentColor.split(",").map((item: string
 
       <template v-if="latest">
         <router-link :to="{ name: 'AlbumDetail', params: { id: latest.key } }" class="album-thumbnail">
-          <span>Latest album</span>
-          <img :src="imageUrl(latest.coverKey, 'large')" alt="" />
+          <span>{{ latest.title }} by {{ user.getUsername(latest.author) }}</span>
+          <img :src="imageUrl(latest.coverKey, 'large')" alt="">
         </router-link>
       </template>
     </div>
 
     <div class="container">
-      <h4>What's happening</h4>
+      <h4 class="flex-wrap">
+        What's Happening
+      </h4>
       <Activity class="activity-home active" limit />
     </div>
 
-    <div class="container" v-if="user.users && user.users.length > 0">
+    <div v-if="user.users && user.users.length > 0" class="container">
       <h4>The squad</h4>
 
       <div class="home-users">
@@ -73,9 +76,8 @@ const accent = computed(() => user.user.accentColor.split(",").map((item: string
       Made by <a target="_blank" href="https://github.com/mavulp">Mavulp</a> in {{ new Date().getFullYear() }}
     </p>
 
-    <div class="blur-bg" v-if="latest">
-      <img :src="imageUrl(latest.coverKey, 'tiny')" alt="" />
-
+    <div v-if="latest" class="blur-bg">
+      <img :src="imageUrl(latest.coverKey, 'tiny')" alt="">
     </div>
   </div>
 </template>
