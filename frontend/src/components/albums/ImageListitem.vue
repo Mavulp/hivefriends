@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { Image, imageUrl } from "../../store/album"
-import { useUser } from "../../store/user"
+import type { Image } from '../../store/album'
+import { imageUrl } from '../../store/album'
+import { useUser } from '../../store/user'
+
+const { image, albumKey } = defineProps<Props>()
 
 const user = useUser()
 
@@ -8,8 +11,6 @@ interface Props {
   image: Image
   albumKey: string
 }
-
-const { image, albumKey } = defineProps<Props>()
 </script>
 
 <template>
@@ -19,18 +20,18 @@ const { image, albumKey } = defineProps<Props>()
       params: {
         album: albumKey,
         image: image.key,
-        ...(user.public_token && { token: user.public_token })
-      }
+        ...(user.public_token && { token: user.public_token }),
+      },
     }"
     class="hi-album-image"
   >
-    <div class="image-wrap">
-      <div class="image-comment-count" v-if="image.commentCount">
-        <span class="material-icons">&#xe0b7;</span>
-        <p>{{ image.commentCount }}</p>
-      </div>
-
-      <img :src="imageUrl(image.key, 'medium')" />
+    <!-- <div class="image-wrap"> -->
+    <div v-if="image.commentCount" class="image-comment-count">
+      <!-- <span class="material-icons">&#xe0b7;</span> -->
+      <p>{{ image.commentCount }} {{ image.commentCount === 1 ? 'comment' : 'comments' }}</p>
     </div>
+
+    <img :src="imageUrl(image.key, 'medium')">
+    <!-- </div> -->
   </router-link>
 </template>

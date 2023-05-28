@@ -1,8 +1,8 @@
 {
   "name": "hi-friends",
-  "description": "A website for a bunch of friends all around the world cherishing moments spent together in form of albums.",
-  "private": true,
   "version": "1.0.0",
+  "private": true,
+  "description": "A website for a bunch of friends all around the world cherishing moments spent together in form of albums.",
   "scripts": {
     "dev": "vite",
     "dev:host": "vite --host",
@@ -22,8 +22,10 @@
     "vue-router": "^4.1.5"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^0.39.3",
     "@types/lodash": "^4.14.185",
     "@vitejs/plugin-vue": "^3.1.0",
+    "eslint": "^8.41.0",
     "typescript": "^4.8.3",
     "vite": "^3.1.2",
     "vitest": "^0.23.2",

@@ -1,16 +1,17 @@
-import { omit } from "lodash"
+import { omit } from 'lodash'
 
 export function getRanMinMax(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
 export function formatDate(date: Date | number, toOmit?: Array<any>) {
-  if (typeof date === "number") date *= 1000
+  if (typeof date === 'number')
+    date *= 1000
 
   const d = new Date(date)
-  const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" }
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
 
-  return d.toLocaleDateString("en-GB", toOmit ? omit(options, toOmit) : options)
+  return d.toLocaleDateString('en-GB', toOmit ? omit(options, toOmit) : options)
 }
 
 export function sameDate(date: string | number | Date, compare: string | number | Date) {
@@ -20,22 +21,22 @@ export function sameDate(date: string | number | Date, compare: string | number 
 }
 
 export function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(() => resolve(true), ms))
+  return new Promise(resolve => setTimeout(() => resolve(true), ms))
 }
 
 export function HEX_to_RGB(hex: string): [number, number, number] {
-  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
   return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : [0, 0, 0]
 }
 
 export function TEXT_CONTRAST(r: number, g: number, b: number): string {
-  var yiq = (r * 299 + g * 587 + b * 114) / 1000
-  return yiq >= 128 ? "black" : "white"
+  const yiq = (r * 299 + g * 587 + b * 114) / 1000
+  return yiq >= 128 ? 'black' : 'white'
 }
 
 export function RGB_TO_HEX(r: number | string, g?: number | string, b?: number | string) {
-  if (!g && !b && typeof r === "string") {
-    const [_r, _g, _b] = r.split(",")
+  if (!g && !b && typeof r === 'string') {
+    const [_r, _g, _b] = r.split(',')
 
     r = _r
     g = _g
@@ -47,25 +48,25 @@ export function RGB_TO_HEX(r: number | string, g?: number | string, b?: number |
   b = Number(b)
 
   return (
-    "#" +
-    [r, g, b]
+    `#${[r, g, b]
       .map((x) => {
         const hex = x.toString(16)
-        return hex.length === 1 ? "0" + hex : hex
+        return hex.length === 1 ? `0${hex}` : hex
       })
-      .join("")
+      .join('')}`
   )
 }
 
 export function formatFileSize(bytes: string | number, round?: boolean) {
-  if (typeof bytes === "string") {
+  if (typeof bytes === 'string')
     bytes = Number(bytes)
-  }
 
-  if (isNaN(bytes)) return 0
+  if (isNaN(bytes))
+    return 0
 
-  if (bytes / 1000000 > 1) return round ? Math.round(bytes / 1000000) + "MB" : bytes / 1000000 + "MB"
-  return round ? Math.round(bytes / 1000) + "KB" : bytes / 1000 + "KB"
+  if (bytes / 1000000 > 1)
+    return round ? `${Math.round(bytes / 1000000)}MB` : `${bytes / 1000000}MB`
+  return round ? `${Math.round(bytes / 1000)}KB` : `${bytes / 1000}KB`
 }
 
 export function flag(code: string) {
@@ -77,37 +78,37 @@ export function median(numbers: Array<number>) {
   const sorted = Array.from(numbers).sort((a, b) => a - b)
   const middle = Math.floor(sorted.length / 2)
 
-  if (sorted.length % 2 === 0) {
+  if (sorted.length % 2 === 0)
     return (sorted[middle - 1] + sorted[middle]) / 2
-  }
 
   return sorted[middle]
 }
 
 export function sanitize(text: string) {
-  if (!text) return null
+  if (!text)
+    return null
 
   const regex = /\bon\w+\=\"?[\w\:\(\)\']+\"?/g
-  return text.replaceAll(regex, "")
+  return text.replaceAll(regex, '')
 }
 
-export const formats = [".jpeg", ".gif", ".png", ".apng", ".svg", ".bmp", ".bmp", ".ico", ".jpg", ".webp"]
+export const formats = ['.jpeg', '.gif', '.png', '.apng', '.svg', '.bmp', '.bmp', '.ico', '.jpg', '.webp']
 
 export function isValidImage(text: string) {
-  return formats.some((format) => text.endsWith(format))
+  return formats.some(format => text.endsWith(format))
 }
 
 export function formatTimestamp(date: number) {
   date *= 1000
   const d = new Date(date)
 
-  return `${padTo2Digits(d.getUTCHours())}:${padTo2Digits(d.getUTCMinutes())}, ${d.toLocaleDateString("en-GB", {
-    year: "numeric",
-    month: "short",
-    day: "numeric"
+  return `${padTo2Digits(d.getUTCHours())}:${padTo2Digits(d.getUTCMinutes())}, ${d.toLocaleDateString('en-GB', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
   })}`
 }
 
 export function padTo2Digits(num: number) {
-  return num.toString().padStart(2, "0")
+  return num.toString().padStart(2, '0')
 }

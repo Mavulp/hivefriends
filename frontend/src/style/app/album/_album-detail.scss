@@ -59,7 +59,7 @@
       }
 
       .album-meta-cells {
-        @include flex($gap: 8px);
+        @include flex($gap: 5px);
 
         p,
         a {
@@ -67,7 +67,7 @@
           display: block;
           color: rgb(var(--color-text));
           opacity: 0.8;
-          font-size: 1.4rem;
+          font-size: 1.3rem;
           margin: 0;
         }
 
@@ -80,10 +80,11 @@
         .material-icons {
           color: rgb(var(--color-text-light));
           pointer-events: none;
+          font-size: 1.6rem;
         }
 
         .mr-32 {
-          margin-right: 32px;
+          margin-right: 24px;
         }
       }
 
@@ -109,15 +110,27 @@
       margin-right: 16px;
 
       .detail-buttons {
-        @include flex($gap: 64px, $justify: flex-start);
+        @include flex($gap: 40px, $justify: flex-start);
         position: absolute;
         bottom: 52px;
         left: 8px;
+        right: 8px;
+
+        .divider {
+          display: block;
+          height: 20px;
+          margin: 0 40px;
+          border-right: 1px solid rgb(var(--color-text));
+        }
 
         a,
         button {
-          @include flex($gap: 12px);
+          @include flex($gap: 10px);
           color: rgb(var(--color-text));
+        }
+
+        .material-icons {
+          font-size: 2rem;
         }
       }
 
@@ -131,6 +144,8 @@
         .album-tagged-users {
           @include t(0.5s, cubic-bezier(0.65, 0, 0.35, 1));
           width: 380px;
+          border-top-left-radius: 12px;
+          border-bottom-left-radius: 12px;
           position: absolute;
           display: block;
           top: 0;
@@ -238,78 +253,71 @@
 }
 
 .hi-album-images {
-  display: block;
-  width: 100%;
+  @include flex(wrap, 16px, center);
+  width: auto;
+  margin: 0 auto;
   max-width: 1920px;
   padding: 0 16px;
   min-height: 50vh;
   padding-bottom: 50vh;
 
-  $gap: 16px;
+  .hi-album-image {
+    @include t();
+    @include radius(6px);
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
 
-  @include grid($gap, 3);
+    &:hover {
+      box-shadow: var(--shadow2);
 
-  .hi-album-image-col {
-    @include flex($direction: column, $gap: $gap);
-
-    .hi-album-image {
-      @include t();
-      @include radius(6px);
-      display: block;
-      width: 100%;
-      position: relative;
-      overflow: hidden;
-
-      &:hover {
-        box-shadow: var(--shadow2);
-        img {
-          transform: scale(1.025);
-        }
-      }
-
-      .image-comment-count {
-        @include radius(50%);
-        @include flex($justify: center, $gap: 2px);
-        background-color: rgba(var(--color-background-dark), 0.4);
-        width: 40px;
-        height: 40px;
-        text-align: center;
-        line-height: 40px;
-
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        left: 12px;
-        pointer-events: none;
-        z-index: 10;
-
-        p {
-          margin: 0;
-          font-size: 1.4rem;
-        }
-
-        .material-icons {
-          font-size: 1.4rem;
-        }
-
-        .material-icons,
-        p {
-          color: #fff;
-          text-shadow: 0 1px 3px rgb(#191716, 0.4);
-        }
-      }
-
-      .image-wrap {
-        display: block;
-        width: 100%;
-
-        img {
-          @include t();
-          display: block;
-          width: 100%;
-        }
+      img {
+        transform: scale(1.025);
       }
     }
+
+    .image-comment-count {
+      @include flex($justify: center, $gap: 5px);
+      background-color: rgba(#000000, 0.85);
+      backdrop-filter: blur(7px);
+      height: 28px;
+      padding: 0 8px;
+      text-align: center;
+      line-height: 40px;
+
+      position: absolute;
+      top: 0;
+      // right: 12px;
+      left: 0;
+      pointer-events: none;
+      z-index: 10;
+
+      p {
+        margin: 0;
+        font-size: 1.4rem;
+      }
+
+      .material-icons {
+        font-size: 1.4rem;
+      }
+
+      .material-icons,
+      p {
+        color: #fff;
+        text-shadow: 0 1px 3px rgb(#191716, 0.4);
+      }
+    }
+
+    img {
+      @include t();
+      height: 292px;
+      // width: 292px;
+      object-fit: cover;
+      object-position: center;
+
+      // width: 100%;
+    }
+    // }
   }
 }
 
