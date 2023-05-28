@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onClickOutside, useMagicKeys, whenever } from '@vueuse/core'
 import { computed, ref, useAttrs, watch } from 'vue'
+import type { ActivityItem as ActivityItemType } from '../../store/activity'
 import { useActivity } from '../../store/activity'
 import { useAlbums } from '../../store/album'
 import { useLoading } from '../../store/loading'
@@ -62,6 +63,33 @@ const sorted = computed(() => {
 
   return activity.sortedItems
 })
+
+function sortItemsWithin(items: ActivityItemType[]) {
+  return items.sort((a: any, b: any) => {
+    let firstItemTimestamp = 0
+    let secondItemTimestamp = 0
+
+    if (a?.comment)
+      firstItemTimestamp = a.comment.createdAt
+    else if (a?.image)
+      firstItemTimestamp = a.image.images[0].uploadedAt
+    else if (a?.user)
+      firstItemTimestamp = a.user.createdAt
+    else if (a?.album)
+      firstItemTimestamp = a.album.publishedAt
+
+    if (b?.comment)
+      secondItemTimestamp = b.comment.createdAt
+    else if (b?.image)
+      secondItemTimestamp = b.image.images[0].uploadedAt
+    else if (b?.user)
+      secondItemTimestamp = b.user.createdAt
+    else if (b?.album)
+      secondItemTimestamp = b.album.publishedAt
+
+    return firstItemTimestamp > secondItemTimestamp ? -1 : 1
+  })
+}
 </script>
 
 <template>
@@ -85,7 +113,10 @@ const sorted = computed(() => {
             <div class="line" />
             <span>{{ items.length }}</span>
           </div>
-          <ActivityItem v-for="(item, index) in items" :key="index" :data="item" />
+          <!-- <pre style="font-size:1.6rem;">
+            {{ items }}
+          </pre> -->
+          <ActivityItem v-for="(item, index) in sortItemsWithin(items)" :key="index" :data="item" />
         </div>
       </template>
     </div>
