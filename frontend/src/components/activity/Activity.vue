@@ -1,15 +1,20 @@
 <script setup lang="ts">
-import { onClickOutside, useMagicKeys, whenever } from "@vueuse/core"
-import { ref, computed, watch, useAttrs, provide } from "vue"
-import { useActivity } from "../../store/activity"
-import { useAlbums } from "../../store/album"
-import { useLoading } from "../../store/loading"
-import { formatDate } from "../../js/utils"
+import { onClickOutside, useMagicKeys, whenever } from '@vueuse/core'
+import { computed, provide, ref, useAttrs, watch } from 'vue'
+import { useActivity } from '../../store/activity'
+import { useAlbums } from '../../store/album'
+import { useLoading } from '../../store/loading'
+import { formatDate } from '../../js/utils'
 
-import LoadingSpin from "../loading/LoadingSpin.vue"
-import Button from "../Button.vue"
-import ActivityItem from "./ActivityItem.vue"
+import LoadingSpin from '../loading/LoadingSpin.vue'
+import ActivityItem from './ActivityItem.vue'
 
+const props = defineProps<{
+  limit?: boolean
+}>()
+const emit = defineEmits<{
+  (e: 'close'): void
+}>()
 const { getLoading } = useLoading()
 const activity = useActivity()
 const attrs = useAttrs()
@@ -17,19 +22,11 @@ const keys = useMagicKeys()
 const album = useAlbums()
 
 const wrap = ref(null)
-const emit = defineEmits<{
-  (e: "close"): void
-}>()
-
-const props = defineProps<{
-  limit?: boolean
-}>()
-
-whenever(keys["Escape"], () => emit("close"))
+whenever(keys.Escape, () => emit('close'))
 onClickOutside(wrap, () => {
-  if (attrs.class === "active") {
+  if (attrs.class === 'active') {
     setTimeout(() => {
-      emit("close")
+      emit('close')
     }, 5)
   }
 })
@@ -37,14 +34,13 @@ onClickOutside(wrap, () => {
 watch(
   () => attrs.class,
   (val) => {
-    if (val === "active") {
+    if (val === 'active')
       query()
-    }
-  }
+  },
 )
 
 async function query() {
-  if (!getLoading("activity")) {
+  if (!getLoading('activity')) {
     activity.fetchActivity()
     album.fetchAlbums()
   }
@@ -55,13 +51,10 @@ async function query() {
  */
 
 const sorted = computed(() => {
-  console.log(props.limit);
-  
-
   if (props.limit) {
     const spliced = Object.entries(activity.sortedItems).splice(0, 15)
 
-    return spliced.reduce((group, [key,value]) => {
+    return spliced.reduce((group, [key, value]) => {
       group[key] = value
       return group
     }, {} as Record<string, any>)
@@ -70,13 +63,13 @@ const sorted = computed(() => {
   return activity.sortedItems
 })
 
-//@ts-ignore
-provide("is-in-header", !attrs?.class?.includes("activity-home") ?? false)
+// @ts-expect-error
+provide('is-in-header', !attrs?.class?.includes('activity-home') ?? false)
 </script>
 
 <template>
   <div ref="wrap" class="activity">
-    <button @click="emit('close')" data-title-left="Close" class="hover-bubble close">
+    <button data-title-left="Close" class="hover-bubble close" @click="emit('close')">
       <span class="material-icons">&#xe5cd;</span>
     </button>
 
@@ -85,17 +78,17 @@ provide("is-in-header", !attrs?.class?.includes("activity-home") ?? false)
     </div>
 
     <div class="activity-list-wrap">
-      <LoadingSpin class="dark center-parent" v-if="getLoading('activity', 'albums')" />
+      <LoadingSpin v-if="getLoading('activity', 'albums')" class="dark center-parent" />
       <template v-else>
-        <div class="activity-group" v-for="(items, day) in sorted">
+        <div v-for="(items, day) in sorted" class="activity-group">
           <div class="activity-group-title">
             <strong>
               {{ formatDate(new Date(day).getTime() / 1000) }}
             </strong>
-            <div class="line"></div>
+            <div class="line" />
             <span>{{ items.length }}</span>
           </div>
-          <ActivityItem v-for="(item, index) in items" :data="item" :key="index" />
+          <ActivityItem v-for="(item, index) in items" :key="index" :data="item" />
         </div>
       </template>
     </div>
