@@ -1,24 +1,24 @@
 <script setup lang="ts">
-import { onBeforeMount, computed, reactive, ref, watchEffect, onMounted, watch } from "vue"
-import { onBeforeRouteLeave, useRoute, useRouter } from "vue-router"
-import { useAlbums, Album, imageUrl, Image } from "../../store/album"
-import { useLoading } from "../../store/loading"
-import { debounce, isEmpty } from "lodash"
-import { useUser } from "../../store/user"
-import { formatDate, sanitize } from "../../js/utils"
-import { useClipboard, useCssVar, usePreferredDark, whenever } from "@vueuse/core"
-import { useBread } from "../../store/bread"
-import { url } from "../../js/fetch"
-import { useToast } from "../../store/toast"
-import { formatTextUsernames, getImageChunks } from "../../js/_composables"
+import { computed, onBeforeMount, reactive, ref, watch, watchEffect } from 'vue'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
+import { debounce, isEmpty } from 'lodash'
+import { useClipboard, useCssVar, usePreferredDark, whenever } from '@vueuse/core'
+import type { Album } from '../../store/album'
+import { imageUrl, useAlbums } from '../../store/album'
+import { useLoading } from '../../store/loading'
+import { useUser } from '../../store/user'
+import { formatDate, sanitize } from '../../js/utils'
+import { useBread } from '../../store/bread'
+import { url } from '../../js/fetch'
+import { useToast } from '../../store/toast'
+import { formatTextUsernames } from '../../js/_composables'
 
-import LoadingSpin from "../../components/loading/LoadingSpin.vue"
-import AlbumTimestamp from "../../components/albums/AlbumTimestamp.vue"
-import ImageListitem from "../../components/albums/ImageListitem.vue"
-import Modal from "../../components/Modal.vue"
-import AlbumMap from "../../components/albums/AlbumMap.vue"
-import Button from "../../components/Button.vue"
-import { isValidMarker } from "../../js/map"
+import LoadingSpin from '../../components/loading/LoadingSpin.vue'
+import AlbumTimestamp from '../../components/albums/AlbumTimestamp.vue'
+import ImageListitem from '../../components/albums/ImageListitem.vue'
+import Modal from '../../components/Modal.vue'
+import AlbumMap from '../../components/albums/AlbumMap.vue'
+import { isValidMarker } from '../../js/map'
 
 const albums = useAlbums()
 const route = useRoute()
@@ -32,7 +32,7 @@ const showUsers = ref(false)
 const album = reactive<Album>({} as Album)
 
 const wrap = ref(null)
-const color = useCssVar("--color-highlight", wrap)
+const color = useCssVar('--color-highlight', wrap)
 
 const _id = computed(() => route?.params?.id.toString() ?? null)
 
@@ -43,34 +43,33 @@ onBeforeMount(async () => {
     const data = await albums.fetchAlbum(_id.value, token)
     Object.assign(album, data)
 
-    bread.set(`${album.title} ${album.draft ? "(draft)" : ""} by ${user.getUsername(data.author)}`)
+    bread.set(`${album.title} ${album.draft ? '(draft)' : ''} by ${user.getUsername(data.author)}`)
   }
 
   const isDark = usePreferredDark()
 
   if (isDark.value && user.public_token) {
-    const root = document.querySelector(":root")
-    if (root) {
-      root.classList.add("dark-normal")
-    }
+    const root = document.querySelector(':root')
+    if (root)
+      root.classList.add('dark-normal')
   }
 })
 
 watchEffect(() => {
   if (album.author) {
-    const accent = user.getUser(album.author, "accentColor")
+    const accent = user.getUser(album.author, 'accentColor')
     color.value = accent
   }
 })
 
 function openCoverImage() {
   router.push({
-    name: user.public_token ? "PublicImageDetail" : "ImageDetail",
+    name: user.public_token ? 'PublicImageDetail' : 'ImageDetail',
     params: {
       album: album.key,
       image: album.coverKey,
-      ...(user.public_token && { token: user.public_token })
-    }
+      ...(user.public_token && { token: user.public_token }),
+    },
   })
 }
 
@@ -79,31 +78,32 @@ function openCoverImage() {
  */
 
 const modal = ref(false)
-const publicLink = ref("")
+const publicLink = ref('')
 const { copy, isSupported } = useClipboard()
 
 async function getPublicLink() {
   if (!publicLink.value) {
-    addLoading("share-link")
+    addLoading('share-link')
 
     const token = await albums.genPublicAlbumToken(_id.value)
-    delLoading("share-link")
+    delLoading('share-link')
 
-    if (token) publicLink.value = `${url}/public${route.fullPath}/${token}`
+    if (token)
+      publicLink.value = `${url}/public${route.fullPath}/${token}`
   }
 
-  if (!publicLink.value) return
+  if (!publicLink.value)
+    return
 
-  if (isSupported) {
+  if (isSupported)
     copyPublic()
-  } else {
+  else
     modal.value = true
-  }
 }
 
 function copyPublic() {
   copy(publicLink.value)
-  toast.add("Album share link copied to clipboard")
+  toast.add('Album share link copied to clipboard')
   modal.value = false
 }
 
@@ -111,31 +111,30 @@ function copyPublic() {
  *  Album map
  */
 const map = ref(false)
-const enableMap = computed(() => album.images.some((image) => isValidMarker(image)))
+const enableMap = computed(() => album.images.some(image => isValidMarker(image)))
 
 /**
  * Remember scroll position
  */
 
 onBeforeRouteLeave((to) => {
-  if (to.name === "ImageDetail") {
-    sessionStorage.setItem("album-scroll", window.scrollY.toString())
-  } else {
-    sessionStorage.removeItem("album-scroll")
-  }
+  if (to.name === 'ImageDetail')
+    sessionStorage.setItem('album-scroll', window.scrollY.toString())
+  else
+    sessionStorage.removeItem('album-scroll')
 })
 
 watch(
-  () => getLoading("get-album"),
+  () => getLoading('get-album'),
   () => {
-    const scroll = sessionStorage.getItem("album-scroll")
+    const scroll = sessionStorage.getItem('album-scroll')
 
     if (scroll) {
       setTimeout(() => {
         window.scrollTo(0, parseInt(scroll))
       }, 50)
     }
-  }
+  },
 )
 
 /**
@@ -145,29 +144,26 @@ watch(
 const showFixedTitle = ref(false)
 
 window.addEventListener(
-  "scroll",
+  'scroll',
   debounce(() => {
-    if (window.scrollY > window.innerHeight) {
+    if (window.scrollY > window.innerHeight)
       showFixedTitle.value = true
-    } else {
+    else
       showFixedTitle.value = false
-    }
-  }, 5)
+  }, 5),
 )
 
 function scrollUp() {
-  window.scrollTo({ top: 0, behavior: "smooth" })
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 function scrollDown() {
-  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" })
-
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
 }
 
 whenever(showUsers, () => {
-  if (showFixedTitle.value) {
+  if (showFixedTitle.value)
     scrollUp()
-  }
 })
 
 // Sort images
@@ -177,15 +173,15 @@ const descending = ref(false)
 const sortedImages = computed(() => {
   if (!descending.value)
     return album.images
-  return [...album.images].sort((a,b) => a.uploadedAt > b.uploadedAt ? -1 : 1)
+  return [...album.images].sort((a, b) => a.uploadedAt > b.uploadedAt ? -1 : 1)
 })
 </script>
 
 <template>
   <div class="hi-album-detail">
-    <LoadingSpin dark v-if="getLoading('get-album')" />
+    <LoadingSpin v-if="getLoading('get-album')" dark />
 
-    <div class="hi-album-detail-error" v-else-if="isEmpty(album)">
+    <div v-else-if="isEmpty(album)" class="hi-album-detail-error">
       <div class="centered">
         <h3>Lmao</h3>
         <p>Error loading album</p>
@@ -195,7 +191,7 @@ const sortedImages = computed(() => {
     <template v-else>
       <div class="hi-album-title">
         <Teleport to="body">
-          <Modal @close="modal = false" v-if="modal">
+          <Modal v-if="modal" @close="modal = false">
             <div class="modal-wrap modal-copy">
               <div class="modal-title">
                 <h4>Album sharing link</h4>
@@ -204,7 +200,7 @@ const sortedImages = computed(() => {
                 </button>
               </div>
               <p>Anyone with this link will be able to view this album</p>
-              <input readonly :value="publicLink" />
+              <input readonly :value="publicLink">
             </div>
           </Modal>
 
@@ -214,16 +210,20 @@ const sortedImages = computed(() => {
         </Teleport>
 
         <div class="hi-album-title-meta">
-          <div class="is-draft hover-bubble bubble-orange active" v-if="album.draft">Draft</div>
+          <div v-if="album.draft" class="is-draft hover-bubble bubble-orange active">
+            Draft
+          </div>
 
           <AlbumTimestamp class="dark" :timeframe="album.timeframe" />
 
           <h1>{{ album.title }}</h1>
-          <p v-if="album.description" v-html="sanitize(formatTextUsernames(album.description, user))"></p>
+          <p v-if="album.description" v-html="sanitize(formatTextUsernames(album.description, user))" />
 
           <div class="album-meta-cells">
             <span class="material-icons">&#xe3f4;</span>
-            <p class="mr-32">{{ album.images.length }} {{ album.images.length === 1 ? "Photo" : "Photos" }}</p>
+            <p class="mr-32">
+              {{ album.images.length }} {{ album.images.length === 1 ? "Photo" : "Photos" }}
+            </p>
 
             <span class="material-icons">&#xe851;</span>
             <router-link :to="{ name: 'UserProfile', params: { user: album.author } }" class="mr-32">
@@ -239,44 +239,44 @@ const sortedImages = computed(() => {
         <div class="hi-album-title-thumbnail">
           <div class="detail-buttons">
             <router-link
+              v-if="user.user.username === album.author"
               :to="{ name: 'AlbumEdit', params: { id: album.key } }"
               class="hover-bubble bubble-orange"
-              v-if="user.user.username === album.author"
             >
               <span class="material-icons">&#xe3c9;</span>
               Edit
             </router-link>
 
-            <button class="hover-bubble" @click="map = true" v-if="enableMap">
+            <button v-if="enableMap" class="hover-bubble" @click="map = true">
               <span class="material-icons">&#xe55b;</span>
               Map
             </button>
 
-            <button class="hover-bubble" @click="showUsers = !showUsers" :class="{ active: showUsers }">
+            <button class="hover-bubble" :class="{ active: showUsers }" @click="showUsers = !showUsers">
               <span class="material-icons">&#xe7fb;</span>
               People {{ album.taggedUsers.length ?? 0 }}
             </button>
 
-            <button class="hover-bubble data-title-width-156" @click="getPublicLink" v-if="!user.public_token">
+            <button v-if="!user.public_token" class="hover-bubble data-title-width-156" @click="getPublicLink">
               <span class="material-icons">&#xe80d;</span>
               Share
-              <span class="material-icons rotate" v-if="getLoading('share-link')">&#xe863;</span>
+              <span v-if="getLoading('share-link')" class="material-icons rotate">&#xe863;</span>
             </button>
 
             <!-- <div class="flex-1"></div> -->
-            <div class="divider"></div>
+            <div class="divider" />
 
-            <button 
-              class="hover-bubble" 
-              @click="descending = !descending" 
+            <button
+              class="hover-bubble"
               :data-title-top="descending ? 'Sorting by newest' : 'Sorting by oldest'"
+              @click="descending = !descending"
             >
-            <div :style="[descending ? 'transform: scaleY(-1);' : '']">
-              <span  class="material-icons" >&#xe164;</span>
-            </div>
+              <div :style="[descending ? 'transform: scaleY(-1);' : '']">
+                <span class="material-icons">&#xe164;</span>
+              </div>
             </button>
 
-            <button class="hover-bubble" @click="scrollDown()" data-title-top="Scroll Down">
+            <button class="hover-bubble" data-title-top="Scroll Down" @click="scrollDown()">
               <span class="material-icons">&#xe5db;</span>
             </button>
           </div>
@@ -300,57 +300,63 @@ const sortedImages = computed(() => {
                     :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"
                     alt=" "
                     @error="(e: any) => e.target.classList.add('image-error')"
-                  />
+                  >
                   <span>{{ user.getUsername(item) }}</span>
-                  <div class="tag tag-orange" v-if="item === album.author">Author</div>
-                  <div class="background"></div>
-                  <div class="background" :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"></div>
+                  <div v-if="item === album.author" class="tag tag-orange">
+                    Author
+                  </div>
+                  <div class="background" />
+                  <div class="background" :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]" />
                 </router-link>
               </template>
-              <p v-else>Nobody is here.</p>
+              <p v-else>
+                Nobody is here.
+              </p>
             </div>
 
-            <img @click="openCoverImage" class="cover-image" :src="imageUrl(album.coverKey)" alt=" " />
+            <img class="cover-image" :src="imageUrl(album.coverKey)" alt=" " @click="openCoverImage">
           </div>
         </div>
       </div>
 
-      <div class="hi-album-title-fixed" v-if="showFixedTitle && !map && !modal">
+      <div v-if="showFixedTitle && !map && !modal" class="hi-album-title-fixed">
         <div class="title-container">
           <div>
-            <p class="uploaded">Uploaded {{ formatDate(album.publishedAt) }}</p>
+            <p class="uploaded">
+              Uploaded {{ formatDate(album.publishedAt) }}
+            </p>
             <h5>{{ album.title }}</h5>
           </div>
 
           <div>
             <!-- <div class="detail-buttons"> -->
             <router-link
+              v-if="user.user.username === album.author"
               :to="{ name: 'AlbumEdit', params: { id: album.key } }"
               class="hover-bubble bubble-orange"
-              v-if="user.user.username === album.author"
             >
               <span class="material-icons">&#xe3c9;</span>
               Edit
             </router-link>
 
-            <button class="hover-bubble" @click="map = true" v-if="enableMap">
+            <button v-if="enableMap" class="hover-bubble" @click="map = true">
               <span class="material-icons">&#xe55b;</span>
               Map
             </button>
 
-            <button class="hover-bubble" @click="showUsers = !showUsers" :class="{ active: showUsers }">
+            <button class="hover-bubble" :class="{ active: showUsers }" @click="showUsers = !showUsers">
               <span class="material-icons">&#xe7fb;</span>
               People {{ album.taggedUsers.length ?? 0 }}
             </button>
 
-            <button class="hover-bubble data-title-width-156" @click="getPublicLink" v-if="!user.public_token">
+            <button v-if="!user.public_token" class="hover-bubble data-title-width-156" @click="getPublicLink">
               <span class="material-icons">&#xe80d;</span>
               Share
-              <span class="material-icons rotate" v-if="getLoading('share-link')">&#xe863;</span>
+              <span v-if="getLoading('share-link')" class="material-icons rotate">&#xe863;</span>
             </button>
 
             <!-- </div> -->
-            <button class="go-up" @click="scrollUp" data-title-bottom="Scroll Up">
+            <button class="go-up" data-title-bottom="Scroll Up" @click="scrollUp">
               <span class="material-icons"> &#xe5d8; </span>
             </button>
           </div>
@@ -360,15 +366,10 @@ const sortedImages = computed(() => {
 
     <div class="hi-album-images album-detail">
       <ImageListitem v-for="image in sortedImages" :key="image.key" :image="image" :album-key="album.key" />
-      <!-- <div class="hi-album-image-col" v-for="chunk in chunks" :key="chunk.length"> -->
-      <!-- </div> -->
     </div>
 
-
-
-    <div class="blur-bg" v-if="album.coverKey">
+    <div v-if="album.coverKey" class="blur-bg">
       <img :src="imageUrl(album.coverKey, 'medium')">
     </div>
   </div>
-
 </template>
