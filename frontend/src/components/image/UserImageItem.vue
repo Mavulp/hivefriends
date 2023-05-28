@@ -32,11 +32,19 @@ const hover = ref(false)
 const { copy } = useClipboard()
 const wrap = ref()
 
+const selectingAlbum = ref(false)
+const selectingLoading = ref(false)
+const albums = ref<Array<Album>>()
+
 const inAlbum = computed(() => props.image.albumKeys.length > 0)
 
 onMounted(() => {
   onClickOutside(wrap, () => (open.value = false))
 })
+
+// @ts-expect-error idk
+const { imgIndex, setIndex } = inject<{ imgIndex: number; setIndex: (num: number) => void }>('image-index')
+const total = inject<number>('image-total')
 
 function imageClick() {
   if (props.mode) {
@@ -77,10 +85,6 @@ whenever(keys.Escape, () => {
  * Go to image album
  */
 
-const selectingAlbum = ref(false)
-const selectingLoading = ref(false)
-const albums = ref<Array<Album>>()
-
 async function tryToAlbum() {
   if (props.image.albumKeys.length === 1) {
     router.push({ name: 'AlbumDetail', params: { id: props.image.albumKeys[0] } })
@@ -95,11 +99,6 @@ async function tryToAlbum() {
     })
   }
 }
-
-// @ts-expect-error
-const { imgIndex, setIndex } = inject<{ imgIndex: number; setIndex: (num: number) => void }>('image-index')
-// @ts-expect-error
-const total = inject<number>('image-total')
 
 watch(imgIndex, (value) => {
   if (value !== props.index)
@@ -139,6 +138,7 @@ watch(imgIndex, (value) => {
           <template v-else>
             <router-link
               v-for="album in albums"
+              :key="album.key"
               :to="{ name: 'AlbumDetail', params: { id: album.key } }"
               class="select-album-item"
             >
