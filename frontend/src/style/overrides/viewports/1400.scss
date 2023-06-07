@@ -1,3 +1,13 @@
+@media only screen and (max-width: 1756px) {
+  .hi-album-list .hi-album-list-layout .layout-item:last-of-type .album-list-wrap {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .hi-album-detail .hi-album-images {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 @media only screen and (max-width: 1324px) {
   .route-login {
     .route-login-split {
@@ -10,17 +20,11 @@
   }
 
   .hi-album-detail .hi-album-images {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 
   .hi-album-detail .detail-buttons {
     gap: 24px;
-  }
-}
-
-@media only screen and (max-width: 1756px) {
-  .hi-album-list .hi-album-list-layout .layout-item:last-of-type .album-list-wrap {
-    grid-template-columns: 1fr 1fr 1fr;
   }
 }
 

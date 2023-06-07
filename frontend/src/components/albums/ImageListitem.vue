@@ -27,8 +27,9 @@ interface Props {
   >
     <!-- <div class="image-wrap"> -->
     <div v-if="image.commentCount" class="image-comment-count">
-      <!-- <span class="material-icons">&#xe0b7;</span> -->
-      <p>{{ image.commentCount }} {{ image.commentCount === 1 ? 'comment' : 'comments' }}</p>
+      <p>{{ image.commentCount }}</p>
+      <span class="material-icons">&#xe0b7;</span>
+      <!-- <p>{{ image.commentCount }} {{ image.commentCount === 1 ? 'comment' : 'comments' }}</p> -->
     </div>
 
     <img :src="imageUrl(image.key, 'medium')">

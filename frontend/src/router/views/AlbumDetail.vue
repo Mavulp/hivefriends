@@ -194,58 +194,60 @@ const sortedImages = computed(() => {
     </div>
 
     <div v-else class="hi-double">
-      <div class="hi-album-title">
-        <Teleport to="body">
-          <Modal v-if="modal" @close="modal = false">
-            <div class="modal-wrap modal-copy">
-              <div class="modal-title">
-                <h4>Album sharing link</h4>
-                <button class="modal-close" @click="modal = false">
-                  <span class="material-icons">&#xe5cd;</span>
-                </button>
+      <div>
+        <div class="hi-album-title">
+          <Teleport to="body">
+            <Modal v-if="modal" @close="modal = false">
+              <div class="modal-wrap modal-copy">
+                <div class="modal-title">
+                  <h4>Album sharing link</h4>
+                  <button class="modal-close" @click="modal = false">
+                    <span class="material-icons">&#xe5cd;</span>
+                  </button>
+                </div>
+                <p>Anyone with this link will be able to view this album</p>
+                <input readonly :value="publicLink">
               </div>
-              <p>Anyone with this link will be able to view this album</p>
-              <input readonly :value="publicLink">
+            </Modal>
+
+            <Modal v-if="map" @close="map = false">
+              <AlbumMap :album="album" @close="map = false" />
+            </Modal>
+          </Teleport>
+
+          <div class="album-thumbnail">
+            <img class="cover-image" :src="imageUrl(album.coverKey)" alt=" " @click="openCoverImage">
+
+            <div v-if="album.coverKey" class="blur-bg">
+              <img :src="imageUrl(album.coverKey, 'medium')">
             </div>
-          </Modal>
-
-          <Modal v-if="map" @close="map = false">
-            <AlbumMap :album="album" @close="map = false" />
-          </Modal>
-        </Teleport>
-
-        <div class="album-thumbnail">
-          <img class="cover-image" :src="imageUrl(album.coverKey)" alt=" " @click="openCoverImage">
-
-          <div v-if="album.coverKey" class="blur-bg">
-            <img :src="imageUrl(album.coverKey, 'medium')">
-          </div>
-        </div>
-
-        <div class="hi-album-title-meta">
-          <div v-if="album.draft" class="is-draft hover-bubble bubble-orange active">
-            Draft
           </div>
 
-          <AlbumTimestamp class="dark" :timeframe="album.timeframe" />
+          <div class="hi-album-title-meta">
+            <div v-if="album.draft" class="is-draft hover-bubble bubble-orange active">
+              Draft
+            </div>
 
-          <h1>{{ album.title }}</h1>
-          <p v-if="album.description" v-html="sanitize(formatTextUsernames(album.description, user))" />
+            <AlbumTimestamp class="dark" :timeframe="album.timeframe" />
 
-          <div class="album-meta-cells">
-            <span class="material-icons">&#xe3f4;</span>
-            <p class="mr-32">
-              {{ album.images.length }} {{ album.images.length === 1 ? "Photo" : "Photos" }}
-            </p>
+            <h1>{{ album.title }}</h1>
+            <p v-if="album.description" v-html="sanitize(formatTextUsernames(album.description, user))" />
 
-            <span class="material-icons">&#xe851;</span>
-            <router-link :to="{ name: 'UserProfile', params: { user: album.author } }" class="mr-32">
-              by: {{ user.getUsername(album.author) }}
-            </router-link>
+            <div class="album-meta-cells">
+              <span class="material-icons">&#xe3f4;</span>
+              <p class="mr-32">
+                {{ album.images.length }} {{ album.images.length === 1 ? "Photo" : "Photos" }}
+              </p>
 
-            <span class="material-icons">&#xe8df;</span>
-            <p>Uploaded</p>
-            <p>{{ dayjs(album.publishedAt * 1000).format(normalDateFormat) }}</p>
+              <span class="material-icons">&#xe851;</span>
+              <router-link :to="{ name: 'UserProfile', params: { user: album.author } }" class="mr-32">
+                by: {{ user.getUsername(album.author) }}
+              </router-link>
+
+              <span class="material-icons">&#xe8df;</span>
+              <p>Uploaded</p>
+              <p>{{ dayjs(album.publishedAt * 1000).format(normalDateFormat) }}</p>
+            </div>
           </div>
         </div>
       </div>

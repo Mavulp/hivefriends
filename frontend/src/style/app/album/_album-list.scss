@@ -191,6 +191,7 @@
 .hi-album-list {
   display: block;
   width: 100%;
+  padding-bottom: 24px;
 
   .go-up {
     @include t(0.3s, linear);
