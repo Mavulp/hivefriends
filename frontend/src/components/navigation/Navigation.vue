@@ -29,7 +29,7 @@ const isDark = computed(() => auth.settings.colorTheme === 'dark-normal')
 </script>
 
 <template>
-  <div class="hi-header" :class="{ 'is-phone': isPhone, 'is-detail': ['AlbumDetail', 'Home'].includes(String(route.name)) }">
+  <div class="hi-header" :class="{ 'is-phone': isPhone, 'is-detail': ['AlbumDetail'].includes(String(route.name)) }">
     <router-link :to="{ name: 'Home' }" class="logo-wrap" title="嘿，伙计，我在哪里可以买到火腿和鸡蛋">
       <img :src="isDark ? '/Sharp.png' : '/Sharp2.png'" alt=" ">
     </router-link>

@@ -1,14 +1,19 @@
 .button {
   @include font(400);
-  // display: inline-block;
   display: block;
   position: relative;
   text-align: left;
   color: rgb(var(--color-text-white));
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
   text-decoration: none !important;
+  border-radius: 4px;
+
+  &.size-normal {
+    padding: 0 16px;
+    height: 48px;
+  }
 
   &.black {
     color: #191716 !important;

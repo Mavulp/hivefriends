@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeMount, ref } from 'vue'
+import dayjs from 'dayjs'
 import HomeUser from '../../components/user/HomeUser.vue'
 import Activity from '../../components/activity/Activity.vue'
 
@@ -8,6 +9,7 @@ import { imageUrl, useAlbums } from '../../store/album'
 import { useUser } from '../../store/user'
 import { useBread } from '../../store/bread'
 import { useActivity } from '../../store/activity'
+import { TEXT_CONTRAST, seedRndMinMax } from '../../js/utils'
 
 const user = useUser()
 const album = useAlbums()
@@ -24,6 +26,19 @@ onBeforeMount(async () => {
 })
 
 const accent = computed(() => user.user.accentColor.split(',').map((item: string) => Number(item)))
+
+// MOTD
+
+const messages = [
+  'They will never make a website for friends which want to cherish moments spent together.',
+  'Comes with max 1 heat stroke.',
+  'Yep we got MOTD now',
+]
+
+// We want to randomize the MOTD every hour
+const date = dayjs().format('YYYYMMDDHH')
+const randomIndex = seedRndMinMax(0, messages.length, date)
+const motd = messages[randomIndex]
 </script>
 
 <template>
@@ -32,13 +47,34 @@ const accent = computed(() => user.user.accentColor.split(',').map((item: string
       <div>
         <div class="home-landing">
           <div v-if="latest" class="album-thumbnail">
-            <img :src="imageUrl(latest.coverKey, 'large')" alt="">
+            <router-link :to="{ name: 'AlbumDetail', params: { id: latest.key } }">
+              <div class="thumbnail-info" :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]">
+                <span>{{ latest.title }} by {{ user.getUsername(latest.author) }}</span>
+              </div>
+
+              <img :src="imageUrl(latest.coverKey, 'large')" alt="">
+            </router-link>
           </div>
+          <h1>friends</h1>
+          <p>
+            {{ motd }}
+          </p>
+
+          <!-- <div class="flex-1" />
+
+          <div class="hero">
+            <button class="button size-normal btn-highlight">
+              Upload
+            </button>
+            <button class="button size-normal btn-white">
+              View Albums
+            </button>
+          </div> -->
         </div>
       </div>
 
       <div class="home-other">
-        <h5> Latest happenings... </h5>
+        <h5> Latest activity</h5>
         <Activity class="activity-home active" limit />
 
         <div v-if="user.users && user.users.length > 0">
@@ -51,41 +87,13 @@ const accent = computed(() => user.user.accentColor.split(',').map((item: string
       </div>
     </div>
 
-    <!-- <div class="home-landing">
-      <h1>hi<b>!</b>friends</h1>
-      <h3>
-        Internet friends <br>
-        bringing the <i>URL</i> <br>
-        to the <i>IRL</i>.
-      </h3>
-
-      <Button
-        size="56px"
-        pad="48px"
-        class="btn-highlight"
-        :to="{ name: 'Albums' }"
-        :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]"
-      >
-        Browse Albums
-      </Button>
-
-      <template v-if="latest">
-        <router-link :to="{ name: 'AlbumDetail', params: { id: latest.key } }" class="album-thumbnail">
-          <span>{{ latest.title }} by {{ user.getUsername(latest.author) }}</span>
-          <img :src="imageUrl(latest.coverKey, 'large')" alt="">
-        </router-link>
-      </template>
-    </div> -->
-
-    <div class="container" />
-
-    <p class="copyright">
+    <!-- <p class="copyright">
       <span class="material-icons"> &#xe86f; </span>
       Made by <a target="_blank" href="https://github.com/mavulp">Mavulp</a> in {{ new Date().getFullYear() }}
-    </p>
+    </p> -->
 
-    <div v-if="latest" class="blur-bg">
+    <!-- <div v-if="latest" class="blur-bg">
       <img :src="imageUrl(latest.coverKey, 'tiny')" alt="">
-    </div>
+    </div> -->
   </div>
 </template>

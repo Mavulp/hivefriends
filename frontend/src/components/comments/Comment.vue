@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import { computed, ref } from "vue"
-import { Comment, useComments } from "../../store/comments"
-import { imageUrl } from "../../store/album"
-import { useUser } from "../../store/user"
-import { sanitize, formatTimestamp } from "../../js/utils"
-import { formatTextUsernames, formatTextImages } from "../../js/_composables"
+import { computed } from 'vue'
+import dayjs from 'dayjs'
+import type { Comment } from '../../store/comments'
+import { useComments } from '../../store/comments'
+import { imageUrl } from '../../store/album'
+import { useUser } from '../../store/user'
+import { sanitize } from '../../js/utils'
+import { formatTextImages, formatTextUsernames } from '../../js/_composables'
+import { timeDateFormat } from '../../js/time'
+
+const props = defineProps<Props>()
 const user = useUser()
 const comments = useComments()
 
@@ -14,10 +19,9 @@ interface Props {
   uploader: string
 }
 
-const props = defineProps<Props>()
-
 const text = computed(() => {
-  if (!props.data.text) return ""
+  if (!props.data.text)
+    return ''
 
   let text = props.data.text
 
@@ -45,21 +49,23 @@ const text = computed(() => {
           class="user-image"
           :src="imageUrl(user.getUser(props.data.author, 'avatarKey'), 'tiny')"
           :style="{
-            backgroundColor: `rgb(${user.getUser(props.data.author, 'accentColor')})`
+            backgroundColor: `rgb(${user.getUser(props.data.author, 'accentColor')})`,
           }"
           alt=" "
           @error="(e: any) => e.target.classList.add('image-error')"
-        />
+        >
 
         <span>{{ user.getUsername(props.data.author) }}</span>
       </router-link>
 
-      <div class="tag tag-orange" v-if="props.uploader === props.data.author">Author</div>
+      <div v-if="props.uploader === props.data.author" class="tag tag-orange">
+        Author
+      </div>
     </div>
 
     <div class="comment-body">
-      <p v-html="sanitize(text)"></p>
-      <span class="timestamp">{{ formatTimestamp(props.data.createdAt) }}</span>
+      <p v-html="sanitize(text)" />
+      <span class="timestamp">{{ dayjs(props.data.createdAt * 1000).format(timeDateFormat) }}</span>
     </div>
   </div>
 </template>

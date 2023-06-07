@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { formatDate } from "../../js/utils"
+import dayjs from 'dayjs'
+import { normalDateFormat } from '../../js/time'
 
 interface Props {
   timeframe: {
@@ -12,17 +13,17 @@ const { timeframe } = defineProps<Props>()
 </script>
 
 <template>
-  <div class="album-timestamp" v-if="timeframe.from && timeframe.to">
+  <div v-if="timeframe.from && timeframe.to" class="album-timestamp">
     <!-- Single day -->
     <span v-if="timeframe.from === timeframe.to">
-      {{ formatDate(timeframe.from) }}
+      {{ dayjs(timeframe.from * 1000).format(normalDateFormat) }}
     </span>
 
     <!-- Start to end -->
     <template v-else>
-      <span v-if="timeframe.from">{{ formatDate(timeframe.from) }}</span>
-      <div class="timestamp-divider"></div>
-      <span v-if="timeframe.to">{{ formatDate(timeframe.to) }}</span>
+      <span v-if="timeframe.from">{{ dayjs(timeframe.from * 1000).format(normalDateFormat) }}</span>
+      <div class="timestamp-divider" />
+      <span v-if="timeframe.to">{{ dayjs(timeframe.to * 1000).format(normalDateFormat) }}</span>
     </template>
   </div>
 </template>

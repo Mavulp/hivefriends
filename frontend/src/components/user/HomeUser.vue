@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import dayjs from 'dayjs'
 import type { User } from '../../store/user'
 import { useUser } from '../../store/user'
-import { flag, formatDate } from '../../js/utils'
+import { flag } from '../../js/utils'
 import { imageUrl } from '../../store/album'
 import countries from '../../js/countries'
+import { normalDateFormat } from '../../js/time'
 
 const props = defineProps<Props>()
 const user = useUser()
@@ -25,7 +27,7 @@ interface Props {
 
     <div class="info">
       <strong>{{ user.getUsername(props.data.username) }}</strong>
-      <p>Joined: {{ formatDate(props.data.createdAt, ['weekday']) }}</p>
+      <p>Joined: {{ dayjs(props.data.createdAt * 1000).format(normalDateFormat) }}</p>
     </div>
 
     <div v-if="props.data.country" :data-title-top="countries[props.data.country].name">

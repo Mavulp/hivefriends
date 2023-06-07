@@ -3,6 +3,7 @@ import { computed, onBeforeMount, reactive, ref, watch, watchEffect } from 'vue'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { debounce, isEmpty } from 'lodash'
 import { useClipboard, useCssVar, usePreferredDark, whenever } from '@vueuse/core'
+import dayjs from 'dayjs'
 import type { Album } from '../../store/album'
 import { imageUrl, useAlbums } from '../../store/album'
 import { useLoading } from '../../store/loading'
@@ -19,6 +20,7 @@ import ImageListitem from '../../components/albums/ImageListitem.vue'
 import Modal from '../../components/Modal.vue'
 import AlbumMap from '../../components/albums/AlbumMap.vue'
 import { isValidMarker } from '../../js/map'
+import { normalDateFormat } from '../../js/time'
 
 const albums = useAlbums()
 const route = useRoute()
@@ -232,7 +234,7 @@ const sortedImages = computed(() => {
 
             <span class="material-icons">&#xe8df;</span>
             <p>Uploaded</p>
-            <p>{{ formatDate(album.publishedAt) }}</p>
+            <p>{{ dayjs(album.publishedAt * 1000).format(normalDateFormat) }}</p>
           </div>
         </div>
 
