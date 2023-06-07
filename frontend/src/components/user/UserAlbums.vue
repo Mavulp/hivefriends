@@ -11,6 +11,7 @@ import AlbumListItem from '../albums/AlbumListItem.vue'
 import Search from '../form/Search.vue'
 import { useUser } from '../../store/user'
 import { useBread } from '../../store/bread'
+import { useThresholdScroll } from '../../js/_composables'
 
 const { getLoading } = useLoading()
 const store = useAlbums()
@@ -48,6 +49,8 @@ const sortedAlbums = computed(() => {
     return searchString.includes(search.value.toLowerCase())
   })
 })
+
+const { scroll, passed } = useThresholdScroll(292)
 </script>
 
 <template>
@@ -65,6 +68,10 @@ const sortedAlbums = computed(() => {
 
         <div class="album-subtitle">
           <p>Showing {{ sortedAlbums.length ?? 0 }} {{ sortedAlbums.length === 1 ? "album" : "albums" }}</p>
+
+          <button :class="{ active: passed }" class="go-up" data-title-bottom="Scroll Up" @click="scroll">
+            <span class="material-icons"> &#xe5d8; </span>
+          </button>
         </div>
       </div>
 

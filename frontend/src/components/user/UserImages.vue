@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeMount, provide, ref } from 'vue'
 import { isEmpty } from 'lodash'
-import { onClickOutside, useWindowScroll } from '@vueuse/core'
+import { onClickOutside } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import type { Album, Image, ImageItemInAlbum } from '../../store/album'
 import { imageUrl, useAlbums } from '../../store/album'
@@ -16,6 +16,7 @@ import { formatDate } from '../../js/utils'
 import UserImageItem from '../image/UserImageItem.vue'
 import LoadingSpin from '../loading/LoadingSpin.vue'
 import Modal from '../Modal.vue'
+import { useThresholdScroll } from '../../js/_composables'
 
 const bread = useBread()
 const toast = useToast()
@@ -169,12 +170,7 @@ function getGroupDate(timestamp: number) {
   })
 }
 
-function scrollUp() {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-}
-
-const { y } = useWindowScroll()
-const shouldShowButtonUp = computed(() => y.value > 292)
+const { scroll, passed } = useThresholdScroll(292)
 </script>
 
 <template>
@@ -253,7 +249,7 @@ const shouldShowButtonUp = computed(() => y.value > 292)
           {{ selectMode ? "Cancel" : "Select" }}
         </button>
 
-        <button :class="{ active: shouldShowButtonUp }" class="go-up" data-title-bottom="Scroll Up" @click="scrollUp">
+        <button :class="{ active: passed }" class="go-up" data-title-bottom="Scroll Up" @click="scroll">
           <span class="material-icons"> &#xe5d8; </span>
         </button>
       </div>

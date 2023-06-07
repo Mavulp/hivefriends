@@ -28,7 +28,8 @@
 }
 
 .album-subtitle {
-  @include flex($gap: 32px);
+  @include flex($gap: 32px, $justify: flex-end);
+  width: 100%;
 
   p {
     margin: 0;
@@ -191,6 +192,27 @@
   display: block;
   width: 100%;
 
+  .go-up {
+    @include t(0.3s, linear);
+    @include radius(50%);
+    width: 48px;
+    height: 48px;
+    color: rgb(var(--color-text));
+    background-color: rgba(var(--color-highlight), 0.1);
+
+    margin-right: -80px;
+    opacity: 0;
+
+    &.active {
+      margin-right: 0;
+      opacity: 1;
+    }
+
+    &:hover {
+      background-color: rgba(var(--color-highlight), 0.3);
+    }
+  }
+
   h1 {
     margin-bottom: 0;
     font-size: 3rem;
@@ -228,7 +250,7 @@
     }
 
     .album-list-controls {
-      @include flex($gap: 40px, $justify: space-between);
+      @include grid(40px, 3);
       align-content: center;
       background-color: rgba(var(--color-white), 0.85);
       backdrop-filter: blur(7px);
@@ -239,7 +261,7 @@
       padding: 16px;
 
       .form-search {
-        width: 100%;
+        // width: 100%;
         max-width: 556px;
         background-color: rgb(var(--color-white));
       }
