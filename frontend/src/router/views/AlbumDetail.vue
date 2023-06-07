@@ -336,9 +336,5 @@ const sortedImages = computed(() => {
         </div>
       </div>
     </div>
-
-    <!-- <div v-if="album.coverKey" class="blur-bg">
-      <img :src="imageUrl(album.coverKey, 'medium')">
-    </div> -->
   </div>
 </template>

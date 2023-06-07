@@ -319,7 +319,7 @@ onClickOutside(deletewrap, () => {
         </div>
       </div>
 
-      <div>
+      <div style="border-left:1px solid rgb(var(--color-border-light))">
         <div v-if="!getLoading('edit')" class="album-upload-metadata">
           <div class="title-wrap">
             <h3>Edit album</h3>
