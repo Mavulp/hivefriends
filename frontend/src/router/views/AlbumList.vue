@@ -50,7 +50,7 @@ const sortedAlbums = computed(() => {
   <div class="hi-album-list">
     <div class="hi-album-list-layout">
       <div class="layout-item album-list-controls">
-        <h1>Album List</h1>
+        <h1>Albums</h1>
 
         <Search v-model:value="search" placeholder="Search for albums..." />
 

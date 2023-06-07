@@ -27,7 +27,7 @@ export function isValidMarker(image?: {
     longitude: string | number
   }
 }): boolean {
-  if (!image || !image.location)
+  if (!image || !image.location || !image.location.latitude || !image.location.longitude)
     return false
   return image.location.latitude !== 0 && image.location.longitude !== 0
 }

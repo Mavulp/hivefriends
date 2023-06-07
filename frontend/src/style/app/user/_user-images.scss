@@ -1,6 +1,6 @@
 .hi-image-list {
   display: block;
-  padding: 32px;
+  // padding: 32px 0;
   width: 100%;
 
   .hi-image-list-upload {
@@ -58,7 +58,7 @@
     // grid-template-columns: repeat(5, 1fr);
     // gap: 10px;
     margin: 0 auto;
-    padding: 0 64px;
+    // padding: 0 64px;
 
     .image-group {
       width: 100%;
@@ -69,11 +69,19 @@
         position: sticky;
         top: 68px;
         z-index: 50;
-        border-top: 1px solid rgb(var(--color-border));
         background-color: rgba(var(--color-background), 0.85);
         backdrop-filter: blur(7px);
         margin: 0 -20px;
         padding: 20px;
+
+        &:before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 20px;
+          right: 20px;
+          border-top: 1px solid rgb(var(--color-border));
+        }
 
         span {
           display: block;
@@ -143,7 +151,7 @@
   @include grid(32px, repeat(3, 1fr));
   width: 100%;
   max-width: 1920px;
-  padding: 24px 64px;
+  padding: 24px 16px;
   position: sticky;
   top: 0;
   margin: 0 auto;

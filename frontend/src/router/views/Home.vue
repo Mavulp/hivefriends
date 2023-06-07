@@ -6,10 +6,8 @@ import Activity from '../../components/activity/Activity.vue'
 import type { Album } from '../../store/album'
 import { imageUrl, useAlbums } from '../../store/album'
 import { useUser } from '../../store/user'
-import { TEXT_CONTRAST } from '../../js/utils'
 import { useBread } from '../../store/bread'
 import { useActivity } from '../../store/activity'
-import Button from '../../components/Button.vue'
 
 const user = useUser()
 const album = useAlbums()
@@ -30,7 +28,30 @@ const accent = computed(() => user.user.accentColor.split(',').map((item: string
 
 <template>
   <div class="hi-home">
-    <div class="home-landing">
+    <div class="hi-double">
+      <div>
+        <div class="home-landing">
+          <div v-if="latest" class="album-thumbnail">
+            <img :src="imageUrl(latest.coverKey, 'large')" alt="">
+          </div>
+        </div>
+      </div>
+
+      <div class="home-other">
+        <h5> Latest happenings... </h5>
+        <Activity class="activity-home active" limit />
+
+        <div v-if="user.users && user.users.length > 0">
+          <h5>The squad</h5>
+
+          <div class="home-users">
+            <HomeUser v-for="item in user.users" :key="item.username" :data="item" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- <div class="home-landing">
       <h1>hi<b>!</b>friends</h1>
       <h3>
         Internet friends <br>
@@ -54,22 +75,9 @@ const accent = computed(() => user.user.accentColor.split(',').map((item: string
           <img :src="imageUrl(latest.coverKey, 'large')" alt="">
         </router-link>
       </template>
-    </div>
+    </div> -->
 
-    <div class="container">
-      <h4 class="flex-wrap">
-        What's Happening
-      </h4>
-      <Activity class="activity-home active" limit />
-    </div>
-
-    <div v-if="user.users && user.users.length > 0" class="container">
-      <h4>The squad</h4>
-
-      <div class="home-users">
-        <HomeUser v-for="item in user.users" :key="item.username" :data="item" />
-      </div>
-    </div>
+    <div class="container" />
 
     <p class="copyright">
       <span class="material-icons"> &#xe86f; </span>
