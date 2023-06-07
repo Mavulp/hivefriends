@@ -315,7 +315,7 @@ function dragCompare() {
         </div>
       </div>
 
-      <div>
+      <div style="border-left:1px solid rgb(var(--color-border-light))">
         <div class="album-upload-metadata">
           <h3>Create album</h3>
 

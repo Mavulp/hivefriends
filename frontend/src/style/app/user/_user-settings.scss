@@ -1,8 +1,8 @@
 .hi-settings-page {
-  @include grid(40px, 96px 1fr);
+  @include grid(40px, 128px 1fr);
   // display: block;
   width: 100%;
-  max-width: 756px;
+  max-width: 716px;
   // padding: 64px 128px;
   padding-top: 64px;
   margin: 0 auto;
@@ -41,12 +41,14 @@
   display: block;
   margin: 0 auto;
   padding-bottom: 256px;
-  margin-top: -40px;
+  margin-top: -32px;
+  width: 100%;
 
   .title-wrap {
     @include flex($justify: space-between);
-    margin: 20px -20px 80px;
+    // margin: 20px 80px;
     padding: 20px;
+    margin: 0 -20px;
     // border-bottom: 1px solid rgb(var(--color-border));
     position: sticky;
     top: 0;

@@ -37,14 +37,23 @@
   }
 
   .album-map-layout {
-    @include grid(0, 1fr 96px);
+    // @include grid(0, 1fr 96px);
+    width: 100%;
     height: 100%;
 
     .map-controls {
-      @include flex($gap: 32px, $direction: column, $align: center);
+      @include flex($gap: 24px, $align: center);
       z-index: 10;
-      padding: 40px 0;
-      border-left: 1px solid rgb(var(--color-border-light));
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 16px;
+      border-radius: 6px;
+      padding: 8px 16px;
+      // border-left: 1px solid rgb(var(--color-border-light));
+      background-color: rgba(var(--color-background), 0.7);
+      backdrop-filter: blur(7px);
+      border: 1px solid rgb(var(--color-border-light));
 
       .padder {
         display: block;
@@ -52,7 +61,7 @@
       }
 
       span.material-icons {
-        font-size: 2.4rem;
+        font-size: 2rem;
         color: rgb(var(--color-text));
         transform: translateY(2px);
       }
@@ -85,17 +94,13 @@
         @include t(0.5s, cubic-bezier(0.65, 0, 0.35, 1));
         @include flex($gap: 0, $direction: column, $wrap: nowrap);
         position: absolute;
-        // width: 512px;
-        width: 30%;
-        min-width: 452px;
-        max-width: 720px;
+        width: 420px;
         top: 0;
         bottom: 0;
         overflow-y: auto;
         overflow-x: hidden;
         left: unset;
         background-color: rgb(var(--color-background));
-        // overflow: hidden;
         right: -100%;
         z-index: 50;
         border-left: 1px solid rgb(var(--color-border-light));
@@ -144,13 +149,42 @@
           }
         }
 
+        a {
+          display: block;
+          width: 100%;
+          position: relative;
+
+          & > span {
+            @include t();
+            @include flex($gap: 5px);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+          }
+
+          &:hover {
+            & > span {
+              opacity: 1;
+            }
+
+            img {
+              opacity: 0.2;
+            }
+          }
+        }
+
         img {
+          @include t();
           display: block;
           object-fit: contain;
           object-position: center;
           width: 100%;
-          max-height: 640px;
-          // object-fit: cover;
+          max-height: 50vh;
+          object-fit: cover;
         }
 
         .hi-comments {
