@@ -202,7 +202,7 @@ input:-webkit-autofill:active {
 
       .material-icons {
         color: rgb(var(--color-border));
-        font-size: 2.4rem;
+        font-size: 25px;
         position: relative;
         z-index: 5;
 
@@ -211,8 +211,8 @@ input:-webkit-autofill:active {
           @include radius(50%);
           content: "";
           display: block;
-          width: 33px;
-          height: 33px;
+          width: 34px;
+          height: 34px;
           // inset: -2px;
           top: -2px;
           left: -4px;

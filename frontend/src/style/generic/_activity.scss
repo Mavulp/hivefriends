@@ -36,7 +36,7 @@
     inset: unset;
     width: 100%;
     // border: none;
-    margin-bottom: 64px;
+    margin-bottom: 32px;
 
     .title-wrap,
     .close {
@@ -97,6 +97,10 @@
       // display: block;
       margin-bottom: 32px;
       position: relative;
+
+      &:last-of-type {
+        margin-bottom: 0;
+      }
 
       .activity-group-title {
         @include flex($gap: 24px, $align: center);
@@ -243,8 +247,8 @@
             @include t(0.1s);
             @include radius(3px);
             display: block;
-            max-width: 64px;
-            height: 64px;
+            max-width: 156px;
+            height: 80px;
             object-fit: cover;
             object-position: center;
 
@@ -291,7 +295,7 @@
       .activity-title {
         display: block;
         width: 100%;
-        margin-bottom: 6px;
+        margin-bottom: 4px;
         line-height: 1.6em;
         padding-left: 36px;
         position: relative;

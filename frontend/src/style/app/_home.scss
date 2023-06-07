@@ -1,109 +1,53 @@
 .hi-home {
-  // @include flex($direction: column);
   width: 100%;
-  padding-bottom: 128px;
+  // padding-bottom: 128px;
 
   .blur-bg {
-    bottom: -256px;
+    bottom: -0;
 
     img {
       height: 125vh;
-      opacity: 0.075 !important;
+      opacity: 0.1 !important;
     }
   }
 
   .home-landing {
-    display: block;
-    height: calc(100vh - $header);
-    padding: 32px 104px 64px;
-    position: relative;
-    margin-bottom: 80px;
-
-    h1 {
-      pointer-events: none;
-      z-index: 10;
-      display: block;
-      position: relative;
-      font-style: italic;
-      margin-top: 48px;
-      font-size: 13vw;
-      -webkit-text-fill-color: transparent;
-      -webkit-text-stroke-width: 1.5px;
-      -webkit-text-stroke-color: rgb(var(--color-text));
-
-      filter: drop-shadow(6px 6px 0px #fff);
-
-      b {
-        display: inline;
-        font-size: inherit;
-
-        -webkit-text-fill-color: rgb(var(--color-highlight));
-        -webkit-text-stroke-width: 2px;
-        -webkit-text-stroke-color: rgb(var(--color-highlight));
-      }
-    }
-
-    h3 {
-      @include font(900);
-      font-size: 8rem;
-      position: relative;
-      pointer-events: none;
-
-      line-height: 1.2em;
-      font-style: italic;
-      z-index: 10;
-      margin-bottom: 56px;
-
-      i {
-        text-decoration: underline;
-        text-decoration-thickness: 8px;
-        text-decoration-color: rgb(var(--color-highlight));
-      }
-    }
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - $header - 32px);
+    position: sticky;
+    top: 16px;
 
     .album-thumbnail {
-      @include radius(12px);
-      display: block;
-      cursor: pointer;
-      position: absolute;
-      bottom: 32px;
-      right: 0;
-      width: 50%;
-      // top: 10%;
-      top: 32px;
+      border-radius: 12px;
+      height: 65vh;
+      min-height: 512px;
       overflow: hidden;
-      z-index: 1;
-      right: 32px;
-      color: rgb(var(--color-text-white));
       box-shadow: var(--shadow);
+      position: relative;
+      margin-bottom: 16px;
+      background-color: rgb(var(--color-background-dark));
 
-      &:hover {
-        img {
-          transform: scale(1.025);
-        }
+      .loading-spinner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
       }
 
-      span {
-        @include radius(4px);
-        height: 32px;
-        line-height: 32px;
-        display: block;
+      .thumbnail-info {
         position: absolute;
-        bottom: 32px;
-        max-width: calc(100% - 64px);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        right: 32px;
-        z-index: 5;
-        padding: 0 12px;
-        background-color: rgba(var(--color-background-dark), 0.6);
-        color: rgb(var(--color-text-white));
-        font-size: 1.5rem;
+        border-radius: 6px;
+        bottom: 16px;
+        right: 16px;
+        padding: 8px 16px;
+        background-color: rgb(var(--color-background-dark-static));
+        color: rgb(var(--color-highlight));
+        filter: drop-shadow(2px 2px 0px rgb(var(--color-highlight)));
+        z-index: 10;
       }
 
       img {
-        @include t();
         display: block;
         width: 100%;
         height: 100%;
@@ -114,10 +58,36 @@
       }
     }
 
-    .button {
-      @include font(700);
-      display: inline-block;
-      font-size: 1.6rem;
+    h1 {
+      font-size: 12rem;
+      text-transform: uppercase;
+      font-style: italic;
+      margin-bottom: 0;
+      letter-spacing: 0.03em;
+      background: -webkit-linear-gradient(45deg, rgb(var(--color-highlight)), rgb(var(--color-info)));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(6px 6px 0px rgb(var(--color-text)));
+    }
+
+    p {
+      @include font(400);
+      font-size: 3.4rem;
+      font-style: italic;
+      color: rgb(var(--color-text));
+
+      b,
+      i {
+        display: inline;
+        text-decoration: underline;
+        text-decoration-thickness: 4px;
+        text-decoration-color: rgb(var(--color-highlight));
+      }
+    }
+
+    .hero {
+      @include flex($gap: 20px);
     }
   }
 
@@ -138,7 +108,7 @@
   .home-users {
     @include grid(0, 2);
     @include radius(6px);
-    margin-bottom: 128px;
+    margin-bottom: 0;
     overflow: hidden;
     border: 1px solid rgb(var(--color-border-light));
 
@@ -148,7 +118,7 @@
       // @include t();
       // @include radius(3px);
       @include flex($gap: 8px);
-      padding: 20px 40px;
+      padding: 16px 24px;
       color: rgb(var(--color-text));
       border-bottom: 1px solid rgb(var(--color-border-light));
 
@@ -174,13 +144,14 @@
         flex: 1;
         align-self: center;
 
-        h5 {
-          margin-bottom: 5px;
-          font-size: 2rem;
+        strong {
+          @include font(700);
+          margin-bottom: 4px;
+          font-size: 1.4rem;
         }
 
         p {
-          font-size: 1.4rem;
+          font-size: 1.2rem;
           margin: 0;
           color: rgb(var(--color-text-light));
         }
@@ -189,12 +160,12 @@
       .user-image {
         @include radius(50%);
         display: block;
-        width: 48px;
-        height: 48px;
+        width: 40px;
+        height: 40px;
         object-fit: cover;
         object-position: center;
         position: relative;
-        margin-right: 12px;
+        margin-right: 8px;
       }
     }
   }
@@ -256,6 +227,7 @@ $flag-w: 28px;
 .copyright {
   @include flex($gap: 4px, $justify: center);
   margin: 0;
+  padding: 64px 0;
   color: rgb(var(--color-text-light));
   font-size: 1.5rem !important;
 

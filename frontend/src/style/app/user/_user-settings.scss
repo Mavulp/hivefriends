@@ -1,7 +1,17 @@
+.hi-settings-page {
+  @include grid(40px, 96px 1fr);
+  // display: block;
+  width: 100%;
+  max-width: 756px;
+  // padding: 64px 128px;
+  padding-top: 64px;
+  margin: 0 auto;
+}
+
 .settings-nav {
-  position: fixed;
-  top: 128px;
-  left: clamp(96px, calc(50% - calc(880px / 2) - 256px), 100%);
+  position: sticky;
+  top: 36px;
+  left: clamp(96px, calc(50% - calc(592px / 2) - 180px), 100%);
 
   width: 128px;
 
@@ -12,17 +22,42 @@
     font-size: 1.4rem;
     color: rgb(var(--color-text));
   }
+
+  .gap {
+    height: 80px;
+  }
+
+  .go-up {
+    @include t();
+    opacity: 0;
+
+    &.visible {
+      opacity: 1;
+    }
+  }
 }
 
 .hi-user-settings-items {
   display: block;
-  width: 60%;
-  max-width: 880px;
   margin: 0 auto;
   padding-bottom: 256px;
+  margin-top: -40px;
 
-  h1 {
-    margin-bottom: 64px;
+  .title-wrap {
+    @include flex($justify: space-between);
+    margin: 20px -20px 80px;
+    padding: 20px;
+    // border-bottom: 1px solid rgb(var(--color-border));
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: rgba(var(--color-background), 0.85);
+    backdrop-filter: blur(7px);
+
+    h1 {
+      margin: 0;
+      font-size: 4rem;
+    }
   }
 
   h4,
@@ -36,7 +71,7 @@
   }
 
   .form-input textarea {
-    min-height: 208px;
+    min-height: 128px;
   }
 
   .form-select {
@@ -50,10 +85,11 @@
     padding-left: 0;
 
     li {
+      padding: 0;
       margin-bottom: 128px;
       padding-bottom: 40px;
-      padding-right: 32px;
-      padding-left: 0;
+      // padding-right: 32px;
+      // padding-left: 0;
       border-bottom: 1px solid rgb(var(--color-border-light));
 
       &:last-child {
@@ -124,7 +160,7 @@
   }
 
   .settings-upload-image {
-    @include grid(40px, 2);
+    @include grid(20px, 2);
 
     .drop-section {
       display: block;
@@ -182,7 +218,7 @@
         @include radius(50%);
         // @include ellipse(32px);
         position: absolute;
-        right: 16px;
+        left: 16px;
         top: 16px;
         background-color: rgb(var(--color-white));
         color: rgb(var(--color-text));
@@ -209,6 +245,8 @@
         display: block;
         margin-bottom: 16px;
         object-fit: contain;
+        border-radius: 12px;
+
         object-position: center;
         box-shadow: var(--shadow);
         z-index: 1;

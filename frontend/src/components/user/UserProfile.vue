@@ -1,17 +1,20 @@
 <script setup lang="ts">
-import LoadingSpin from "../loading/LoadingSpin.vue"
-import AlbumListItem from "../albums/AlbumListItem.vue"
-import Button from "../Button.vue"
+import { computed, onBeforeMount, onBeforeUnmount, onMounted, ref, watchEffect } from 'vue'
+import { useRoute } from 'vue-router'
+import { useCssVar, useMediaQuery } from '@vueuse/core'
+import dayjs from 'dayjs'
+import LoadingSpin from '../loading/LoadingSpin.vue'
+import AlbumListItem from '../albums/AlbumListItem.vue'
 
-import { computed, onBeforeMount, onBeforeUnmount, onMounted, ref, watchEffect } from "vue"
-import { useUser, User } from "../../store/user"
-import { Album, imageUrl, useAlbums } from "../../store/album"
-import { useRoute } from "vue-router"
-import { TEXT_CONTRAST, formatDate, flag, sanitize } from "../../js/utils"
-import { useLoading } from "../../store/loading"
-import { useCssVar, useMediaQuery } from "@vueuse/core"
-import countries from "../../js/countries"
-import { useBread } from "../../store/bread"
+import type { User } from '../../store/user'
+import { useUser } from '../../store/user'
+import type { Album } from '../../store/album'
+import { imageUrl, useAlbums } from '../../store/album'
+import { TEXT_CONTRAST, flag, sanitize } from '../../js/utils'
+import { useLoading } from '../../store/loading'
+import countries from '../../js/countries'
+import { useBread } from '../../store/bread'
+import { normalDateFormat } from '../../js/time'
 
 const { addLoading, delLoading, getLoading } = useLoading()
 const users = useUser()
@@ -20,19 +23,19 @@ const albums = useAlbums()
 const bread = useBread()
 
 const wrap = ref(null)
-const color = useCssVar("--color-highlight", wrap)
-const isPhone = useMediaQuery("(max-width: 512px)")
+const color = useCssVar('--color-highlight', wrap)
+const isPhone = useMediaQuery('(max-width: 512px)')
 const _id = computed(() => route?.params?.user?.toString() ?? null)
 const userAlbums = ref<Array<Album>>([])
-const bgscrollpos = ref("50%")
+const bgscrollpos = ref('50%')
 const imgheight = 512
 
-const user = computed<User>(() => users.users.find((item) => item.username === _id.value) as User)
-const accent = computed(() => color.value.split(",").map((item) => Number(item)))
+const user = computed<User>(() => users.users.find(item => item.username === _id.value) as User)
+const accent = computed(() => color.value.split(',').map(item => Number(item)))
 // const flag = ref()
 
 onBeforeMount(() => {
-  addLoading("profile")
+  addLoading('profile')
 
   bread.set(`${users.getUsername(_id.value)}'s profile`)
 
@@ -43,36 +46,34 @@ onBeforeMount(() => {
     })
     .catch(() => {})
     .finally(() => {
-      delLoading("profile")
+      delLoading('profile')
     })
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener("scroll", () => {})
+  window.removeEventListener('scroll', () => {})
 })
 
 const strength = computed(() => (isPhone.value ? -4 : -2.5))
 
 onMounted(() => {
-  window.addEventListener("scroll", () => {
+  window.addEventListener('scroll', () => {
     const top = window.scrollY
 
-    if (top < imgheight) {
+    if (top < imgheight)
       bgscrollpos.value = `calc(50% - ${top / strength.value}px)`
-    }
   })
 })
 
 watchEffect(() => {
-  if (user.value) {
-    color.value = user.value.accentColor ?? "128,128,128"
-  }
+  if (user.value)
+    color.value = user.value.accentColor ?? '128,128,128'
 })
 </script>
 
 <template>
-  <div class="hi-user-profile" ref="wrap">
-    <LoadingSpin class="center-page dark" v-if="getLoading('profile')" />
+  <div ref="wrap" class="hi-user-profile">
+    <LoadingSpin v-if="getLoading('profile')" class="center-page dark" />
 
     <div v-else-if="!user" class="hi-user-profile" style="padding: 128px">
       <h1>Bruh</h1>
@@ -86,7 +87,7 @@ watchEffect(() => {
             class="banner"
             :style="{
               backgroundImage: `url(${imageUrl(user.bannerKey)})`,
-              backgroundPositionY: bgscrollpos
+              backgroundPositionY: bgscrollpos,
             }"
           />
         </div>
@@ -95,7 +96,7 @@ watchEffect(() => {
           <div class="user-information-container">
             <div class="user-information">
               <h1>{{ user.displayName ?? user.username }}</h1>
-              <p v-html="sanitize(user.bio)"></p>
+              <p v-html="sanitize(user.bio)" />
             </div>
 
             <div class="avatar-wrap">
@@ -104,7 +105,7 @@ watchEffect(() => {
                 :src="imageUrl(user.avatarKey, 'large')"
                 alt=" "
                 @error="(e: any) => e.target.classList.add('image-error')"
-              />
+              >
             </div>
           </div>
         </div>
@@ -130,7 +131,7 @@ watchEffect(() => {
               </router-link>
             </h2>
             <div class="user-albums-list">
-              <AlbumListItem v-for="item in [...userAlbums].slice(0, 3)" :data="item" />
+              <AlbumListItem v-for="item in [...userAlbums].slice(0, 3)" :key="item.key" :data="item" />
             </div>
           </template>
         </div>
@@ -140,18 +141,18 @@ watchEffect(() => {
               <span>Country</span>
 
               <div class="nationality-wrap">
-                <img class="flag" :src="flag(user.country)" :alt="user.country" />
+                <img class="flag" :src="flag(user.country)" :alt="user.country">
                 <p>{{ countries[user.country].name }}</p>
               </div>
             </div>
 
             <div>
               <span>Joined</span>
-              <p>{{ formatDate(user.createdAt) }}</p>
+              <p>{{ dayjs(user.createdAt * 1000).format(normalDateFormat) }}</p>
             </div>
           </div>
 
-          <div class="user-met-with" v-if="user.met.length > 0">
+          <div v-if="user.met.length > 0" class="user-met-with">
             <h4>
               <span class="material-icons">&#xe7fb;</span>
               Met with
@@ -170,11 +171,13 @@ watchEffect(() => {
                 :style="[`backgroundColor: rgb(${users.getUser(item, 'accentColor')})`]"
                 alt=" "
                 @error="(e: any) => e.target.classList.add('image-error')"
-              />
+              >
               <span>{{ users.getUsername(item) }}</span>
-              <div class="tag tag-orange" v-if="item === user.username">Author</div>
+              <div v-if="item === user.username" class="tag tag-orange">
+                Author
+              </div>
               <!-- <div class="background"></div> -->
-              <div class="background" :style="[`backgroundColor: rgb(${users.getUser(item, 'accentColor')})`]"></div>
+              <div class="background" :style="[`backgroundColor: rgb(${users.getUser(item, 'accentColor')})`]" />
             </router-link>
           </div>
         </div>

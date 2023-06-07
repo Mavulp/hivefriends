@@ -29,7 +29,7 @@ const isDark = computed(() => auth.settings.colorTheme === 'dark-normal')
 </script>
 
 <template>
-  <div class="hi-header" :class="{ 'is-phone': isPhone, 'is-detail': ['AlbumDetail', 'Home'].includes(String(route.name)) }">
+  <div class="hi-header" :class="{ 'is-phone': isPhone, 'is-detail': ['AlbumDetail'].includes(String(route.name)) }">
     <router-link :to="{ name: 'Home' }" class="logo-wrap" title="嘿，伙计，我在哪里可以买到火腿和鸡蛋">
       <img :src="isDark ? '/Sharp.png' : '/Sharp2.png'" alt=" ">
     </router-link>
@@ -49,8 +49,13 @@ const isDark = computed(() => auth.settings.colorTheme === 'dark-normal')
           Activity
         </router-link>
         <router-link class="nav-link" :to="{ name: 'About' }">
-          The Project
+          About
         </router-link>
+        <!--
+        <router-link class="nav-link" :to="{ name: 'Upload' }">
+          <span class="material-icons">&#xe2cc;</span>
+          Upload
+        </router-link> -->
       </div>
 
       <transition name="fade" appear mode="out-in">
@@ -91,9 +96,9 @@ const isDark = computed(() => auth.settings.colorTheme === 'dark-normal')
         <router-link class="hover-bubble btn-icon" data-title-bottom="Settings" :to="{ name: 'UserSettings' }">
           <span class="material-icons">&#xe8b8;</span>
         </router-link>
-        <button class="hover-bubble btn-icon" data-title-bottom="Log out" @click="signOut()">
+        <!-- <button class="hover-bubble btn-icon" data-title-bottom-right="Log out" @click="signOut()">
           <span class="material-icons">&#xe9ba;</span>
-        </button>
+        </button> -->
       </template>
     </template>
 

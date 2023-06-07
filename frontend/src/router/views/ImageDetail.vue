@@ -5,12 +5,13 @@ import { isEmpty, isNil } from 'lodash'
 import { onKeyStroke, useClipboard, useCssVar, useMediaQuery, usePreferredDark, useScroll, whenever } from '@vueuse/core'
 import type { Map } from 'mapbox-gl'
 import { MapboxMap, MapboxMarker } from 'vue-mapbox-ts'
+import dayjs from 'dayjs'
 import type { Album, Image as ImageStruct } from '../../store/album'
 import { imageUrl, useAlbums } from '../../store/album'
 import { useLoading } from '../../store/loading'
 import { getBounds, isValidMarker, map_access, map_dark, map_light } from '../../js/map'
 import { useUser } from '../../store/user'
-import { RGB_TO_HEX, formatDate, formatFileSize } from '../../js/utils'
+import { RGB_TO_HEX, formatFileSize } from '../../js/utils'
 import { useComments } from '../../store/comments'
 import { useToast } from '../../store/toast'
 import { useBread } from '../../store/bread'
@@ -19,6 +20,7 @@ import { url } from '../../js/fetch'
 import LoadingSpin from '../../components/loading/LoadingSpin.vue'
 import CommentsWrap from '../../components/comments/CommentsWrap.vue'
 import Modal from '../../components/Modal.vue'
+import { normalDateFormat } from '../../js/time'
 
 /**
  *  Setup
@@ -500,7 +502,7 @@ const { y } = useScroll(scrollWrap)
                 <li v-if="image.takenAt">
                   <span class="material-icons"> &#xebcc; </span>
                   <span>Taken</span>
-                  <p>{{ formatDate(image.takenAt) }}</p>
+                  <p>{{ dayjs(image.takenAt * 1000).format(normalDateFormat) }}</p>
                 </li>
 
                 <template v-if="image.location">

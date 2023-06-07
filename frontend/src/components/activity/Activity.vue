@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { onClickOutside, useMagicKeys, whenever } from '@vueuse/core'
 import { computed, ref, useAttrs, watch } from 'vue'
+import dayjs from 'dayjs'
 import type { ActivityItem as ActivityItemType } from '../../store/activity'
 import { useActivity } from '../../store/activity'
 import { useAlbums } from '../../store/album'
 import { useLoading } from '../../store/loading'
-import { formatDate } from '../../js/utils'
 
 import LoadingSpin from '../loading/LoadingSpin.vue'
+import { normalDateFormat } from '../../js/time'
 import ActivityItem from './ActivityItem.vue'
 
 const props = defineProps<{
@@ -108,7 +109,9 @@ function sortItemsWithin(items: ActivityItemType[]) {
         <div v-for="(items, day) in sorted" :key="day" class="activity-group">
           <div class="activity-group-title">
             <strong>
-              {{ formatDate(new Date(day).getTime() / 1000) }}
+              <!-- {{ formatDate(new Date(day).getTime() / 1000) }} -->
+
+              {{ dayjs(day).format(normalDateFormat) }}
             </strong>
             <div class="line" />
             <span>{{ items.length }}</span>

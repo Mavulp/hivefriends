@@ -105,10 +105,10 @@
   }
 
   .album-upload-layout {
-    @include grid(0, 1fr 512px);
+    @include grid(0, 1fr 464px);
 
     .album-upload-items {
-      @include flex($gap: 64px, $direction: column);
+      @include flex($gap: 16px, $direction: column);
       padding: 16px;
       position: relative;
       background-color: rgba(var(--color-background-dimmed), 0.025);
@@ -191,6 +191,7 @@
         width: 100%;
         background-color: rgb(var(--color-white));
         border: 1px solid transparent;
+        border-radius: 6px;
 
         // &:after {
         //   content: "";
@@ -273,10 +274,10 @@
         }
 
         .album-upload-content {
-          padding: 24px;
+          padding: 16px;
 
           .grid-view {
-            @include grid(40px, 2);
+            @include grid(16px, 2);
 
             & > div {
               min-width: 45%;
@@ -331,10 +332,16 @@
 
     .album-upload-metadata {
       display: block;
-      min-height: calc(100vh - $header);
-      padding: 40px;
+      height: 100vh;
+      padding: 24px;
+      position: sticky;
+      top: 0;
       // background-color: rgb(var(--color-white));
       border-left: 1px solid rgb(var(--color-border-light));
+
+      textarea {
+        max-height: 256px;
+      }
 
       .title-wrap {
         @include flex($justify: space-between);
@@ -354,7 +361,7 @@
       }
 
       h3 {
-        margin-bottom: 40px;
+        margin-bottom: 24px;
       }
 
       .loading {

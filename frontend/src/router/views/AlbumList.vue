@@ -10,6 +10,7 @@ import type { Album } from '../../store/album'
 import { useAlbums } from '../../store/album'
 import { useLoading } from '../../store/loading'
 import { useBread } from '../../store/bread'
+import { useThresholdScroll } from '../../js/_composables'
 
 const { getLoading } = useLoading()
 
@@ -44,21 +45,25 @@ const sortedAlbums = computed(() => {
     return searchString.includes(search.value.toLowerCase())
   })
 })
+
+const { scroll, passed } = useThresholdScroll(292)
 </script>
 
 <template>
   <div class="hi-album-list">
     <div class="hi-album-list-layout">
       <div class="layout-item album-list-controls">
-        <h1>Album List</h1>
+        <h1>Albums</h1>
 
         <Search v-model:value="search" placeholder="Search for albums..." />
 
         <div class="album-subtitle">
           <p>Showing {{ sortedAlbums?.length ?? 0 }} {{ sortedAlbums?.length === 1 ? "album" : "albums" }}</p>
-        </div>
 
-        <!-- <Filters :loading="getLoading('albums') && init" @call="fetchUpdate" /> -->
+          <button :class="{ active: passed }" class="go-up" data-title-bottom="Scroll Up" @click="scroll">
+            <span class="material-icons"> &#xe5d8; </span>
+          </button>
+        </div>
       </div>
 
       <div class="layout-item">

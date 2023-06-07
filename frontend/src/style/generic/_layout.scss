@@ -15,13 +15,14 @@
   flex: 1;
 }
 
-.hi-home-layout {
-  @include grid(64px, 2.5fr 1fr);
-  max-width: 1920px;
-  width: 100%;
-  height: 100%;
-}
-
 .flex-1 {
   flex: 1;
+}
+
+.hi-double {
+  // display: grid;
+  @include grid(24px, 2);
+  padding: 16px;
+  max-width: 1920px;
+  margin: 0 auto;
 }

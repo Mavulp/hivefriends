@@ -1,16 +1,18 @@
 <script setup lang="ts">
-import { User, useUser } from "../../store/user"
-import { flag, formatDate } from "../../js/utils"
-import { imageUrl } from "../../store/album"
-import countries from "../../js/countries"
+import dayjs from 'dayjs'
+import type { User } from '../../store/user'
+import { useUser } from '../../store/user'
+import { flag } from '../../js/utils'
+import { imageUrl } from '../../store/album'
+import countries from '../../js/countries'
+import { normalDateFormat } from '../../js/time'
 
+const props = defineProps<Props>()
 const user = useUser()
 
 interface Props {
   data: User
 }
-
-const props = defineProps<Props>()
 </script>
 
 <template>
@@ -21,15 +23,15 @@ const props = defineProps<Props>()
       alt=" "
       :style="{ backgroundColor: `rgb(${props.data.accentColor})` }"
       @error="(e: any) => e.target.classList.add('image-error')"
-    />
+    >
 
     <div class="info">
-      <h5>{{ user.getUsername(props.data.username) }}</h5>
-      <p>Joined: {{ formatDate(props.data.createdAt, ['weekday'])  }}</p>
+      <strong>{{ user.getUsername(props.data.username) }}</strong>
+      <p>Joined: {{ dayjs(props.data.createdAt * 1000).format(normalDateFormat) }}</p>
     </div>
 
     <div v-if="props.data.country" :data-title-top="countries[props.data.country].name">
-      <img class="flag" :src="flag(props.data.country)" :alt="props.data.country" />
+      <img class="flag" :src="flag(props.data.country)" :alt="props.data.country">
     </div>
   </router-link>
 </template>

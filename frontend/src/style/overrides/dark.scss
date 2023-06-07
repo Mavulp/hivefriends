@@ -140,14 +140,14 @@
   .hi-home {
     .home-landing {
       h1 {
-        filter: drop-shadow(0 1px 4px rgb(var(--color-highlight), 1));
+        // filter: drop-shadow(0 1px 4px rgb(var(--color-highlight), 1));
       }
     }
   }
 
   .hi-home {
     .home-users .home-user {
-      background-color: rgb(var(--color-background-dark));
+      background-color: rgb(var(--color-background));
     }
 
     .home-landing {
@@ -267,10 +267,10 @@
 
   .activity {
     &.activity-home {
-      background-color: rgb(var(--color-background-dark));
+      background-color: rgb(var(--color-background));
 
       .activity-group-title {
-        background-color: rgb(var(--color-background-dark));
+        background-color: rgb(var(--color-background));
       }
     }
 

@@ -7,5 +7,5 @@ const { dark } = defineProps<Props>()
 </script>
 
 <template>
-  <div class="loading-spinner" :class="{ dark }"></div>
+  <div class="loading-spinner" :class="{ dark }" />
 </template>
