@@ -191,6 +191,8 @@
 .hi-album-list {
   display: block;
   width: 100%;
+  max-width: 1920px;
+  margin: 0 auto;
   padding-bottom: 24px;
 
   .go-up {
@@ -216,7 +218,8 @@
 
   h1 {
     margin-bottom: 0;
-    font-size: 3rem;
+    font-size: 2.6rem;
+    line-height: 50px;
 
     &.has-loading {
       @include flex();
@@ -233,9 +236,6 @@
       &:last-of-type {
         padding: 16px;
         min-height: calc(100vh - $header);
-        border-left: 1px solid rgb(var(--color-border-light));
-
-        // container: "list" / normal;
       }
 
       .album-list-wrap {
