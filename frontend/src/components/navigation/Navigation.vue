@@ -96,9 +96,9 @@ const isDark = computed(() => auth.settings.colorTheme === 'dark-normal')
         <router-link class="hover-bubble btn-icon" data-title-bottom="Settings" :to="{ name: 'UserSettings' }">
           <span class="material-icons">&#xe8b8;</span>
         </router-link>
-        <button class="hover-bubble btn-icon" data-title-bottom-right="Log out" @click="signOut()">
+        <!-- <button class="hover-bubble btn-icon" data-title-bottom-right="Log out" @click="signOut()">
           <span class="material-icons">&#xe9ba;</span>
-        </button>
+        </button> -->
       </template>
     </template>
 

@@ -10,6 +10,7 @@ import { useUser } from '../../store/user'
 import { useBread } from '../../store/bread'
 import { useActivity } from '../../store/activity'
 import { TEXT_CONTRAST, seedRndMinMax } from '../../js/utils'
+import LoadingSpin from '../../components/loading/LoadingSpin.vue'
 
 const user = useUser()
 const album = useAlbums()
@@ -22,17 +23,48 @@ onBeforeMount(async () => {
   activity.fetchActivity()
   albums.value = await album.fetchAlbums()
 
-  bread.set('Homepage | url to irl')
+  bread.set('Homepage | url -> irl')
 })
 
 const accent = computed(() => user.user.accentColor.split(',').map((item: string) => Number(item)))
 
 // MOTD
-
 const messages = [
   'They will never make a website for friends which want to cherish moments spent together.',
   'Comes with max 1 heat stroke.',
   'Yep we got MOTD now',
+  'Now with even more watermelon',
+  'Based and minted',
+  'Chantyarno knows your location and is rapidly approaching',
+  'Half of the people in these albums live in your walls',
+  'Wang, wang, wang, wang, wang, wang, wang, wang, wang, HUUUUUUH???..., wang, wang, wang, wang',
+  'Did you forget to post your daily picture?',
+  'Are you more of a Ublumpf or a Schklabumf guy?',
+  'This is the last UI update',
+  'TTT and prop hunt next friday?',
+  'Fishstick bouldering gym when',
+  'Hide the shrooms before tmtu finds them',
+  'WE ARE MAKING PESTO BITCH!!!!!!!!!!',
+  'Wouldn\'t it be funny if you could play a banana?',
+  'Fishstick house will feature a washing machine',
+  'Never go full WANG WANG',
+  'Caboose with moderation',
+  'Don\'t forget to bring your controller to the next hike',
+  'Can you help me sort the chests?',
+  'How many warcrimes have you commited in IRC today?',
+  'Daily lethal dosage of pepperonis',
+  'SINGHAM!!',
+  '!randota',
+  '40. Invoker',
+  'Pack it up there is no MOTD',
+  'Tenacity in 1 word: 😐',
+  '🤓🤓🤓',
+  'Fishstick company will NOT sell fish',
+  `Mavulp web services dropping in ${dayjs().add(1, 'month').format('MMMM')}`,
+  `Big reveal on ${dayjs().add(3, 'day').format('dddd')}`,
+  'NO WAY IM A MOTD TEXT!!!! HELLO MOM!!!!!!!!!!!!!',
+  '>13750Hz (tinnitus)',
+  '',
 ]
 
 // We want to randomize the MOTD every hour
@@ -46,8 +78,10 @@ const motd = messages[randomIndex]
     <div class="hi-double">
       <div>
         <div class="home-landing">
-          <div v-if="latest" class="album-thumbnail">
-            <router-link :to="{ name: 'AlbumDetail', params: { id: latest.key } }">
+          <div class="album-thumbnail">
+            <LoadingSpin v-if="!latest" dark />
+
+            <router-link v-else :to="{ name: 'AlbumDetail', params: { id: latest.key } }">
               <div class="thumbnail-info" :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]">
                 <span>{{ latest.title }} by {{ user.getUsername(latest.author) }}</span>
               </div>
@@ -55,6 +89,7 @@ const motd = messages[randomIndex]
               <img :src="imageUrl(latest.coverKey, 'large')" alt="">
             </router-link>
           </div>
+
           <h1>friends</h1>
           <p>
             {{ motd }}

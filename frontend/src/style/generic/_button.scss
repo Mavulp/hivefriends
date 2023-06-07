@@ -1,6 +1,7 @@
 .button {
   @include font(400);
-  display: block;
+  @include flex($gap: 5px);
+  // display: block;
   position: relative;
   text-align: left;
   color: rgb(var(--color-text-white));

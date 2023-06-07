@@ -191,32 +191,40 @@ const { passed, scroll } = useThresholdScroll(292)
 </script>
 
 <template>
-  <div class="hi-user-page" style="max-width: unset">
+  <div class="hi-settings-page">
     <LoadingSpin v-if="getLoading('settings')" class="center-page" />
 
-    <div class="settings-nav">
-      <button :class="{ active: active === 'info' }" class="nav-item hover-bubble" @click="scrollTo('#info')">
-        User Information
-      </button>
-      <button :class="{ active: active === 'avatars' }" class="nav-item hover-bubble" @click="scrollTo('#avatars')">
-        Avatar & Banner
-      </button>
-      <button :class="{ active: active === 'visuals' }" class="nav-item hover-bubble" @click="scrollTo('#visuals')">
-        Visuals
-      </button>
-      <button :class="{ active: active === 'passwords' }" class="nav-item hover-bubble" @click="scrollTo('#passwords')">
-        Password
-      </button>
+    <div>
+      <div class="settings-nav">
+        <button :class="{ active: active === 'info' }" class="nav-item hover-bubble" @click="scrollTo('#info')">
+          User Information
+        </button>
+        <button :class="{ active: active === 'avatars' }" class="nav-item hover-bubble" @click="scrollTo('#avatars')">
+          Avatar & Banner
+        </button>
+        <button :class="{ active: active === 'visuals' }" class="nav-item hover-bubble" @click="scrollTo('#visuals')">
+          Visuals
+        </button>
+        <button :class="{ active: active === 'passwords' }" class="nav-item hover-bubble" @click="scrollTo('#passwords')">
+          Password
+        </button>
 
-      <div class="gap" />
+        <div class="gap" />
 
-      <button :class="{ visible: passed }" class="hover-bubble go-up" data-title-bottom="Scroll Up" @click="scroll">
-        <span class="material-icons"> &#xe5d8; </span>
-      </button>
+        <button :class="{ visible: passed }" class="hover-bubble go-up" data-title-bottom="Scroll Up" @click="scroll">
+          <span class="material-icons"> &#xe5d8; </span>
+        </button>
+      </div>
     </div>
 
     <div class="hi-user-settings-items">
-      <h1>Settings</h1>
+      <div class="title-wrap">
+        <h1>Settings</h1>
+        <button class="button btn-black size-normal">
+          <span class="material-icons">&#xe9ba;</span>
+          Log out
+        </button>
+      </div>
 
       <ul class="user-settings-list">
         <li>
