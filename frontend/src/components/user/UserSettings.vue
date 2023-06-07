@@ -199,11 +199,11 @@ const { passed, scroll } = useThresholdScroll(292)
         <button :class="{ active: active === 'info' }" class="nav-item hover-bubble" @click="scrollTo('#info')">
           User Information
         </button>
-        <button :class="{ active: active === 'avatars' }" class="nav-item hover-bubble" @click="scrollTo('#avatars')">
-          Avatar & Banner
-        </button>
         <button :class="{ active: active === 'visuals' }" class="nav-item hover-bubble" @click="scrollTo('#visuals')">
           Visuals
+        </button>
+        <button :class="{ active: active === 'avatars' }" class="nav-item hover-bubble" @click="scrollTo('#avatars')">
+          Avatar & Banner
         </button>
         <button :class="{ active: active === 'passwords' }" class="nav-item hover-bubble" @click="scrollTo('#passwords')">
           Password
@@ -265,18 +265,6 @@ const { passed, scroll } = useThresholdScroll(292)
           <!-- </form> -->
         </li>
         <li>
-          <h5 id="avatars">
-            Avatar image
-          </h5>
-          <p>Will be used on your profile or if someone tags you in an album / photo</p>
-          <UploadSettingsImage key="one" field="avatarKey" />
-        </li>
-        <li>
-          <h5>Banner image</h5>
-          <p>Visible on your profile</p>
-          <UploadSettingsImage key="two" field="bannerKey" />
-        </li>
-        <li>
           <h5 id="visuals">
             Color theme
           </h5>
@@ -315,6 +303,19 @@ const { passed, scroll } = useThresholdScroll(292)
             </div>
           </div>
         </li>
+        <li>
+          <h5 id="avatars">
+            Avatar image
+          </h5>
+          <p>Will be used on your profile or if someone tags you in an album / photo</p>
+          <UploadSettingsImage key="one" field="avatarKey" />
+        </li>
+        <li>
+          <h5>Banner image</h5>
+          <p>Visible on your profile</p>
+          <UploadSettingsImage key="two" field="bannerKey" />
+        </li>
+
         <li>
           <h5 id="passwords">
             Password
