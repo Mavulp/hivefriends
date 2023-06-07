@@ -307,7 +307,7 @@ function dragCompare() {
             :data="item"
             :index="index"
             @remove="delImage"
-            @setAsCover="(key: string) => album.coverKey = key"
+            @set-as-cover="(key: string) => album.coverKey = key"
             @drag="dragStart(index)"
             @dragover="(e: any) => dragOver(e, index)"
             @drop="dragCompare()"
@@ -315,78 +315,80 @@ function dragCompare() {
         </div>
       </div>
 
-      <div class="album-upload-metadata">
-        <h3>Create album</h3>
+      <div>
+        <div class="album-upload-metadata">
+          <h3>Create album</h3>
 
-        <InputText v-model:value="album.title" placeholder="Album name" label="Title" required :error="errors.title" />
-        <InputTextarea
-          v-model:value="album.description"
-          placeholder="Album description"
-          label="Description"
-          :error="errors.description"
-        />
+          <InputText v-model:value="album.title" placeholder="Album name" label="Title" required :error="errors.title" />
+          <InputTextarea
+            v-model:value="album.description"
+            placeholder="Album description"
+            label="Description"
+            :error="errors.description"
+          />
 
-        <h6>Event Dates</h6>
-        <div class="form-date" :class="{ single: singleDate }">
-          <div class="form-inputs">
-            <div class="form-input">
-              <input v-model="album.timeframe.from" type="date">
-              <label>{{ singleDate ? "Date" : "Start" }}</label>
+          <h6>Event Dates</h6>
+          <div class="form-date" :class="{ single: singleDate }">
+            <div class="form-inputs">
+              <div class="form-input">
+                <input v-model="album.timeframe.from" type="date">
+                <label>{{ singleDate ? "Date" : "Start" }}</label>
+              </div>
+
+              <div v-if="!singleDate" class="form-input">
+                <input v-model="album.timeframe.to" type="date">
+                <label>End</label>
+              </div>
             </div>
+            <InputCheckbox v-model:check="singleDate" label="Set date in the same day" />
+          </div>
 
-            <div v-if="!singleDate" class="form-input">
-              <input v-model="album.timeframe.to" type="date">
-              <label>End</label>
+          <h6>Tagged people</h6>
+
+          <InputSelect
+            v-model:selected="taggedUsers"
+            label="People"
+            :options="userOptions"
+            placeholder="Click to select people"
+            multiple
+          />
+
+          <div v-if="taggedUsers" class="tagged-users">
+            <div v-for="item in taggedUsers" :key="item" class="tagged-user" :data-title-top="user.getUsername(item)">
+              <img
+                class="user-image"
+                :src="imageUrl(getUserImageKey(item), 'tiny')"
+                :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"
+                alt=" "
+                @error="(e: any) => e.target.classList.add('image-error')"
+              >
             </div>
           </div>
-          <InputCheckbox v-model:check="singleDate" label="Set date in the same day" />
-        </div>
 
-        <h6>Tagged people</h6>
+          <InputCheckbox v-model:check="album.draft" label="Save as draft. Album will be visible only to you." />
 
-        <InputSelect
-          v-model:selected="taggedUsers"
-          label="People"
-          :options="userOptions"
-          placeholder="Click to select people"
-          multiple
-        />
-
-        <div v-if="taggedUsers" class="tagged-users">
-          <div v-for="item in taggedUsers" :key="item" class="tagged-user" :data-title-top="user.getUsername(item)">
-            <img
-              class="user-image"
-              :src="imageUrl(getUserImageKey(item), 'tiny')"
-              :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"
-              alt=" "
-              @error="(e: any) => e.target.classList.add('image-error')"
-            >
-          </div>
-        </div>
-
-        <InputCheckbox v-model:check="album.draft" label="Save as draft. Album will be visible only to you." />
-
-        <Button
-          v-if="albumKey"
-          style="margin-top: 32px"
-          class="btn-blue btn-icon"
-          :to="{ name: 'AlbumDetail', params: { id: albumKey } }"
-        >
-          View Album
-          <span class="material-icons"> &#xe941; </span>
-        </Button>
-
-        <template v-else>
           <Button
-            :class="{ 'btn-disabled': files.values.length === 0 || isLoading || !album.title }"
-            class="btn-icon btn-black"
-            style="width: 100%; margin-bottom: 20px"
-            @click="submit"
+            v-if="albumKey"
+            style="margin-top: 32px"
+            class="btn-blue btn-icon"
+            :to="{ name: 'AlbumDetail', params: { id: albumKey } }"
           >
-            {{ album.draft ? "Save Draft" : "Save Album" }}
-            <LoadingSpin v-if="isLoading" class="dark" />
+            View Album
+            <span class="material-icons"> &#xe941; </span>
           </Button>
-        </template>
+
+          <template v-else>
+            <Button
+              :class="{ 'btn-disabled': files.values.length === 0 || isLoading || !album.title }"
+              class="btn-icon btn-black"
+              style="width: 100%; margin-bottom: 20px"
+              @click="submit"
+            >
+              {{ album.draft ? "Save Draft" : "Save Album" }}
+              <LoadingSpin v-if="isLoading" class="dark" />
+            </Button>
+          </template>
+        </div>
       </div>
     </div>
   </div>

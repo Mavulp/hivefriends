@@ -1,7 +1,7 @@
 .settings-nav {
   position: fixed;
   top: 128px;
-  left: clamp(96px, calc(50% - calc(880px / 2) - 256px), 100%);
+  left: clamp(96px, calc(50% - calc(592px / 2) - 180px), 100%);
 
   width: 128px;
 
@@ -12,12 +12,25 @@
     font-size: 1.4rem;
     color: rgb(var(--color-text));
   }
+
+  .gap {
+    height: 80px;
+  }
+
+  .go-up {
+    @include t();
+    opacity: 0;
+
+    &.visible {
+      opacity: 1;
+    }
+  }
 }
 
 .hi-user-settings-items {
   display: block;
   width: 60%;
-  max-width: 880px;
+  max-width: 592px;
   margin: 0 auto;
   padding-bottom: 256px;
 
@@ -124,7 +137,7 @@
   }
 
   .settings-upload-image {
-    @include grid(40px, 2);
+    @include grid(20px, 2);
 
     .drop-section {
       display: block;
@@ -182,7 +195,7 @@
         @include radius(50%);
         // @include ellipse(32px);
         position: absolute;
-        right: 16px;
+        left: 16px;
         top: 16px;
         background-color: rgb(var(--color-white));
         color: rgb(var(--color-text));
@@ -209,6 +222,8 @@
         display: block;
         margin-bottom: 16px;
         object-fit: contain;
+        border-radius: 12px;
+
         object-position: center;
         box-shadow: var(--shadow);
         z-index: 1;

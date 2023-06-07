@@ -14,7 +14,7 @@ import { TEXT_CONTRAST, flag, sanitize } from '../../js/utils'
 import { useLoading } from '../../store/loading'
 import countries from '../../js/countries'
 import { useBread } from '../../store/bread'
-import { timeDateFormat } from '../../js/time'
+import { normalDateFormat } from '../../js/time'
 
 const { addLoading, delLoading, getLoading } = useLoading()
 const users = useUser()
@@ -148,7 +148,7 @@ watchEffect(() => {
 
             <div>
               <span>Joined</span>
-              <p>{{ dayjs(user.createdAt * 1000).format(timeDateFormat) }}</p>
+              <p>{{ dayjs(user.createdAt * 1000).format(normalDateFormat) }}</p>
             </div>
           </div>
 

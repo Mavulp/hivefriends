@@ -1,23 +1,28 @@
 <script setup lang="ts">
-import InputSelect from "../../components/form/InputSelect.vue"
-import InputText from "../../components/form/InputText.vue"
-import InputTextarea from "../../components/form/InputTextarea.vue"
-import ImageUploadItem from "../../components/upload/ImageUploadItem.vue"
-import Button from "../../components/Button.vue"
-import InputCheckbox from "../../components/form/InputCheckbox.vue"
-import LoadingSpin from "../../components/loading/LoadingSpin.vue"
+import { computed, nextTick, onBeforeMount, onMounted, reactive, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { clone } from 'lodash'
+import { onClickOutside } from '@vueuse/core'
+import InputSelect from '../../components/form/InputSelect.vue'
+import InputText from '../../components/form/InputText.vue'
+import InputTextarea from '../../components/form/InputTextarea.vue'
+import ImageUploadItem from '../../components/upload/ImageUploadItem.vue'
+import Button from '../../components/Button.vue'
+import InputCheckbox from '../../components/form/InputCheckbox.vue'
+import LoadingSpin from '../../components/loading/LoadingSpin.vue'
 
-import { computed, nextTick, onBeforeMount, reactive, ref, onMounted } from "vue"
-import { useRoute, useRouter } from "vue-router"
-import { Album, NewAlbum, useAlbums, imageUrl, ImageFile, Image } from "../../store/album"
-import { useLoading } from "../../store/loading"
-import { useUser, User } from "../../store/user"
-import { useFormValidation, required } from "../../js/validation"
-import { clone } from "lodash"
-import { upload } from "../../js/fetch"
-import { useBread } from "../../store/bread"
-import { onClickOutside } from "@vueuse/core"
+import type { Image, ImageFile, NewAlbum } from '../../store/album'
+import { imageUrl, useAlbums } from '../../store/album'
+import { useLoading } from '../../store/loading'
+import type { User } from '../../store/user'
+import { useUser } from '../../store/user'
+import { required, useFormValidation } from '../../js/validation'
+import { upload } from '../../js/fetch'
+import { useBread } from '../../store/bread'
 
+const props = defineProps<{
+  images?: string
+}>()
 /**
  * Setup
  */
@@ -32,52 +37,57 @@ const bread = useBread()
 const _id = computed(() => route?.params?.id.toString() ?? null)
 const IS_OK = ref(false)
 
-const props = defineProps<{
-  images?: string
-}>()
-
 onBeforeMount(async () => {
-  addLoading("edit")
-  bread.set("Edit an album")
+  addLoading('edit')
+  bread.set('Edit an album')
 
   const album = await albums.fetchAlbum(_id.value)
-  if (album) setupForm(album)
+  if (album)
+    setupForm(album)
 
-  delLoading("edit")
+  delLoading('edit')
 })
 
 const rawFileLength = ref(0)
 
-const isLoading = computed(() => files.values.some((file) => file.loading))
+/**
+ *  Format album properties into a form
+ */
+const draggingOver = ref(false)
+const album = reactive<NewAlbum>({} as NewAlbum)
+const files = reactive<ImageFile>({ values: [] })
+const singleDate = ref(false)
+const key = ref()
+
+const isLoading = computed(() => files.values.some(file => file.loading))
 // const uploadProgress = computed(() => `${[...files.values].filter((item) => item.key).length} / ${rawFileLength.value}`)
-const remainingProgress = computed(() => rawFileLength.value - [...files.values].filter((item) => item.key).length)
-const imageKeys = computed<Array<any>>(() => files.values.map((file) => file.key).filter((item) => item))
+const remainingProgress = computed(() => rawFileLength.value - [...files.values].filter(item => item.key).length)
+const imageKeys = computed<Array<any>>(() => files.values.map(file => file.key).filter(item => item))
 
 /**
  * File Handling
  */
 
 onMounted(() => {
-  const el = document.getElementById("drop-area")
+  const el = document.getElementById('drop-area')
 
   if (el) {
-    el.addEventListener("dragenter", onSubmitHandler, false)
-    el.addEventListener("dragleave", onSubmitHandler, false)
-    el.addEventListener("dragover", onSubmitHandler, false)
-    el.addEventListener("drop", onSubmitHandler, false)
-    el.addEventListener("input", (e) => onSubmitHandler(e, true), false)
+    el.addEventListener('dragenter', onSubmitHandler, false)
+    el.addEventListener('dragleave', onSubmitHandler, false)
+    el.addEventListener('dragover', onSubmitHandler, false)
+    el.addEventListener('drop', onSubmitHandler, false)
+    el.addEventListener('input', e => onSubmitHandler(e, true), false)
   }
 })
 
-function onSubmitHandler(e: any, fromField: boolean = false) {
+function onSubmitHandler(e: any, fromField = false) {
   e.preventDefault()
   e.stopPropagation()
 
-  let files = fromField ? e.target.files : e.dataTransfer.files
+  const files = fromField ? e.target.files : e.dataTransfer.files
 
-  if (files.length > 0) {
+  if (files.length > 0)
     uploadFiles(files)
-  }
 }
 
 async function uploadFiles(_files: any) {
@@ -86,10 +96,11 @@ async function uploadFiles(_files: any) {
   rawFileLength.value += _files.length
 
   for (const file of _files) {
-    if (!file) continue
+    if (!file)
+      continue
 
-    let formData = new FormData()
-    formData.append("file", file)
+    const formData = new FormData()
+    formData.append('file', file)
 
     await uploadFile(file, formData, clone(i))
 
@@ -102,38 +113,29 @@ async function uploadFile(file: any, formData: any, index: number) {
     name: file.name,
     size: file.size,
     loading: true,
-    key: null
+    key: null,
   }
 
-  return upload("/api/images/", formData)
+  return upload('/api/images/', formData)
     .then((response: any) => {
       Object.assign(files.values[index], {
         loading: false,
-        key: response.key
+        key: response.key,
       })
     })
     .catch((error) => {
       Object.assign(files.values[index], {
         loading: false,
-        error
+        error,
       })
     })
 }
 
-/**
- *  Format album properties into a form
- */
-const draggingOver = ref(false)
-const album = reactive<NewAlbum>({} as NewAlbum)
-const files = reactive<ImageFile>({ values: [] })
-const singleDate = ref(false)
-const key = ref()
-
 function initializeTimeframe(ms: number) {
-  let date = new Date(ms)
-  let year = date.getFullYear()
-  let month = ("0" + (date.getMonth() + 1)).slice(-2)
-  let day = ("0" + date.getDate()).slice(-2)
+  const date = new Date(ms)
+  const year = date.getFullYear()
+  const month = (`0${date.getMonth() + 1}`).slice(-2)
+  const day = (`0${date.getDate()}`).slice(-2)
   return `${year}-${month}-${day}`
 }
 
@@ -143,21 +145,19 @@ function setupForm(_album: any) {
   _album.timeframe.from = initializeTimeframe(_album.timeframe.from * 1000)
   _album.timeframe.to = initializeTimeframe(_album.timeframe.to * 1000)
 
-  if (_album.timeframe.from && _album.timeframe.to) {
+  if (_album.timeframe.from && _album.timeframe.to)
     singleDate.value = _album.timeframe.from === _album.timeframe.to
-  }
 
-  if (props.images) {
+  if (props.images)
     _album.images.push(...JSON.parse(props.images))
-  }
 
   // Assign image files into an array
-  _album.images.map((image: Image) => {
+  _album.images.forEach((image: Image) => {
     files.values.push({
       name: image.fileName,
       size: image.sizeBytes,
       loading: false,
-      key: image.key
+      key: image.key,
     })
   })
 
@@ -169,7 +169,7 @@ function setupForm(_album: any) {
 }
 
 const rules = computed(() => ({
-  title: { required }
+  title: { required },
 }))
 
 const { validate, errors } = useFormValidation(album, rules)
@@ -183,9 +183,9 @@ async function submit() {
     Object.assign(model, {
       timeframe: {
         from: new Date(album.timeframe.from).getTime() / 1000,
-        to: new Date(singleDate.value ? album.timeframe.from : album.timeframe.to).getTime() / 1000
+        to: new Date(singleDate.value ? album.timeframe.from : album.timeframe.to).getTime() / 1000,
       },
-      coverKey: album.coverKey ? album.coverKey : imageKeys.value[0]
+      coverKey: album.coverKey ? album.coverKey : imageKeys.value[0],
     })
 
     albums.editAlbum(key.value, model)
@@ -195,16 +195,17 @@ async function submit() {
 }
 
 function getUserImageKey(name: string): string {
-  return user.users.find((item) => item.username === name)?.avatarKey ?? ""
+  return user.users.find(item => item.username === name)?.avatarKey ?? ''
 }
 
 const userOptions = computed(() => {
-  if (!user.users || user.users.length === 0) return null
+  if (!user.users || user.users.length === 0)
+    return null
 
   // Make sure you can't select yourself
   return user.users.map((item: User) => ({
     label: item.displayName ?? item.username,
-    value: item.username
+    value: item.username,
   }))
 })
 
@@ -213,9 +214,8 @@ const userOptions = computed(() => {
  */
 
 function delImage(index: number) {
-  if (files.values[index]) {
+  if (files.values[index])
     files.values.splice(index, 1)
-  }
 }
 
 /**
@@ -240,17 +240,16 @@ function dragCompare() {
     return
   }
 
-  let _temp = files.values[drag_now.value]
+  const _temp = files.values[drag_now.value]
   files.values[drag_now.value] = files.values[drag_over.value]
 
   // Remove
   files.values.splice(drag_now.value, 1)
 
-  if (drag_over.value === 0) {
+  if (drag_over.value === 0)
     files.values.unshift(_temp)
-  } else {
+  else
     files.values.splice(drag_over.value, 0, _temp)
-  }
 
   nextTick(() => {
     drag_now.value = null
@@ -264,7 +263,7 @@ function dragCompare() {
 
 async function deleteAlbum() {
   await albums.deleteAlbum(_id.value)
-  router.push({ name: "UserAlbums", params: { user: user.user.username } })
+  router.push({ name: 'UserAlbums', params: { user: user.user.username } })
 }
 
 /**
@@ -287,32 +286,32 @@ onClickOutside(deletewrap, () => {
     <div class="album-upload-layout">
       <div class="album-upload-items">
         <div
-          class="album-drag-input"
           id="drop-area"
+          class="album-drag-input"
+          :class="{ hovering: draggingOver, empty: files.values.length === 0 }"
           @dragenter="draggingOver = true"
           @mouseleave="draggingOver = false"
-          :class="{ hovering: draggingOver, empty: files.values.length === 0 }"
         >
-          <input id="draginput" name="draginput" type="file" multiple accept="image/*" />
+          <input id="draginput" name="draginput" type="file" multiple accept="image/*">
           <label for="draginput">
             <span class="material-icons">&#xe439;</span>
             <span>{{ draggingOver ? "Drop the files!" : "Cllick me / Drag files over here" }}</span>
           </label>
         </div>
 
-        <div class="album-upload-items-list" v-if="files.values.length > 0">
-          <p class="upload-amount-indicator" v-if="remainingProgress > 0">
+        <div v-if="files.values.length > 0" class="album-upload-items-list">
+          <p v-if="remainingProgress > 0" class="upload-amount-indicator">
             {{ remainingProgress }} file(s) left to upload
           </p>
 
           <ImageUploadItem
             v-for="(item, index) in files.values"
+            :key="item.name"
             :class="{ 'is-cover': item.key === album.coverKey, 'is-dragging-over': index === drag_over }"
             :data="item"
-            :key="item.name"
             :index="index"
             @remove="delImage"
-            @setAsCover="(key: string) => album.coverKey = key"
+            @set-as-cover="(key: string) => album.coverKey = key"
             @drag="dragStart(index)"
             @dragover="(e: any) => dragOver(e, index)"
             @drop="dragCompare()"
@@ -320,99 +319,101 @@ onClickOutside(deletewrap, () => {
         </div>
       </div>
 
-      <div class="album-upload-metadata" v-if="!getLoading('edit')">
-        <div class="title-wrap">
-          <h3>Edit album</h3>
+      <div>
+        <div v-if="!getLoading('edit')" class="album-upload-metadata">
+          <div class="title-wrap">
+            <h3>Edit album</h3>
 
-          <div class="delete-wrap" ref="deletewrap">
-            <button
-              @click="deleteopen = !deleteopen"
-              class="hover-bubble bubble-red text-red"
-              :class="{ active: deleteopen }"
-            >
-              Delete album
-              <span class="material-icons rotate" v-if="getLoading('delete-albums')">&#xe863;</span>
-            </button>
-
-            <div class="dropdown-list" :class="{ active: deleteopen }">
+            <div ref="deletewrap" class="delete-wrap">
               <button
-                class="hover-bubble bubble-red"
-                :class="{ 'btn-disabled': getLoading('delete-album') }"
-                @click="deleteAlbum"
+                class="hover-bubble bubble-red text-red"
+                :class="{ active: deleteopen }"
+                @click="deleteopen = !deleteopen"
               >
-                <span class="material-icons"> &#xe872; </span>
-                Delete
-                <span class="material-icons rotate" v-if="getLoading('delete-album')">&#xe863;</span>
+                Delete album
+                <span v-if="getLoading('delete-albums')" class="material-icons rotate">&#xe863;</span>
               </button>
 
-              <button class="hover-bubble bubble-info" @click="deleteopen = false">
-                <span class="material-icons">&#xe5cd;</span> Cancel
-              </button>
+              <div class="dropdown-list" :class="{ active: deleteopen }">
+                <button
+                  class="hover-bubble bubble-red"
+                  :class="{ 'btn-disabled': getLoading('delete-album') }"
+                  @click="deleteAlbum"
+                >
+                  <span class="material-icons"> &#xe872; </span>
+                  Delete
+                  <span v-if="getLoading('delete-album')" class="material-icons rotate">&#xe863;</span>
+                </button>
+
+                <button class="hover-bubble bubble-info" @click="deleteopen = false">
+                  <span class="material-icons">&#xe5cd;</span> Cancel
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        <InputText v-model:value="album.title" placeholder="Album name" label="Title" required :error="errors.title" />
-        <InputTextarea v-model:value="album.description" placeholder="Album description" label="Description" />
+          <InputText v-model:value="album.title" placeholder="Album name" label="Title" required :error="errors.title" />
+          <InputTextarea v-model:value="album.description" placeholder="Album description" label="Description" />
 
-        <h6>Event Dates</h6>
-        <div class="form-date" :class="{ single: singleDate }">
-          <div class="form-inputs">
-            <div class="form-input">
-              <input type="date" v-model="album.timeframe.from" />
-              <label>{{ singleDate ? "Date" : "Start" }}</label>
+          <h6>Event Dates</h6>
+          <div class="form-date" :class="{ single: singleDate }">
+            <div class="form-inputs">
+              <div class="form-input">
+                <input v-model="album.timeframe.from" type="date">
+                <label>{{ singleDate ? "Date" : "Start" }}</label>
+              </div>
+
+              <div v-if="!singleDate" class="form-input">
+                <input v-model="album.timeframe.to" type="date">
+                <label>End</label>
+              </div>
             </div>
+            <InputCheckbox v-model:check="singleDate" label="Set date in the same day" />
+          </div>
 
-            <div class="form-input" v-if="!singleDate">
-              <input type="date" v-model="album.timeframe.to" />
-              <label>End</label>
+          <h6>Tagged people</h6>
+
+          <InputSelect
+            v-model:selected="album.taggedUsers"
+            label="People"
+            :options="userOptions"
+            placeholder="Click to select people"
+            multiple
+          />
+
+          <div v-if="album.taggedUsers" class="tagged-users">
+            <div
+              v-for="item in album.taggedUsers"
+              :key="item"
+              class="tagged-user"
+              :data-title-top="user.getUsername(item)"
+            >
+              <img
+                class="user-image"
+                :src="imageUrl(getUserImageKey(item), 'tiny')"
+                :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"
+                alt=" "
+                @error="(e: any) => e.target.classList.add('image-error')"
+              >
             </div>
           </div>
-          <InputCheckbox v-model:check="singleDate" label="Set date in the same day" />
-        </div>
 
-        <h6>Tagged people</h6>
+          <InputCheckbox v-model:check="album.draft" label="Save as a draft. It won't be published" />
 
-        <InputSelect
-          label="People"
-          :options="userOptions"
-          v-model:selected="album.taggedUsers"
-          placeholder="Click to select people"
-          multiple
-        />
-
-        <div class="tagged-users" v-if="album.taggedUsers">
-          <div
-            class="tagged-user"
-            v-for="item in album.taggedUsers"
-            :data-title-top="user.getUsername(item)"
-            :key="item"
-          >
-            <img
-              class="user-image"
-              :src="imageUrl(getUserImageKey(item), 'tiny')"
-              :style="[`backgroundColor: rgb(${user.getUser(item, 'accentColor')})`]"
-              alt=" "
-              @error="(e: any) => e.target.classList.add('image-error')"
-            />
-          </div>
-        </div>
-
-        <InputCheckbox v-model:check="album.draft" label="Save as a draft. It won't be published" />
-
-        <div class="buttons" style="padding-top: 16px">
-          <Button
-            :class="{ 'btn-disabled': files.values.length === 0 || isLoading || !album.title }"
-            class="btn-icon btn-black"
-            @click="submit"
-          >
-            Save Changes
-            <LoadingSpin class="dark" v-if="isLoading" />
-          </Button>
+          <div class="buttons" style="padding-top: 16px">
+            <Button
+              :class="{ 'btn-disabled': files.values.length === 0 || isLoading || !album.title }"
+              class="btn-icon btn-black"
+              @click="submit"
+            >
+              Save Changes
+              <LoadingSpin v-if="isLoading" class="dark" />
+            </Button>
 
           <!-- <Button class="btn-blue btn-icon" :to="{ name: 'AlbumDetail', params: { id: key } }">
             View Album
           </Button> -->
+          </div>
         </div>
       </div>
     </div>

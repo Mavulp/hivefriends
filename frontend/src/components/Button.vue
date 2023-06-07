@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { useMediaQuery } from "@vueuse/core"
-import { computed, useAttrs } from "vue"
+import { useMediaQuery } from '@vueuse/core'
+import { computed, useAttrs } from 'vue'
+
+const { size, pad, to, color, center } = defineProps<Props>()
 
 const attrs = useAttrs()
 
@@ -12,31 +14,29 @@ interface Props {
   center?: boolean
 }
 
-const isPhone = useMediaQuery("(max-width: 512px)")
-
-const { size, pad, to, color, center } = defineProps<Props>()
+const isPhone = useMediaQuery('(max-width: 512px)')
 
 const style = computed(() => ({
-  height: size ? size : isPhone.value ? "36px" : "44px",
-  lineHeight: size ? size : isPhone.value ? "36px" : "44px",
-  paddingLeft: pad ? pad : isPhone.value ? "16px" : "32px",
-  paddingRight: pad ? pad : isPhone.value ? "16px" : "32px",
+  height: size || (isPhone.value ? '36px' : '44px'),
+  lineHeight: size || (isPhone.value ? '36px' : '44px'),
+  paddingLeft: pad || (isPhone.value ? '16px' : '24px'),
+  paddingRight: pad || (isPhone.value ? '16px' : '24px'),
   // alignText: 'center',
   ...(color && { color }),
-  ...(center && { alignText: "center" })
+  ...(center && { alignText: 'center' }),
 }))
 </script>
 
 <template>
-  <button class="button" :style="style" v-bind="attrs" v-if="!to">
+  <button v-if="!to" class="button" :style="style" v-bind="attrs">
     <slot />
   </button>
 
-  <a class="button" :style="style" v-bind="attrs" :href="to" v-else-if="to && typeof to === 'string'">
+  <a v-else-if="to && typeof to === 'string'" class="button" :style="style" v-bind="attrs" :href="to">
     <slot />
   </a>
 
-  <router-link class="button" :style="style" v-bind="attrs" v-else-if="to" :to="to">
+  <router-link v-else-if="to" class="button" :style="style" v-bind="attrs" :to="to">
     <slot />
   </router-link>
 </template>
