@@ -285,31 +285,4 @@
       }
     }
   }
-
-  // .hi-image-meta-wrap {
-  //   @include t(0.15s);
-  //   width: 0;
-  //   max-width: 0;
-  //   overflow: hidden;
-  //   display: block;
-  //   height: 100vh;
-
-  //   border-left: 1px solid rgb(var(--color-border-light));
-
-  //   &.active {
-  //     width: 420px;
-  //     max-width: 420px;
-  //     min-width: 420px;
-  //   }
-
-  //   .hi-image-meta {
-  //     padding: 128px 40px;
-
-  //     .map-wrap {
-  //       display: block;
-  //       height: 168px;
-  //       width: 100%;
-  //     }
-  //   }
-  // }
 }

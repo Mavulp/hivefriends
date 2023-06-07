@@ -238,10 +238,8 @@
         cursor: default;
 
         .photo-list {
-          @include flex($gap: 4px, $wrap: wrap);
+          @include flex($gap: 6px, $wrap: wrap);
           margin-top: 4px;
-          // display: grid;
-          // grid-template-columns: repeat(7, 1fr);
 
           img {
             @include t(0.1s);

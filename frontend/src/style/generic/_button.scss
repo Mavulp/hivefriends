@@ -219,3 +219,60 @@ button {
     // opacity: 0.8;
   }
 }
+
+.detail-wrap {
+}
+
+.detail-wrap {
+  @include t();
+  display: block;
+  width: 100%;
+
+  // padding: 20px;
+  // overflow: hidden;
+
+  &.unstyle {
+    border-radius: unset;
+    border: unset;
+  }
+
+  &.is-open {
+    // outline: 2px solid rgb(var(--color-accent));
+    // border-color: rgb(var(--color-accent));
+
+    .button-detail-content {
+      // max-height: 500px;
+      overflow: unset;
+      // padding: 20px;
+    }
+  }
+
+  // .button-detail-header {
+  //   @include t(0.1s);
+  //   @include edge(4px 4px 0 0);
+  //   @include flex(10px);
+  //   height: 40px;
+  //   line-height: 40px;
+  //   padding: 0 20px;
+  //   width: 100%;
+  //   font-size: 1.5rem;
+  //   color: rgb(var(--color-text));
+
+  //   &:before {
+  //     @include edge(4px 4px 0 0);
+  //   }
+
+  //   &.is-open {
+  //     // &:hover {
+  //     background-color: rgb(var(--color-accent-light));
+  //     color: rgb(var(--color-accent));
+  //   }
+  // }
+
+  .button-detail-content {
+    @include t(0.2s);
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+  }
+}

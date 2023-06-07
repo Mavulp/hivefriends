@@ -8,6 +8,14 @@
       }
     }
   }
+
+  .hi-album-detail .hi-album-images {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hi-album-detail .detail-buttons {
+    gap: 24px;
+  }
 }
 
 @media only screen and (max-width: 1756px) {
@@ -20,5 +28,23 @@
   .hi-album-list .hi-album-list-layout .layout-item:last-of-type .album-list-wrap {
     // @include flex(wrap, 0, center);
     grid-template-columns: 1fr 1fr;
+  }
+
+  .hi-album-detail .hi-double {
+    display: block;
+
+    .hi-album-title {
+      margin-bottom: 80px;
+
+      .blur-bg {
+        display: none;
+      }
+    }
+
+    .detail-buttons {
+      // position: relative;
+      // top: unset;
+      // background-color: transparent;
+    }
   }
 }

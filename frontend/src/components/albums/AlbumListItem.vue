@@ -25,7 +25,7 @@ function goto() {
     </div>
 
     <div class="album-meta">
-      <AlbumTimestamp class="dark-light" :timeframe="props.data.timeframe" @click="goto" />
+      <!-- <AlbumTimestamp class="dark-light" :timeframe="props.data.timeframe" @click="goto" /> -->
       <div class="draft-wrap" @click="goto">
         <span v-if="props.data.draft" class="album-draft">Draft</span>
       </div>

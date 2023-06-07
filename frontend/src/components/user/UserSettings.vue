@@ -208,9 +208,7 @@ const { passed, scroll } = useThresholdScroll(292)
         <button :class="{ active: active === 'passwords' }" class="nav-item hover-bubble" @click="scrollTo('#passwords')">
           Password
         </button>
-
         <div class="gap" />
-
         <button :class="{ visible: passed }" class="hover-bubble go-up" data-title-bottom="Scroll Up" @click="scroll">
           <span class="material-icons"> &#xe5d8; </span>
         </button>
