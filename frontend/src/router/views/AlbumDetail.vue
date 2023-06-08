@@ -216,7 +216,7 @@ const sortedImages = computed(() => {
           </Teleport>
 
           <div class="album-thumbnail">
-            <img class="cover-image" :src="imageUrl(album.coverKey)" alt=" " @click="openCoverImage">
+            <img class="cover-image" :src="imageUrl(album.coverKey, 'large')" alt=" " @click="openCoverImage">
 
             <div v-if="album.coverKey" class="blur-bg">
               <img :src="imageUrl(album.coverKey, 'medium')">

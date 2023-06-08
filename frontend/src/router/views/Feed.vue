@@ -15,6 +15,7 @@ import UserUpload from '../../components/feed/UserUpload.vue'
  * 4. Add an arrow button to the left sidebar which will scroll to the next album item (that is not on the screen) (intersection observer crap?)
  * 5. Move sidebar next to the entire for-loop wrapper and display dates based on intersection observer.
  *    This allows for a nice transition between dates.
+ * 6. [x] Fix comments overflowing (should have a wrapper with leftover flex1 and entire comments component will inset:0 into it)
  */
 
 const activity = useActivity()

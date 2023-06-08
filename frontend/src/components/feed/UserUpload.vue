@@ -74,12 +74,12 @@ function scrollToMe() {
     <div v-if="props.images.length > 1" :id="sliderId">
       <div v-for="image in props.images" :key="image.key" class="slider-image" :data-image-key="image.key">
         <img :src="imageUrl(image.key, 'large')" alt=" ">
-        <img class="blurred" :src="imageUrl(image.key, 'large')" alt=" ">
+        <img class="blurred" :src="imageUrl(image.key, 'medium')" alt=" ">
       </div>
     </div>
     <div v-else class="image-wrap">
       <img :src="imageUrl(props.images[0].key, 'large')" alt="">
-      <img class="blurred" :src="imageUrl(props.images[0].key, 'large')" alt=" ">
+      <img class="blurred" :src="imageUrl(props.images[0].key, 'medium')" alt=" ">
     </div>
 
     <div v-if="visibleImage" class="feed-image-info">
@@ -166,12 +166,13 @@ function scrollToMe() {
           </template>
         </Detail>
       </div>
-
-      <CommentsWrap
-        :album-key="visibleImage.albumKeys[0]"
-        :image-key="visibleImage.key"
-        :uploader="visibleImage.uploader"
-      />
+      <div class="hi-comments-wrap">
+        <CommentsWrap
+          :album-key="visibleImage.albumKeys[0]"
+          :image-key="visibleImage.key"
+          :uploader="visibleImage.uploader"
+        />
+      </div>
     </div>
   </div>
 </template>

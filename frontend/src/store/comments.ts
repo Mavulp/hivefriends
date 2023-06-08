@@ -52,16 +52,17 @@ export const useComments = defineStore('comments', {
     async addComment({ albumKey, imageKey, text }: { albumKey: string; imageKey: string; text: string }) {
       const { addLoading, delLoading } = useLoading()
 
-      const addCommentId = `add-comment-${albumKey}-${imageKey}`
+      const commentListId = `comments-${albumKey}-${imageKey}`
 
-      addLoading(addCommentId)
+      addLoading(`add-${commentListId}`)
 
       return post(`/api/comments/${albumKey}/${imageKey}`, text)
         .then((response) => {
-          if (!this.comments[addCommentId])
-            this.comments[addCommentId] = [response]
+          if (!this.comments[commentListId])
+            this.comments[commentListId] = [response]
           else
-            this.comments[addCommentId].push(response)
+            this.comments[commentListId].push(response)
+
           return response
         })
         .catch((error: FetchError) => {
@@ -69,7 +70,7 @@ export const useComments = defineStore('comments', {
           toast.add(error.message, 'error')
         })
         .finally(() => {
-          delLoading(addCommentId)
+          delLoading(`add-${commentListId}`)
         })
     },
 
@@ -80,7 +81,7 @@ export const useComments = defineStore('comments', {
         .then(() => {
           for (const [key, comments] of Object.entries(this.comments)) {
             if (comments.find(c => c.id === id)) {
-              this.comments[key] = this.comments[key].filter(c => c.id === id)
+              this.comments[key] = this.comments[key].filter(c => c.id !== id)
               break
             }
           }

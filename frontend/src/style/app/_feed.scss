@@ -145,18 +145,28 @@
           .feed-image-info {
             @include flex($gap: 0, $align: flex-start, $justify: flex-start, $direction: column);
 
-            .hi-comments {
+            .hi-comments-wrap {
               border-top: 1px solid rgb(var(--color-border-light));
               width: 100%;
               flex: 1;
               border-bottom-right-radius: 12px;
+              position: relative;
+              // overflow: hidden;
 
-              .hi-comments-info {
-                display: none;
-              }
+              .hi-comments {
+                overflow-y: auto;
+                position: absolute;
+                inset: 0;
 
-              .control-button {
-                display: none;
+                .hi-comments-info {
+                  display: none;
+                }
+
+                .hi-comments-header {
+                  .control-button {
+                    display: none;
+                  }
+                }
               }
             }
 
