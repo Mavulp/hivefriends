@@ -29,7 +29,7 @@ interface Props {
   uploader: string
 }
 
-const data = computed<Array<Comment>>(() => comments.comments)
+const data = computed<Comment[]>(() => comments.comments[`comments-${props.albumKey}-${props.imageKey}`] ?? [])
 const modal = ref(false)
 
 watch(
@@ -139,7 +139,7 @@ const metadata = computed(() => {
     </div>
 
     <div class="hi-comments-list">
-      <LoadingSpin v-if="getLoading('comments')" class="dark center-parent" />
+      <LoadingSpin v-if="getLoading(`comments-${props.albumKey}-${props.imageKey}`)" class="dark center-parent" />
       <div v-else-if="data.length === 0" class="hi-no-comments">
         <span>...</span>
       </div>
@@ -167,7 +167,7 @@ const metadata = computed(() => {
           <button type="submit" class="hover-bubble">
             Send
           </button>
-          <LoadingSpin v-if="getLoading('add-comments')" class="dark small" />
+          <LoadingSpin v-if="getLoading(`add-comments-${props.albumKey}-${props.imageKey}`)" class="dark small" />
 
           <div class="flex-1" />
 

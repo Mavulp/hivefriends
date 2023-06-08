@@ -31,18 +31,23 @@ const activeImage = ref('')
 onMounted(() => {
   // If more than 1 images is present, initialize slider
   activeImage.value = props.images[0].key
+  initSlider()
+})
 
+let sliderInst: any
+function initSlider() {
   if (props.images.length > 1) {
-    const slider = new Slider(`#${sliderId.value}`, {
-      height: window.innerHeight / 100 * 75,
+    sliderInst = new Slider(`#${sliderId.value}`, {
+      // height: window.innerHeight / 100 * 75,
+      active: props.images.findIndex(i => i.key === activeImage.value),
     })
 
-    slider.onSlideChange(({ toEl }: { toEl: HTMLDivElement }) => {
+    sliderInst.onSlideChange(({ toEl }: { toEl: HTMLDivElement }) => {
       // Fetch comments on slide change
       activeImage.value = toEl.getAttribute('data-image-key') as string
     })
   }
-})
+}
 
 const visibleImage = computed(() => {
   return props.images.find(i => i.key === activeImage.value)

@@ -109,7 +109,7 @@
             .slider-dot {
               width: 8px;
               height: 8px;
-              background-color: rgb(var(--color-border));
+              background-color: rgb(var(--color-text-light));
 
               &.active {
                 background-color: rgb(var(--color-highlight));

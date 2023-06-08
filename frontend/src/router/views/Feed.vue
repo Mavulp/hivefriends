@@ -9,9 +9,9 @@ import UserUpload from '../../components/feed/UserUpload.vue'
 /**
  * SECTION Feed todo
  *
- * 1. Refactor comments to store comments by album & image key
- * 2. Add key x album key loading to comments
- * 3. Re-initialize slider on window reload
+ * 1. [x] Refactor comments to store comments by album & image key
+ * 2. [x] Add key x album key loading to comments
+ * 3. Fix slider breaking when window is resized
  * 4. Add an arrow button to the left sidebar which will scroll to the next album item (that is not on the screen) (intersection observer crap?)
  * 5. Move sidebar next to the entire for-loop wrapper and display dates based on intersection observer.
  *    This allows for a nice transition between dates.

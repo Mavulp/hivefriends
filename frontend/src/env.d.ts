@@ -8,3 +8,4 @@ declare module '*.vue' {
 }
 
 declare module "@dolanske/slider"
+declare module "dayjs"
