@@ -39,9 +39,9 @@ const isDark = computed(() => auth.settings.colorTheme === 'dark-normal')
         <router-link class="nav-link" :to="{ name: 'Home' }">
           Home
         </router-link>
-        <!-- <router-link class="nav-link" :to="{ name: 'Feed' }">
+        <router-link class="nav-link" :to="{ name: 'Feed' }">
           Feed
-        </router-link> -->
+        </router-link>
         <router-link class="nav-link" :to="{ name: 'Albums' }">
           Albums
         </router-link>

@@ -70,6 +70,7 @@ const messages = [
 // We want to randomize the MOTD every hour
 const date = dayjs().format('YYYYMMDDHH')
 const randomIndex = seedRndMinMax(0, messages.length, date)
+
 const motd = messages[randomIndex]
 </script>
 

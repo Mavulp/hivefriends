@@ -40,11 +40,13 @@ watch(isOpen, async (value) => {
 
   if (value) {
     await nextTick()
-    console.log(content.value.scrollHeight)
-
     contentMaxHeight.value = content.value.scrollHeight
   }
 })
+
+watch(() => slots.content, () => {
+  contentMaxHeight.value = content.value.scrollHeight
+}, { deep: true })
 </script>
 
 <template>

@@ -50,7 +50,6 @@ export const useActivity = defineStore('activity', {
 
       return get('/api/activity')
         .then((response) => {
-          // this.items = response.slice(0, 128)
           this.items = response
           this.hasNew = true
 
@@ -118,7 +117,15 @@ export const useActivity = defineStore('activity', {
   },
   getters: {
     getActivity: state => state.items,
-    // getImageActivity: (state)  => state.
+    /**
+     * This is the gettter for feed page. Display images only
+     *
+     * 1. Filter out only image items from the activity
+     * 2. Group them by date
+     * 3. Within the date group, group them by albums
+     */
+    // getImageActivity: state => state.items
+    //   .filter(item => Object.hasOwn(item, 'image'))
   },
 })
 

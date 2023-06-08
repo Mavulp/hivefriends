@@ -38,7 +38,7 @@ const text = computed(() => {
       <button
         v-if="props.data.author === user.user.username || props.uploader === user.user.username"
         class="control-button hover-bubble"
-        data-title-top="Remove"
+        data-title-left="Remove"
         @click="comments.delComment(data.id)"
       >
         <span class="material-icons"> &#xe872; </span>
