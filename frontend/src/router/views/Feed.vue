@@ -25,7 +25,7 @@ const formattedActivity = computed(() => {
   const raw = activity.sortedItems
 
   // Limit the activity to 30 items
-  const iterationLimit = 30
+  const iterationLimit = 15
   let iterations = 0
 
   return Object.entries(raw)
@@ -61,24 +61,22 @@ const formattedActivity = computed(() => {
 
 <template>
   <div class="hi-feed">
+    <div class="feed-sidebar">
+      <div class="feed-sidebar-scroll">
+        <span>
+          {{ dayjs().format('DD MMMM YYYY') }}
+        </span>
+      </div>
+    </div>
     <div class="hi-feed-wrap">
-      <div v-for="(users, date, index) in formattedActivity" :key="date" class="feed-item-wrap">
-        <div class="feed-sidebar">
-          <div class="feed-sidebar-scroll">
-            <span>
-              {{ dayjs(date).format('MMMM DD, YYYY') }}
-            </span>
-          </div>
-        </div>
-        <div class="feed-date">
-          <UserUpload
-            v-for="item in users"
-            :key="item.user"
-            :user="item.user"
-            :images="item.images"
-            :index="index"
-          />
-        </div>
+      <div v-for="(users, date, index) in formattedActivity" :key="date" class="feed-date" :data-date="date">
+        <UserUpload
+          v-for="item in users"
+          :key="item.user"
+          :user="item.user"
+          :images="item.images"
+          :index="index"
+        />
       </div>
     </div>
   </div>
