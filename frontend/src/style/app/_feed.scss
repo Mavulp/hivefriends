@@ -40,7 +40,8 @@
 
         .image-wrap,
         .slider {
-          min-height: 680px;
+          // min-height: 680px;
+          height: 75vh;
           position: relative;
           overflow: hidden;
           border-top-left-radius: 12px;

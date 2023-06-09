@@ -1,6 +1,8 @@
 <script setup lang='ts'>
-import { computed, onBeforeMount } from 'vue'
+import { computed, onBeforeMount, ref } from 'vue'
 import dayjs from 'dayjs'
+import { vElementVisibility } from '@vueuse/components'
+import { useScroll } from '@vueuse/core'
 import { useActivity } from '../../store/activity'
 import type { ReducedImage } from '../../store/activity'
 import type { ImageItemInAlbum } from '../../store/album'
@@ -57,19 +59,55 @@ const formattedActivity = computed(() => {
       return group
     }, {} as Record<string, ReducedImage[]>)
 })
+
+// Observe scrolling and get the .feed-date element that is currently on screen
+interface VisibleItem {
+  date: any
+  el: HTMLDivElement
+}
+
+const visible = ref<VisibleItem[]>([])
+const activeSection = ref<VisibleItem>()
+
+const { directions } = useScroll(window)
+
+function setVisibleEl(isVisible: boolean, date: string) {
+  if (isVisible) {
+    visible.value.push({
+      date,
+      el: document.querySelector(`[data-date="${dayjs(date).unix()}"]`) as HTMLDivElement,
+    })
+  }
+  else {
+    visible.value = visible.value.filter(item => item.date !== date)
+    activeSection.value = visible.value[0]
+
+    return
+  }
+
+  // Ran on first iteration
+  if (!activeSection.value)
+    activeSection.value = visible.value[0]
+}
 </script>
 
 <template>
   <div class="hi-feed">
     <div class="feed-sidebar">
-      <div class="feed-sidebar-scroll">
-        <span>
-          {{ dayjs().format('DD MMMM YYYY') }}
-        </span>
+      <div v-if="activeSection" class="feed-sidebar-scroll">
+        <Transition mode="out-in" name="pagetransition" appear>
+          <span :key="activeSection.date"> {{ dayjs(activeSection.date).format('DD MMMM YYYY') }}</span>
+        </Transition>
       </div>
     </div>
     <div class="hi-feed-wrap">
-      <div v-for="(users, date, index) in formattedActivity" :key="date" class="feed-date" :data-date="date">
+      <div
+        v-for="(users, date, index) in formattedActivity"
+        :key="date"
+        v-element-visibility="(state) => setVisibleEl(state, date)"
+        class="feed-date"
+        :data-date="dayjs(date).unix()"
+      >
         <UserUpload
           v-for="item in users"
           :key="item.user"

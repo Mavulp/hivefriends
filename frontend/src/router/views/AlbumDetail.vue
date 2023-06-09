@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, onBeforeMount, reactive, ref, watch, watchEffect } from 'vue'
-import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
+import { computed, onBeforeMount, reactive, ref, watchEffect } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { debounce, isEmpty } from 'lodash'
 import { useClipboard, useCssVar, useLocalStorage, usePreferredDark, whenever } from '@vueuse/core'
 import dayjs from 'dayjs'
@@ -117,30 +117,6 @@ function copyPublic() {
  */
 const map = ref(false)
 const enableMap = computed(() => album.images.some(image => isValidMarker(image)))
-
-/**
- * Remember scroll position
- */
-
-onBeforeRouteLeave((to) => {
-  if (to.name === 'ImageDetail')
-    sessionStorage.setItem('album-scroll', window.scrollY.toString())
-  else
-    sessionStorage.removeItem('album-scroll')
-})
-
-watch(
-  () => getLoading('get-album'),
-  () => {
-    const scroll = sessionStorage.getItem('album-scroll')
-
-    if (scroll) {
-      setTimeout(() => {
-        window.scrollTo(0, parseInt(scroll))
-      }, 50)
-    }
-  },
-)
 
 /**
  * Fixed title
