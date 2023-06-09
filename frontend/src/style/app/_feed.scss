@@ -9,25 +9,43 @@
     position: relative;
 
     .feed-sidebar-scroll {
+      @include flex($direction: column, $justify: space-between, $align: flex-end);
       position: sticky;
       top: 16px;
+      height: calc(100vh - 48px);
+      z-index: 5;
 
       span {
-        font-size: 1.4rem;
+        display: block;
+        font-size: 1.6rem;
+      }
+
+      button {
+        .material-icons {
+          color: rgb(var(--color-text));
+          font-size: 2.4rem;
+        }
       }
     }
   }
 
   .hi-feed-wrap {
-    // scroll-snap-type: y proximity;
-
     .feed-date {
+      &:first-child {
+        .feed-user-wrap {
+          &:first-child {
+            scroll-snap-align: none;
+          }
+        }
+      }
+
       .feed-user-wrap {
         @include grid(0, 1fr 356px);
         margin-bottom: 80px;
         border: 1px solid rgb(var(--color-border-light));
         border-radius: 12px;
         position: relative;
+
         scroll-snap-align: start;
 
         .scroll-to {
@@ -78,7 +96,7 @@
           padding: 16px;
 
           img {
-            max-height: 75vh;
+            max-height: calc(75vh - 16px);
           }
         }
 

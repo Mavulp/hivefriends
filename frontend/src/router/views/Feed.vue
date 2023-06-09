@@ -2,22 +2,17 @@
 import { computed, onBeforeMount, ref } from 'vue'
 import dayjs from 'dayjs'
 import { vElementVisibility } from '@vueuse/components'
-import { useScroll } from '@vueuse/core'
+import { useScroll, whenever } from '@vueuse/core'
 import { useActivity } from '../../store/activity'
 import type { ReducedImage } from '../../store/activity'
 import type { ImageItemInAlbum } from '../../store/album'
 import UserUpload from '../../components/feed/UserUpload.vue'
+import { useThresholdScroll } from '../../js/_composables'
 
 /**
  * SECTION Feed todo
  *
- * 1. [x] Refactor comments to store comments by album & image key
- * 2. [x] Add key x album key loading to comments
  * 3. Fix slider breaking when window is resized
- * 4. Add an arrow button to the left sidebar which will scroll to the next album item (that is not on the screen) (intersection observer crap?)
- * 5. Move sidebar next to the entire for-loop wrapper and display dates based on intersection observer.
- *    This allows for a nice transition between dates.
- * 6. [x] Fix comments overflowing (should have a wrapper with leftover flex1 and entire comments component will inset:0 into it)
  */
 
 const activity = useActivity()
@@ -69,34 +64,56 @@ interface VisibleItem {
 const visible = ref<VisibleItem[]>([])
 const activeSection = ref<VisibleItem>()
 
-const { directions } = useScroll(window)
+// Save is last scroll was up or down
+const { directions, y } = useScroll(window)
+const scrolledUp = ref(false)
+
+whenever(() => directions.top, () => scrolledUp.value = true)
+whenever(() => directions.bottom, () => scrolledUp.value = false)
+whenever(() => y.value < 156, () => activeSection.value = visible.value[0])
 
 function setVisibleEl(isVisible: boolean, date: string) {
   if (isVisible) {
-    visible.value.push({
-      date,
-      el: document.querySelector(`[data-date="${dayjs(date).unix()}"]`) as HTMLDivElement,
-    })
+    if (scrolledUp.value) {
+      visible.value.unshift({
+        date,
+        el: document.querySelector(`[data-date="${dayjs(date).unix()}"]`) as HTMLDivElement,
+      })
+    }
+    else {
+      visible.value.push({
+        date,
+        el: document.querySelector(`[data-date="${dayjs(date).unix()}"]`) as HTMLDivElement,
+      })
+    }
   }
   else {
     visible.value = visible.value.filter(item => item.date !== date)
-    activeSection.value = visible.value[0]
+    activeSection.value = visible.value.at(scrolledUp.value ? -1 : 0)
 
     return
   }
 
   // Ran on first iteration
   if (!activeSection.value)
-    activeSection.value = visible.value[0]
+    activeSection.value = visible.value.at(scrolledUp.value ? -1 : 0)
 }
+
+// Scroll up
+const { passed, scroll } = useThresholdScroll(292)
 </script>
 
 <template>
   <div class="hi-feed">
     <div class="feed-sidebar">
       <div v-if="activeSection" class="feed-sidebar-scroll">
-        <Transition mode="out-in" name="pagetransition" appear>
-          <span :key="activeSection.date"> {{ dayjs(activeSection.date).format('DD MMMM YYYY') }}</span>
+        <Transition mode="out-in" :name="scrolledUp ? 'fadedown' : 'fadeup'" appear>
+          <span :key="activeSection.date"> {{ dayjs(activeSection.date).format('DD MMMM') }}</span>
+        </Transition>
+        <Transition name="fade" mode="out-in">
+          <button v-if="passed" class="hover-bubble" data-title-top="Scroll Up" @click="scroll">
+            <span class="material-icons"> &#xe5d8; </span>
+          </button>
         </Transition>
       </div>
     </div>

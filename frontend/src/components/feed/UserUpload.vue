@@ -38,7 +38,7 @@ let sliderInst: any
 function initSlider() {
   if (props.images.length > 1) {
     sliderInst = new Slider(`#${sliderId.value}`, {
-      // height: window.innerHeight / 100 * 75,
+      height: window.innerHeight / 100 * 75,
       active: props.images.findIndex(i => i.key === activeImage.value),
     })
 
@@ -52,25 +52,10 @@ function initSlider() {
 const visibleImage = computed(() => {
   return props.images.find(i => i.key === activeImage.value)
 })
-
-// Scroll into the view
-const wrapper = ref<HTMLDivElement>()
-function scrollToMe() {
-  if (wrapper.value) {
-    wrapper.value.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-    })
-  }
-}
 </script>
 
 <template>
-  <div ref="wrapper" class="feed-user-wrap">
-    <!-- <button class="scroll-to" @click="scrollToMe">
-      me!
-    </button> -->
-
+  <div class="feed-user-wrap">
     <div v-if="props.images.length > 1" :id="sliderId">
       <div v-for="image in props.images" :key="image.key" class="slider-image" :data-image-key="image.key">
         <img :src="imageUrl(image.key, 'large')" alt=" ">
