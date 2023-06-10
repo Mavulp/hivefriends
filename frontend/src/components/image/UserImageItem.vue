@@ -161,7 +161,9 @@ watch(imgIndex, (value) => {
 
     <Teleport v-if="open" to="body">
       <Modal class="modal-images">
-        <img :src="imageUrl(props.image.key)" alt="">
+        <div class="flex-1">
+          <img :src="imageUrl(props.image.key)" alt="">
+        </div>
 
         <div class="modal-top">
           <div class="left">

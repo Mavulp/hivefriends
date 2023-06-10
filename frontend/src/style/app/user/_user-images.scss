@@ -243,6 +243,15 @@
     background-color: rgb(var(--color-background)) !important;
     height: 100vh;
 
+    display: flex;
+    flex-direction: column;
+
+    .flex-1 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     .nav-btn {
       @include t();
       width: 64px;
