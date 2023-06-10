@@ -32,7 +32,7 @@ interface Props {
       <!-- <p>{{ image.commentCount }} {{ image.commentCount === 1 ? 'comment' : 'comments' }}</p> -->
     </div>
 
-    <img :src="imageUrl(image.key, 'medium')">
+    <img :src="imageUrl(image.key, 'tiny')">
     <!-- </div> -->
   </router-link>
 </template>

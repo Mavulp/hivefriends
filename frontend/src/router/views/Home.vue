@@ -35,7 +35,7 @@ const messages = [
   'Yep we got MOTD now',
   'Now with even more watermelon',
   'Based and minted',
-  'Chantyarno knows your location and is rapidly approaching',
+  'Chantyarno knows your location and is (rapid)ly approaching',
   'Half of the people in these albums live in your walls',
   'Wang, wang, wang, wang, wang, wang, wang, wang, wang, HUUUUUUH???..., wang, wang, wang, wang',
   'Did you forget to post your daily picture?',
@@ -47,7 +47,7 @@ const messages = [
   'WE ARE MAKING PESTO BITCH!!!!!!!!!!',
   'Wouldn\'t it be funny if you could play a banana?',
   'Fishstick house will feature a washing machine',
-  'Never go full WANG WANG',
+  'Never go full WANG WANG mode',
   'Caboose with moderation',
   'Don\'t forget to bring your controller to the next hike',
   'Can you help me sort the chests?',
@@ -64,12 +64,32 @@ const messages = [
   `Big reveal on ${dayjs().add(3, 'day').format('dddd')}`,
   'NO WAY IM A MOTD TEXT!!!! HELLO MOM!!!!!!!!!!!!!',
   '>13750Hz (tinnitus)',
-  '',
+  'Add some mint',
+  'tmtu pomegranate',
+  'Proud member of Jokler cyberbullying prevention group',
+  'The fust',
+  'Cobalt tournament winners cape distribution is next week',
+  'Wata shiva Isaku san desu uwu (⋟﹏⋞)',
+  'Cha cha cha',
+  'Tractor enthusiasts unite',
+  'I\'d say that\'s at least a 6b+',
+  'Complaining about boulder grading',
+  'Oy mate blimey',
+  'Imagine actually owning a house',
+  'Come on lets go buy more camping gear',
+  `Time Terminated 2 coming out in ${dayjs().add('year').format('YYYY')}`,
+  'dota 20m',
+  'Will eventually arrive to the caboose destination',
 ]
 
 // We want to randomize the MOTD every hour
-const date = dayjs().format('YYYYMMDDHH')
-const randomIndex = seedRndMinMax(0, messages.length, date)
+
+const date = dayjs().format('MMMMddddA')
+
+const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+
+const randomIndex = seedRndMinMax(0, messages.length, date + letters[dayjs().get('hour')])
+
 const motd = messages[randomIndex]
 </script>
 
@@ -80,20 +100,16 @@ const motd = messages[randomIndex]
         <div class="home-landing">
           <div class="album-thumbnail">
             <LoadingSpin v-if="!latest" dark />
-
             <router-link v-else :to="{ name: 'AlbumDetail', params: { id: latest.key } }">
               <div class="thumbnail-info" :class="[TEXT_CONTRAST(accent[0], accent[1], accent[2])]">
                 <span>{{ latest.title }} by {{ user.getUsername(latest.author) }}</span>
               </div>
-
               <img :src="imageUrl(latest.coverKey, 'large')" alt="">
             </router-link>
           </div>
 
           <h1>friends</h1>
-          <p>
-            {{ motd }}
-          </p>
+          <p>{{ motd }}</p>
 
           <!-- <div class="flex-1" />
 

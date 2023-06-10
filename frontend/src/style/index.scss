@@ -1,5 +1,4 @@
 @import "./setup/";
-
 @import "./generic/";
 
 html {
@@ -9,8 +8,10 @@ html {
   background-color: rgb(var(--color-background));
   color: rgb(var(--color-text));
   min-height: 100vh;
+  // letter-spacing: 0.005em;
 
-  letter-spacing: 0.005em;
+  scroll-padding-top: 16px;
+  scroll-snap-type: y proximity;
 
   * {
     outline: none;

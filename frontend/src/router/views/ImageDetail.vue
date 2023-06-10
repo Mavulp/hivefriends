@@ -395,7 +395,7 @@ const { y } = useScroll(scrollWrap)
 
               <span v-if="getLoading('comments')" class="material-icons rotate">&#xe863;</span>
               <template v-else>
-                ({{ comment.comments.length }})
+                ({{ (comment.comments[`comments-${albumKey}-${imageKey}`] ?? []).length }})
               </template>
             </button>
 

@@ -1,19 +1,23 @@
 <script setup lang="ts">
-import { watch, computed, reactive, nextTick, ref } from "vue"
-import { Comment, useComments } from "../../store/comments"
-import { useLoading } from "../../store/loading"
-import { useUser } from "../../store/user"
-import { minLength, required, useFormValidation } from "../../js/validation"
-import { sanitize } from "../../js/utils"
-import { formatTextUsernames } from "../../js/_composables"
+import { computed, reactive, ref, watch } from 'vue'
+import type { Comment } from '../../store/comments'
+import { useComments } from '../../store/comments'
+import { useLoading } from '../../store/loading'
+import { useUser } from '../../store/user'
+import { minLength, required, useFormValidation } from '../../js/validation'
+import { sanitize } from '../../js/utils'
+import { formatTextUsernames } from '../../js/_composables'
 
-import LoadingSpin from "../loading/LoadingSpin.vue"
-import InputTextarea from "../form/InputTextarea.vue"
-import CommentVue from "./Comment.vue"
-import AliasModal from "./AliasModal.vue"
-import Modal from "../Modal.vue"
-import { useAlbums } from "../../store/album"
+import LoadingSpin from '../loading/LoadingSpin.vue'
+import InputTextarea from '../form/InputTextarea.vue'
+import { useAlbums } from '../../store/album'
+import CommentVue from './Comment.vue'
+import AliasModal from './AliasModal.vue'
 
+const props = defineProps<Props>()
+const emit = defineEmits<{
+  (e: 'close'): void
+}>()
 const comments = useComments()
 const user = useUser()
 const album = useAlbums()
@@ -25,13 +29,7 @@ interface Props {
   uploader: string
 }
 
-const props = defineProps<Props>()
-
-const emit = defineEmits<{
-  (e: "close"): void
-}>()
-
-const data = computed<Array<Comment>>(() => comments.comments)
+const data = computed<Comment[]>(() => comments.comments[`comments-${props.albumKey}-${props.imageKey}`] ?? [])
 const modal = ref(false)
 
 watch(
@@ -40,12 +38,12 @@ watch(
     await comments.fetchComments(
       {
         albumKey: props.albumKey,
-        imageKey: props.imageKey
+        imageKey: props.imageKey,
       },
-      user.public_token
+      user.public_token,
     )
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 /**
@@ -53,14 +51,14 @@ watch(
  */
 
 const form = reactive({
-  comment: ""
+  comment: '',
 })
 
 const rules = computed(() => ({
   comment: {
     required,
-    minLength: minLength(1)
-  }
+    minLength: minLength(1),
+  },
 }))
 
 const { validate, errors, reset } = useFormValidation(form, rules, { autoclear: true })
@@ -72,11 +70,11 @@ async function submit() {
     comments.addComment({
       albumKey: props.albumKey,
       imageKey: props.imageKey,
-      text: form.comment
+      text: form.comment,
     })
 
     setTimeout(() => {
-      form.comment = ""
+      form.comment = ''
       reset()
     }, 25)
   })
@@ -84,7 +82,8 @@ async function submit() {
 
 function insert(text: string) {
   let t = `!${text}`
-  if (form.comment) t = " " + t
+  if (form.comment)
+    t = ` ${t}`
 
   form.comment += t
 }
@@ -100,36 +99,38 @@ function handleKeys(e: any) {
 
   keys.push(e.key)
 
-  if (e.key === "Enter" && !keys.includes("Shift")) {
+  if (e.key === 'Enter' && !keys.includes('Shift')) {
     keys = []
     submit()
   }
 
-  if (keys.length > 5) keys = []
+  if (keys.length > 5)
+    keys = []
 }
 
 const metadata = computed(() => {
-  if (!user.public_token) {
+  if (!user.public_token)
     return album.getImageMetadata(props.imageKey)
-  }
+
+  return undefined
 })
 </script>
 
 <template>
   <div class="hi-comments">
-    <div class="hi-comments-info" v-if="metadata?.fileName || metadata?.description">
+    <div v-if="metadata?.fileName || metadata?.description" class="hi-comments-info">
       <div class="icon">
         <span class="material-icons">&#xe412;</span>
       </div>
 
       <strong v-if="metadata?.fileName" class="file-name">{{ metadata.fileName }}</strong>
-      <p v-if="metadata?.description" v-html="sanitize(formatTextUsernames(metadata.description, user))"></p>
+      <p v-if="metadata?.description" v-html="sanitize(formatTextUsernames(metadata.description, user))" />
     </div>
     <div class="hi-comments-header">
       <h6>Comments</h6>
       <span>({{ data.length }})</span>
 
-      <div class="flex-1"></div>
+      <div class="flex-1" />
 
       <button class="control-button" @click="emit('close')">
         Hide
@@ -138,23 +139,22 @@ const metadata = computed(() => {
     </div>
 
     <div class="hi-comments-list">
-      <LoadingSpin class="dark center-parent" v-if="getLoading('comments')" />
-      <div class="hi-no-comments" v-else-if="data.length === 0">
-        <span>Nobody said anything</span>
-        <strong>...yet</strong>
+      <LoadingSpin v-if="getLoading(`comments-${props.albumKey}-${props.imageKey}`)" class="dark center-parent" />
+      <div v-else-if="data.length === 0" class="hi-no-comments">
+        <span>...</span>
       </div>
       <template v-else>
         <CommentVue
           v-for="item in data"
           :key="item.id"
           :data="item"
-          :imageKey="props.imageKey"
+          :image-key="props.imageKey"
           :uploader="props.uploader"
         />
       </template>
     </div>
 
-    <div class="hi-add-comment" v-if="!user.public_token">
+    <div v-if="!user.public_token" class="hi-add-comment">
       <form @submit.prevent="submit">
         <InputTextarea
           v-model:value="form.comment"
@@ -164,12 +164,14 @@ const metadata = computed(() => {
         />
 
         <div class="buttons">
-          <button type="submit" class="hover-bubble">Send</button>
-          <LoadingSpin class="dark small" v-if="getLoading('add-comments')" />
+          <button type="submit" class="hover-bubble">
+            Send
+          </button>
+          <LoadingSpin v-if="getLoading(`add-comments-${props.albumKey}-${props.imageKey}`)" class="dark small" />
 
-          <div class="flex-1"></div>
+          <div class="flex-1" />
 
-          <button @click.prevent="modal = !modal" class="hover-bubble" :class="{ active: modal }">
+          <button class="hover-bubble" :class="{ active: modal }" @click.prevent="modal = !modal">
             <span class="material-icons"> &#xe1d3; </span>
           </button>
         </div>

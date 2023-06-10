@@ -3,7 +3,7 @@
   background-color: rgb(var(--color-background));
 
   .hi-comments-info {
-    padding: 24px;
+    padding: 16px;
     padding-left: 56px;
     width: 100%;
     position: relative;
@@ -51,10 +51,13 @@
   .hi-comments-header {
     @include flex($justify: space-between);
     width: 100%;
-    padding: 16px 24px 32px;
+    padding: 16px 16px 24px;
+    gap: 5px;
 
     h6 {
+      @include font(500);
       margin-bottom: 0;
+      font-size: 1.4rem;
     }
 
     .control-button {
@@ -86,7 +89,7 @@
     width: 100%;
     flex: 1;
     position: relative;
-    padding: 0 24px 16px;
+    padding: 0 16px 16px;
 
     .hi-no-comments {
       position: absolute;
@@ -106,8 +109,8 @@
 
     .hi-comment {
       display: block;
-      margin-bottom: 20px;
-      padding-bottom: 20px;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
       border-bottom: 1px solid rgb(var(--color-border-light));
 
       &:last-of-type {
@@ -164,10 +167,7 @@
     border-top: 1px solid rgb(var(--color-border-light));
 
     .buttons {
-      padding: 0 24px 24px;
-      // padding: 16px;
-      // padding-bottom: 24px;
-      // justify-content: flex-end;
+      padding: 0 16px 16px;
 
       button {
         @include radius(4px);
@@ -178,7 +178,6 @@
 
         .material-icons {
           font-size: 1.8rem;
-          transform: translateY(4px);
         }
       }
     }
@@ -189,6 +188,7 @@
       textarea {
         border: 0;
         resize: none;
+        padding: 16px;
         min-height: 80px;
         // background-color: #fff;
       }
