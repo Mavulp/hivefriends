@@ -1,10 +1,10 @@
 .activity {
   @include t();
   @include flex($direction: column, $align: flex-start);
-  position: fixed;
-  top: $header;
-  bottom: 0;
-  right: 0;
+  // position: fixed;
+  // top: $header;
+  // bottom: 0;
+  // right: 0;
   // box-shadow: var(--shadow);
   // border-left: 1px solid rgb(var(--color-border-light));
   background-color: rgb(var(--color-background));
@@ -72,7 +72,7 @@
     flex: 1;
     width: 100%;
     position: relative;
-    overflow-y: auto;
+    // overflow-y: auto;
 
     ::-webkit-scrollbar {
       display: none;
@@ -107,7 +107,7 @@
         margin-bottom: 12px;
         position: sticky;
         top: 0;
-        z-index: 10;
+        z-index: 100;
         padding: 6px 0 8px;
         background-color: rgb(var(--color-background));
 

@@ -123,7 +123,7 @@ function scrollNext() {
         <div style="height:25.5px">
           <Transition name="fade" mode="out-in">
             <button v-if="passed" class="hover-bubble" data-title-right="Scroll Up" @click="scroll">
-              <span class="material-icons"> &#xe5ce; </span>
+              <span class="material-icons"> &#xe5d8; </span>
             </button>
           </Transition>
         </div>
