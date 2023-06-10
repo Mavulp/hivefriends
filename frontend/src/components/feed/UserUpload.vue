@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import { computed, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
 import { Slider } from '@dolanske/slider'
 import dayjs from 'dayjs'
 import type { ImageItemInAlbum } from '../../store/album'
@@ -31,7 +31,11 @@ const activeImage = ref('')
 onMounted(() => {
   // If more than 1 images is present, initialize slider
   activeImage.value = props.images[0].key
-  initSlider()
+  nextTick(() => {
+    setTimeout(() => {
+      initSlider()
+    }, 50)
+  })
 })
 
 let sliderInst: any
@@ -39,6 +43,7 @@ function initSlider() {
   if (props.images.length > 1) {
     sliderInst = new Slider(`#${sliderId.value}`, {
       height: window.innerHeight / 100 * 75,
+      width: null,
       active: props.images.findIndex(i => i.key === activeImage.value),
     })
 

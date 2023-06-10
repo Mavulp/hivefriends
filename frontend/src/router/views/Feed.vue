@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import { computed, onBeforeMount, ref } from 'vue'
+import { computed, nextTick, onBeforeMount, ref } from 'vue'
 import dayjs from 'dayjs'
 import { vElementVisibility } from '@vueuse/components'
 import { useScroll, whenever } from '@vueuse/core'
@@ -8,12 +8,6 @@ import type { ReducedImage } from '../../store/activity'
 import type { ImageItemInAlbum } from '../../store/album'
 import UserUpload from '../../components/feed/UserUpload.vue'
 import { useThresholdScroll } from '../../js/_composables'
-
-/**
- * SECTION Feed todo
- *
- * 3. Fix slider breaking when window is resized
- */
 
 const activity = useActivity()
 onBeforeMount(activity.fetchActivity)
@@ -102,13 +96,20 @@ function setVisibleEl(isVisible: boolean, date: string) {
 // Scroll up
 const { passed, scroll } = useThresholdScroll(292)
 
-// Sroll to next post
+// Sroll to previous & next post
+const isAutoScroll = ref(false)
 
-function scrollNext() {
+async function autoScroll(direction: 'up' | 'down' = 'down') {
+  isAutoScroll.value = true
+  await nextTick()
   window.scrollBy({
-    top: window.innerHeight / 100 * 75,
+    top: (window.innerHeight / 100) * (direction === 'down' ? 75 : -75),
     behavior: 'smooth',
   })
+
+  setTimeout(() => {
+    isAutoScroll.value = false
+  }, 300)
 }
 </script>
 
@@ -120,6 +121,16 @@ function scrollNext() {
           <span :key="activeSection.date"> {{ dayjs(activeSection.date).format('DD MMMM') }}</span>
         </Transition>
 
+        <button class="hover-bubble" data-title-right="Previous Post" @click="autoScroll('up')">
+          <span class="material-icons"> &#xe5ce; </span>
+        </button>
+
+        <button class="hover-bubble" data-title-right="Next Post" @click="autoScroll('down')">
+          <span class="material-icons"> &#xe313; </span>
+        </button>
+
+        <div class="flex-1" />
+
         <div style="height:25.5px">
           <Transition name="fade" mode="out-in">
             <button v-if="passed" class="hover-bubble" data-title-right="Scroll Up" @click="scroll">
@@ -127,10 +138,6 @@ function scrollNext() {
             </button>
           </Transition>
         </div>
-
-        <button class="hover-bubble" data-title-right="Next Post" @click="scrollNext">
-          <span class="material-icons"> &#xe313; </span>
-        </button>
       </div>
     </div>
     <div class="hi-feed-wrap">
@@ -147,6 +154,7 @@ function scrollNext() {
           :user="item.user"
           :images="item.images"
           :index="index"
+          :style="[isAutoScroll ? 'scroll-snap-align: start' : '']"
         />
       </div>
     </div>
