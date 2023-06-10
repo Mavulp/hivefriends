@@ -58,6 +58,13 @@
       }
     }
 
+    .title-wrap {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
     h1 {
       font-size: 12rem;
       text-transform: uppercase;
