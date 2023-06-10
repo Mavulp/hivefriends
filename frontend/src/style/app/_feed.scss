@@ -11,13 +11,17 @@
     .feed-sidebar-scroll {
       @include flex($direction: column, $justify: space-between, $align: flex-end);
       position: sticky;
-      top: 16px;
-      height: calc(100vh - 48px);
+      top: $header + 64px;
       z-index: 5;
+      gap: 24px;
 
       span {
         display: block;
         font-size: 1.6rem;
+
+        &:not(.material-icons) {
+          margin-bottom: 16px;
+        }
       }
 
       button {

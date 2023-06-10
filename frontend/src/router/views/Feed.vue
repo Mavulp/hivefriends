@@ -101,6 +101,15 @@ function setVisibleEl(isVisible: boolean, date: string) {
 
 // Scroll up
 const { passed, scroll } = useThresholdScroll(292)
+
+// Sroll to next post
+
+function scrollNext() {
+  window.scrollBy({
+    top: window.innerHeight / 100 * 75,
+    behavior: 'smooth',
+  })
+}
 </script>
 
 <template>
@@ -110,11 +119,18 @@ const { passed, scroll } = useThresholdScroll(292)
         <Transition mode="out-in" :name="scrolledUp ? 'fadedown' : 'fadeup'" appear>
           <span :key="activeSection.date"> {{ dayjs(activeSection.date).format('DD MMMM') }}</span>
         </Transition>
-        <Transition name="fade" mode="out-in">
-          <button v-if="passed" class="hover-bubble" data-title-top="Scroll Up" @click="scroll">
-            <span class="material-icons"> &#xe5d8; </span>
-          </button>
-        </Transition>
+
+        <div style="height:25.5px">
+          <Transition name="fade" mode="out-in">
+            <button v-if="passed" class="hover-bubble" data-title-right="Scroll Up" @click="scroll">
+              <span class="material-icons"> &#xe5ce; </span>
+            </button>
+          </Transition>
+        </div>
+
+        <button class="hover-bubble" data-title-right="Next Post" @click="scrollNext">
+          <span class="material-icons"> &#xe313; </span>
+        </button>
       </div>
     </div>
     <div class="hi-feed-wrap">
