@@ -1,11 +1,11 @@
-import { defineStore } from "pinia"
-import { get, rootUrl, post, put, del } from "../js/fetch"
-import { useLoading } from "./loading"
-import { useToast } from "./toast"
-import { FetchError } from "../js/global-types"
-import { useFilters } from "./filters"
-import { query } from "../js/query"
-import { remove } from "lodash"
+import { defineStore } from 'pinia'
+import { remove } from 'lodash'
+import { del, get, post, put, rootUrl } from '../js/fetch'
+import type { FetchError } from '../js/global-types'
+import { query } from '../js/query'
+import { useLoading } from './loading'
+import { useToast } from './toast'
+import { useFilters } from './filters'
 
 export interface Image {
   key: string
@@ -82,28 +82,28 @@ export interface NewAlbum {
   draft: boolean
 }
 
-export const useAlbums = defineStore("album", {
+export const useAlbums = defineStore('album', {
   state: () =>
-  ({
-    albumList: [],
-    albums: [],
-    drafts: [],
-    userAlbums: {},
-    imageMetadata: {}
-  } as State),
+    ({
+      albumList: [],
+      albums: [],
+      drafts: [],
+      userAlbums: {},
+      imageMetadata: {},
+    } as State),
   actions: {
     async genPublicAlbumToken(albumKey: string) {
       return post(`/api/public/albums/${albumKey}`, {})
-        .then((response) => response.token)
+        .then(response => response.token)
         .catch((error: FetchError) => {
           const toast = useToast()
-          toast.add(error.message, "error")
+          toast.add(error.message, 'error')
         })
     },
     async fetchAlbum(id: string | string[], token?: string | string[]) {
       const { addLoading, delLoading } = useLoading()
 
-      addLoading("get-album")
+      addLoading('get-album')
 
       const query = token ? `/api/public/albums/${id}/${token}` : `/api/albums/${id}`
 
@@ -114,23 +114,23 @@ export const useAlbums = defineStore("album", {
         })
         .catch((error: FetchError) => {
           const toast = useToast()
-          toast.add(error.message, "error")
+          toast.add(error.message, 'error')
         })
-        .finally(() => delLoading("get-album"))
+        .finally(() => delLoading('get-album'))
     },
 
     async fetchDrafts() {
       this.drafts = await this.fetchAlbums(true)
     },
 
-    async fetchAlbums(draft: boolean = false) {
+    async fetchAlbums(draft = false) {
       const { addLoading, delLoading } = useLoading()
       const filters = useFilters()
-      addLoading("albums")
+      addLoading('albums')
 
       const q = query({
         filters: filters.active,
-        draft
+        draft,
       })
 
       return get(`/api/albums${q}`)
@@ -140,23 +140,23 @@ export const useAlbums = defineStore("album", {
         })
         .catch((error: FetchError) => {
           const toast = useToast()
-          toast.add(error.message, "error")
+          toast.add(error.message, 'error')
         })
-        .finally(() => delLoading("albums"))
+        .finally(() => delLoading('albums'))
     },
 
-    async fetchUserAlbums(user: string, draft: boolean = false) {
+    async fetchUserAlbums(user: string, draft = false) {
       const { addLoading, delLoading } = useLoading()
       const filters = useFilters()
 
-      addLoading(`albums`)
+      addLoading('albums')
 
       const q = query({
         filters: {
           ...filters.active,
-          authors: [user]
+          authors: [user],
         },
-        draft
+        draft,
       })
 
       return get(`/api/albums${q}`)
@@ -167,10 +167,10 @@ export const useAlbums = defineStore("album", {
         })
         .catch((error: FetchError) => {
           const toast = useToast()
-          toast.add(error.message, "error")
+          toast.add(error.message, 'error')
         })
         .finally(() => {
-          delLoading(`albums`)
+          delLoading('albums')
         })
     },
 
@@ -186,7 +186,7 @@ export const useAlbums = defineStore("album", {
         })
         .catch((error: FetchError) => {
           const toast = useToast()
-          toast.add(error.message, "error")
+          toast.add(error.message, 'error')
         })
         .finally(() => delLoading(key))
     },
@@ -199,10 +199,10 @@ export const useAlbums = defineStore("album", {
 
       return put(`/api/images/${key}`, form)
         .then((res) => {
-          toast.add("Updated image metadata", "success")
+          toast.add('Updated image metadata', 'success')
         })
         .catch((error: FetchError) => {
-          toast.add(error.message, "error")
+          toast.add(error.message, 'error')
         })
         .finally(() => delLoading(key))
     },
@@ -210,102 +210,105 @@ export const useAlbums = defineStore("album", {
     async addAlbum(album: NewAlbum) {
       const { addLoading, delLoading } = useLoading()
 
-      addLoading("add-album")
+      addLoading('add-album')
 
-      return post("/api/albums", album)
+      return post('/api/albums', album)
         .then((key) => {
           // Redirect to page with data.key
           return key
         })
         .catch((error: FetchError) => {
           const toast = useToast()
-          toast.add(error.message, "error")
+          toast.add(error.message, 'error')
         })
-        .finally(() => delLoading("add-album"))
+        .finally(() => delLoading('add-album'))
     },
 
     async deleteAlbum(key: string) {
       const { addLoading, delLoading } = useLoading()
       const toast = useToast()
 
-      addLoading("delete-album")
+      addLoading('delete-album')
 
       return del(`/api/albums/${key}`)
         .then(() => {
-          remove(this.albums, (item) => item.key === key)
-          toast.add("Successfully deleted album", "success")
+          remove(this.albums, item => item.key === key)
+          toast.add('Successfully deleted album', 'success')
           return true
         })
         .catch((error: FetchError) => {
-          toast.add(error.message, "error")
+          toast.add(error.message, 'error')
         })
-        .finally(() => delLoading("delete-album"))
+        .finally(() => delLoading('delete-album'))
     },
 
     async editAlbum(key: string, album: NewAlbum) {
       const { addLoading, delLoading } = useLoading()
       const toast = useToast()
 
-      addLoading("edit-album-submit")
+      addLoading('edit-album-submit')
 
       return put(`/api/albums/${key}`, album)
         .then((res) => {
-          toast.add("Successfully updated album", "success")
+          toast.add('Successfully updated album', 'success')
         })
         .catch((error: FetchError) => {
-          toast.add(error.message, "error")
+          toast.add(error.message, 'error')
         })
-        .finally(() => delLoading("edit-album-submit"))
+        .finally(() => delLoading('edit-album-submit'))
     },
 
     async fetchUserImages() {
       const { addLoading, delLoading } = useLoading()
       const toast = useToast()
 
-      addLoading("images")
+      addLoading('images')
 
-      return get("/api/images")
-        .then((data) => data)
+      return get('/api/images')
+        .then(data => data)
         .catch((error: FetchError) => {
-          toast.add(error.message, "error")
+          toast.add(error.message, 'error')
           return []
         })
-        .finally(() => delLoading("images"))
+        .finally(() => delLoading('images'))
     },
     async deleteImages(keys: string[] | string) {
-      if (!keys) return
+      if (!keys)
+        return
 
-      if (typeof keys === "string") keys = [keys]
+      if (typeof keys === 'string')
+        keys = [keys]
 
       const { addLoading, delLoading } = useLoading()
       const toast = useToast()
 
-      addLoading("delete-images")
+      addLoading('delete-images')
 
       Promise.all(keys.map((key: string) => del(`/api/images/${key}`)))
         .then(() => {
           this.fetchUserImages()
         })
         .catch((error: FetchError) => {
-          toast.add(error.message, "error")
+          toast.add(error.message, 'error')
         })
         .finally(() => {
-          delLoading("delete-images")
+          delLoading('delete-images')
         })
-    }
+    },
   },
   getters: {
-    getUserAlbums: (state) => (username: string) => state.userAlbums[username],
-    getAlbums: (state) => state.albums,
-    getAlbum: (state) => (key: string) => state.albums.find((album) => album.key === key),
-    getListAlbum: (state) => (key: string) => state.albumList.find((album) => album.key === key),
-    getImageMetadata: (state) => (key: string) => state.imageMetadata[key] ?? null
-  }
+    getUserAlbums: state => (username: string) => state.userAlbums[username],
+    getAlbums: state => state.albums,
+    getAlbum: state => (key: string) => state.albums.find(album => album.key === key),
+    getListAlbum: state => (key: string) => state.albumList.find(album => album.key === key),
+    getImageMetadata: state => (key: string) => state.imageMetadata[key] ?? null,
+  },
 })
 
-type sizes = "full" | "large" | "medium" | "tiny"
+type sizes = 'full' | 'large' | 'medium' | 'tiny'
 
-export function imageUrl(key: string, size: sizes = "full") {
-  if (!key) return ""
-  return rootUrl + `/data/image/${key}/${size}.jpg`
+export function imageUrl(key: string, size: sizes = 'full') {
+  if (!key)
+    return ''
+  return `${rootUrl}/data/image/${key}/${size}.jpg`
 }
