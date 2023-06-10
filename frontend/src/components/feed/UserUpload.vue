@@ -43,6 +43,7 @@ function initSlider() {
   if (props.images.length > 1) {
     sliderInst = new Slider(`#${sliderId.value}`, {
       height: window.innerHeight / 100 * 75,
+      width: null,
       active: props.images.findIndex(i => i.key === activeImage.value),
     })
 

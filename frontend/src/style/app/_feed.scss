@@ -9,19 +9,15 @@
     position: relative;
 
     .feed-sidebar-scroll {
-      @include flex($direction: column, $justify: space-between, $align: flex-end);
+      @include flex($gap: 16px, $direction: column, $justify: space-between, $align: flex-end);
       position: sticky;
-      top: $header + 64px;
+      top: $header + 16px;
       z-index: 5;
-      gap: 24px;
+      height: calc(100vh - $header - 48px);
 
       span {
         display: block;
         font-size: 1.6rem;
-
-        &:not(.material-icons) {
-          margin-bottom: 16px;
-        }
       }
 
       button {
@@ -35,13 +31,13 @@
 
   .hi-feed-wrap {
     .feed-date {
-      &:first-child {
-        .feed-user-wrap {
-          &:first-child {
-            scroll-snap-align: none;
-          }
-        }
-      }
+      // &:first-child {
+      //   .feed-user-wrap {
+      //     &:first-child {
+      //       scroll-snap-align: none;
+      //     }
+      //   }
+      // }
 
       .feed-user-wrap {
         @include grid(0, 1fr 356px);
@@ -50,7 +46,7 @@
         border-radius: 12px;
         position: relative;
 
-        scroll-snap-align: start;
+        // scroll-snap-align: start;
 
         .scroll-to {
           display: block;
