@@ -26,50 +26,43 @@ const user = useUser()
 const sliderId = computed(() => props.user + props.index)
 
 // Refs updated when albums and images change
-const activeImage = ref('')
+const visibleImage = ref<ImageItemInAlbum>()
 
 onMounted(() => {
   // If more than 1 images is present, initialize slider
-  activeImage.value = props.images[0].key
+  visibleImage.value = props.images[0]
   nextTick(() => {
-    setTimeout(() => {
-      initSlider()
-    }, 50)
+    initSlider()
   })
 })
 
-let sliderInst: any
 function initSlider() {
   if (props.images.length > 1) {
-    sliderInst = new Slider(`#${sliderId.value}`, {
+    // eslint-disable-next-line no-new
+    new Slider(`#${sliderId.value}`, {
       height: window.innerHeight / 100 * 75,
       width: null,
-      active: props.images.findIndex(i => i.key === activeImage.value),
-    })
-
-    sliderInst.onSlideChange(({ toEl }: { toEl: HTMLDivElement }) => {
-      // Fetch comments on slide change
-      activeImage.value = toEl.getAttribute('data-image-key') as string
+      on: {
+        slideChange({ toIndex }: { toIndex: number }) {
+          visibleImage.value = props.images[toIndex]
+        },
+      },
     })
   }
 }
-
-const visibleImage = computed(() => {
-  return props.images.find(i => i.key === activeImage.value)
-})
 </script>
 
 <template>
   <div class="feed-user-wrap">
     <div v-if="props.images.length > 1" :id="sliderId">
       <div v-for="image in props.images" :key="image.key" class="slider-image" :data-image-key="image.key">
-        <img :src="imageUrl(image.key, 'large')" alt=" ">
-        <img class="blurred" :src="imageUrl(image.key, 'medium')" alt=" ">
+        <img :src="imageUrl(image.key, 'large')" alt=" " loading="lazy">
+        <img class="blurred" :src="imageUrl(image.key, 'medium')" alt=" " loading="lazy">
       </div>
     </div>
     <div v-else class="image-wrap">
-      <img :src="imageUrl(props.images[0].key, 'large')" alt="">
-      <img class="blurred" :src="imageUrl(props.images[0].key, 'medium')" alt=" ">
+      <img :src="imageUrl(props.images[0].key, 'large')" alt="" loading="lazy">
+      <img class="blurred" :src="imageUrl(props.images[0].key, 'medium')" alt=" " loading="lazy">
     </div>
 
     <div v-if="visibleImage" class="feed-image-info">
