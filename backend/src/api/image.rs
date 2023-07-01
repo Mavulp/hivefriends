@@ -181,7 +181,8 @@ pub fn insert(metadata: &DbImage, conn: &Connection) -> anyhow::Result<()> {
             f_number, \
             focal_length, \
             description, \
-            uploaded_at \
+            uploaded_at, \
+            iso \
         ) VALUES ( \
             :key, \
             :uploader, \
@@ -196,7 +197,8 @@ pub fn insert(metadata: &DbImage, conn: &Connection) -> anyhow::Result<()> {
             :f_number, \
             :focal_length, \
             :description, \
-            :uploaded_at \
+            :uploaded_at, \
+            :iso \
         )",
         to_params_named(metadata).unwrap().to_slice().as_slice(),
     )?;
