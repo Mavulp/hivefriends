@@ -72,6 +72,7 @@ pub(super) async fn post(
             exposure_time: None,
             f_number: None,
             focal_length: None,
+            iso: None,
         },
     };
 
@@ -186,6 +187,10 @@ fn populate_metadata_from_exif(metadata: &mut DbImageMetadata, exif: &exif::Exif
         .map(|f| f.display_value().with_unit(exif).to_string());
     metadata.focal_length = exif
         .get_field(Tag::FocalLength, In::PRIMARY)
+        .map(|f| f.display_value().with_unit(exif).to_string());
+    metadata.iso = exif
+        .get_field(Tag::PhotographicSensitivity, In::PRIMARY)
+        .or_else(|| exif.get_field(Tag::ISOSpeed, In::PRIMARY))
         .map(|f| f.display_value().with_unit(exif).to_string());
 }
 

@@ -40,6 +40,7 @@ pub struct ImageMetadata {
     exposure_time: Option<String>,
     f_number: Option<String>,
     focal_length: Option<String>,
+    iso: Option<String>,
 }
 
 pub(super) fn non_empty_location<'de, D: Deserializer<'de>>(
@@ -94,6 +95,7 @@ pub struct DbImageMetadata {
     pub exposure_time: Option<String>,
     pub f_number: Option<String>,
     pub focal_length: Option<String>,
+    pub iso: Option<String>,
 }
 
 impl From<DbImageMetadata> for ImageMetadata {
@@ -117,6 +119,7 @@ impl From<DbImageMetadata> for ImageMetadata {
             exposure_time: meta.exposure_time,
             f_number: meta.f_number,
             focal_length: meta.focal_length,
+            iso: meta.iso,
         }
     }
 }
