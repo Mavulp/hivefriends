@@ -88,13 +88,14 @@ async fn handle_error(_err: std::io::Error) -> impl IntoResponse {
     (StatusCode::INTERNAL_SERVER_ERROR, "Something went wrong...")
 }
 
-pub(crate) const MIGRATIONS: [M; 3] = [
+pub(crate) const MIGRATIONS: [M; 4] = [
     M::up(include_str!("../migrations/001_initial.sql")),
     M::up(include_str!(
         "../migrations/002_username_collate_nocase.sql"
     ))
     .foreign_key_check(),
     M::up(include_str!("../migrations/003_activity_changes.sql")).foreign_key_check(),
+    M::up(include_str!("../migrations/004_add_iso.sql")),
 ];
 
 pub async fn setup_database(path: &Path) -> anyhow::Result<tokio_rusqlite::Connection> {
