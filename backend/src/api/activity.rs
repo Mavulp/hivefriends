@@ -91,7 +91,7 @@ async fn get_activities(
             let mut activities: Vec<Activity> =
                 albums.chain(users).chain(comments).chain(images).collect();
 
-            activities.sort_unstable_by(|a, b| b.partial_cmp(a).unwrap());
+            activities.sort_unstable_by(|a, b| b.cmp(a));
 
             Ok(Json(activities))
         })
@@ -121,8 +121,8 @@ impl PartialEq for Activity {
     }
 }
 
-impl PartialOrd for Activity {
-    fn partial_cmp(&self, other: &Activity) -> Option<std::cmp::Ordering> {
+impl Ord for Activity {
+    fn cmp(&self, other: &Activity) -> std::cmp::Ordering {
         use Activity::*;
 
         let this_time = match self {
@@ -139,7 +139,13 @@ impl PartialOrd for Activity {
             Image(i) => i.image.published_at.unwrap(),
         };
 
-        this_time.partial_cmp(&other_time)
+        this_time.cmp(&other_time)
+    }
+}
+
+impl PartialOrd for Activity {
+    fn partial_cmp(&self, other: &Activity) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
     }
 }
 
