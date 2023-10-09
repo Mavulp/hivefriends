@@ -91,7 +91,7 @@ async fn get_activities(
             let mut activities: Vec<Activity> =
                 albums.chain(users).chain(comments).chain(images).collect();
 
-            activities.sort_unstable_by(|a, b| b.cmp(a));
+            activities.sort_unstable_by(|a, b| b.partial_cmp(a).unwrap());
 
             Ok(Json(activities))
         })
@@ -145,11 +145,13 @@ impl PartialOrd for Activity {
 
 impl Eq for Activity {}
 
+/*
 impl Ord for Activity {
     fn cmp(&self, other: &Activity) -> std::cmp::Ordering {
         self.partial_cmp(other).unwrap()
     }
 }
+*/
 
 #[cfg(test)]
 mod test {
