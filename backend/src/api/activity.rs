@@ -121,8 +121,8 @@ impl PartialEq for Activity {
     }
 }
 
-impl PartialOrd for Activity {
-    fn partial_cmp(&self, other: &Activity) -> Option<std::cmp::Ordering> {
+impl Ord for Activity {
+    fn cmp(&self, other: &Activity) -> std::cmp::Ordering {
         use Activity::*;
 
         let this_time = match self {
@@ -139,17 +139,17 @@ impl PartialOrd for Activity {
             Image(i) => i.image.published_at.unwrap(),
         };
 
-        this_time.partial_cmp(&other_time)
+        this_time.cmp(&other_time)
+    }
+}
+
+impl PartialOrd for Activity {
+    fn partial_cmp(&self, other: &Activity) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
     }
 }
 
 impl Eq for Activity {}
-
-impl Ord for Activity {
-    fn cmp(&self, other: &Activity) -> std::cmp::Ordering {
-        self.partial_cmp(other).unwrap()
-    }
-}
 
 #[cfg(test)]
 mod test {
