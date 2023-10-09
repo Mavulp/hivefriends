@@ -17,7 +17,7 @@ serde_json = "1.0.81"
 serde_rusqlite = "0.31.0"
 tokio-rusqlite = "0.3.0"
 rusqlite = { version = "0.28.0", features = ["bundled"] }
-rusqlite_migration = { git = "https://github.com/cljoly/rusqlite_migration" }
+rusqlite_migration = { git = "https://github.com/cljoly/rusqlite_migration", rev="dd52178f1ad24a7e090ebbf4a834eda0cd7c60a5" }
 lazy_static = "1.4.0"
 tracing-subscriber = { version = "0.3.15", features = ["env-filter"] }
 rand = "0.8.5"
