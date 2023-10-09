@@ -145,14 +145,6 @@ impl PartialOrd for Activity {
 
 impl Eq for Activity {}
 
-/*
-impl Ord for Activity {
-    fn cmp(&self, other: &Activity) -> std::cmp::Ordering {
-        self.partial_cmp(other).unwrap()
-    }
-}
-*/
-
 #[cfg(test)]
 mod test {
     use super::*;
