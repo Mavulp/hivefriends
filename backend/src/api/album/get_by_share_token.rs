@@ -75,7 +75,8 @@ pub(super) async fn get(
                         i.focal_length \
                     FROM images i \
                     INNER JOIN album_image_associations aia ON aia.image_key=i.key \
-                    WHERE aia.album_key=?1",
+                    WHERE aia.album_key=?1
+                    ORDER BY aia.idx",
                     )
                     .context("Failed to prepare statement for image query")?;
                 let image_iter = stmt
